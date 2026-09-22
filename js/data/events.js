@@ -1,68 +1,52 @@
-// ============================================================
-// Données des événements — CONTENU D'EXEMPLE à remplacer.
-// Chaque objet = une fiche événement. `slug` doit être unique
-// (utilisé dans l'URL evenement.html?e=slug).
-// `statut`: "avenir" ou "archive".
-// Plus tard : ce fichier pourra être remplacé par un appel API
-// vers un backend, sans changer evenements.html / evenement.html.
-// ============================================================
+/**
+ * Données des événements. Un seul endroit à modifier pour que la liste ET
+ * les fiches détaillées se mettent à jour automatiquement.
+ *
+ * Pour ajouter un événement : copie un objet ci-dessous, change les valeurs.
+ * "slug" doit être unique (utilisé dans l'adresse de la fiche, ex :
+ * evenement.html?slug=soiree-halloween-2026), sans espaces ni accents.
+ * "status" : "a-venir" ou "passe".
+ */
 export const EVENTS = [
   {
-    slug: "solstice-warehouse-2026",
-    statut: "avenir",
-    nom: "Solstice Warehouse",
-    date: "2026-12-13",
-    horaires: "23h00 – 07h00",
-    lieu: "Entrepôt La Rampe, Strasbourg",
-    adresse: "12 rue des Docks, 67000 Strasbourg",
-    prix: "12 € prévente / 15 € sur place",
-    billetterie: "https://shotgun.live/",
-    ageMin: "18 ans",
-    dressCode: "Libre",
-    acces: "Tram + 10 min à pied, parking gratuit à proximité",
-    description: "Une nuit dans un entrepôt réchauffé pour l'occasion : gros système, lumières basses, line-up 100% local. Premier événement de la saison hiver.",
-    lineup: ["Selecta Nox (live)", "Kranz b2b Ilo", "Résident TND"],
-    visuel: "decor/star-outline.webp",
+    slug: "soiree-ouverture-2026",
+    status: "a-venir",
+    title: "Soirée d'ouverture de saison",
+    date: "2026-11-14",
+    time: "22h00 – 5h00",
+    place: "Lieu communiqué prochainement, Strasbourg",
+    ticketUrl: "",              // laisse vide si pas de billetterie
+    cover: null,                // ex: "assets/img/events/ouverture-2026.webp"
+    description:
+      "Premier rendez-vous de la saison : plusieurs heures de sets tekno, notre sound system complet et l'équipe au complet pour l'occasion.",
+    practical: [
+      "Entrée à partir de 22h00",
+      "Vestiaire sur place",
+      "Accès en transport en commun conseillé"
+    ]
   },
   {
-    slug: "session-plein-air-ete",
-    statut: "avenir",
-    nom: "Session plein air",
-    date: "2027-02-21",
-    horaires: "16h00 – 23h00",
-    lieu: "Base de loisirs, à confirmer",
-    adresse: "Adresse communiquée aux inscrits",
-    prix: "Prix libre / participation conseillée 8 €",
-    billetterie: "https://helloasso.com/",
-    ageMin: "Aucun avant 22h, 18 ans après",
-    dressCode: "Confortable, prévoir de quoi se couvrir",
-    acces: "Covoiturage organisé, voir le formulaire de contact",
-    description: "Format plus doux, en journée : moins de basses, plus de soleil. Bar associatif et petite restauration sur place.",
-    lineup: ["Line-up en cours de confirmation"],
-    visuel: "decor/sparkle-blue.webp",
+    slug: "session-plein-air-2026",
+    status: "a-venir",
+    title: "Session plein air",
+    date: "2026-12-20",
+    time: "16h00 – 23h00",
+    place: "Lieu communiqué prochainement, environs de Strasbourg",
+    ticketUrl: "",
+    cover: null,
+    description:
+      "Une session en extérieur, format plus court, pour clôturer l'année avant les fêtes.",
+    practical: ["Prévoir des vêtements chauds", "Événement en extérieur, sous réserve de météo"]
   },
   {
-    slug: "release-party-tnd6tem",
-    statut: "archive",
-    nom: "Release Party TND6TEM",
-    date: "2026-06-06",
-    horaires: "22h00 – 06h00",
-    lieu: "Local associatif, Kehl",
-    description: "Soirée de lancement officiel du sound system TND6TEM : premier déploiement complet du système son et de la scéno.",
-    lineup: ["Résident TND", "Invité surprise"],
-    retour: "Belle affluence pour une première, système rodé pour la suite. Merci à tous les bénévoles montage/démontage.",
-    visuel: "decor/burst.webp",
-  },
-  {
-    slug: "warmup-hiver-2025",
-    statut: "archive",
-    nom: "Warm-up d'hiver",
-    date: "2025-11-29",
-    horaires: "21h00 – 04h00",
-    lieu: "Salle des fêtes, Scheibenhard",
-    description: "Petit format pour tester la config lumière avant la saison des grosses soirées.",
-    lineup: ["Résident TND"],
-    retour: "Configuration lumière validée, quelques ajustements sur la diffusion du son en salle fermée.",
-    visuel: "decor/star-pair.webp",
-  },
+    slug: "warm-up-printemps-2025",
+    status: "passe",
+    title: "Warm-up de printemps",
+    date: "2025-04-12",
+    place: "Strasbourg",
+    cover: null,
+    description:
+      "Notre première soirée de l'association, une bonne occasion de tester le matériel grandeur nature.",
+    gallerySlug: "warm-up-printemps-2025"   // relie vers js/data/galerie.js
+  }
 ];

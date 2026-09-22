@@ -4,74 +4,37 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Événements — Tekno Never Dies</title>
-  <meta name="description" content="Les prochaines soirées de l'association Tekno Never Dies, et l'historique des événements passés." />
+  <meta name="description" content="Prochains événements et soirées passées de l'association Tekno Never Dies." />
   <link rel="icon" type="image/png" href="assets/img/favicon.png" />
+  <link rel="preload" href="assets/fonts/archivo-black-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+  <script type="importmap">{ "imports": { "three": "./vendor/three/three.module.min.js" } }</script>
+  <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/partials.js"></script>
 </head>
-<body>
-
-  <header class="site-header">
-    <a class="brand" href="index.html">
-      <span class="badge" role="img" aria-label="Logo Tekno Never Dies"></span>
-      <strong>TND6TEM</strong>
-    </a>
-    <nav aria-label="Navigation principale">
-      <a href="evenements.html" aria-current="page">Événements</a>
-      <a href="location.html">Location</a>
-      <a href="association.html">L'association</a>
-      <a href="galerie.html">Galerie</a>
-      <a href="contact.html">Contact</a>
-    </nav>
-  </header>
+<body data-page="evenements">
+  <canvas id="stage" aria-hidden="true"></canvas>
+  <div data-include="partials/header.html"></div>
 
   <main>
-    <section class="page-hero container">
-      <p class="breadcrumb"><a href="index.html">Accueil</a> / Événements</p>
+    <section class="page-head container">
       <h1>Événements</h1>
-      <p>Nos soirées à venir, et l'historique de ce qu'on a déjà fait vibrer.</p>
+      <p>Nos prochaines soirées, et un aperçu de celles déjà organisées.</p>
     </section>
 
-    <section class="container block block--flush-top">
-      <div class="tabs" role="tablist" aria-label="Filtrer les événements">
-        <button class="tab-btn" role="tab" id="tab-avenir" aria-controls="panel-avenir" aria-selected="true">À venir</button>
-        <button class="tab-btn" role="tab" id="tab-archive" aria-controls="panel-archive" aria-selected="false">Archives</button>
-      </div>
-
-      <div class="tab-panel" id="panel-avenir" role="tabpanel" aria-labelledby="tab-avenir">
-        <div class="card-grid" id="events-avenir"></div>
-      </div>
-      <div class="tab-panel" id="panel-archive" role="tabpanel" aria-labelledby="tab-archive" hidden>
-        <div class="card-grid" id="events-archive"></div>
-      </div>
+    <section class="container events-block">
+      <h2 class="section-title">À venir</h2>
+      <ul class="card-grid" id="upcoming-events"></ul>
     </section>
 
-    <section class="container block block--flush-top">
-      <div class="cta-banner">
-        <div>
-          <h2>Une salle, un lieu à proposer ?</h2>
-          <p>On est toujours à la recherche de nouveaux spots pour poser le système.</p>
-        </div>
-        <div class="actions"><a class="btn btn-cyan" href="contact.html?sujet=partenariat">Nous contacter</a></div>
-      </div>
+    <section class="container events-block">
+      <h2 class="section-title">Événements passés</h2>
+      <ul class="card-grid" id="past-events"></ul>
     </section>
   </main>
 
-  <footer>
-    <div class="container foot">
-      <div class="who">
-        <span class="badge" role="img" aria-label="Logo Tekno Never Dies"></span>
-        <div><div class="tnd">TND6TEM</div><small>© 2026 Tekno Never Dies, association</small></div>
-      </div>
-      <nav aria-label="Pied de page">
-        <a href="association.html">L'asso</a>
-        <a href="evenements.html">Agenda</a>
-        <a href="location.html">Location</a>
-        <a href="contact.html">Contact</a>
-        <a href="mentions-legales.html">Mentions légales</a>
-      </nav>
-    </div>
-  </footer>
-
-  <script type="module" src="js/evenements.js"></script>
+  <div data-include="partials/footer.html"></div>
+  <script type="module" src="js/pages/evenements.js"></script>
 </body>
 </html>

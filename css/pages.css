@@ -1,0 +1,100 @@
+/* =====================================================================
+   Tekno Never Dies — pages internes (Événements, Location, Association,
+   Contact, Galerie). Complète css/style.css, ne le remplace pas.
+   Sommaire : 1 Base pages internes · 2 Cartes · 3 Fiches détail
+              4 Catalogue · 5 Formulaire de contact · 6 Galerie
+   ===================================================================== */
+
+/* ---------- 1. Base des pages internes ---------- */
+.page-head{padding:clamp(120px,16vh,150px) 0 clamp(28px,4vw,48px)}
+.page-head h1{font-family:var(--display);font-weight:400;text-transform:uppercase;font-size:clamp(2.4rem,6vw,4.6rem);line-height:.96;margin:0 0 .3em;color:var(--accent)}
+.page-head p{max-width:56ch;color:var(--muted);margin:0;font-size:1.1rem}
+.section-title{font-family:var(--display);font-weight:400;text-transform:uppercase;font-size:clamp(1.7rem,3.4vw,2.6rem);margin:0 0 1em}
+.back-link{display:inline-block;margin-bottom:1.4em;font-weight:700;text-decoration:none;opacity:.8}
+.back-link:hover{opacity:1;text-decoration:underline}
+.btn-sm{padding:.55em 1.1em;font-size:.92rem}
+.pill{display:inline-block;font-weight:700;font-size:.85rem;padding:.35em 1em;border-radius:999px;background:var(--cyan);color:#000;margin-bottom:.8em}
+
+/* vignette générique (vraie photo ou placeholder) */
+.thumb{aspect-ratio:4/3;border-radius:16px;overflow:hidden;background:var(--card);display:flex;align-items:center;justify-content:center}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb--placeholder{color:var(--muted);font-size:.85rem;font-weight:600;text-align:center;padding:1em;border:1.5px dashed var(--line)}
+
+/* ---------- 2. Cartes (événements / matériel) ---------- */
+.card-grid{list-style:none;margin:0;padding:0;display:grid;gap:clamp(20px,2.6vw,32px);grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.event-card,.material-card{list-style:none}
+.event-card__body,.material-card__body{padding-top:.9em}
+.event-card h3,.material-card h3{font-size:1.15rem;margin:.2em 0}
+.event-card p,.material-card p{margin:0 0 .7em;color:var(--muted)}
+.event-card__date{font-family:var(--display);font-size:.85rem;text-transform:uppercase;color:var(--accent)}
+.event-card__actions{display:flex;flex-wrap:wrap;gap:.6em}
+.material-card__foot{display:flex;align-items:center;justify-content:space-between;gap:10px 14px;flex-wrap:wrap}
+.material-card__foot .btn{flex:none}
+.price{font-weight:700}
+.events-block{margin-bottom:clamp(48px,7vw,88px)}
+
+/* ---------- 3. Fiches détail ---------- */
+.detail{max-width:60ch}
+.detail .thumb{max-width:520px;margin-bottom:1.4em}
+.event-detail__meta{color:var(--muted);font-weight:600;margin-top:0}
+.detail h2{font-size:1.2rem;margin:1.4em 0 .5em}
+.detail ul{padding-left:1.2em}
+.material-facts{display:grid;gap:.9em;margin:1.4em 0;padding:1.2em;background:var(--card);border-radius:16px}
+.material-facts div{display:flex;justify-content:space-between;gap:16px}
+.material-facts dt{font-weight:700}
+.material-facts dd{margin:0;text-align:right;color:var(--muted)}
+.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:1.2em}
+
+/* ---------- 4. Catalogue ---------- */
+.catalogue-nav{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:clamp(28px,4vw,48px)}
+.catalogue-nav a{text-decoration:none;font-weight:700;padding:.5em 1.1em;border-radius:999px;border:2px solid var(--ink);font-size:.92rem}
+.catalogue-nav a:hover{background:var(--card)}
+.catalogue-section{margin-bottom:clamp(40px,6vw,72px);scroll-margin-top:90px}
+.material-grid{list-style:none;margin:0;padding:0;display:grid;gap:clamp(20px,2.6vw,32px);grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+
+/* ---------- 5. Formulaire de contact ---------- */
+.contact-layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:clamp(28px,5vw,72px);align-items:start}
+.field{margin-bottom:1.2em}
+.field label{display:block;font-weight:700;margin-bottom:.4em;font-size:.95rem}
+.field input,.field select,.field textarea{width:100%;padding:.75em .9em;border-radius:10px;border:1.5px solid var(--line);background:var(--page);color:var(--ink);font:inherit}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
+.field textarea{resize:vertical;min-height:120px}
+.field[hidden]{display:none}
+.contact-info{background:var(--card);border-radius:20px;padding:clamp(24px,3vw,36px)}
+.contact-info h2{font-size:1.2rem;margin-top:0}
+.contact-info ul{list-style:none;padding:0;margin:0;display:grid;gap:.7em}
+.contact-info a{font-weight:700;text-decoration:none}
+.contact-info a:hover{text-decoration:underline}
+.form-note{font-size:.85rem;color:var(--muted);margin-top:.6em}
+
+/* ---------- 6. Galerie ---------- */
+.gallery-year{margin-bottom:clamp(40px,6vw,72px)}
+.gallery-year h2{font-family:var(--display);font-weight:400;font-size:clamp(1.8rem,4vw,2.8rem);margin:0 0 .6em}
+.gallery-event{margin-bottom:2em;scroll-margin-top:90px}
+.gallery-event h3{margin:0 0 .8em}
+.gallery-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.gallery-grid .thumb{aspect-ratio:1/1}
+
+/* ---------- Association ---------- */
+.about-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,5vw,72px)}
+.about-grid section{margin-bottom:clamp(36px,5vw,60px)}
+.about-grid h2{font-size:1.3rem}
+.values-list{list-style:none;margin:0;padding:0;display:grid;gap:.8em}
+.values-list li{padding:.9em 1.1em;background:var(--card);border-radius:12px;font-weight:600}
+
+@media (max-width:860px){
+  .contact-layout,.about-grid{grid-template-columns:minmax(0,1fr)}
+}
+
+/* ---------- Chiffres de l'association (bloc dans la page d'accueil) ---------- */
+.stats-row{list-style:none;margin:1.6em 0 0;padding:1.2em 0 0;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:clamp(20px,4vw,44px)}
+.stats-row li{display:flex;flex-direction:column;gap:.15em}
+.stats-row strong{font-family:var(--display);font-size:clamp(1.6rem,3vw,2.2rem);color:var(--accent)}
+.stats-row span{font-size:.85rem;color:var(--muted)}
+
+@media (max-width:640px){
+  /* Le header n'est plus en survol sur mobile (voir css/style.css) :
+     les pages internes n'ont donc plus besoin de la grande marge qui lui
+     laissait de la place. */
+  .page-head{padding-top:clamp(28px,5vh,48px)}
+}

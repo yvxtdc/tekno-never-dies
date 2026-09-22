@@ -4,60 +4,29 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Galerie — Tekno Never Dies</title>
-  <meta name="description" content="Photos et vidéos des soirées et installations de Tekno Never Dies." />
+  <meta name="description" content="Photos des soirées et événements de Tekno Never Dies." />
   <link rel="icon" type="image/png" href="assets/img/favicon.png" />
+  <link rel="preload" href="assets/fonts/archivo-black-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+  <script type="importmap">{ "imports": { "three": "./vendor/three/three.module.min.js" } }</script>
+  <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/partials.js"></script>
 </head>
-<body>
-
-  <header class="site-header">
-    <a class="brand" href="index.html">
-      <span class="badge" role="img" aria-label="Logo Tekno Never Dies"></span>
-      <strong>TND6TEM</strong>
-    </a>
-    <nav aria-label="Navigation principale">
-      <a href="evenements.html">Événements</a>
-      <a href="location.html">Location</a>
-      <a href="association.html">L'association</a>
-      <a href="galerie.html" aria-current="page">Galerie</a>
-      <a href="contact.html">Contact</a>
-    </nav>
-  </header>
+<body data-page="galerie">
+  <canvas id="stage" aria-hidden="true"></canvas>
+  <div data-include="partials/header.html"></div>
 
   <main>
-    <section class="page-hero container">
-      <p class="breadcrumb"><a href="index.html">Accueil</a> / Galerie</p>
+    <section class="page-head container">
       <h1>Galerie</h1>
-      <p>Photos et vidéos de nos soirées et installations, classées par événement.</p>
+      <p>Les photos de nos soirées, classées par année et par événement.</p>
     </section>
 
-    <section class="container block block--flush-top">
-      <div class="chip-row" id="gal-chips" style="margin-bottom:2em"></div>
-      <div class="gallery-grid" id="gal-grid"></div>
-    </section>
-
-    <section class="container block block--flush-top">
-      <div class="section-head"><h2>Suivez-nous</h2></div>
-      <p style="color:var(--muted);max-width:60ch">Flux Instagram à intégrer ici une fois le compte de l'association actif — en attendant, retrouvez nos photos ci-dessus et sur nos réseaux.</p>
-    </section>
+    <section class="container" id="gallery-root" style="padding-bottom:clamp(72px,11vw,150px)"></section>
   </main>
 
-  <footer>
-    <div class="container foot">
-      <div class="who">
-        <span class="badge" role="img" aria-label="Logo Tekno Never Dies"></span>
-        <div><div class="tnd">TND6TEM</div><small>© 2026 Tekno Never Dies, association</small></div>
-      </div>
-      <nav aria-label="Pied de page">
-        <a href="association.html">L'asso</a>
-        <a href="evenements.html">Agenda</a>
-        <a href="location.html">Location</a>
-        <a href="contact.html">Contact</a>
-        <a href="mentions-legales.html">Mentions légales</a>
-      </nav>
-    </div>
-  </footer>
-
-  <script type="module" src="js/galerie.js"></script>
+  <div data-include="partials/footer.html"></div>
+  <script type="module" src="js/pages/galerie.js"></script>
 </body>
 </html>

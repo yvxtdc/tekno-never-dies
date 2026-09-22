@@ -4,114 +4,61 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>L'association — Tekno Never Dies</title>
-  <meta name="description" content="Qui sommes-nous, nos valeurs, l'équipe et comment rejoindre l'association Tekno Never Dies." />
+  <meta name="description" content="Qui est Tekno Never Dies : histoire, objectifs et fonctionnement de l'association." />
   <link rel="icon" type="image/png" href="assets/img/favicon.png" />
+  <link rel="preload" href="assets/fonts/archivo-black-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+  <script type="importmap">{ "imports": { "three": "./vendor/three/three.module.min.js" } }</script>
+  <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/partials.js"></script>
 </head>
-<body>
-
-  <header class="site-header">
-    <a class="brand" href="index.html">
-      <span class="badge" role="img" aria-label="Logo Tekno Never Dies"></span>
-      <strong>TND6TEM</strong>
-    </a>
-    <nav aria-label="Navigation principale">
-      <a href="evenements.html">Événements</a>
-      <a href="location.html">Location</a>
-      <a href="association.html" aria-current="page">L'association</a>
-      <a href="galerie.html">Galerie</a>
-      <a href="contact.html">Contact</a>
-    </nav>
-  </header>
+<body data-page="association">
+  <canvas id="stage" aria-hidden="true"></canvas>
+  <div data-include="partials/header.html"></div>
 
   <main>
-    <section class="page-hero container">
-      <p class="breadcrumb"><a href="index.html">Accueil</a> / L'association</p>
+    <section class="page-head container">
       <h1>L'association</h1>
-      <p>Qui on est, ce qu'on défend, et comment nous rejoindre.</p>
+      <p>Qui nous sommes, pourquoi Tekno Never Dies existe, et comment on fonctionne.</p>
+      <!-- TODO : remplacer ce texte d'intro par une vraie présentation -->
     </section>
 
-    <section class="container block block--flush-top asso-grid">
-      <h2>Qui sommes-nous ?</h2>
-      <div class="prose">
-        <p>Tekno Never Dies (TND6TEM) est une association loi 1901 fondée par un noyau de passionnés de musique électronique, avec l'envie de monter des soirées à l'ambiance chaleureuse et un son à la hauteur.</p>
-        <p>Depuis nos débuts, on a progressivement construit notre propre sound system : enceintes, éclairage, structure. Ce matériel sert nos événements, et on le met aussi à disposition d'autres organisateurs.</p>
+    <section class="container about-grid" style="padding-bottom:clamp(72px,11vw,150px)">
+      <div>
+        <section>
+          <h2>Notre histoire</h2>
+          <!-- TODO : date de création réelle, contexte -->
+          <p>Tekno Never Dies est née de l'envie de quelques passionnés d'organiser leurs propres soirées, avec leur propre matériel plutôt que d'en dépendre à chaque fois.</p>
+        </section>
+        <section>
+          <h2>Nos objectifs</h2>
+          <p>Faire vivre la scène tekno locale, transmettre le goût de l'organisation d'événements, et rendre le matériel accessible à d'autres collectifs.</p>
+        </section>
+        <section>
+          <h2>Nos projets</h2>
+          <!-- TODO : lister projets réels en cours ou à venir -->
+          <p>Au-delà des soirées, l'association travaille à élargir son parc de matériel et à proposer plus régulièrement de la location à d'autres associations locales.</p>
+        </section>
       </div>
-    </section>
-
-    <section class="container block block--flush-top">
-      <div class="section-head"><h2>Nos valeurs</h2></div>
-      <div class="card-grid">
-        <div class="card" style="cursor:default">
-          <div class="card-body">
-            <h3>Sécurité</h3>
-            <p>Matériel révisé, installations vérifiées, équipe formée aux premiers secours sur les gros événements.</p>
-          </div>
-        </div>
-        <div class="card" style="cursor:default">
-          <div class="card-body">
-            <h3>Bienveillance</h3>
-            <p>Un espace où chacun est respecté, avec une équipe attentive tout au long de la soirée.</p>
-          </div>
-        </div>
-        <div class="card" style="cursor:default">
-          <div class="card-body">
-            <h3>Qualité sonore</h3>
-            <p>On ne transige pas sur le son : réglages soignés, matériel entretenu, tests avant chaque ouverture de porte.</p>
-          </div>
-        </div>
+      <div>
+        <section>
+          <h2>Nos valeurs</h2>
+          <ul class="values-list">
+            <li>Autogestion et entraide</li>
+            <li>Accès à la fête pour tous</li>
+            <li>Transmission du savoir-faire technique</li>
+          </ul>
+        </section>
+        <section>
+          <h2>L'équipe</h2>
+          <!-- TODO : présenter les membres si l'asso le souhaite -->
+          <p>Une équipe de bénévoles qui se relaie sur le son, la lumière, l'accueil et la logistique selon les événements.</p>
+        </section>
       </div>
-    </section>
-
-    <section class="container block block--flush-top">
-      <div class="section-head"><h2>Le bureau</h2></div>
-      <div class="card-grid">
-        <div class="card" style="cursor:default">
-          <div class="card-media" style="background-image:url('assets/img/decor/star-outline.webp')"></div>
-          <div class="card-body"><h3>Prénom Nom</h3><p>Présidence</p></div>
-        </div>
-        <div class="card" style="cursor:default">
-          <div class="card-media" style="background-image:url('assets/img/decor/sparkle-blue.webp')"></div>
-          <div class="card-body"><h3>Prénom Nom</h3><p>Trésorerie</p></div>
-        </div>
-        <div class="card" style="cursor:default">
-          <div class="card-media" style="background-image:url('assets/img/decor/star-pair.webp')"></div>
-          <div class="card-body"><h3>Prénom Nom</h3><p>Secrétariat</p></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="container block block--flush-top">
-      <div class="cta-banner">
-        <div>
-          <h2>Rejoindre l'asso</h2>
-          <p>Régie son, lumière, montage, communication, accueil du public : il y a toujours une place pour un coup de main.</p>
-        </div>
-        <div class="actions"><a class="btn btn-cyan" href="contact.html?sujet=partenariat">Devenir bénévole</a></div>
-      </div>
-    </section>
-
-    <section class="container block block--flush-top">
-      <div class="section-head"><h2>Nos partenaires</h2></div>
-      <p style="color:var(--muted);max-width:60ch">Liste à venir — salles, associations amies et prestataires avec qui on collabore régulièrement.</p>
     </section>
   </main>
 
-  <footer>
-    <div class="container foot">
-      <div class="who">
-        <span class="badge" role="img" aria-label="Logo Tekno Never Dies"></span>
-        <div><div class="tnd">TND6TEM</div><small>© 2026 Tekno Never Dies, association</small></div>
-      </div>
-      <nav aria-label="Pied de page">
-        <a href="association.html">L'asso</a>
-        <a href="evenements.html">Agenda</a>
-        <a href="location.html">Location</a>
-        <a href="contact.html">Contact</a>
-        <a href="mentions-legales.html">Mentions légales</a>
-      </nav>
-    </div>
-  </footer>
-
+  <div data-include="partials/footer.html"></div>
 </body>
 </html>
