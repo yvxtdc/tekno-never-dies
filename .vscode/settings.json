@@ -1,0 +1,8 @@
+{
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.wordWrap": "on",
+  "files.eol": "\n",
+  "files.encoding": "utf8",
+  "liveServer.settings.donotShowInfoMsg": true
+}
