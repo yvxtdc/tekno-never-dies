@@ -118,9 +118,13 @@ h2{font-family:var(--display);font-weight:400;text-transform:uppercase;line-heig
 .rows li:nth-child(3) .pill{background:var(--lav)}
 
 .rejoindre{background:var(--violet);color:#fff;border-radius:clamp(24px,3.4vw,44px);padding:clamp(32px,6vw,88px);position:relative;overflow:hidden}
+.rejoindre h2,.rejoindre p,.rejoindre .btn{position:relative;z-index:2}
 .rejoindre h2{max-width:14ch;margin-bottom:.45em}
 .rejoindre p{max-width:42ch;margin:0 0 1.8em;font-size:1.12rem}
-.chain{position:absolute;right:clamp(-30px,1vw,20px);bottom:-18px;width:clamp(150px,26vw,360px);aspect-ratio:520/506;background:url("../assets/img/decor/chain.webp") center/contain no-repeat;opacity:.96;pointer-events:none}
+
+/* Chaîne 3D dynamique */
+.chain{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:auto}
+.chain canvas{display:block;width:100%!important;height:100%!important}
 
 footer{padding:clamp(40px,6vw,72px) 0 clamp(48px,7vw,88px)}
 .foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px}
