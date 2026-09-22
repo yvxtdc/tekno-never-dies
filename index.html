@@ -23,7 +23,6 @@
 <body data-page="accueil">
 
   <!-- Calque WebGL des étoiles 3D (voir js/stars/) -->
-  <canvas id="stage" aria-hidden="true"></canvas>
 
   <!-- Petite étoile réutilisée dans le bandeau défilant -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -36,6 +35,9 @@
 
     <!-- ============ Accueil ============ -->
     <section class="hero">
+
+      <canvas id="stage" aria-hidden="true"></canvas> 
+
       <div class="container hero-grid">
         <h1 class="lockup" aria-label="Tekno Never Dies, TND6TEM">
           <span class="l-tekno" aria-hidden="true">Tekno</span>
