@@ -31,7 +31,19 @@ function initMenu() {
   });
 
   nav.querySelectorAll("a").forEach(a => a.addEventListener("click", close));
-  document.addEventListener("keydown", e => { if (e.key === "Escape") close(); });
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") close();
+});
+
+document.addEventListener("click", e => {
+  const open = button.getAttribute("aria-expanded") === "true";
+
+  if (open && !nav.contains(e.target) && !button.contains(e.target)) {
+    close();
+  }
+});
+
 }
 
 const nodes = [...document.querySelectorAll("[data-include]")];
