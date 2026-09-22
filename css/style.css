@@ -55,8 +55,8 @@ a{color:inherit}
 .top{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:clamp(14px,2.4vw,28px) var(--pad);background:rgba(10,10,14,.03);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 .top .badge{width:clamp(48px,5vw,64px)}
 .top nav{display:flex;gap:clamp(14px,2.6vw,36px);flex-wrap:wrap}
-.top nav a{font-weight:700;text-decoration:none;font-size:.98rem;padding:6px 2px;border-bottom:2px solid transparent}
-.top nav a:hover{border-color:var(--pink)}
+.top nav a{font-weight:700;text-decoration:none;font-size:.98rem;padding:6px 2px;border-bottom:2px solid transparent;transition:border-color .2s ease,transform .2s ease}
+.top nav a:hover{border-color:var(--pink);transform:translateY(-1px)}
 
 .hero{position:relative;min-height:100svh;display:flex;align-items:center;padding:clamp(88px,12vh,120px) 0 clamp(40px,7vh,72px);overflow:hidden}
 .hero-grid{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(0,1fr);align-items:center;gap:clamp(28px,4vw,64px)}
