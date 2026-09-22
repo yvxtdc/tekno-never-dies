@@ -52,7 +52,7 @@ a{color:inherit}
 .badge{display:block;aspect-ratio:1/1;background:var(--badge) center/100% 100% no-repeat;border-radius:50%}
 
 /* ---------- 4. Accueil ---------- */
-.top{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:clamp(14px,2.4vw,28px) var(--pad)}
+.top{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:clamp(14px,2.4vw,28px) var(--pad);background:rgba(10,10,14,.65);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 .top .badge{width:clamp(48px,5vw,64px)}
 .top nav{display:flex;gap:clamp(14px,2.6vw,36px);flex-wrap:wrap}
 .top nav a{font-weight:700;text-decoration:none;font-size:.98rem;padding:6px 2px;border-bottom:2px solid transparent}
@@ -166,7 +166,7 @@ footer{padding:clamp(40px,6vw,72px) 0 clamp(48px,7vw,88px)}
 .menu-toggle span:not(.sr-only){display:block;height:2px;background:currentColor;margin:4px 0}
 .top nav a.active{border-color:var(--pink)}
 @media (max-width:760px){
-.top{position:fixed;top:0;left:0;right:0;background:var(--page);padding-bottom:12px}
+.top{position:fixed;top:0;left:0;right:0;background:rgba(10,10,14,.65);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding-bottom:12px}
   .top .badge{width:52px}
   .menu-toggle{display:block;margin-left:auto}
   .top nav{display:none;width:100%;flex-direction:column;gap:0;padding:10px 0 4px}
