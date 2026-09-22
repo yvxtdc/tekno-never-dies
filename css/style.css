@@ -12,7 +12,8 @@
 
 /* ---------- 2. Charte : couleurs relevées sur CHARTE_TND.pdf ---------- */
 :root{
-  --violet:#4226b6; --navy:#00006e; --lav:#956aff; --cyan:#5ee0ff; --pink:#ff60dc;
+  --violet:#334b3a; --navy:#006e05; --lav:#ff6adf; --cyan:#ffef5e; --pink:#bd1899;
+  /* --violet:#4226b6; --navy:#00006e; --lav:#956aff; --cyan:#5ee0ff; --pink:#ff60dc; */
   --page:#fffcf7; --card:#ede5de; --ink:#000; --muted:rgba(0,0,0,.72);
   --wm:#4226b6; --sh-tekno:rgba(0,0,0,.30); --sh-wm:#000;
   --panel:#00006e; --accent:#4226b6; --line:rgba(0,0,0,.16);
