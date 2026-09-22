@@ -159,43 +159,113 @@ a{
   left:0;
   right:0;
   z-index:1000;
+
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:16px;
-  flex-wrap:wrap;
-  padding:clamp(14px,2.4vw,28px) var(--pad);
-  background:rgba(10,10,14,.03);
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px)
+  gap:24px;
+
+  padding:clamp(12px,1.8vw,22px) var(--pad);
+
+  background:rgba(255,252,247,.035);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+
+  border-bottom:1px solid rgba(255,255,255,.06);
+
+  transition:
+    padding .35s ease,
+    background-color .35s ease,
+    box-shadow .35s ease,
+    border-color .35s ease;
+}
+
+.top.is-scrolled{
+  padding-top:10px;
+  padding-bottom:10px;
+
+  background:rgba(255,252,247,.72);
+
+  border-bottom-color:rgba(66,38,182,.12);
+
+  box-shadow:
+    0 10px 35px rgba(0,0,0,.08),
+    0 0 30px rgba(66,38,182,.06);
 }
 
 .top .badge{
-  width:clamp(48px,5vw,64px)
+  width:clamp(48px,5vw,64px);
+
+  transition:
+    transform .35s ease,
+    filter .35s ease;
+
+  filter:drop-shadow(0 0 0 rgba(66,38,182,0));
+}
+
+.top .brand{
+  display:flex;
+  align-items:center;
+  flex:none;
+}
+
+.top .brand:hover .badge{
+  transform:rotate(-4deg) scale(1.04);
+  filter:drop-shadow(0 0 12px rgba(66,38,182,.28));
 }
 
 .top nav{
   display:flex;
-  gap:clamp(14px,2.6vw,36px);
-  flex-wrap:wrap
+  align-items:center;
+  gap:clamp(12px,2.4vw,32px);
+  flex-wrap:wrap;
 }
 
 .top nav a{
+  position:relative;
+
   font-weight:700;
   text-decoration:none;
-  font-size:.98rem;
-  padding:6px 2px;
-  border-bottom:2px solid transparent;
+  font-size:.92rem;
+  letter-spacing:.01em;
+  text-transform:uppercase;
+
+  padding:8px 2px;
+
+  border-bottom:0;
+
   transition:
-    border-color .2s ease,
-    transform .2s ease,
-    text-shadow .2s ease
+    color .25s ease,
+    transform .25s ease,
+    text-shadow .25s ease;
+}
+
+.top nav a::after{
+  content:"";
+
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+
+  height:2px;
+  border-radius:999px;
+
+  background:var(--gradient-tnd);
+
+  transform:scaleX(0);
+  transform-origin:center;
+
+  transition:transform .25s ease;
 }
 
 .top nav a:hover{
-  border-color:var(--pink);
   transform:translateY(-1px);
-  text-shadow:0 0 12px rgba(182,38,154,.28)
+  text-shadow:0 0 12px rgba(182,38,154,.24);
+}
+
+.top nav a:hover::after{
+  transform:scaleX(1);
 }
 
 
@@ -826,8 +896,11 @@ footer{
 }
 
 .top nav a.active{
-  border-color:var(--pink);
-  text-shadow:0 0 14px rgba(182,38,154,.35)
+  text-shadow:0 0 14px rgba(182,38,154,.30);
+}
+
+.top nav a.active::after{
+  transform:scaleX(1);
 }
 
 
