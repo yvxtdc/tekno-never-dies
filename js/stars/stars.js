@@ -153,8 +153,30 @@ export function startStars(canvas, cfg) {
     renderer.render(scene, camera);
   }
 
-  const clock = new THREE.Clock();
-  renderer.setAnimationLoop(() => tick(Math.min(clock.getDelta(), 0.05)));
+ const clock = new THREE.Clock();
 
-  return { renderer, scene, camera, stars, tick };
+function startAnimation() {
+  clock.start();
+  renderer.setAnimationLoop(() => {
+    tick(Math.min(clock.getDelta(), 0.05));
+  });
+}
+
+function stopAnimation() {
+  renderer.setAnimationLoop(null);
+  clock.stop();
+}
+
+startAnimation();
+
+return {
+  renderer,
+  scene,
+  camera,
+  stars,
+  tick,
+  startAnimation,
+  stopAnimation
+};
+
 }
