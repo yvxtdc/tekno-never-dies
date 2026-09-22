@@ -3,27 +3,23 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Tekno Never Dies — Association &amp; sound system</title>
-  <meta name="description" content="Tekno Never Dies : association et sound system tekno." />
+  <title>Tekno Never Dies — Association, soirées & location de matériel événementiel</title>
+  <meta name="description" content="Tekno Never Dies : association qui organise des soirées tekno et loue du matériel événementiel (sono, lumière, structure)." />
   <link rel="icon" type="image/png" href="assets/img/favicon.png" />
 
-  <!-- Précharge la police du titre pour éviter un flash de texte -->
   <link rel="preload" href="assets/fonts/archivo-black-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="css/style.css" />
 
-  <!-- Three.js est fourni localement (dossier vendor/) : le site marche hors ligne.
-       L'import map permet d'écrire `import ... from "three"` dans les fichiers JS. -->
   <script type="importmap">
     { "imports": { "three": "./vendor/three/three.module.min.js" } }
   </script>
   <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/home.js"></script>
 </head>
 <body>
 
-  <!-- Calque WebGL des étoiles 3D (voir js/stars/) -->
   <canvas id="stage" aria-hidden="true"></canvas>
 
-  <!-- Petite étoile réutilisée dans le bandeau défilant -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <symbol id="spark" viewBox="0 0 24 24"><path d="M12 0C13 8 16 11 24 12 16 13 13 16 12 24 11 16 8 13 0 12 8 11 11 8 12 0Z"/></symbol>
   </svg>
@@ -34,10 +30,11 @@
       <span class="badge" role="img" aria-label="Logo Tekno Never Dies Sound System"></span>
     </a>
     <nav aria-label="Navigation principale">
-      <a href="#asso">L'asso</a>
-      <a href="#systeme">Le système</a>
-      <a href="#agenda">Agenda</a>
-      <a href="#rejoindre">Rejoindre</a>
+      <a href="evenements.html">Événements</a>
+      <a href="location.html">Location</a>
+      <a href="association.html">L'association</a>
+      <a href="galerie.html">Galerie</a>
+      <a href="contact.html">Contact</a>
     </nav>
   </header>
 
@@ -54,19 +51,18 @@
           <span class="badge" aria-hidden="true"></span>
         </h1>
         <div class="hero-side">
-          <p class="lead">Association et sound system tekno.</p>
-          <p>Des basses, du monde devant les enceintes et une règle simple : la fête continue.</p>
+          <p class="lead">Association, soirées tekno &amp; location de matériel événementiel.</p>
+          <p>Des basses, du monde devant les enceintes — et tout le matériel pour organiser la vôtre.</p>
           <div class="actions">
-            <a class="btn btn-solid" href="#agenda">Voir l'agenda</a>
-            <a class="btn btn-line" href="#rejoindre">Rejoindre l'asso</a>
+            <a class="btn btn-solid" href="evenements.html">Voir les événements</a>
+            <a class="btn btn-line" href="location.html">Louer du matériel</a>
+            <a class="btn btn-line" href="contact.html?sujet=devis">Demander un devis</a>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ============ Bandeau défilant ============
-         8 copies identiques = deux moitiés égales => boucle sans coupure.
-         Pour changer le texte, modifie une ligne puis recopie-la 8 fois. -->
+    <!-- ============ Bandeau défilant ============ -->
     <div class="ticker" aria-hidden="true">
       <div class="track">
         <span>Tekno Never Dies<svg class="c"><use href="#spark"/></svg>Sound system<svg class="p"><use href="#spark"/></svg>TND6TEM<svg class="c"><use href="#spark"/></svg></span>
@@ -87,6 +83,7 @@
         <div class="prose">
           <p>Tekno Never Dies est une association de passionnés de musique électronique. On construit, on transporte et on fait vibrer notre propre sound system.</p>
           <p>Chaque événement se prépare à plusieurs : montage du son, lumières, accueil, rangement. Chacun peut y trouver sa place.</p>
+          <p><a class="link-more" href="association.html">Découvrir l'association →</a></p>
         </div>
       </div>
     </section>
@@ -106,17 +103,48 @@
       </div>
     </section>
 
-    <!-- ============ Agenda ============ -->
-    <section class="block block--flush-top container" id="agenda">
-      <div class="agenda-head">
-        <h2>Agenda</h2>
-        <div class="squiggle" aria-hidden="true"></div>
+    <!-- ============ Réassurance ============ -->
+    <section class="block block--flush-top container">
+      <div class="stats">
+        <div class="stat"><b>5+</b><span>années d'activité</span></div>
+        <div class="stat"><b>100%</b><span>matériel révisé avant chaque location</span></div>
+        <div class="stat"><b>30+</b><span>soirées organisées</span></div>
+        <div class="stat"><b>10</b><span>bénévoles actifs</span></div>
       </div>
-      <ul class="rows">
-        <li><span class="when">Date à annoncer</span><span class="what"><strong>Prochaine soirée</strong><span>Lieu communiqué bientôt</span></span><span class="pill">Bientôt</span></li>
-        <li><span class="when">Date à annoncer</span><span class="what"><strong>Session sound system</strong><span>Lieu communiqué bientôt</span></span><span class="pill">Bientôt</span></li>
-        <li><span class="when">Date à annoncer</span><span class="what"><strong>Événement à venir</strong><span>Lieu communiqué bientôt</span></span><span class="pill">Bientôt</span></li>
+    </section>
+
+    <!-- ============ Agenda (dynamique) ============ -->
+    <section class="block block--flush-top container" id="agenda">
+      <div class="section-head">
+        <h2>Agenda</h2>
+        <a class="link-more" href="evenements.html">Tous les événements →</a>
+      </div>
+      <ul class="rows" id="home-agenda">
+        <li><span class="when">Chargement…</span><span class="what"><strong>Événements à venir</strong></span></li>
       </ul>
+    </section>
+
+    <!-- ============ Catalogue (aperçu, dynamique) ============ -->
+    <section class="block block--flush-top container">
+      <div class="section-head">
+        <h2>Location de matériel</h2>
+        <a class="link-more" href="location.html">Voir tout le catalogue →</a>
+      </div>
+      <div class="card-grid" id="home-catalogue"></div>
+    </section>
+
+    <!-- ============ Galerie (aperçu) ============ -->
+    <section class="block block--flush-top container">
+      <div class="section-head">
+        <h2>Galerie</h2>
+        <a class="link-more" href="galerie.html">Toute la galerie →</a>
+      </div>
+      <div class="gallery-grid">
+        <figure style="background-image:url('assets/img/decor/star-outline.webp')"><figcaption>Solstice Warehouse — 2026</figcaption></figure>
+        <figure style="background-image:url('assets/img/decor/sparkle-blue.webp')"><figcaption>Montage son — coulisses</figcaption></figure>
+        <figure style="background-image:url('assets/img/decor/burst.webp')"><figcaption>Release Party TND6TEM</figcaption></figure>
+        <figure style="background-image:url('assets/img/decor/sparkles-lavender.webp')"><figcaption>Éclairage de scène</figcaption></figure>
+      </div>
     </section>
 
     <!-- ============ Rejoindre ============ -->
@@ -124,8 +152,7 @@
       <div class="rejoindre">
         <h2>Une idée, un live, un coup de main ?</h2>
         <p>L'asso avance grâce à celles et ceux qui s'y mettent. Écris-nous et on se retrouve devant les enceintes.</p>
-        <!-- TODO : remplacer par la vraie adresse de contact -->
-        <a class="btn btn-cyan" href="mailto:contact@example.org">Nous écrire</a>
+        <a class="btn btn-cyan" href="contact.html">Nous écrire</a>
         <div class="chain" aria-hidden="true"></div>
       </div>
     </section>
@@ -140,7 +167,11 @@
         <div><div class="tnd">TND6TEM</div><small>© 2026 Tekno Never Dies, association</small></div>
       </div>
       <nav aria-label="Pied de page">
-        <a href="#asso">L'asso</a><a href="#agenda">Agenda</a><a href="mailto:contact@example.org">Contact</a>
+        <a href="association.html">L'asso</a>
+        <a href="evenements.html">Agenda</a>
+        <a href="location.html">Location</a>
+        <a href="contact.html">Contact</a>
+        <a href="mentions-legales.html">Mentions légales</a>
       </nav>
     </div>
   </footer>

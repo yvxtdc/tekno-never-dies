@@ -1,8 +1,28 @@
 # Tekno Never Dies — site vitrine
 
-Page d'accueil de l'association **Tekno Never Dies** (TND6TEM) : charte graphique du PDF + étoiles chrome en 3D (Three.js) qui dérivent lentement à l'écran.
+Site de l'association **Tekno Never Dies** (TND6TEM) : événements, location de matériel événementiel, présentation de l'association, galerie, contact/devis. Accueil animé avec des étoiles chrome en 3D (Three.js).
 
 Site 100 % statique : **HTML + CSS + JavaScript**, aucune installation (ni Node, ni npm) n'est nécessaire pour travailler dessus.
+
+## Pages
+
+| Fichier | Contenu |
+|---|---|
+| `index.html` | Accueil — piliers événements / location / asso, agenda et catalogue dynamiques |
+| `evenements.html` | Liste des événements à venir + archives (onglets) |
+| `evenement.html?e=slug` | Fiche détaillée d'un événement (lit `js/data/events.js`) |
+| `location.html` | Catalogue de location, filtres par catégorie et recherche |
+| `materiel.html?m=slug` | Fiche détaillée d'un matériel/pack (lit `js/data/catalogue.js`) |
+| `association.html` | Qui sommes-nous, valeurs, bureau, rejoindre |
+| `galerie.html` | Galerie photo/vidéo filtrable par événement |
+| `contact.html` | Formulaire de contact/devis (Formspree) + FAQ |
+| `mentions-legales.html` | Mentions légales, RGPD, conditions générales de location |
+
+**Contenu à remplacer avant mise en ligne** : tout ce qui est dans `js/data/events.js` et `js/data/catalogue.js` (événements et matériel) est un exemple. Modifie ces deux fichiers pour mettre tes vraies données — les pages se mettent à jour automatiquement, sans toucher au HTML.
+
+**Formulaire de contact** : va sur <https://formspree.io>, crée un compte gratuit et un formulaire, puis remplace `YOUR_FORM_ID` dans `contact.html` (attribut `action` du `<form>`) par ton identifiant. Tant que ce n'est pas fait, le formulaire se soumet normalement (rechargement de page) au lieu de rester sur place — et le lien mailto reste utilisable en attendant.
+
+**Vers un vrai backend plus tard** : `events.js` et `catalogue.js` exportent de simples tableaux JavaScript. Le jour où tu veux un calendrier de disponibilité en temps réel ou un espace membre, tu peux remplacer ces fichiers par des appels à une API (`fetch(...)`) sans changer les pages HTML ni leur logique d'affichage.
 
 ---
 
@@ -28,11 +48,28 @@ Pour arrêter : clic sur **Port : 5500** en bas à droite de VS Code.
 
 ```
 tekno-never-dies/
-├── index.html              Structure et textes de la page
+├── index.html              Accueil
+├── evenements.html         Liste des événements (à venir / archives)
+├── evenement.html          Fiche détaillée d'un événement (?e=slug)
+├── location.html           Catalogue de location
+├── materiel.html           Fiche détaillée d'un matériel/pack (?m=slug)
+├── association.html        Page "L'association"
+├── galerie.html             Galerie photo/vidéo
+├── contact.html             Formulaire de contact/devis + FAQ
+├── mentions-legales.html    Mentions légales, RGPD, CGL
 ├── css/
 │   └── style.css           Charte (couleurs, polices), mise en page, mode sombre
 ├── js/
-│   ├── main.js             Point d'entrée : lance les étoiles
+│   ├── main.js             Point d'entrée : lance les étoiles (accueil uniquement)
+│   ├── home.js             Agenda et catalogue dynamiques sur l'accueil
+│   ├── evenements.js / evenement-detail.js   Liste et fiche événement
+│   ├── location.js / materiel-detail.js      Catalogue et fiche matériel
+│   ├── galerie.js          Filtres de la galerie
+│   ├── contact.js          Formulaire de contact (champs conditionnels, envoi)
+│   ├── legal-tabs.js       Onglets de la page mentions légales
+│   ├── data/
+│   │   ├── events.js       ★ Données des événements (à remplacer)
+│   │   └── catalogue.js    ★ Données du catalogue de location (à remplacer)
 │   └── stars/
 │       ├── config.js       ★ Tous les réglages des étoiles (vitesse, couleurs, ombre…)
 │       ├── stars.js        Scène 3D, trajectoires aléatoires, animation
@@ -60,7 +97,10 @@ tekno-never-dies/
 | Chrome plus doux / plus miroir | `js/stars/config.js` → `chrome.roughness`, `envMapIntensity` |
 | Désactiver les étoiles | `js/stars/config.js` → `enabled: false` |
 | Mettre les étoiles derrière le texte | `css/style.css` → `#stage { z-index: 0 }` |
-| Changer l'adresse de contact | `index.html` → chercher `example.org` |
+| Changer l'adresse de contact | `contact.html` et `mentions-legales.html` → chercher `example.org` |
+| Ajouter/modifier un événement | `js/data/events.js` |
+| Ajouter/modifier un matériel ou pack | `js/data/catalogue.js` |
+| Activer le vrai formulaire de devis/contact | `contact.html` → remplacer `YOUR_FORM_ID` par ton identifiant Formspree |
 | Utiliser un décor de la charte | `assets/img/decor/…` (images `.webp` transparentes) |
 
 Astuce : dans le navigateur, **F12 › Console**, tape `TND.stars.stars[0].mesh.material.color.set(0xff60dc)` pour tester une couleur en direct.

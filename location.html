@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Location de matériel — Tekno Never Dies</title>
+  <meta name="description" content="Catalogue de location de matériel événementiel : sonorisation, éclairage, structure, mobilier et packs clés en main." />
+  <link rel="icon" type="image/png" href="assets/img/favicon.png" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <a class="brand" href="index.html">
+      <span class="badge" role="img" aria-label="Logo Tekno Never Dies"></span>
+      <strong>TND6TEM</strong>
+    </a>
+    <nav aria-label="Navigation principale">
+      <a href="evenements.html">Événements</a>
+      <a href="location.html" aria-current="page">Location</a>
+      <a href="association.html">L'association</a>
+      <a href="galerie.html">Galerie</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-hero container">
+      <p class="breadcrumb"><a href="index.html">Accueil</a> / Location de matériel</p>
+      <h1>Location de matériel</h1>
+      <p>Sonorisation, éclairage, structure, mobilier et packs clés en main — tout est révisé avant chaque départ. Pas de paiement en ligne : on fonctionne sur devis.</p>
+    </section>
+
+    <section class="container block block--flush-top">
+      <div class="filters">
+        <input type="search" id="cat-search" placeholder="Rechercher un matériel ou un pack…" aria-label="Rechercher dans le catalogue" />
+      </div>
+      <div class="chip-row" id="cat-chips" role="group" aria-label="Filtrer par catégorie" style="margin-bottom:2em"></div>
+
+      <div class="card-grid" id="cat-grid"></div>
+    </section>
+
+    <section class="container block block--flush-top">
+      <div class="section-head"><h2>Comment ça marche</h2></div>
+      <ol class="specs" style="list-style:decimal;padding-left:1.4em">
+        <li>Demande de devis : tu choisis le matériel ou le pack, on te répond avec un devis et la disponibilité.</li>
+        <li>Validation de la date : on bloque le matériel pour ton événement.</li>
+        <li>Dépôt de caution + contrat : signé au retrait, restitué à la restitution du matériel en bon état.</li>
+        <li>Retrait / restitution : sur rendez-vous, voir la page Contact pour le lieu et les horaires.</li>
+      </ol>
+    </section>
+
+    <section class="container block block--flush-top">
+      <div class="cta-banner">
+        <div>
+          <h2>Une config sur-mesure ?</h2>
+          <p>Décris-nous ton événement (nombre de personnes, lieu, style) et on te propose une sélection adaptée.</p>
+        </div>
+        <div class="actions"><a class="btn btn-cyan" href="contact.html?sujet=devis">Demander un devis</a></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container foot">
+      <div class="who">
+        <span class="badge" role="img" aria-label="Logo Tekno Never Dies"></span>
+        <div><div class="tnd">TND6TEM</div><small>© 2026 Tekno Never Dies, association</small></div>
+      </div>
+      <nav aria-label="Pied de page">
+        <a href="association.html">L'asso</a>
+        <a href="evenements.html">Agenda</a>
+        <a href="location.html">Location</a>
+        <a href="contact.html">Contact</a>
+        <a href="mentions-legales.html">Mentions légales</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script type="module" src="js/location.js"></script>
+</body>
+</html>

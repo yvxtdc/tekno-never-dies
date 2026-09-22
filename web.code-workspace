@@ -1,0 +1,26 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../../../../Downloads/tekno-never-dies/tekno-never-dies/assets"
+		},
+		{
+			"path": "../../../../Downloads/tekno-never-dies/tekno-never-dies/.vscode"
+		},
+		{
+			"path": "../../../../Downloads/tekno-never-dies/tekno-never-dies/css"
+		},
+		{
+			"path": "../../../../Downloads/tekno-never-dies/tekno-never-dies/js"
+		},
+		{
+			"path": "../../../../Downloads/tekno-never-dies/tekno-never-dies/vendor"
+		}
+	],
+	"settings": {
+		"liveServer.settings.donotShowInfoMsg": true,
+		"liveServer.settings.multiRootWorkspaceName": "web"
+	}
+}
