@@ -48,3 +48,15 @@ if (catEl) {
     )
     .join("");
 }
+
+
+
+import { initChain } from './chain/chain.js';
+
+// Initialisation de la chaîne une fois le DOM prêt
+document.addEventListener('DOMContentLoaded', () => {
+  initChain();
+});
+
+
+
