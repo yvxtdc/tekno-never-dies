@@ -98,3 +98,31 @@
      laissait de la place. */
   .page-head{padding-top:clamp(28px,5vh,48px)}
 }
+
+/* ---------- Nouvelles pages / blocs ---------- */
+.content-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin-bottom:60px}
+.info-card{background:var(--card);border-radius:20px;padding:clamp(22px,3vw,34px)}
+.info-card h2,.info-card h3{margin-top:0}
+.info-card p:last-child{margin-bottom:0}
+.icon-list{list-style:none;padding:0;margin:0;display:grid;gap:12px}
+.icon-list li{padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:color-mix(in srgb,var(--page) 75%,var(--card))}
+.steps{counter-reset:step;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+.step{counter-increment:step;padding:22px;background:var(--card);border-radius:18px}
+.step::before{content:counter(step,decimal-leading-zero);font-family:var(--display);font-size:2rem;color:var(--accent);display:block;margin-bottom:10px}
+.step h3{margin:.1em 0 .4em}
+.cta-panel{background:var(--panel);color:#fff;border-radius:28px;padding:clamp(28px,5vw,56px);margin-block:50px}
+.cta-panel h2{font-size:clamp(2rem,5vw,4rem);margin-bottom:.35em}
+.cta-panel p{max-width:60ch;color:rgba(255,255,255,.82)}
+.article-list{display:grid;gap:20px}
+.article-card{padding:24px;background:var(--card);border-radius:18px}
+.article-card h2{font-size:1.5rem;margin:0 0 .35em}
+.article-card .date{font-weight:700;color:var(--accent);font-size:.9rem}
+.faq-list{display:grid;gap:12px;max-width:900px}
+.faq-list details{background:var(--card);border-radius:16px;padding:0 20px}
+.faq-list summary{cursor:pointer;font-weight:700;padding:20px 4px}
+.faq-list details p{padding:0 4px 20px;margin:0;color:var(--muted)}
+.legal-content{max-width:850px;padding-bottom:100px}
+.legal-content h2{font-size:1.5rem;margin-top:2em}
+.quote-note{border-left:4px solid var(--accent);padding:12px 18px;background:var(--card);border-radius:0 14px 14px 0}
+@media(max-width:900px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}.content-grid{grid-template-columns:1fr}}
+@media(max-width:600px){.steps{grid-template-columns:1fr}}

@@ -1,26 +1,21 @@
-import { readParam } from "./helpers.js";
+const form = document.querySelector("#contact-form");
+const type = document.querySelector("#type");
+const dateField = document.querySelector("#field-date");
+const eventField = document.querySelector("#field-evenement");
+const materialField = document.querySelector("#field-materiel");
 
-const form = document.getElementById("contact-form");
-const typeSelect = form.querySelector("#type");
-const fieldEvenement = form.querySelector("#field-evenement");
-const fieldDate = form.querySelector("#field-date");
-const fieldMateriel = form.querySelector("#field-materiel");
-
-function syncFields() {
-  const type = typeSelect.value;
-  fieldDate.hidden = !["evenement", "location"].includes(type);
-  fieldMateriel.hidden = type !== "location";
-  fieldEvenement.hidden = type !== "evenement";
+function updateFields() {
+  const value = type?.value;
+  dateField?.toggleAttribute("hidden", !["location", "evenement"].includes(value));
+  eventField?.toggleAttribute("hidden", !["evenement", "info-soiree"].includes(value));
+  materialField?.toggleAttribute("hidden", value !== "location");
 }
-typeSelect.addEventListener("change", syncFields);
 
-// Pré-remplit le formulaire si on arrive depuis une fiche événement/matériel
-// (ex : contact.html?sujet=location&materiel=Enceinte%20active)
-const sujet = readParam("sujet");
-if (sujet) typeSelect.value = sujet;
-const materiel = readParam("materiel");
-if (materiel) form.querySelector("#materiel").value = materiel;
-const evenement = readParam("evenement");
-if (evenement) form.querySelector("#evenement-nom").value = evenement;
+type?.addEventListener("change", updateFields);
+const params = new URLSearchParams(location.search);
+if (params.get("type") === "location" && type) type.value = "location";
+updateFields();
 
-syncFields();
+form?.addEventListener("submit", () => {
+  form.querySelector('button[type="submit"]')?.setAttribute("disabled", "disabled");
+});

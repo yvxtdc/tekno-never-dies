@@ -159,3 +159,18 @@ footer{padding:clamp(40px,6vw,72px) 0 clamp(48px,7vw,88px)}
 .block--systeme{padding-bottom:clamp(72px,11vw,150px)}
 .block--rejoindre{padding-bottom:clamp(56px,8vw,110px)}
 
+
+/* ---------- Navigation mobile ---------- */
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+.menu-toggle{display:none;border:2px solid var(--ink);background:var(--page);color:var(--ink);border-radius:12px;padding:9px;width:48px;height:44px;cursor:pointer}
+.menu-toggle span:not(.sr-only){display:block;height:2px;background:currentColor;margin:4px 0}
+.top nav a.active{border-color:var(--pink)}
+@media (max-width:760px){
+  .top{position:relative;background:var(--page);padding-bottom:12px}
+  .top .badge{width:52px}
+  .menu-toggle{display:block;margin-left:auto}
+  .top nav{display:none;width:100%;flex-direction:column;gap:0;padding:10px 0 4px}
+  .top nav.is-open{display:flex}
+  .top nav a{padding:11px 4px;border-bottom:1px solid var(--line)}
+  .top nav a:last-child{border-bottom:0}
+}

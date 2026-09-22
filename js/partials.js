@@ -1,15 +1,3 @@
-/**
- * Charge l'en-tête et le pied de page depuis partials/, pour ne les écrire
- * qu'une seule fois et les avoir identiques sur toutes les pages.
- *
- * Utilisation dans une page : mets deux éléments vides dans le HTML,
- *   <div data-include="partials/header.html"></div>
- *   <div data-include="partials/footer.html"></div>
- * et charge ce script en <script type="module" src="js/partials.js"></script>.
- *
- * Le lien du menu correspondant à la page actuelle reçoit la classe
- * "active" automatiquement (via l'attribut data-nav de header.html).
- */
 async function include(el) {
   const url = el.getAttribute("data-include");
   try {
@@ -23,9 +11,31 @@ async function include(el) {
 
 function markActiveLink() {
   const page = document.body.dataset.page;
-  if (!page) return;
-  document.querySelectorAll(`[data-nav="${page}"]`).forEach((a) => a.classList.add("active"));
+  if (page) document.querySelectorAll(`[data-nav="${page}"]`).forEach(a => a.classList.add("active"));
+}
+
+function initMenu() {
+  const button = document.querySelector(".menu-toggle");
+  const nav = document.querySelector("#main-navigation");
+  if (!button || !nav) return;
+
+  const close = () => {
+    button.setAttribute("aria-expanded", "false");
+    nav.classList.remove("is-open");
+  };
+
+  button.addEventListener("click", () => {
+    const open = button.getAttribute("aria-expanded") === "true";
+    button.setAttribute("aria-expanded", String(!open));
+    nav.classList.toggle("is-open", !open);
+  });
+
+  nav.querySelectorAll("a").forEach(a => a.addEventListener("click", close));
+  document.addEventListener("keydown", e => { if (e.key === "Escape") close(); });
 }
 
 const nodes = [...document.querySelectorAll("[data-include]")];
-Promise.all(nodes.map(include)).then(markActiveLink);
+Promise.all(nodes.map(include)).then(() => {
+  markActiveLink();
+  initMenu();
+});

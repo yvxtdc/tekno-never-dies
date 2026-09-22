@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://www.example.org/</loc></url>
+  <url><loc>https://www.example.org/evenements.html</loc></url>
+  <url><loc>https://www.example.org/location.html</loc></url>
+  <url><loc>https://www.example.org/association.html</loc></url>
+  <url><loc>https://www.example.org/nos-actions.html</loc></url>
+  <url><loc>https://www.example.org/rejoindre.html</loc></url>
+  <url><loc>https://www.example.org/actualites.html</loc></url>
+  <url><loc>https://www.example.org/partenaires.html</loc></url>
+  <url><loc>https://www.example.org/galerie.html</loc></url>
+  <url><loc>https://www.example.org/faq.html</loc></url>
+  <url><loc>https://www.example.org/contact.html</loc></url>
+  <url><loc>https://www.example.org/conditions-location.html</loc></url>
+  <url><loc>https://www.example.org/mentions-legales.html</loc></url>
+  <url><loc>https://www.example.org/confidentialite.html</loc></url>
+</urlset>
