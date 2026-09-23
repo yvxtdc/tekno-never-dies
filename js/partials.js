@@ -22,12 +22,14 @@ function initMenu() {
   const close = () => {
     button.setAttribute("aria-expanded", "false");
     nav.classList.remove("is-open");
+    button.querySelector(".sr-only").textContent = "Ouvrir le menu";
   };
 
   button.addEventListener("click", () => {
     const open = button.getAttribute("aria-expanded") === "true";
     button.setAttribute("aria-expanded", String(!open));
     nav.classList.toggle("is-open", !open);
+    button.querySelector(".sr-only").textContent = open ? "Ouvrir le menu" : "Fermer le menu";
   });
 
   nav.querySelectorAll("a").forEach(a => a.addEventListener("click", close));

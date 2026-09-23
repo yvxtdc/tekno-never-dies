@@ -14,6 +14,12 @@ function updateFields() {
 type?.addEventListener("change", updateFields);
 const params = new URLSearchParams(location.search);
 if (params.get("type") === "location" && type) type.value = "location";
+const eventParam = params.get("evenement");
+const materialParam = params.get("materiel");
+const eventInput = document.querySelector("#evenement-nom");
+const materialInput = document.querySelector("#materiel");
+if (eventParam && eventInput) eventInput.value = eventParam;
+if (materialParam && materialInput) materialInput.value = materialParam;
 updateFields();
 
 form?.addEventListener("submit", () => {
