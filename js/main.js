@@ -1,12 +1,17 @@
-import { startStars } from "./stars/stars.js";
-import { STARS_CONFIG } from "./stars/config.js";
-
 const canvas = document.getElementById("stage");
 const hero = document.querySelector(".hero");
 
-if (canvas && hero && STARS_CONFIG.enabled) {
+if (canvas && hero) {
+  const [{ startStars }, { STARS_CONFIG }] = await Promise.all([
+    import("./stars/stars.js"),
+    import("./stars/config.js")
+  ]);
 
-  const stars = startStars(canvas, STARS_CONFIG);
+  if (!STARS_CONFIG.enabled) {
+    canvas.remove();
+  } else {
+
+    const stars = startStars(canvas, STARS_CONFIG);
 
   if (stars) {
 
@@ -40,6 +45,8 @@ if (canvas && hero && STARS_CONFIG.enabled) {
   } else {
 
     canvas.remove();
+
+    }
 
   }
 

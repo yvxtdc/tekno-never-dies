@@ -28,7 +28,7 @@ if (!item) {
       ${item.conditions ? `<div><dt>Conditions</dt><dd>${item.conditions}</dd></div>` : ""}
     </dl>
     <div class="actions">
-      <a class="btn btn-solid" href="contact.html?sujet=location&materiel=${encodeURIComponent(item.name)}">Demander un devis</a>
+      <a class="btn btn-solid" href="contact.html?type=location&materiel=${encodeURIComponent(item.name)}">Demander un devis</a>
     </div>
   `;
 }

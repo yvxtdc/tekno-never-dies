@@ -320,6 +320,17 @@ const modalExtra =
 const modalBio =
   document.querySelector('#team-modal-bio');
 
+let lastFocused = null;
+
+const focusableSelector = [
+  'button:not([disabled])',
+  '[href]',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])'
+].join(',');
+
 
 if (
   !modal ||
@@ -339,7 +350,9 @@ if (
    OUVERTURE DE LA FICHE
 ========================================================= */
 
-function openModal(member) {
+function openModal(member, trigger) {
+
+  lastFocused = trigger;
 
   modalImg.src =
     member.photo;
@@ -425,6 +438,8 @@ function closeModal() {
   modal.hidden = true;
 
   document.body.style.overflow = '';
+
+  lastFocused?.focus();
 }
 
 
@@ -453,7 +468,7 @@ track.addEventListener(
 
 
     if (member) {
-      openModal(member);
+      openModal(member, button);
     }
   }
 );
@@ -482,11 +497,26 @@ document.addEventListener(
   'keydown',
   event => {
 
-    if (
-      event.key === 'Escape' &&
-      !modal.hidden
-    ) {
+    if (modal.hidden) return;
+
+    if (event.key === 'Escape') {
       closeModal();
+      return;
+    }
+
+    if (event.key !== 'Tab') return;
+
+    const focusable = [...modal.querySelectorAll(focusableSelector)];
+    if (!focusable.length) return;
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
     }
   }
 );

@@ -28,7 +28,7 @@ if (!ev) {
     ${practical ? `<h2>Informations pratiques</h2><ul>${practical}</ul>` : ""}
     <div class="actions">
       ${ticket}
-      <a class="btn btn-line" href="contact.html?sujet=evenement&evenement=${encodeURIComponent(ev.title)}">Une question sur cet événement ?</a>
+      <a class="btn btn-line" href="contact.html?type=evenement&evenement=${encodeURIComponent(ev.title)}">Une question sur cet événement ?</a>
     </div>
     ${galleryLink}
   `;
