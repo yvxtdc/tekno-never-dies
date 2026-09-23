@@ -1,0 +1,190 @@
+/* Équipe TND — structure inspirée du bandeau de la version de Yannis */
+.team-section {
+  width: 100%;
+  margin: 0 0 clamp(56px, 8vw, 100px);
+  overflow: hidden;
+}
+
+.team-section__intro {
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: var(--pad);
+}
+
+.team-section__intro h2 {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  line-height: 1;
+  text-transform: uppercase;
+  margin: 0 0 .35em;
+}
+
+.team-section__intro p {
+  color: var(--muted);
+  margin: 0 0 1.5rem;
+}
+
+.team-carousel {
+  position: relative;
+  width: 100vw;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  overflow: hidden;
+  padding: 8px 0 22px;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.team-carousel.is-dragging { cursor: grabbing; }
+
+.team-track {
+  display: flex;
+  width: max-content;
+  align-items: stretch;
+  gap: clamp(14px, 1.6vw, 24px);
+  margin: 0;
+  padding: 0 var(--pad);
+  list-style: none;
+  will-change: transform;
+}
+
+.team-track > li { flex: 0 0 auto; }
+
+.team-card,
+.team-card img {
+  display: block;
+}
+
+.team-card {
+  position: relative;
+  width: clamp(170px, 18vw, 235px);
+  aspect-ratio: 4 / 5;
+  padding: 0;
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--card);
+  color: #fff;
+  text-align: left;
+  box-shadow: 0 10px 28px rgba(0,0,0,.12);
+}
+
+button.team-card {
+  cursor: pointer;
+}
+
+.team-card img {
+  position: absolute;
+  inset: 5px;
+  width: calc(100% - 10px);
+  height: calc(100% - 10px);
+  object-fit: cover;
+  border-radius: 14px;
+  pointer-events: none;
+}
+
+.team-card__overlay {
+  position: absolute;
+  left: 5px;
+  right: 5px;
+  bottom: 5px;
+  display: grid;
+  gap: 3px;
+  padding: 46px 16px 15px;
+  border-radius: 0 0 14px 14px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(0,0,0,.18) 22%,
+    rgba(0,0,0,.82) 100%
+  );
+  pointer-events: none;
+}
+
+.team-card__name {
+  font-family: var(--display);
+  font-size: clamp(1.15rem, 2vw, 1.45rem);
+  font-weight: 400;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.team-card__role {
+  font-size: .86rem;
+  line-height: 1.25;
+  opacity: .92;
+}
+
+.team-card__hint {
+  margin-top: 4px;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  opacity: .72;
+}
+
+button.team-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--glow-violet), 0 14px 30px rgba(0,0,0,.14);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .team-card { transition: transform .25s ease, box-shadow .25s ease; }
+}
+
+.team-modal[hidden] { display: none; }
+
+.team-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.team-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.64);
+  backdrop-filter: blur(6px);
+}
+
+.team-modal-card {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(220px, 320px) minmax(280px, 1fr);
+  width: min(860px, 100%);
+  overflow: hidden;
+  border-radius: 24px;
+  background: var(--page);
+  box-shadow: 0 30px 70px rgba(0,0,0,.32);
+}
+
+.team-modal-photo { min-height: 320px; background: var(--card); }
+.team-modal-photo img { width:100%; height:100%; object-fit:cover; display:block; }
+.team-modal-body { padding: clamp(24px, 4vw, 42px); }
+.team-modal-body h3 { font-family: var(--display); font-weight:400; text-transform:uppercase; margin:.2em 0 .2em; font-size:clamp(1.8rem, 4vw, 3rem); }
+.team-modal-role { color:var(--muted); margin-top:0; }
+.team-modal-bio { max-width: 60ch; line-height: 1.65; margin: 18px 0 0; }
+.team-modal-close { position:absolute; right:14px; top:14px; z-index:2; width:42px; height:42px; border:0; border-radius:50%; background:rgba(0,0,0,.72); color:#fff; cursor:pointer; font-size:1.2rem; }
+.team-modal-tags { display:flex; flex-wrap:wrap; gap:8px; margin-top:18px; }
+.team-modal-tags span { padding:.45em .75em; border-radius:999px; background:var(--card); font-size:.82rem; font-weight:700; }
+.team-modal-extra { display:grid; gap:8px; margin:20px 0 0; }
+.team-modal-extra div { display:flex; justify-content:space-between; gap:18px; padding-top:8px; border-top:1px solid var(--line); }
+.team-modal-extra dt { font-weight:700; }
+.team-modal-extra dd { margin:0; color:var(--muted); text-align:right; }
+
+@media (max-width: 700px) {
+  .team-track { padding-inline: 20px; }
+  .team-card { width: 155px; border-radius: 15px; }
+  .team-modal-card { grid-template-columns: 1fr; max-height: calc(100vh - 40px); overflow:auto; }
+  .team-modal-photo { min-height: 280px; max-height: 48vh; }
+}
