@@ -17,6 +17,7 @@ if (eventsRoot) {
           ${thumb(ev.cover, ev.title, "Photo à venir")}
           <div class="event-card__body">
             <span class="event-card__date">${formatDate(ev.date)}</span>
+            ${ev.demo ? '<span class="demo-label">DEMO À REMPLACER</span>' : ""}
             <h3>${ev.title}</h3>
             <p>${ev.place}</p>
             <a class="btn btn-line btn-sm" href="evenement.html?slug=${ev.slug}">Voir la fiche</a>
@@ -37,6 +38,7 @@ if (materielRoot) {
         ${thumb(item.cover, item.name, "Photo à ajouter")}
         <div class="material-card__body">
           <h3>${item.name}</h3>
+          ${item.demo ? '<span class="demo-label">VISUEL DEMO</span>' : ""}
           <p>${item.short}</p>
           <span class="price">${item.price || "Sur devis"}</span>
         </div>

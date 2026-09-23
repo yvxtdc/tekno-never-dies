@@ -27,11 +27,24 @@
 .event-card h3,.material-card h3{font-size:1.15rem;margin:.2em 0}
 .event-card p,.material-card p{margin:0 0 .7em;color:var(--muted)}
 .event-card__date{font-family:var(--display);font-size:.85rem;text-transform:uppercase;color:var(--accent)}
+.demo-label{display:inline-block;margin:.4em 0;color:var(--accent);font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
 .event-card__actions{display:flex;flex-wrap:wrap;gap:.6em}
 .material-card__foot{display:flex;align-items:center;justify-content:space-between;gap:10px 14px;flex-wrap:wrap}
 .material-card__foot .btn{flex:none}
 .price{font-weight:700}
 .events-block{margin-bottom:clamp(48px,7vw,88px)}
+.section-heading{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:1.2em}
+.section-heading .section-title{margin:0}
+.listing-tools{display:grid;grid-template-columns:minmax(0,1fr) minmax(190px,.35fr);gap:16px;margin:0 0 28px;padding:18px;background:var(--card);border-radius:16px}
+.search-field,.select-field{display:grid;gap:6px;font-weight:700;font-size:.85rem}
+.search-field input,.select-field select{width:100%;padding:.7em .85em;border:1.5px solid var(--line);border-radius:10px;background:var(--page);color:var(--ink);font:inherit}
+.form-status{min-height:1.6em;color:var(--muted);font-size:.9rem}
+.empty-state{grid-column:1/-1;list-style:none;padding:28px;background:var(--card);border-radius:14px;color:var(--muted)}
+.card-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.quote-summary{display:flex;align-items:center;justify-content:space-between;gap:20px;margin:0 0 36px;padding:18px 20px;border:2px solid var(--accent);border-radius:16px;background:color-mix(in srgb,var(--page) 80%,var(--card))}
+.quote-summary div{display:grid;gap:3px;min-width:0}
+.quote-summary strong{font-size:1rem}
+.quote-summary span{overflow:hidden;color:var(--muted);font-size:.85rem;text-overflow:ellipsis;white-space:nowrap}
 
 /* ---------- 3. Fiches détail ---------- */
 .detail{max-width:60ch}
@@ -60,6 +73,10 @@
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
 .field textarea{resize:vertical;min-height:120px}
 .field[hidden]{display:none}
+.field-checks{display:grid;gap:10px;margin:0 0 1.2em;padding:0;border:0}
+.field-checks legend{font-weight:700;margin-bottom:.4em;font-size:.95rem}
+.field-checks label{display:flex;align-items:center;gap:8px;font-size:.95rem}
+.field-checks input{accent-color:var(--accent)}
 .contact-info{background:var(--card);border-radius:20px;padding:clamp(24px,3vw,36px)}
 .contact-info h2{font-size:1.2rem;margin-top:0}
 .contact-info ul{list-style:none;padding:0;margin:0;display:grid;gap:.7em}
@@ -79,11 +96,20 @@
 .about-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,5vw,72px)}
 .about-grid section{margin-bottom:clamp(36px,5vw,60px)}
 .about-grid h2{font-size:1.3rem}
+.official-card{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:28px;margin-bottom:clamp(56px,8vw,100px);padding:clamp(24px,4vw,44px);border:1px solid var(--line);border-radius:20px;background:var(--card)}
+.official-card h2{font-family:var(--display);font-weight:400;text-transform:uppercase;font-size:clamp(1.8rem,3vw,3rem);line-height:.98;margin:.2em 0 0}
+.official-card dl{display:grid;gap:0;margin:0}
+.official-card dl div{display:grid;grid-template-columns:minmax(110px,.6fr) minmax(0,1fr);gap:18px;padding:12px 0;border-bottom:1px solid var(--line)}
+.official-card dt{font-weight:700;color:var(--muted)}
+.official-card dd{margin:0}
+.eyebrow{font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.content-placeholder{color:var(--accent);font-size:.85rem}
 .values-list{list-style:none;margin:0;padding:0;display:grid;gap:.8em}
 .values-list li{padding:.9em 1.1em;background:var(--card);border-radius:12px;font-weight:600}
 
 @media (max-width:860px){
   .contact-layout,.about-grid{grid-template-columns:minmax(0,1fr)}
+  .official-card{grid-template-columns:1fr}
 }
 
 /* ---------- Chiffres de l'association (bloc dans la page d'accueil) ---------- */
@@ -126,6 +152,12 @@
 .quote-note{border-left:4px solid var(--accent);padding:12px 18px;background:var(--card);border-radius:0 14px 14px 0}
 @media(max-width:900px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}.content-grid{grid-template-columns:1fr}}
 @media(max-width:600px){.steps{grid-template-columns:1fr}}
+@media(max-width:640px){
+  .listing-tools{grid-template-columns:1fr}
+  .section-heading{align-items:flex-start;flex-direction:column}
+  .quote-summary{align-items:stretch;flex-direction:column}
+  .quote-summary span{white-space:normal}
+}
 
 
 

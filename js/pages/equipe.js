@@ -1,4 +1,4 @@
-import { EQUIPE } from "../data/equipe.js";
+import { TEAM } from "../data/equipe.js";
 
 /**
  * Bande de photos de l'équipe + fiche modale au clic.
@@ -39,7 +39,8 @@ function card(member) {
 
 const track = document.getElementById("team-track");
 if (track) {
-  track.innerHTML = EQUIPE.map(card).join("");
+  track.innerHTML = TEAM.map(card).join("");
+    track.innerHTML = TEAM.map(card).join("");
   setupModal(track);
 }
 
@@ -81,7 +82,7 @@ function setupModal(track) {
   track.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-member]");
     if (!btn) return;
-    const member = EQUIPE.find((m) => m.slug === btn.dataset.member);
+    const member = TEAM.find((m) => m.slug === btn.dataset.member);
     if (member) open(member, btn);
   });
 

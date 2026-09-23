@@ -71,26 +71,39 @@
           <label for="evenement-nom">Événement concerné</label>
           <input type="text" id="evenement-nom" name="evenement" />
         </div>
+        <div class="field" id="field-lieu">
+          <label for="lieu">Lieu ou commune</label>
+          <input type="text" id="lieu" name="lieu" autocomplete="address-level2" />
+        </div>
+        <div class="field" id="field-participants">
+          <label for="participants">Nombre de personnes attendu</label>
+          <input type="number" id="participants" name="participants" min="1" inputmode="numeric" />
+        </div>
         <div class="field" id="field-materiel">
           <label for="materiel">Matériel recherché</label>
           <input type="text" id="materiel" name="materiel" placeholder="Ex : 2 enceintes actives, un jeu de lyres…" />
         </div>
+        <fieldset class="field field-checks">
+          <legend>Services souhaités</legend>
+          <label><input type="checkbox" name="livraison" value="oui" /> Livraison</label>
+          <label><input type="checkbox" name="installation" value="oui" /> Installation ou démontage</label>
+        </fieldset>
         <div class="field">
           <label for="message">Message</label>
           <textarea id="message" name="message" required placeholder="Décris ton projet ou ta demande"></textarea>
         </div>
         <button class="btn btn-solid" type="submit">Envoyer</button>
+        <p class="form-status" id="contact-status" role="status" aria-live="polite"></p>
         <p class="form-note">En envoyant ce formulaire, ton message est transmis par e-mail à l'association.</p>
       </form>
 
       <aside class="contact-info">
         <h2>Nous contacter directement</h2>
         <ul>
-          <!-- TODO : remplacer par les vraies coordonnées de l'association -->
-          <li>✉️ <a href="mailto:contact@example.org">contact@example.org</a></li>
-          <li>📞 <a href="tel:+33000000000">Téléphone à venir</a></li>
-          <li>📍 Strasbourg et environs</li>
-          <li>🔗 <a href="#">Instagram</a></li>
+          <li>✉️ <a href="mailto:contact@example.org">[E-MAIL À REMPLACER]</a></li>
+          <li>📞 <span>[TÉLÉPHONE À REMPLACER]</span></li>
+          <li>📍 Siège déclaré : Lauterbourg, Grand Est</li>
+          <li>🔗 <a href="#">[RÉSEAU SOCIAL À REMPLACER]</a></li>
         </ul>
       </aside>
     </section>

@@ -3,6 +3,7 @@
 export const TEAM = [
   {
     slug: 'yannis',
+    demo: true,
     name: 'Yannis',
     role: 'Présidence / coordination',
     photo: 'assets/img/badge-black.webp',
@@ -16,6 +17,7 @@ export const TEAM = [
   },
   {
     slug: 'jonathan-axel',
+    demo: true,
     name: 'Jonathan & Axel',
     role: 'Technique / logistique',
     photo: 'assets/img/decor/chain.webp',
@@ -29,6 +31,7 @@ export const TEAM = [
   },
   {
     slug: 'estebane',
+    demo: true,
     name: 'Estebane',
     role: 'Événementiel',
     photo: 'assets/img/decor/sparkle-blue.webp',
@@ -42,6 +45,7 @@ export const TEAM = [
   },
   {
     slug: 'ricky',
+    demo: true,
     name: 'Ricky',
     role: 'Son / technique',
     photo: 'assets/img/decor/sparkles-lavender.webp',
@@ -55,6 +59,7 @@ export const TEAM = [
   },
   {
     slug: 'celeste-yelena',
+    demo: true,
     name: 'Céleste & Yelena',
     role: 'Accueil / organisation',
     photo: 'assets/img/decor/star-hollow.webp',
@@ -68,6 +73,7 @@ export const TEAM = [
   },
   {
     slug: 'remi',
+    demo: true,
     name: 'Rémi',
     role: 'Technique',
     photo: 'assets/img/decor/star-lavender.webp',
@@ -81,6 +87,7 @@ export const TEAM = [
   },
   {
     slug: 'elena-yanniv',
+    demo: true,
     name: 'Elena & Yanniv',
     role: 'Communication',
     photo: 'assets/img/decor/star-outline.webp',
@@ -94,6 +101,7 @@ export const TEAM = [
   },
   {
     slug: 'noah',
+    demo: true,
     name: 'Noah',
     role: 'Organisation',
     photo: 'assets/img/decor/star-pair.webp',

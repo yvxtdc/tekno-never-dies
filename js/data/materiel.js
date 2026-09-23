@@ -26,7 +26,8 @@ export const MATERIEL = [
     quantity: 4,
     price: "35 € / jour",
     conditions: "Caution demandée. Retrait et retour à convenir.",
-    cover: null
+    cover: "assets/img/decor/star-hollow.webp",
+    demo: true
   },
   {
     slug: "caisson-basse-18",
@@ -39,7 +40,8 @@ export const MATERIEL = [
     quantity: 2,
     price: "45 € / jour",
     conditions: "Caution demandée.",
-    cover: null
+    cover: "assets/img/decor/star-lavender.webp",
+    demo: true
   },
   {
     slug: "lyres-led",
@@ -52,7 +54,8 @@ export const MATERIEL = [
     quantity: 1,
     price: "",
     conditions: "Installation possible par l'équipe sur demande, en supplément.",
-    cover: null
+    cover: "assets/img/decor/sparkle-blue.webp",
+    demo: true
   },
   {
     slug: "structure-truss-3m",
@@ -65,7 +68,8 @@ export const MATERIEL = [
     quantity: 2,
     price: "Sur devis",
     conditions: "Montage recommandé par l'équipe.",
-    cover: null
+    cover: "assets/img/decor/chain.webp",
+    demo: true
   },
   {
     slug: "mange-debout",
@@ -78,7 +82,8 @@ export const MATERIEL = [
     quantity: 6,
     price: "8 € / jour",
     conditions: "",
-    cover: null
+    cover: "assets/img/decor/star-outline.webp",
+    demo: true
   },
   {
     slug: "lot-cables-xlr",
@@ -91,6 +96,7 @@ export const MATERIEL = [
     quantity: 10,
     price: "Inclus avec la location de sonorisation",
     conditions: "",
-    cover: null
+    cover: "assets/img/decor/squiggle.webp",
+    demo: true
   }
 ];

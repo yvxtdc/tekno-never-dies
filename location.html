@@ -25,6 +25,20 @@
 
     <section class="container" style="padding-bottom:clamp(72px,11vw,150px)">
       <nav class="catalogue-nav" id="catalogue-nav" aria-label="Catégories de matériel"></nav>
+      <div class="listing-tools" aria-label="Recherche dans le catalogue">
+        <label class="search-field">
+          <span>Rechercher un équipement</span>
+          <input id="material-search" type="search" placeholder="Enceinte, lumière, câble…" />
+        </label>
+        <label class="select-field">
+          <span>Catégorie</span>
+          <select id="material-filter"><option value="tous">Toutes les catégories</option></select>
+        </label>
+      </div>
+      <aside class="quote-summary" id="quote-summary" aria-live="polite">
+        <div><strong id="quote-count">0 équipement sélectionné</strong><span id="quote-list">Ajoutez du matériel pour préparer votre demande.</span></div>
+        <a class="btn btn-solid btn-sm" id="quote-link" href="contact.html?type=location">Préparer un devis</a>
+      </aside>
       <div id="catalogue"></div>
     </section>
     <section class="container cta-panel">
