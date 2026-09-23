@@ -1,1 +1,90 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>L'association — Tekno Never Dies</title><meta name="description" content="Découvrez Tekno Never Dies, ses actions, ses valeurs et comment rejoindre l'association."><link rel="icon" href="assets/img/favicon.png"><link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/pages.css"><script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js"}}</script><script type="module" src="js/main.js"></script><script type="module" src="js/partials.js"></script></head><body data-page="association"><canvas id="stage" aria-hidden="true"></canvas><div data-include="partials/header.html"></div><main><section class="page-head container"><h1>L'association</h1><p>Une association dédiée à la musique, aux événements et au partage de savoir-faire autour de la scène tekno.</p></section><section class="container about-grid" style="padding-bottom:60px"><div><section><h2>Qui sommes-nous ?</h2><p>Tekno Never Dies est une association qui développe des projets musicaux et événementiels, organise des rendez-vous et met son matériel à disposition d'autres projets lorsque cela est possible.</p><p>Cette présentation est volontairement générique tant que les informations officielles de l'association n'ont pas été renseignées.</p></section><section><h2>Nos actions</h2><ul class="values-list"><li>Organisation d'événements musicaux</li><li>Développement et entretien d'un parc de matériel</li><li>Accompagnement technique de projets</li><li>Partage de connaissances et entraide</li></ul></section></div><div><section><h2>Nos valeurs</h2><ul class="values-list"><li>Autogestion et entraide</li><li>Respect des personnes et des lieux</li><li>Transmission du savoir-faire</li><li>Culture et création</li></ul></section><section><h2>Notre équipe</h2><p>Le fonctionnement repose sur des bénévoles qui peuvent intervenir sur la technique, la logistique, l'accueil, la communication et l'organisation.</p></section></div></section><section class="container cta-panel"><h2>Envie de participer ?</h2><p>Tu veux donner un coup de main, proposer un projet ou rejoindre l'équipe ?</p><a class="btn btn-cyan" href="rejoindre.html">Nous rejoindre</a></section></main><div data-include="partials/footer.html"></div></body></html>
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>L'association — Tekno Never Dies</title>
+  <meta name="description" content="Découvrez Tekno Never Dies, ses actions, ses valeurs et son équipe.">
+  <link rel="icon" href="assets/img/favicon.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <link rel="stylesheet" href="css/components/team.css">
+  <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js"}}</script>
+  <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/partials.js"></script>
+  <script type="module" src="js/components/team.js"></script>
+</head>
+<body data-page="association">
+  <canvas id="stage" aria-hidden="true"></canvas>
+  <div data-include="partials/header.html"></div>
+
+  <main>
+    <section class="page-head container">
+      <h1>L'association</h1>
+      <p>Une association dédiée à la musique, aux événements et au partage de savoir-faire autour de la scène tekno.</p>
+    </section>
+
+    <section class="container" style="padding-bottom:clamp(45px,7vw,85px)">
+      <article class="info-card">
+        <h2>Qui sommes-nous ?</h2>
+        <p>Tekno Never Dies est une association qui développe des projets musicaux et événementiels, organise des rendez-vous et met son matériel à disposition d'autres projets lorsque cela est possible.</p>
+        <p>Cette présentation est volontairement générique tant que les informations officielles de l'association n'ont pas été renseignées.</p>
+      </article>
+    </section>
+
+    <section class="team-section" id="equipe" aria-labelledby="equipe-title">
+      <div class="team-section__intro agenda-head">
+        <h2 id="equipe-title">L'équipe TND6TEM</h2>
+        <div class="squiggle" aria-hidden="true"></div>
+        <p>Appuie sur une photo pour en savoir plus sur chaque membre. Le bandeau avance automatiquement et peut aussi être déplacé à la souris ou au doigt.</p>
+      </div>
+      <div class="team-carousel" aria-label="Bandeau de présentation de l'équipe">
+        <ul class="team-track" role="list"></ul>
+      </div>
+    </section>
+
+    <section class="container about-grid" style="padding-bottom:20px">
+      <section>
+        <h2>Nos actions</h2>
+        <ul class="values-list">
+          <li>Organisation d'événements musicaux</li>
+          <li>Développement et entretien d'un parc de matériel</li>
+          <li>Accompagnement technique de projets</li>
+          <li>Partage de connaissances et entraide</li>
+        </ul>
+      </section>
+      <section>
+        <h2>Nos valeurs</h2>
+        <ul class="values-list">
+          <li>Autogestion et entraide</li>
+          <li>Respect des personnes et des lieux</li>
+          <li>Transmission du savoir-faire</li>
+          <li>Culture et création</li>
+        </ul>
+      </section>
+    </section>
+
+    <section class="container cta-panel">
+      <h2>Envie de participer ?</h2>
+      <p>Tu veux donner un coup de main, proposer un projet ou rejoindre l'équipe ?</p>
+      <a class="btn btn-cyan" href="rejoindre.html">Nous rejoindre</a>
+    </section>
+  </main>
+
+  <div class="team-modal" id="team-modal" hidden>
+    <div class="team-modal-backdrop" data-close></div>
+    <div class="team-modal-card" role="dialog" aria-modal="true" aria-labelledby="team-modal-name">
+      <button class="team-modal-close" type="button" data-close aria-label="Fermer">✕</button>
+      <div class="team-modal-photo"><img id="team-modal-img" src="" alt=""></div>
+      <div class="team-modal-body">
+        <h3 id="team-modal-name"></h3>
+        <p class="team-modal-role" id="team-modal-role"></p>
+        <div class="team-modal-tags" id="team-modal-tags"></div>
+        <dl class="team-modal-extra" id="team-modal-extra"></dl>
+      </div>
+    </div>
+  </div>
+
+  <div data-include="partials/footer.html"></div>
+</body>
+</html>
