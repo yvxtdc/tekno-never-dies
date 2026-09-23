@@ -122,7 +122,7 @@
   /* Le header n'est plus en survol sur mobile (voir css/style.css) :
      les pages internes n'ont donc plus besoin de la grande marge qui lui
      laissait de la place. */
-  .page-head{padding-top:clamp(28px,5vh,48px)}
+  .page-head{padding-top:clamp(104px,14vh,140px)}
 }
 
 /* ---------- Nouvelles pages / blocs ---------- */

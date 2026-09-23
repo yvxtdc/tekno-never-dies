@@ -273,10 +273,10 @@ a{
 
 .hero{
   position:relative;
-  min-height:100svh;
+  min-height:clamp(640px,100svh,960px);
   display:flex;
   align-items:center;
-  padding:clamp(88px,12vh,120px) 0 clamp(40px,7vh,72px);
+  padding:clamp(128px,15vh,168px) 0 clamp(64px,9vh,112px);
   overflow:hidden
 }
 
@@ -295,8 +295,10 @@ a{
   font-weight:400;
   text-transform:uppercase;
   line-height:.82;
-  font-size:min(12.8vw,23svh);
-  letter-spacing:-.025em
+  max-width:100%;
+  font-size:clamp(4.5rem,12.8vw,12rem);
+  letter-spacing:-.025em;
+  z-index:1
 }
 
 .lockup span{
@@ -328,9 +330,9 @@ a{
 
 .lockup .badge{
   position:absolute;
-  right:-.02em;
-  bottom:-.08em;
-  width:1.06em;
+  right:.08em;
+  bottom:-.02em;
+  width:.78em;
   box-shadow:0 0 0 .045em var(--violet)
 }
 
@@ -423,12 +425,14 @@ a{
 .ticker{
   position:relative;
   z-index:2;
+  width:100%;
   background:var(--violet);
   color:#fff;
   overflow:hidden;
+  contain:paint;
   padding:.55em 0;
   transform:rotate(-1.4deg);
-  margin:0 -3vw
+  margin:0
 }
 
 .track{
@@ -730,55 +734,35 @@ h2{
 /* ---------- Footer ---------- */
 
 footer{
-  padding:clamp(40px,6vw,72px) 0 clamp(48px,7vw,88px)
+  margin-top:clamp(36px,7vw,96px);
+  padding:clamp(42px,7vw,80px) 0 28px;
+  color:#fff;
+  background:var(--navy);
+  border-top:6px solid var(--violet)
 }
 
-.foot{
-  display:flex;
-  flex-wrap:wrap;
-  align-items:center;
-  justify-content:space-between;
-  gap:24px
+.footer-grid{
+  display:grid;
+  grid-template-columns:minmax(220px,1.15fr) minmax(150px,.75fr) minmax(240px,1fr);
+  gap:clamp(28px,6vw,88px)
 }
 
-.foot .who{
-  display:flex;
-  align-items:center;
-  gap:16px
-}
-
-.foot .badge{
-  width:64px
-}
-
-.foot .tnd{
-  font-family:var(--display);
-  font-size:1.5rem;
-  text-shadow:.06em .06em 0 var(--sh-tekno)
-}
-
-.foot small{
-  color:var(--muted);
-  font-size:.9rem
-}
-
-.foot nav{
-  display:flex;
-  gap:22px;
-  flex-wrap:wrap
-}
-
-.foot nav a{
-  font-weight:700;
-  text-decoration:none
-}
-
-.foot nav a:hover{
-  text-decoration:underline;
-  text-decoration-color:var(--pink);
-  text-underline-offset:5px;
-  text-decoration-thickness:2px
-}
+.footer-brand{display:flex;align-items:flex-start;gap:16px}
+.footer-brand .badge{width:68px;flex:none;background-image:var(--badge-white)}
+.footer-brand .tnd{font-family:var(--display);font-size:1.5rem;line-height:1;text-shadow:.06em .06em 0 var(--sh-wm)}
+.footer-brand p,.footer-contact p{margin:.7em 0 0;color:rgba(255,255,255,.76);font-size:.9rem}
+.footer-demo{color:#a99aff;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.footer-column h2{margin:0 0 14px;font-family:var(--text);font-size:.85rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#a99aff}
+.footer-column nav{display:grid;gap:8px}
+.footer-column nav a,.footer-bottom a{font-weight:700;text-decoration:none}
+.footer-column nav a:hover,.footer-bottom a:hover{color:#8fe4f1;text-decoration:underline;text-underline-offset:4px}
+.socials{display:flex!important;flex-wrap:wrap;gap:10px!important}
+.socials a{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid rgba(255,255,255,.22);border-radius:999px;font-size:.82rem}
+.socials svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2}
+.socials svg path{fill:currentColor;stroke:none}
+.socials .social-dot{fill:currentColor;stroke:none}
+.footer-bottom{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:18px;padding-top:22px;border-top:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.68);font-size:.82rem}
+.footer-bottom nav{display:flex;flex-wrap:wrap;gap:18px}
 
 
 /* ---------- 7. Étoiles 3D (calque fixe, au-dessus de la page) ---------- */
@@ -805,7 +789,7 @@ footer{
   }
 
   .lockup{
-    font-size:min(22vw,21svh)
+    font-size:clamp(4rem,18vw,8rem)
   }
 
   .hero-side{
@@ -946,4 +930,30 @@ footer{
   .top nav a:last-child{
     border-bottom:0
   }
+
+  .hero{
+    min-height:auto;
+    padding-top:clamp(116px,18vh,156px);
+    padding-bottom:clamp(58px,10vh,96px)
+  }
+
+  .hero-grid{
+    align-items:start;
+    gap:42px
+  }
+
+  .lockup{
+    font-size:clamp(4rem,19vw,7rem);
+    line-height:.86
+  }
+
+  .lockup .badge{
+    right:.04em;
+    width:.72em
+  }
+
+  .hero-side{max-width:34rem}
+
+  .footer-grid{grid-template-columns:1fr;gap:34px}
+  .footer-bottom{align-items:flex-start;flex-direction:column}
 }
