@@ -3,7 +3,7 @@ import { SITE } from "./data/site.js";
 async function include(el) {
   const url = el.getAttribute("data-include");
   try {
-    const res = await fetch(url);
+    const res = await fetch(`${url}?v=20260923`, { cache: "no-store" });
     if (!res.ok) throw new Error(res.status);
     el.outerHTML = await res.text();
   } catch (err) {
