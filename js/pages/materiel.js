@@ -10,6 +10,18 @@ if (!item) {
     <p><a class="btn btn-line" href="location.html">Retour au catalogue</a></p>`;
 } else {
   document.title = `${item.name} — Tekno Never Dies`;
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: item.name,
+    description: item.description,
+    brand: { "@type": "Organization", name: "TEKNO NEVER DIES" },
+    offers: { "@type": "Offer", priceCurrency: "EUR", availability: "https://schema.org/InStock", description: item.price || "Sur devis" }
+  };
+  const schema = document.createElement("script");
+  schema.type = "application/ld+json";
+  schema.textContent = JSON.stringify(productSchema);
+  document.head.append(schema);
   const catLabel = CATEGORIES.find((c) => c.id === item.category)?.label || item.category;
   const specs = (item.specs || []).map((s) => `<li>${s}</li>`).join("");
   const accessories = (item.accessories || []).map((a) => `<li>${a}</li>`).join("");
@@ -19,6 +31,7 @@ if (!item) {
     ${thumb(item.cover, item.name, "Photo à ajouter")}
     <span class="pill">${catLabel}</span>
     <h1>${item.name}</h1>
+    ${item.demo ? '<p class="demo-label">FICHE ET VISUEL DE DÉMONSTRATION À VALIDER</p>' : ""}
     <p>${item.description}</p>
     ${specs ? `<h2>Caractéristiques</h2><ul>${specs}</ul>` : ""}
     ${accessories ? `<h2>Accessoires inclus</h2><ul>${accessories}</ul>` : ""}

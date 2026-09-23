@@ -54,3 +54,9 @@ Remplacer les placeholders entre crochets, le domaine example.org, les coordonn�
 L'action Formspree de `contact.html` contient encore `VOTRE_ID`. Créer le
 formulaire Formspree puis remplacer cette valeur par l'identifiant fourni avant
 la mise en ligne.
+
+## Validation technique
+
+Avec Node.js installé, lance `node tools/validate.mjs` depuis la racine du
+projet. Le script vérifie les références locales des pages, CSS et scripts,
+ainsi que l'unicité des slugs d'événements et de matériel.

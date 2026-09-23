@@ -42,7 +42,7 @@ const cards = TEAM.map(member => {
 
   const hint = document.createElement('span');
   hint.className = 'team-card__hint';
-  hint.textContent = 'Voir la fiche';
+  hint.textContent = member.demo ? 'Profil demo - voir la fiche' : 'Voir la fiche';
 
   overlay.append(name, role, hint);
   button.append(img, overlay);

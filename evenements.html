@@ -24,11 +24,29 @@
     </section>
 
     <section class="container events-block">
-      <h2 class="section-title">À venir</h2>
+      <div class="section-heading">
+        <h2 class="section-title">À venir</h2>
+        <button class="btn btn-line btn-sm" type="button" id="copy-events-link">Partager l'agenda</button>
+      </div>
+      <div class="listing-tools" aria-label="Filtres des événements">
+        <label class="search-field">
+          <span>Rechercher</span>
+          <input id="event-search" type="search" placeholder="Nom, lieu ou description" />
+        </label>
+        <label class="select-field">
+          <span>Afficher</span>
+          <select id="event-filter">
+            <option value="tous">Tous les événements</option>
+            <option value="a-venir">À venir</option>
+            <option value="passe">Passés</option>
+          </select>
+        </label>
+      </div>
+      <p class="form-status" id="events-status" role="status" aria-live="polite"></p>
       <ul class="card-grid" id="upcoming-events"></ul>
     </section>
 
-    <section class="container events-block">
+    <section class="container events-block" id="past-events-block">
       <h2 class="section-title">Événements passés</h2>
       <ul class="card-grid" id="past-events"></ul>
     </section>
