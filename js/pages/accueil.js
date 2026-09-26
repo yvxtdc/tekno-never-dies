@@ -46,3 +46,9 @@ if (materielRoot) {
     )
     .join("");
 }
+
+const newsletterForm = document.getElementById("newsletter-form");
+newsletterForm?.addEventListener("submit", (event) => {
+  document.getElementById("newsletter-status").textContent =
+    "Le formulaire Brevo s'ouvre dans un nouvel onglet. Confirme ton adresse par e-mail si Brevo te le demande.";
+});

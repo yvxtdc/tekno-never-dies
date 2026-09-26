@@ -140,6 +140,31 @@
       </div>
     </section>
 
+    <section class="newsletter-band" id="newsletter" aria-labelledby="newsletter-title">
+      <div class="container newsletter-inner">
+        <div class="newsletter-copy">
+          <span class="newsletter-kicker">TND6TEM · LES PROCHAINES DATES</span>
+          <h2 id="newsletter-title">La prochaine nuit, dans ta boîte mail.</h2>
+          <p>Une annonce quand une nouvelle date est publiée. Pas de calendrier imposé, pas de messages hors sujet.</p>
+        </div>
+        <form class="newsletter-form" id="newsletter-form" action="https://aeeb5d2e.sibforms.com/serve/MUIFAMuZe_ORIfGwhnoJ-D9e4ra4TW4Wlg_1iNe5DkkTIWQzFPuNEusQbGVek992AHi5x5QFum8nuCDIWKNik9IFlFP0w5lYvCVHf77yz8l-wtdfQcxOAqhiWpSmFe6kQNywagTAxyhCxMAwZ8Zm5LKDMX7FcBT5pXQ7jk0QemS2ocBKSI4c-fG9t5efTQrjrLjJH3ei3AntLzvryQ==" method="POST" target="_blank">
+          <label for="newsletter-email">Ton adresse e-mail</label>
+          <div class="newsletter-controls">
+            <input id="newsletter-email" name="EMAIL" type="email" required autocomplete="email" placeholder="toi@exemple.fr" />
+            <button class="btn btn-cyan" type="submit">M'inscrire</button>
+          </div>
+          <label class="newsletter-consent">
+            <input type="checkbox" required />
+            <span>J'accepte de recevoir les annonces des prochains événements TND6TEM.</span>
+          </label>
+          <input class="newsletter-honeypot" type="text" name="email_address_check" tabindex="-1" autocomplete="off" aria-hidden="true" />
+          <input type="hidden" name="locale" value="fr" />
+          <p class="newsletter-note">Brevo enregistre l'inscription. Si la confirmation est activée, vérifie ensuite ta boîte mail. <a href="confidentialite.html">Confidentialité</a></p>
+          <p class="newsletter-status" id="newsletter-status" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+
   </main>
 
   <div data-include="partials/footer.html"></div>
