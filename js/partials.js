@@ -71,24 +71,65 @@ function initSeo() {
   document.head.append(script);
 }
 
-// Menu plein écran (design repris de tekno-never-dies_2, voir css/style.css section 9)
+function addMeta(name, content, attribute = "name") {
+  if (!content || document.head.querySelector(`meta[${attribute}="${name}"]`)) return;
+  const meta = document.createElement("meta");
+  meta.setAttribute(attribute, name);
+  meta.content = content;
+  document.head.append(meta);
+}
+
+function initSeo() {
+  const description = document.querySelector('meta[name="description"]')?.content || SITE.description;
+  addMeta("theme-color", "#4226b6");
+  addMeta("og:type", "website", "property");
+  addMeta("og:title", document.title, "property");
+  addMeta("og:description", description, "property");
+  if (SITE.url && !SITE.url.includes("example.org")) {
+    addMeta("og:url", new URL(location.pathname, SITE.url).href, "property");
+    const canonical = document.createElement("link");
+    canonical.rel = "canonical";
+    canonical.href = new URL(location.pathname, SITE.url).href;
+    document.head.append(canonical);
+  }
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: SITE.official.legalName,
+    alternateName: SITE.shortName,
+    description,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "51 avenue Georges Clemenceau",
+      postalCode: "67630",
+      addressLocality: "Lauterbourg",
+      addressCountry: "FR"
+    },
+    identifier: [SITE.official.siren, SITE.official.siret]
+  };
+  const script = document.createElement("script");
+  script.type = "application/ld+json";
+  script.textContent = JSON.stringify(structuredData);
+  document.head.append(script);
+}
+
 function initMenu() {
   const button = document.querySelector(".tnd-toggle");
   const nav = document.querySelector("#main-navigation");
   if (!button || !nav) return;
 
-  const label = button.querySelector(".tnd-toggle-label");
-
-  const setOpen = (open) => {
-    button.setAttribute("aria-expanded", String(open));
-    nav.classList.toggle("is-open", open);
-    document.body.classList.toggle("tnd-lock", open);
-    if (label) label.textContent = open ? "Fermer" : "Menu";
-    if (open) nav.querySelector(".tnd-links a")?.focus({ preventScroll: true });
+  const close = () => {
+    button.setAttribute("aria-expanded", "false");
+    nav.classList.remove("is-open");
+    button.querySelector(".sr-only").textContent = "Ouvrir le menu";
   };
 
   button.addEventListener("click", () => {
-    setOpen(button.getAttribute("aria-expanded") !== "true");
+    const open = button.getAttribute("aria-expanded") === "true";
+    button.setAttribute("aria-expanded", String(!open));
+    nav.classList.toggle("is-open", !open);
+    button.querySelector(".sr-only").textContent = open ? "Ouvrir le menu" : "Fermer le menu";
   });
 
   nav.querySelectorAll(".tnd-links a").forEach(a => a.addEventListener("click", () => setOpen(false)));

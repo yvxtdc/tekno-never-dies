@@ -5,7 +5,6 @@ export const GALLERY = [
   {
     year: 2026,
     events: [
-      { title: "Nos soirées TND6TEM", photos: ["assets/img/events/soiree1.webp", "assets/img/events/soiree2.webp"] },
       { title: "Soirée d'ouverture de saison", eventSlug: "ouverture-2026", photos: ["assets/img/decor/star-pair.webp", "assets/img/decor/sparkles-lavender.webp"] },
       { title: "Session plein air", eventSlug: "session-plein-air-2026", photos: ["assets/img/decor/star-outline.webp", "assets/img/decor/sparkle-blue.webp"] },
       { title: "Atelier son", eventSlug: "atelier-son-2027", photos: ["assets/img/decor/chain.webp", "assets/img/decor/thorn.webp"] }

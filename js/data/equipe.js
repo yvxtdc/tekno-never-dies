@@ -4,7 +4,7 @@
 export const TEAM = [
   {
     slug: 'yannis',
-    demo: false,
+    demo: true,
     name: 'Yannis',
     role: "Président de l'association",
     photo: 'assets/img/equipe/yannis.webp',
@@ -18,7 +18,7 @@ export const TEAM = [
   },
   {
     slug: 'jonathan-axel',
-    demo: false,
+    demo: true,
     name: 'Jonathan & Axel',
     role: 'Responsables sonorisation/lumières',
     photo: 'assets/img/equipe/jonathan-axel.webp',
@@ -32,7 +32,7 @@ export const TEAM = [
   },
   {
     slug: 'estebane',
-    demo: false,
+    demo: true,
     name: 'Estebane',
     role: "Bras & mains de l'association",
     photo: 'assets/img/equipe/estebane.webp',
@@ -46,7 +46,7 @@ export const TEAM = [
   },
   {
     slug: 'ricky',
-    demo: false,
+    demo: true,
     name: 'Ricky',
     role: 'Organisation du bar',
     photo: 'assets/img/equipe/ricky.webp',
@@ -60,7 +60,7 @@ export const TEAM = [
   },
   {
     slug: 'celeste-yelena',
-    demo: false,
+    demo: true,
     name: 'Céleste & Yelena',
     role: 'Communication / événementiel',
     photo: 'assets/img/equipe/celeste-yelena.webp',
@@ -74,7 +74,7 @@ export const TEAM = [
   },
   {
     slug: 'remi',
-    demo: false,
+    demo: true,
     name: 'Rémi',
     role: 'Nouveau membre',
     photo: 'assets/img/equipe/remi.webp',
@@ -88,7 +88,7 @@ export const TEAM = [
   },
   {
     slug: 'elena-yanniv',
-    demo: false,
+    demo: true,
     name: 'Elena & Yanniv',
     role: 'Bénévoles',
     photo: 'assets/img/equipe/elena-yanniv.webp',
@@ -102,7 +102,7 @@ export const TEAM = [
   },
   {
     slug: 'noah',
-    demo: false,
+    demo: true,
     name: 'Noah',
     role: 'Artiste bénévole',
     photo: 'assets/img/equipe/noah.webp',
