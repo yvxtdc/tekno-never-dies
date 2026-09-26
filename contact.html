@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Contact — Tekno Never Dies</title>
-  <meta name="description" content="Contacter l'association Tekno Never Dies pour un événement, une location de matériel ou toute autre demande." />
+  <meta name="description" content="Contacter l'association Tekno Never Dies pour un événement, rejoindre l'équipe ou toute autre demande." />
   <link rel="icon" type="image/png" href="assets/img/favicon.png" />
   <link rel="preload" href="assets/fonts/archivo-black-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="css/style.css" />
@@ -20,7 +20,7 @@
   <main>
     <section class="page-head container">
       <h1>Contact</h1>
-      <p>Une question, une envie de louer du matériel, une soirée à organiser ensemble ? Écris-nous.</p>
+      <p>Une question, une envie de rejoindre l'équipe, une soirée à organiser ensemble ? Écris-nous.</p>
     </section>
 
     <section class="container contact-layout" style="padding-bottom:clamp(72px,11vw,150px)">
@@ -53,7 +53,7 @@
           <label for="type">Type de demande</label>
           <select id="type" name="type" required>
             <option value="">Choisir…</option>
-            <option value="location">Location de matériel</option>
+            <!-- Location de matériel retirée du site : <option value="location">Location de matériel</option> -->
             <option value="evenement">Organisation d'un événement</option>
             <option value="info-soiree">Information sur une soirée</option>
             <option value="partenariat">Partenariat</option>
@@ -71,26 +71,41 @@
           <label for="evenement-nom">Événement concerné</label>
           <input type="text" id="evenement-nom" name="evenement" />
         </div>
+        <div class="field" id="field-lieu">
+          <label for="lieu">Lieu ou commune</label>
+          <input type="text" id="lieu" name="lieu" autocomplete="address-level2" />
+        </div>
+        <div class="field" id="field-participants">
+          <label for="participants">Nombre de personnes attendu</label>
+          <input type="number" id="participants" name="participants" min="1" inputmode="numeric" />
+        </div>
+        <!-- Champ lié à la location de matériel, retirée du site : conservé en commentaire.
         <div class="field" id="field-materiel">
           <label for="materiel">Matériel recherché</label>
           <input type="text" id="materiel" name="materiel" placeholder="Ex : 2 enceintes actives, un jeu de lyres…" />
         </div>
+        -->
+        <fieldset class="field field-checks">
+          <legend>Services souhaités</legend>
+          <label><input type="checkbox" name="livraison" value="oui" /> Livraison</label>
+          <label><input type="checkbox" name="installation" value="oui" /> Installation ou démontage</label>
+        </fieldset>
         <div class="field">
           <label for="message">Message</label>
           <textarea id="message" name="message" required placeholder="Décris ton projet ou ta demande"></textarea>
         </div>
         <button class="btn btn-solid" type="submit">Envoyer</button>
+        <p class="form-status" id="contact-status" role="status" aria-live="polite"></p>
         <p class="form-note">En envoyant ce formulaire, ton message est transmis par e-mail à l'association.</p>
       </form>
 
       <aside class="contact-info">
         <h2>Nous contacter directement</h2>
         <ul>
-          <!-- TODO : remplacer par les vraies coordonnées de l'association -->
-          <li>✉️ <a href="mailto:contact@example.org">contact@example.org</a></li>
-          <li>📞 <a href="tel:+33000000000">Téléphone à venir</a></li>
-          <li>📍 Strasbourg et environs</li>
-          <li>🔗 <a href="#">Instagram</a></li>
+          <li>✉️ <a href="mailto:tnd6tem@gmail.com">tnd6tem@gmail.com</a></li>
+          <li>📞 <span>[TÉLÉPHONE À REMPLACER]</span></li>
+          <li>📍 Siège déclaré : Lauterbourg, Grand Est</li>
+          <li>🔗 <a href="#">[RÉSEAU SOCIAL À REMPLACER]</a></li>
         </ul>
       </aside>
     </section>

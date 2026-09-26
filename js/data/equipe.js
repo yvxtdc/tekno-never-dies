@@ -1,107 +1,116 @@
-// Données de l'équipe. Les photos ci-dessous sont uniquement des visuels de démonstration.
-// Pour chaque membre réel, renseigne surtout : nom, rôle et année d'arrivée.
+// Données de l'équipe.
+// Photos, rôles et tags à jour (repris de la version tekno-never-dies_2).
+// Il ne reste plus que les bios à écrire pour chaque membre.
 export const TEAM = [
   {
     slug: 'yannis',
+    demo: false,
     name: 'Yannis',
-    role: 'Présidence / coordination',
-    photo: 'assets/img/badge-black.webp',
-    tags: ['Coordination', 'Association'],
+    role: "Président de l'association",
+    photo: 'assets/img/equipe/yannis.webp',
+    tags: ['Organisation générale', 'Baron', 'Supervision', 'Gestion & coordination'],
     extra: {
       'Dans l’association depuis': '2024',
-      'Rôle': 'Coordination des projets et de l’équipe',
+      'Rôle': "Président de l'association",
       'Pôle': 'Organisation'
     },
     bio: 'Une courte présentation de Yannis, son rôle et ce qu’il apporte à l’association.'
   },
   {
     slug: 'jonathan-axel',
+    demo: false,
     name: 'Jonathan & Axel',
-    role: 'Technique / logistique',
-    photo: 'assets/img/decor/chain.webp',
-    tags: ['Technique', 'Logistique'],
+    role: 'Responsables sonorisation/lumières',
+    photo: 'assets/img/equipe/jonathan-axel.webp',
+    tags: ['Gestion & installation', 'Réglages & tests', 'Entretien du matériel'],
     extra: {
       'Dans l’association depuis': '2024',
-      'Rôle': 'Préparation et installation du matériel',
+      'Rôle': 'Gestion, installation et entretien de la sonorisation et des lumières',
       'Pôle': 'Technique'
     },
     bio: 'Une courte présentation du binôme et de ses missions au sein de l’association.'
   },
   {
     slug: 'estebane',
+    demo: false,
     name: 'Estebane',
-    role: 'Événementiel',
-    photo: 'assets/img/decor/sparkle-blue.webp',
-    tags: ['Événement', 'Organisation'],
+    role: "Bras & mains de l'association",
+    photo: 'assets/img/equipe/estebane.webp',
+    tags: ['Montage/installation', 'Polyvalent'],
     extra: {
       'Dans l’association depuis': '2024',
-      'Rôle': 'Préparation et coordination des événements',
+      'Rôle': "Montage, installation et appui polyvalent",
       'Pôle': 'Événementiel'
     },
     bio: 'Une courte présentation d’Estebane et de son implication dans les événements.'
   },
   {
     slug: 'ricky',
+    demo: false,
     name: 'Ricky',
-    role: 'Son / technique',
-    photo: 'assets/img/decor/sparkles-lavender.webp',
-    tags: ['Son', 'Technique'],
+    role: 'Organisation du bar',
+    photo: 'assets/img/equipe/ricky.webp',
+    tags: ['Gestion des stocks', 'Organisation du bar'],
     extra: {
       'Dans l’association depuis': '2024',
-      'Rôle': 'Préparation et exploitation de la partie son',
-      'Pôle': 'Technique'
+      'Rôle': 'Gestion des stocks et organisation du bar',
+      'Pôle': 'Événementiel'
     },
-    bio: 'Une courte présentation de Ricky et de son rôle technique.'
+    bio: 'Une courte présentation de Ricky et de son rôle au sein de l’association.'
   },
   {
     slug: 'celeste-yelena',
+    demo: false,
     name: 'Céleste & Yelena',
-    role: 'Accueil / organisation',
-    photo: 'assets/img/decor/star-hollow.webp',
-    tags: ['Accueil', 'Organisation'],
+    role: 'Communication / événementiel',
+    photo: 'assets/img/equipe/celeste-yelena.webp',
+    tags: ['Réseaux sociaux', 'Création de contenus', 'Stratégie & image'],
     extra: {
       'Dans l’association depuis': '2024',
-      'Rôle': 'Accueil, organisation et coordination sur les événements',
-      'Pôle': 'Événementiel'
-    },
-    bio: 'Une courte présentation du binôme et de ses missions.'
-  },
-  {
-    slug: 'remi',
-    name: 'Rémi',
-    role: 'Technique',
-    photo: 'assets/img/decor/star-lavender.webp',
-    tags: ['Technique'],
-    extra: {
-      'Dans l’association depuis': '2024',
-      'Rôle': 'Appui technique et préparation du matériel',
-      'Pôle': 'Technique'
-    },
-    bio: 'Une courte présentation de Rémi et de son implication.'
-  },
-  {
-    slug: 'elena-yanniv',
-    name: 'Elena & Yanniv',
-    role: 'Communication',
-    photo: 'assets/img/decor/star-outline.webp',
-    tags: ['Communication', 'Création'],
-    extra: {
-      'Dans l’association depuis': '2024',
-      'Rôle': 'Communication et création de contenus',
+      'Rôle': 'Communication, réseaux sociaux et création de contenus',
       'Pôle': 'Communication'
     },
     bio: 'Une courte présentation du binôme et de ses missions.'
   },
   {
-    slug: 'noah',
-    name: 'Noah',
-    role: 'Organisation',
-    photo: 'assets/img/decor/star-pair.webp',
-    tags: ['Organisation'],
+    slug: 'remi',
+    demo: false,
+    name: 'Rémi',
+    role: 'Nouveau membre',
+    photo: 'assets/img/equipe/remi.webp',
+    tags: ['Montage & démontage', 'Organisation du bar'],
     extra: {
       'Dans l’association depuis': '2024',
-      'Rôle': 'Organisation et soutien sur les événements',
-      'Pôle': 'Organisation'
+      'Rôle': 'Montage, démontage et organisation du bar',
+      'Pôle': 'Événementiel'
+    },
+    bio: 'Une courte présentation de Rémi et de son implication.'
+  },
+  {
+    slug: 'elena-yanniv',
+    demo: false,
+    name: 'Elena & Yanniv',
+    role: 'Bénévoles',
+    photo: 'assets/img/equipe/elena-yanniv.webp',
+    tags: ['Bons commerciaux', 'Entrée & billetterie'],
+    extra: {
+      'Dans l’association depuis': '2024',
+      'Rôle': 'Bons commerciaux, entrée et billetterie',
+      'Pôle': 'Événementiel'
+    },
+    bio: 'Une courte présentation du binôme et de ses missions.'
+  },
+  {
+    slug: 'noah',
+    demo: false,
+    name: 'Noah',
+    role: 'Artiste bénévole',
+    photo: 'assets/img/equipe/noah.webp',
+    tags: ['Graffitis', 'Créations visuelles'],
+    extra: {
+      'Dans l’association depuis': '2024',
+      'Rôle': 'Graffitis et créations visuelles',
+      'Pôle': 'Création'
     },
     bio: 'Une courte présentation de Noah et de son rôle dans l’association.'
   }

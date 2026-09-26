@@ -47,6 +47,7 @@
   --text:"Montserrat",system-ui,-apple-system,"Segoe UI",sans-serif;
 
   --pad:clamp(20px,4vw,56px);
+  --logo:clamp(48px,5vw,64px); /* même taille que .top .badge, utilisée par le menu plein écran */
 
   color-scheme:light;
   box-sizing:border-box;
@@ -214,6 +215,10 @@ a{
   filter:drop-shadow(0 0 12px rgba(66,38,182,.28));
 }
 
+/* Ce bloc ".top nav ..." stylait l'ancien menu horizontal dans le header.
+   Le header ne contient plus de <nav> (voir partials/header.html) : la
+   navigation est maintenant le menu plein écran ".tnd-menu" (section 9).
+   Conservé ici sans suppression, au cas où on reviendrait à un menu inline. */
 .top nav{
   display:flex;
   align-items:center;
@@ -273,10 +278,10 @@ a{
 
 .hero{
   position:relative;
-  min-height:100svh;
+  min-height:clamp(640px,100svh,960px);
   display:flex;
   align-items:center;
-  padding:clamp(88px,12vh,120px) 0 clamp(40px,7vh,72px);
+  padding:clamp(128px,15vh,168px) 0 clamp(64px,9vh,112px);
   overflow:hidden
 }
 
@@ -295,8 +300,10 @@ a{
   font-weight:400;
   text-transform:uppercase;
   line-height:.82;
-  font-size:min(12.8vw,23svh);
-  letter-spacing:-.025em
+  max-width:100%;
+  font-size:clamp(4.5rem,12.8vw,12rem);
+  letter-spacing:-.025em;
+  z-index:1
 }
 
 .lockup span{
@@ -328,9 +335,9 @@ a{
 
 .lockup .badge{
   position:absolute;
-  right:-.02em;
-  bottom:-.08em;
-  width:1.06em;
+  right:.08em;
+  bottom:-.02em;
+  width:.78em;
   box-shadow:0 0 0 .045em var(--violet)
 }
 
@@ -423,12 +430,14 @@ a{
 .ticker{
   position:relative;
   z-index:2;
+  width:100%;
   background:var(--violet);
   color:#fff;
   overflow:hidden;
+  contain:paint;
   padding:.55em 0;
   transform:rotate(-1.4deg);
-  margin:0 -3vw
+  margin:0
 }
 
 .track{
@@ -730,55 +739,35 @@ h2{
 /* ---------- Footer ---------- */
 
 footer{
-  padding:clamp(40px,6vw,72px) 0 clamp(48px,7vw,88px)
+  margin-top:clamp(36px,7vw,96px);
+  padding:clamp(42px,7vw,80px) 0 28px;
+  color:#fff;
+  background:var(--navy);
+  border-top:6px solid var(--violet)
 }
 
-.foot{
-  display:flex;
-  flex-wrap:wrap;
-  align-items:center;
-  justify-content:space-between;
-  gap:24px
+.footer-grid{
+  display:grid;
+  grid-template-columns:minmax(220px,1.15fr) minmax(150px,.75fr) minmax(240px,1fr);
+  gap:clamp(28px,6vw,88px)
 }
 
-.foot .who{
-  display:flex;
-  align-items:center;
-  gap:16px
-}
-
-.foot .badge{
-  width:64px
-}
-
-.foot .tnd{
-  font-family:var(--display);
-  font-size:1.5rem;
-  text-shadow:.06em .06em 0 var(--sh-tekno)
-}
-
-.foot small{
-  color:var(--muted);
-  font-size:.9rem
-}
-
-.foot nav{
-  display:flex;
-  gap:22px;
-  flex-wrap:wrap
-}
-
-.foot nav a{
-  font-weight:700;
-  text-decoration:none
-}
-
-.foot nav a:hover{
-  text-decoration:underline;
-  text-decoration-color:var(--pink);
-  text-underline-offset:5px;
-  text-decoration-thickness:2px
-}
+.footer-brand{display:flex;align-items:flex-start;gap:16px}
+.footer-brand .badge{width:68px;flex:none;background-image:var(--badge-white)}
+.footer-brand .tnd{font-family:var(--display);font-size:1.5rem;line-height:1;text-shadow:.06em .06em 0 var(--sh-wm)}
+.footer-brand p,.footer-contact p{margin:.7em 0 0;color:rgba(255,255,255,.76);font-size:.9rem}
+.footer-demo{color:#a99aff;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.footer-column h2{margin:0 0 14px;font-family:var(--text);font-size:.85rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#a99aff}
+.footer-column nav{display:grid;gap:8px}
+.footer-column nav a,.footer-bottom a{font-weight:700;text-decoration:none}
+.footer-column nav a:hover,.footer-bottom a:hover{color:#8fe4f1;text-decoration:underline;text-underline-offset:4px}
+.socials{display:flex!important;flex-wrap:wrap;gap:10px!important}
+.socials a{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid rgba(255,255,255,.22);border-radius:999px;font-size:.82rem}
+.socials svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2}
+.socials svg path{fill:currentColor;stroke:none}
+.socials .social-dot{fill:currentColor;stroke:none}
+.footer-bottom{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:18px;padding-top:22px;border-top:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.68);font-size:.82rem}
+.footer-bottom nav{display:flex;flex-wrap:wrap;gap:18px}
 
 
 /* ---------- 7. Étoiles 3D (calque fixe, au-dessus de la page) ---------- */
@@ -805,7 +794,7 @@ footer{
   }
 
   .lockup{
-    font-size:min(22vw,21svh)
+    font-size:clamp(4rem,18vw,8rem)
   }
 
   .hero-side{
@@ -876,6 +865,9 @@ footer{
   border:0!important
 }
 
+/* Ancien bouton hamburger + soulignement de lien actif : remplacés par le
+   menu plein écran ".tnd-toggle / .tnd-menu" (section 9 plus bas), conservés
+   ici en commentaire au cas où.
 .menu-toggle{
   display:none;
   border:2px solid var(--ink);
@@ -902,6 +894,7 @@ footer{
 .top nav a.active::after{
   transform:scaleX(1);
 }
+*/
 
 
 @media (max-width:760px){
@@ -921,6 +914,7 @@ footer{
     width:52px
   }
 
+  /* Ancien menu déroulant dans .top, remplacé par .tnd-menu (section 9) :
   .menu-toggle{
     display:block;
     margin-left:auto
@@ -946,4 +940,126 @@ footer{
   .top nav a:last-child{
     border-bottom:0
   }
+  */
+
+  .hero{
+    min-height:auto;
+    padding-top:clamp(116px,18vh,156px);
+    padding-bottom:clamp(58px,10vh,96px)
+  }
+
+  .hero-grid{
+    align-items:start;
+    gap:42px
+  }
+
+  .lockup{
+    font-size:clamp(4rem,19vw,7rem);
+    line-height:.86
+  }
+
+  .lockup .badge{
+    right:.04em;
+    width:.72em
+  }
+
+  .hero-side{max-width:34rem}
+
+  .footer-grid{grid-template-columns:1fr;gap:34px}
+  .footer-bottom{align-items:flex-start;flex-direction:column}
+}
+
+/* =====================================================================
+   9. Menu plein écran (design repris du projet tekno-never-dies_2)
+   Bouton ".tnd-toggle" toujours visible en haut à droite, ouvre le menu
+   plein écran ".tnd-menu". Logique JS : initMenu() dans js/partials.js.
+   ===================================================================== */
+.tnd-toggle{
+  position:fixed;z-index:1001;
+  top:calc(clamp(14px,2.4vw,28px) + var(--logo)/2 - 23px + env(safe-area-inset-top,0px));
+  right:var(--pad);
+  display:flex;align-items:center;gap:10px;
+  padding:10px 20px;border-radius:999px;cursor:pointer;
+  background:var(--navy);color:#fff;border:2px solid var(--pink);
+  font:700 1rem var(--text);
+  box-shadow:.18em .18em 0 var(--pink);
+  transition:background-color .2s,color .2s,box-shadow .2s,transform .2s;
+}
+.tnd-toggle:hover{transform:translate(-2px,-2px);box-shadow:.3em .3em 0 var(--pink)}
+.tnd-toggle[aria-expanded="true"]{background:var(--pink);color:var(--navy);box-shadow:none;transform:none}
+.tnd-toggle:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
+
+/* Mini égaliseur : il bouge au survol, quand le menu est ouvert, et à côté du lien actif */
+.tnd-eq{display:inline-flex;align-items:flex-end;gap:3px;height:16px}
+.tnd-eq span{width:3px;height:45%;background:var(--cyan);border-radius:1px}
+.tnd-eq span:nth-child(2){height:90%;animation-delay:-.3s}
+.tnd-eq span:nth-child(3){height:65%;animation-delay:-.6s}
+.tnd-eq span:nth-child(4){height:30%;animation-delay:-.15s}
+.tnd-toggle[aria-expanded="true"] .tnd-eq span{background:var(--navy)}
+.tnd-toggle:hover .tnd-eq span,
+.tnd-toggle[aria-expanded="true"] .tnd-eq span,
+.tnd-links .tnd-eq span{animation:tnd-bounce .9s ease-in-out infinite alternate}
+@keyframes tnd-bounce{from{height:20%}to{height:100%}}
+
+/* Le menu plein écran */
+.tnd-menu{
+  position:fixed;inset:0;z-index:1000;
+  display:flex;flex-direction:column;justify-content:space-between;gap:40px;
+  overflow-y:auto;overscroll-behavior:contain;
+  padding:calc(var(--logo) + 64px + env(safe-area-inset-top,0px)) var(--pad) calc(32px + env(safe-area-inset-bottom,0px));
+  background:var(--navy);color:#fff;
+  visibility:hidden;opacity:0;
+  transition:opacity .25s,visibility 0s .25s;
+}
+.tnd-menu.is-open{visibility:visible;opacity:1;transition:opacity .25s}
+
+/* Logo blanc à la même place que celui du header */
+.tnd-menu-badge{
+  position:absolute;
+  top:calc(clamp(14px,2.4vw,28px) + env(safe-area-inset-top,0px));left:var(--pad);
+  width:var(--logo);background-image:var(--badge-white);
+}
+
+.tnd-links{list-style:none;margin:0;padding:0}
+.tnd-links li{opacity:0;transform:translateY(24px);transition:opacity .35s,transform .35s cubic-bezier(.2,.8,.2,1)}
+.tnd-menu.is-open .tnd-links li{opacity:1;transform:none;transition-delay:calc(var(--i) * 55ms + 80ms)}
+
+/* Les liens : lettres en contour, qui se remplissent en rose au survol */
+.tnd-links a{
+  display:inline-flex;align-items:center;gap:.3em;
+  font-family:var(--display);font-weight:400;text-transform:uppercase;
+  font-size:clamp(2.2rem,min(10vw,10.5vh),6.2rem);line-height:1.02;letter-spacing:-.005em;
+  text-decoration:none;
+  color:transparent;-webkit-text-stroke:2px #fff;
+  transition:color .18s,-webkit-text-stroke-color .18s,transform .18s,text-shadow .18s;
+}
+.tnd-links a:hover,.tnd-links a:focus-visible{
+  color:var(--pink);-webkit-text-stroke-color:var(--pink);
+  text-shadow:.045em .045em 0 var(--violet);
+  transform:translateX(.1em);outline:none;
+}
+/* Page actuelle = le morceau "en cours de lecture" : lettres pleines + égaliseur.
+   La classe .active est posée par markActiveLink() dans js/partials.js. */
+.tnd-links a.active{color:#fff;-webkit-text-stroke-color:#fff;text-shadow:.045em .045em 0 var(--violet)}
+.tnd-links a.active:hover{color:var(--pink);-webkit-text-stroke-color:var(--pink)}
+.tnd-links .tnd-eq{height:.5em;gap:.07em}
+.tnd-links .tnd-eq span{width:.08em;background:var(--cyan)}
+
+.tnd-menu-foot{margin:0;color:var(--lav);font-weight:600;line-height:1.6}
+.tnd-menu-foot a{color:#fff}
+.tnd-menu-foot a:hover{color:var(--pink)}
+.tnd-menu-foot a:focus-visible{outline-color:var(--cyan)}
+
+body.tnd-lock{overflow:hidden}
+.team-modal{z-index:1100} /* la fiche membre passe devant le bouton Menu */
+
+@media (max-width:520px){
+  .tnd-toggle{padding:8px 16px}
+  .tnd-links a{-webkit-text-stroke-width:1.5px}
+}
+@supports not (-webkit-text-stroke:1px){.tnd-links a{color:#fff}}
+@media (prefers-reduced-motion:reduce){
+  .tnd-eq span{animation:none!important}
+  .tnd-links li,.tnd-menu,.tnd-links a,.tnd-toggle{transition:none!important}
+  .tnd-links li{transform:none}
 }
