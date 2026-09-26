@@ -989,17 +989,41 @@ footer{
 .tnd-toggle[aria-expanded="true"]{background:var(--pink);color:var(--navy);box-shadow:none;transform:none}
 .tnd-toggle:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
 
-/* Mini égaliseur : il bouge au survol, quand le menu est ouvert, et à côté du lien actif */
+/* Mini égaliseur : quatre rythmes et niveaux différents, comme un vu-mètre. */
 .tnd-eq{display:inline-flex;align-items:flex-end;gap:3px;height:16px}
-.tnd-eq span{width:3px;height:45%;background:var(--cyan);border-radius:1px}
-.tnd-eq span:nth-child(2){height:90%;animation-delay:-.3s}
-.tnd-eq span:nth-child(3){height:65%;animation-delay:-.6s}
-.tnd-eq span:nth-child(4){height:30%;animation-delay:-.15s}
-.tnd-toggle[aria-expanded="true"] .tnd-eq span{background:var(--navy)}
-.tnd-toggle:hover .tnd-eq span,
-.tnd-toggle[aria-expanded="true"] .tnd-eq span,
-.tnd-links .tnd-eq span{animation:tnd-bounce .9s ease-in-out infinite alternate}
-@keyframes tnd-bounce{from{height:20%}to{height:100%}}
+.tnd-eq span{display:block;width:3px;border-radius:2px;transform-origin:bottom;will-change:transform}
+.tnd-eq span:nth-child(1){height:62%;animation:tnd-level-1 2.1s linear -.9s infinite}
+.tnd-eq span:nth-child(2){height:92%;animation:tnd-level-2 2.75s linear -1.5s infinite}
+.tnd-eq span:nth-child(3){height:74%;animation:tnd-level-3 2.3s linear -.5s infinite}
+.tnd-eq span:nth-child(4){height:100%;animation:tnd-level-4 2.9s linear -1.8s infinite}
+@keyframes tnd-level-1{
+  0%,100%{transform:scaleY(.22);background-color:#58df82}
+  24%{transform:scaleY(.52);background-color:#a8dc50}
+  48%{transform:scaleY(.86);background-color:#f0cb3c}
+  68%{transform:scaleY(1.28);background-color:#ef4943}
+  84%{transform:scaleY(.76);background-color:#ff9d36}
+}
+@keyframes tnd-level-2{
+  0%,100%{transform:scaleY(.3);background-color:#58df82}
+  19%{transform:scaleY(.74);background-color:#b4df4c}
+  43%{transform:scaleY(1.12);background-color:#f4bd37}
+  61%{transform:scaleY(1.38);background-color:#ed403f}
+  82%{transform:scaleY(.8);background-color:#ff9c35}
+}
+@keyframes tnd-level-3{
+  0%,100%{transform:scaleY(.18);background-color:#58df82}
+  31%{transform:scaleY(.64);background-color:#b1df4d}
+  51%{transform:scaleY(.98);background-color:#f2c13a}
+  73%{transform:scaleY(1.32);background-color:#ed403f}
+  89%{transform:scaleY(.7);background-color:#ffa037}
+}
+@keyframes tnd-level-4{
+  0%,100%{transform:scaleY(.26);background-color:#58df82}
+  17%{transform:scaleY(.6);background-color:#a8dc50}
+  42%{transform:scaleY(.94);background-color:#f0c83b}
+  64%{transform:scaleY(1.24);background-color:#ef4943}
+  81%{transform:scaleY(.68);background-color:#ff9d36}
+}
 
 /* Le menu plein écran */
 .tnd-menu{
@@ -1043,7 +1067,7 @@ footer{
 .tnd-links a.active{color:#fff;-webkit-text-stroke-color:#fff;text-shadow:.045em .045em 0 var(--violet)}
 .tnd-links a.active:hover{color:var(--pink);-webkit-text-stroke-color:var(--pink)}
 .tnd-links .tnd-eq{height:.5em;gap:.07em}
-.tnd-links .tnd-eq span{width:.08em;background:var(--cyan)}
+.tnd-links .tnd-eq span{width:.08em}
 
 .tnd-menu-foot{margin:0;color:var(--lav);font-weight:600;line-height:1.6}
 .tnd-menu-foot a{color:#fff}
@@ -1059,7 +1083,7 @@ body.tnd-lock{overflow:hidden}
 }
 @supports not (-webkit-text-stroke:1px){.tnd-links a{color:#fff}}
 @media (prefers-reduced-motion:reduce){
-  .tnd-eq span{animation:none!important}
+  .tnd-eq span{animation:none!important;transform:none!important}
   .tnd-links li,.tnd-menu,.tnd-links a,.tnd-toggle{transition:none!important}
   .tnd-links li{transform:none}
 }
