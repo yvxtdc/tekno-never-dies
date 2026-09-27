@@ -185,7 +185,7 @@ a{
   padding-top:10px;
   padding-bottom:10px;
 
-  background:rgba(255,252,247,.72);
+  background:rgba(255,252,247,.92);
 
   border-bottom-color:rgba(66,38,182,.12);
 
@@ -904,7 +904,7 @@ footer{
     top:0;
     left:0;
     right:0;
-    background:rgba(10,10,14,.3);
+    background:rgba(255,252,247,.55); /* était rgba(10,10,14,.3) : bandeau gris sur fond crème */
     backdrop-filter:blur(10px);
     -webkit-backdrop-filter:blur(10px);
     padding-bottom:12px
@@ -1087,3 +1087,17 @@ body.tnd-lock{overflow:hidden}
   .tnd-links li,.tnd-menu,.tnd-links a,.tnd-toggle{transition:none!important}
   .tnd-links li{transform:none}
 }
+
+
+/* ---------- Corrections visuelles (septembre 2026) ---------- */
+
+/* Menu ouvert : le bouton "Fermer" passait sous le menu plein écran
+   (même z-index, menu placé après dans la page) et devenait invisible.
+   Le menu passe sous le header, et le header devient transparent pendant
+   que le menu est ouvert pour laisser voir le logo blanc du menu. */
+.tnd-menu{z-index:999}
+body.tnd-lock .top{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;border-bottom-color:transparent;box-shadow:none}
+body.tnd-lock .top .brand{visibility:hidden}
+
+/* Bandeau défilant incliné : 1 px de défilement horizontal parasite. */
+body{overflow-x:clip}

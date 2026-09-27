@@ -184,3 +184,74 @@
 
 
 
+
+/* =====================================================================
+   Corrections visuelles (septembre 2026)
+   Regroupées ici pour être faciles à relire ou à annuler.
+   ===================================================================== */
+
+/* 1. Titres de page : le raccourci "padding" écrasait les marges latérales
+      de .container → titre décalé à gauche sur ordinateur et collé au bord
+      de l'écran sur mobile. On ne touche plus qu'au haut et au bas. */
+.page-head{padding:0 var(--pad);padding-block:clamp(120px,16vh,150px) clamp(28px,4vw,48px)}
+@media (max-width:640px){.page-head{padding-top:clamp(104px,14vh,140px)}}
+
+/* 2. Blocs colorés posés directement sur .container (CTA, carte "association
+      déclarée") : ils débordaient de la largeur du contenu. */
+.container.cta-panel,
+.container.official-card{
+  width:calc(100% - 2 * var(--pad));
+  max-width:calc(1280px - 2 * var(--pad))
+}
+
+/* 3. FAQ et pages légales : contenu aligné à gauche avec le titre
+      au lieu d'être centré dans une colonne étroite. */
+.container.faq-list,
+.container.legal-content{max-width:1280px}
+.faq-list{grid-template-columns:minmax(0,900px)}
+.legal-content > *{max-width:850px}
+
+/* 4. Titres dans les cartes (Nos actions, Partenaires, Qui sommes-nous,
+      catégories Location) : ils héritaient de la taille des grands titres
+      de section et sortaient des cartes. */
+.info-card h2{font-size:clamp(1.5rem,2.6vw,2.3rem);line-height:1;margin-bottom:.5em;overflow-wrap:anywhere}
+.catalogue-section > h2{font-size:clamp(1.8rem,3.4vw,2.8rem);margin-bottom:.5em}
+
+/* 5. Grilles de cartes : 3 colonnes pleines sur ordinateur au lieu d'une
+      4e colonne vide ; boutons alignés en bas des cartes. */
+.card-grid{grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr))}
+.event-card,.material-card{display:flex;flex-direction:column}
+.event-card__body,.material-card__body{display:flex;flex-direction:column;align-items:flex-start;flex:1}
+.event-card__body > .btn:last-child,
+.event-card__body > .event-card__actions:last-child{margin-top:auto}
+.event-card .demo-label{display:block}
+.faq-list summary .demo-label{margin:0 0 0 .5em;vertical-align:middle}
+
+/* 6. Galerie : vignettes plus grandes. */
+.gallery-grid{grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr))}
+
+/* 7. Chiffres de l'accueil : 3 colonnes régulières au lieu de 2 + 1. */
+.stats-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+
+/* 8. Formulaire de contact : les cases à cocher prenaient 100 % de la
+      largeur et repoussaient leur libellé tout à droite. */
+.field-checks input{width:auto;flex:none;margin:0}
+.field-checks label{justify-content:flex-start;font-weight:600;margin:0}
+.contact-info h2{margin-bottom:.9em}
+
+/* 9. Petits espacements manquants. */
+.page-head .btn{margin-top:1.4em}
+.quote-note{margin-bottom:24px}
+.page-head .quote-note{margin:1.2em 0 0;max-width:62ch}
+
+/* 10. Page L'association, bloc équipe : le texte était coincé dans une
+       colonne de quelques mots (tout était sur une seule ligne flex). */
+.team-section__intro .agenda-head{margin-bottom:.8em}
+.team-section__intro .agenda-head h2{margin:0}
+.team-section__photo{margin:0 0 clamp(20px,3vw,32px)}
+
+/* 11. Titres longs (« Confidentialité ») : débordaient de l'écran sur mobile. */
+.page-head h1{font-size:clamp(1.9rem,6vw,4.6rem);overflow-wrap:anywhere}
+
+/* 12. Boutons "Ajouter à mon agenda" / "Partager l'agenda" côte à côte. */
+.section-heading__actions{display:flex;flex-wrap:wrap;gap:10px}
