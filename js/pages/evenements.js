@@ -1,5 +1,6 @@
 import { EVENTS } from "../data/events.js";
 import { formatDate, thumb } from "./helpers.js";
+import { downloadICS } from "./ics.js";
 
 const upcomingRoot = document.getElementById("upcoming-events");
 const pastRoot = document.getElementById("past-events");
@@ -65,6 +66,12 @@ document.getElementById("copy-events-link")?.addEventListener("click", async (ev
     button.textContent = "Copie indisponible";
   }
   setTimeout(() => { button.textContent = "Partager l'agenda"; }, 1800);
+});
+
+// Bouton "Ajouter à mon agenda" : un fichier .ics avec tous les événements à venir
+document.getElementById("download-agenda")?.addEventListener("click", () => {
+  const upcoming = EVENTS.filter((e) => e.status === "a-venir");
+  downloadICS(upcoming, "tekno-never-dies-agenda.ics");
 });
 
 render();

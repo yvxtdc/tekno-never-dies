@@ -101,9 +101,20 @@ function initMenu() {
   });
 }
 
+// Header opaque dès qu'on a défilé (la classe .is-scrolled existait dans le CSS
+// mais n'était jamais ajoutée : le texte passait flou sous le header).
+function initScrolledHeader() {
+  const header = document.querySelector(".top");
+  if (!header) return;
+  const update = () => header.classList.toggle("is-scrolled", window.scrollY > 24);
+  update();
+  window.addEventListener("scroll", update, { passive: true });
+}
+
 const nodes = [...document.querySelectorAll("[data-include]")];
 Promise.all(nodes.map(include)).then(() => {
   markActiveLink();
   initMenu();
+  initScrolledHeader();
   initSeo();
 });

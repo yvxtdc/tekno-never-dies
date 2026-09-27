@@ -1,5 +1,6 @@
 import { EVENTS } from "../data/events.js";
 import { formatDate, thumb, readParam } from "./helpers.js";
+import { downloadICS, parisOffset } from "./ics.js";
 
 const root = document.getElementById("event-detail");
 const ev = EVENTS.find((e) => e.slug === readParam("slug"));
@@ -16,7 +17,8 @@ if (!ev) {
     "@type": "Event",
     name: ev.title,
     description: ev.description,
-    startDate: `${ev.date}T${startTime}:00+02:00`,
+    // Décalage horaire calculé selon la date (+01:00 en hiver, +02:00 en été)
+    startDate: `${ev.date}T${startTime}:00${parisOffset(ev.date, Number(startTime.split(":")[0]))}`,
     location: { "@type": "Place", name: ev.place },
     organizer: { "@type": "Organization", name: "TEKNO NEVER DIES" }
   };
@@ -43,8 +45,14 @@ if (!ev) {
     ${practical ? `<h2>Informations pratiques</h2><ul>${practical}</ul>` : ""}
     <div class="actions">
       ${ticket}
+      ${ev.status === "a-venir" ? '<button class="btn btn-line" type="button" id="add-to-calendar">Ajouter à mon agenda</button>' : ""}
       <a class="btn btn-line" href="contact.html?type=evenement&evenement=${encodeURIComponent(ev.title)}">Une question sur cet événement ?</a>
     </div>
     ${galleryLink}
   `;
+
+  // Bouton "Ajouter à mon agenda" : télécharge un fichier .ics pour cet événement
+  document.getElementById("add-to-calendar")?.addEventListener("click", () => {
+    downloadICS([ev], `tnd-${ev.slug}.ics`);
+  });
 }
