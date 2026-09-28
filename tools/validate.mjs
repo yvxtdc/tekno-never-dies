@@ -31,7 +31,7 @@ for (const file of files) {
   }
 }
 
-const dataFiles = ["js/data/events.js", "js/data/materiel.js"];
+const dataFiles = ["js/data/events.js"];
 for (const relative of dataFiles) {
   const file = path.join(root, relative);
   const source = fs.readFileSync(file, "utf8");
