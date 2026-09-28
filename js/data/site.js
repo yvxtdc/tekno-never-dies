@@ -1,7 +1,7 @@
 export const SITE = {
   name: "Tekno Never Dies",
   shortName: "TND6TEM",
-  description: "Association et sound system tekno : événements, technique et location de matériel.",
+  description: "Association et sound system tekno : événements et technique.",
   url: "https://www.example.org",
   official: {
     legalName: "TEKNO NEVER DIES",
