@@ -19,7 +19,9 @@
 
   <main>
     <section class="page-head container">
-      <h1>Événements</h1>
+      <p class="page-kicker">l'agenda</p>
+      <h1><span class="l2">Événements</span></h1>
+      <img class="decor decor-r decor--float" src="assets/img/decor/star-pair.webp" alt="" aria-hidden="true" />
       <p>Nos prochaines soirées, et un aperçu de celles déjà organisées.</p>
     </section>
 
@@ -49,10 +51,18 @@
       <ul class="card-grid" id="upcoming-events"></ul>
     </section>
 
-    <section class="container events-block" id="past-events-block">
+    <section class="container events-block has-decor" id="past-events-block">
+      <img class="decor decor-r2" style="top:-14px" src="assets/img/decor/sparkle-blue.webp" alt="" aria-hidden="true" />
       <h2 class="section-title">Événements passés</h2>
       <ul class="card-grid" id="past-events"></ul>
     </section>
+
+    <a class="cta-row" href="contact.html">
+      <span class="cta-row__inner">
+        <span class="cta-row__kicker">Une soirée à organiser ensemble ?</span>
+        <span class="cta-row__title"><span>Écris-nous</span> <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18M14 5l7 7-7 7"/></svg></span>
+      </span>
+    </a>
   </main>
 
   <div data-include="partials/footer.html"></div>

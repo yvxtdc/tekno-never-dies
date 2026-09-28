@@ -3,59 +3,71 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Tekno Never Dies — Association &amp; sound system</title>
-  <meta name="description" content="Tekno Never Dies : association et sound system tekno." />
+  <title>Tekno Never Dies — Sound System</title>
+  <meta name="description" content="Tekno Never Dies : association et sound system tekno. Événements, équipe et univers TND6TEM." />
   <link rel="icon" type="image/png" href="assets/img/favicon.png" />
 
-  <!-- Précharge la police du titre pour éviter un flash de texte -->
   <link rel="preload" href="assets/fonts/archivo-black-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/pages.css" />
 
-  <!-- Three.js est fourni localement (dossier vendor/) : le site marche hors ligne.
-       L'import map permet d'écrire `import ... from "three"` dans les fichiers JS. -->
   <script type="importmap">
     { "imports": { "three": "./vendor/three/three.module.min.js" } }
   </script>
   <script type="module" src="js/main.js"></script>
   <script type="module" src="js/partials.js"></script>
 </head>
-<body data-page="accueil">
+<body data-page="accueil" class="home-page">
 
-  <!-- Calque WebGL des étoiles 3D (voir js/stars/) -->
-
-  <!-- Petite étoile réutilisée dans le bandeau défilant -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-    <symbol id="spark" viewBox="0 0 24 24"><path d="M12 0C13 8 16 11 24 12 16 13 13 16 12 24 11 16 8 13 0 12 8 11 11 8 12 0Z"/></symbol>
+    <symbol id="spark" viewBox="0 0 24 24">
+      <path d="M12 0C13 8 16 11 24 12 16 13 13 16 12 24 11 16 8 13 0 12 8 11 11 8 12 0Z"/>
+    </symbol>
   </svg>
 
   <div data-include="partials/header.html"></div>
 
   <main id="top">
+    <!-- HERO -->
+    <section class="hero hero--home">
+      <div class="hero-photo" aria-hidden="true"></div>
+      <div class="hero-photo-shade" aria-hidden="true"></div>
+      <div class="hero-vignette" aria-hidden="true"></div>
 
-    <!-- ============ Accueil ============ -->
-    <section class="hero">
+      <!-- Étoiles 3D conservées au-dessus de la photo -->
+      <canvas id="stage" aria-hidden="true"></canvas>
 
-      <canvas id="stage" aria-hidden="true"></canvas> 
+      <div class="hero-glow hero-glow--one" aria-hidden="true"></div>
+      <div class="hero-glow hero-glow--two" aria-hidden="true"></div>
 
-      <div class="container hero-grid">
-        <h1 class="lockup" aria-label="Tekno Never Dies, TND6TEM">
-          <span class="l-tekno" aria-hidden="true">Tekno</span>
-          <span class="l-never" aria-hidden="true">Never</span>
-          <span class="l-dies" aria-hidden="true">Dies</span>
-          <span class="l-tnd" aria-hidden="true">TND6TEM</span>
-          <span class="badge" aria-hidden="true"></span>
+      <!-- Images décoratives chromées (charte TND) -->
+      <img class="decor decor-thorn decor--float" src="assets/img/decor/thorn.webp" alt="" aria-hidden="true" />
+      <img class="decor decor-star-pair decor--float" src="assets/img/decor/star-pair.webp" alt="" aria-hidden="true" style="--rot:-10deg" />
+
+      <div class="container hero-content">
+        <div class="hero-kicker hero-rise">
+          <span>TND6TEM</span>
+          <i></i>
+          <span>Lauterbourg · Alsace</span>
+        </div>
+
+        <h1 class="home-lockup hero-rise" aria-label="Tekno Never Dies">
+          <span class="home-lockup__line home-lockup__line--white">Tekno</span>
+          <span class="home-lockup__line home-lockup__line--gradient">Never Dies</span>
         </h1>
-        <div class="hero-side">
-          <p class="lead">Association et sound system tekno.</p>
-          <p>Des basses, du monde devant les enceintes et une règle simple : la fête continue.</p>
-          <div class="actions">
+
+        <div class="hero-bottom hero-rise">
+          <div class="hero-copy">
+            <p class="hero-lead">Association &amp; sound system tekno.</p>
+            <p>Des soirées, du son, une équipe et tout ce qu'il faut pour faire vibrer le dancefloor.</p>
+          </div>
+
+          <div class="hero-actions">
             <a class="btn btn-solid" href="evenements.html">Voir les événements</a>
             <a class="btn btn-line" href="association.html">Découvrir l'association</a>
           </div>
         </div>
       </div>
-    </section>
 
     <!-- ============ Bandeau défilant ============
          8 copies identiques = deux moitiés égales => boucle sans coupure.
@@ -90,32 +102,16 @@
       </div>
     </section>
 
-    <!-- ============ Le système ============ -->
-    <section class="container block--systeme" id="systeme">
-      <div class="systeme">
-        <span class="badge" role="img" aria-label="Badge Tekno Never Dies Sound System"></span>
+    <!-- UNIVERS / CARDS -->
+    <section id="univers" class="home-work" aria-label="L'univers Tekno Never Dies">
+      <div class="home-section-head container">
+        <img class="decor decor-spark decor--float" src="assets/img/decor/sparkle-blue.webp" alt="" aria-hidden="true" />
         <div>
-          <h2>Notre sound system</h2>
-          <dl>
-            <div><dt>Le son</dt><dd>Des enceintes puissantes, réglées pour tenir la nuit entière.</dd></div>
-            <div class="i2"><dt>La lumière</dt><dd>Éclairage et déco pour transformer n'importe quel lieu en piste de danse.</dd></div>
-            <div class="i3"><dt>Les gens</dt><dd>Une équipe, des DJ invités et un public qui fait l'ambiance.</dd></div>
-          </dl>
+          <p class="eyebrow">Tekno Never Dies · TND6TEM</p>
+          <h2>Un son. Une équipe.<br><span>Une nuit qui continue.</span></h2>
         </div>
+        <p class="home-section-intro">Retrouve les soirées, le sound system et l'équipe qui font vivre l'association.</p>
       </div>
-    </section>
-
-    <!-- ============ Agenda (aperçu, alimenté par js/data/events.js) ============ -->
-    <section class="block block--flush-top container" id="agenda">
-      <div class="agenda-head">
-        <h2>Prochains événements</h2>
-        <div class="squiggle" aria-hidden="true"></div>
-      </div>
-      <ul class="card-grid" id="home-events"></ul>
-      <div class="actions" style="margin-top:2em">
-        <a class="btn btn-line" href="evenements.html">Voir tous les événements</a>
-      </div>
-    </section>
 
     <!-- ============ Rejoindre ============ -->
     <section class="container block--rejoindre" id="rejoindre">
@@ -127,31 +123,17 @@
       </div>
     </section>
 
-    <section class="newsletter-band" id="newsletter" aria-labelledby="newsletter-title">
-      <div class="container newsletter-inner">
-        <div class="newsletter-copy">
-          <span class="newsletter-kicker">TND6TEM · LES PROCHAINES DATES</span>
-          <h2 id="newsletter-title">La prochaine nuit, dans ta boîte mail.</h2>
-          <p>Une annonce quand une nouvelle date est publiée. Pas de calendrier imposé, pas de messages hors sujet.</p>
+    <!-- CTA -->
+    <section class="home-contact">
+      <img class="decor decor-hollow decor--float" src="assets/img/decor/star-hollow.webp" alt="" aria-hidden="true" />
+      <div class="container home-contact__inner">
+        <div>
+          <p class="eyebrow">Tu veux nous rejoindre ?</p>
+          <h2>Une idée, un live,<br><span>un coup de main ?</span></h2>
         </div>
-        <form class="newsletter-form" id="newsletter-form" action="https://aeeb5d2e.sibforms.com/serve/MUIFAMuZe_ORIfGwhnoJ-D9e4ra4TW4Wlg_1iNe5DkkTIWQzFPuNEusQbGVek992AHi5x5QFum8nuCDIWKNik9IFlFP0w5lYvCVHf77yz8l-wtdfQcxOAqhiWpSmFe6kQNywagTAxyhCxMAwZ8Zm5LKDMX7FcBT5pXQ7jk0QemS2ocBKSI4c-fG9t5efTQrjrLjJH3ei3AntLzvryQ==" method="POST" target="_blank">
-          <label for="newsletter-email">Ton adresse e-mail</label>
-          <div class="newsletter-controls">
-            <input id="newsletter-email" name="EMAIL" type="email" required autocomplete="email" placeholder="toi@exemple.fr" />
-            <button class="btn btn-cyan" type="submit">M'inscrire</button>
-          </div>
-          <label class="newsletter-consent">
-            <input type="checkbox" required />
-            <span>J'accepte de recevoir les annonces des prochains événements TND6TEM.</span>
-          </label>
-          <input class="newsletter-honeypot" type="text" name="email_address_check" tabindex="-1" autocomplete="off" aria-hidden="true" />
-          <input type="hidden" name="locale" value="fr" />
-          <p class="newsletter-note">Brevo enregistre l'inscription. Si la confirmation est activée, vérifie ensuite ta boîte mail. <a href="confidentialite.html">Confidentialité</a></p>
-          <p class="newsletter-status" id="newsletter-status" role="status" aria-live="polite"></p>
-        </form>
+        <a class="btn btn-solid" href="contact.html">Nous contacter</a>
       </div>
     </section>
-
   </main>
 
   <div data-include="partials/footer.html"></div>

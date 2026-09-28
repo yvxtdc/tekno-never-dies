@@ -254,3 +254,315 @@
 
 /* 12. Boutons "Ajouter à mon agenda" / "Partager l'agenda" côte à côte. */
 .section-heading__actions{display:flex;flex-wrap:wrap;gap:10px}
+
+/* =====================================================================
+   Thème violet foncé × structure « Beam » — pages internes
+   (en-tête éditorial, grilles à fines lignes, cadres à coins de viseur,
+   rangée de lien géante). Regroupé ici pour être facile à relire ou à annuler.
+   ===================================================================== */
+
+/* --- En-tête de page : petite ligne italique + grand titre (dernière ligne en dégradé) --- */
+.page-head{position:relative}
+.page-kicker{margin:0 0 14px;font-style:italic;font-size:1.05rem;color:var(--muted)}
+.page-head h1{
+  margin:0 0 .32em;
+  max-width:none;
+  font-size:clamp(2.3rem,8.5vw,7rem);
+  line-height:.88;
+  letter-spacing:-.035em;
+  color:#fff;
+  filter:drop-shadow(.035em .035em 0 rgba(66,38,182,.65));
+}
+.page-head h1 .l1{display:block;color:#fff}
+.page-head h1 .l2{
+  display:block;
+  padding:.14em 0 .04em;
+  margin-top:-.1em;
+  background-image:var(--gradient-title);
+  background-size:180% 100%;
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  animation:home-gradient-shift 8s ease-in-out infinite alternate;
+}
+.page-head p{font-size:1.12rem}
+@media (prefers-reduced-motion:reduce){.page-head h1 .l2{animation:none}}
+
+/* --- Images décoratives des pages internes --- */
+.page-head .decor-r{
+  right:var(--pad);
+  top:clamp(96px,14vh,138px);
+  width:clamp(96px,15vw,220px);
+  --rot:8deg;
+  opacity:.95;
+}
+.decor-l{left:-34px;width:clamp(70px,9vw,132px);--rot:-12deg;opacity:.92}
+.decor-r2{right:-30px;width:clamp(76px,10vw,150px);--rot:12deg;opacity:.92}
+.has-decor{position:relative}
+
+/* --- Cadres à coins de viseur (photos, cartes) --- */
+:root{--br:16px}
+.thumb,
+.info-card,
+.article-card,
+.step,
+.contact-info,
+.official-card,
+.cta-panel{position:relative;--bracket:var(--lav)}
+.thumb::after,
+.info-card::after,
+.article-card::after,
+.step::after,
+.contact-info::after,
+.official-card::after,
+.cta-panel::after{
+  content:"";
+  position:absolute;
+  inset:8px;
+  z-index:3;
+  pointer-events:none;
+  background:
+    linear-gradient(var(--bracket),var(--bracket)) 0 0/var(--br) 1px,
+    linear-gradient(var(--bracket),var(--bracket)) 0 0/1px var(--br),
+    linear-gradient(var(--bracket),var(--bracket)) 100% 0/var(--br) 1px,
+    linear-gradient(var(--bracket),var(--bracket)) 100% 0/1px var(--br),
+    linear-gradient(var(--bracket),var(--bracket)) 0 100%/var(--br) 1px,
+    linear-gradient(var(--bracket),var(--bracket)) 0 100%/1px var(--br),
+    linear-gradient(var(--bracket),var(--bracket)) 100% 100%/var(--br) 1px,
+    linear-gradient(var(--bracket),var(--bracket)) 100% 100%/1px var(--br);
+  background-repeat:no-repeat;
+  opacity:.45;
+  transition:opacity .3s ease;
+}
+.info-card:hover,.article-card:hover,.step:hover,.official-card:hover,.event-card:hover .thumb,.contact-info:hover,.cta-panel:hover{--bracket:#e05cc8}
+.info-card:hover::after,.article-card:hover::after,.step:hover::after,.official-card:hover::after,
+.event-card:hover .thumb::after,.contact-info:hover::after,.cta-panel:hover::after{opacity:1}
+
+/* --- Vignettes photo : cadre fin + coins --- */
+.thumb{border-radius:2px;border:1px solid var(--line);padding:6px;background:rgba(255,255,255,.03)}
+.thumb img{border-radius:0}
+.thumb--placeholder{border:1px dashed rgba(255,255,255,.28)}
+
+/* --- Grille d'événements : fines lignes façon Beam --- */
+.card-grid{
+  gap:0;
+  border-top:1px solid var(--line);
+  border-left:1px solid var(--line);
+  grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));
+}
+.event-card,
+.material-card{
+  padding:clamp(18px,2.2vw,30px);
+  border-right:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  background:rgba(255,255,255,.015);
+  transition:background .3s ease;
+}
+.event-card:hover,.material-card:hover{background:rgba(149,106,255,.07)}
+.event-card h3,.material-card h3{
+  margin:.3em 0 .25em;
+  font-family:var(--display);
+  font-weight:400;
+  font-size:clamp(1.3rem,2vw,1.75rem);
+  line-height:1;
+  text-transform:uppercase;
+  letter-spacing:-.01em;
+}
+.event-card__date{color:var(--lav);font-size:.74rem;letter-spacing:.16em}
+.empty-state{border:1px solid var(--line);border-radius:2px;background:none}
+.gallery-grid{gap:0}
+.gallery-grid .thumb{border-radius:0;margin:0 -1px -1px 0;padding:8px}
+.gallery-year h2{
+  background-image:var(--gradient-title);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  display:inline-block;
+}
+.gallery-event h3{font-style:italic;font-weight:600;color:var(--muted);font-size:1rem}
+
+/* --- Titres de section --- */
+.section-title{font-size:clamp(1.9rem,4vw,3.2rem);letter-spacing:-.02em;color:#fff}
+.section-title::before{
+  content:"";
+  display:block;
+  width:44px;
+  height:2px;
+  margin-bottom:.55em;
+  background:linear-gradient(90deg,var(--lav),var(--pink));
+}
+
+/* --- Cartes plates à fines lignes --- */
+.info-card,
+.article-card,
+.step,
+.contact-info,
+.official-card,
+.listing-tools,
+.material-facts,
+.icon-list li{
+  border:1px solid var(--line);
+  border-radius:2px;
+  background:linear-gradient(160deg,rgba(255,255,255,.045),rgba(255,255,255,.012));
+}
+.listing-tools{padding:20px}
+.values-list li{
+  padding:1em 0;
+  background:none;
+  border-radius:0;
+  border-bottom:1px solid var(--line);
+  font-weight:600;
+}
+.values-list li:first-child{border-top:1px solid var(--line)}
+.about-grid h2{
+  font-family:var(--display);
+  font-weight:400;
+  text-transform:uppercase;
+  font-size:clamp(1.5rem,2.6vw,2.2rem);
+  letter-spacing:-.01em;
+}
+
+/* --- Page L'association : bloc d'introduction en 2 colonnes (Qui sommes-nous) --- */
+.about-intro{
+  display:grid;
+  grid-template-columns:minmax(0,4fr) minmax(0,8fr);
+  gap:clamp(20px,4vw,64px);
+  padding-block:clamp(28px,5vw,64px);
+  border-top:1px solid var(--line);
+}
+.about-intro__label{
+  margin:0;
+  font-size:.74rem;
+  font-weight:700;
+  letter-spacing:.25em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.about-intro__text p{margin:0 0 1em;font-size:clamp(1.1rem,1.7vw,1.45rem);line-height:1.55;color:rgba(255,255,255,.9)}
+.about-intro__text .content-placeholder{font-size:.85rem}
+@media (max-width:760px){.about-intro{grid-template-columns:1fr}}
+.official-card__photo{border-radius:2px;border:1px solid var(--line);padding:6px;background:rgba(255,255,255,.03)}
+
+/* --- Étapes « Nous rejoindre » : grille de chiffres à fines lignes --- */
+.steps{gap:0}
+.step{
+  padding:clamp(22px,3vw,40px);
+  margin:0 -1px -1px 0;
+  border-radius:0;
+  background:rgba(255,255,255,.015);
+}
+.step::before{
+  font-size:clamp(2.4rem,4vw,3.6rem);
+  background-image:var(--gradient-title);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  display:inline-block;
+}
+.step h3{font-family:var(--display);font-weight:400;text-transform:uppercase;font-size:1.25rem;letter-spacing:-.01em}
+
+/* --- Bandeau d'appel à l'action (violet charte) --- */
+.cta-panel{
+  border-radius:2px;
+  border:1px solid rgba(149,106,255,.4);
+  background:
+    radial-gradient(circle at 92% 20%, rgba(182,38,154,.32), transparent 40%),
+    linear-gradient(135deg,#231470 0%,#3a1fa0 60%,#2a1680 100%);
+}
+.cta-panel h2{letter-spacing:-.02em}
+
+/* --- Rangée de lien géante (fin de page, comme « Let's make the video ») --- */
+.cta-row{
+  display:block;
+  margin-top:clamp(36px,6vw,80px);
+  padding:clamp(44px,7vw,96px) var(--pad);
+  border-top:1px solid var(--line);
+  text-decoration:none;
+  color:inherit;
+}
+.cta-row__inner{display:block;max-width:1280px;margin:0 auto}
+.cta-row__kicker{display:block;font-style:italic;color:var(--muted);font-size:1.05rem}
+.cta-row__title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+  margin-top:14px;
+  font-family:var(--display);
+  font-size:clamp(1.9rem,5.4vw,4.8rem);
+  line-height:.95;
+  letter-spacing:-.025em;
+  text-transform:uppercase;
+  color:#fff;
+  transition:color .2s ease;
+}
+.cta-row__title svg{width:clamp(30px,4vw,54px);height:auto;flex:none;fill:none;stroke:currentColor;stroke-width:1.5;transition:transform .25s ease}
+.cta-row:hover .cta-row__title,.cta-row:focus-visible .cta-row__title{color:var(--lav)}
+.cta-row:hover .cta-row__title svg,.cta-row:focus-visible .cta-row__title svg{transform:translateX(10px)}
+
+/* --- Formulaires : champs plats, libellés en petites capitales --- */
+.field:not(.field-checks) > label,
+.search-field span,
+.select-field span,
+.field-checks legend{
+  font-size:.72rem;
+  font-weight:700;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.field input,.field select,.field textarea,
+.search-field input,.select-field select,
+.newsletter-controls input{
+  border-radius:2px;
+  border:1px solid rgba(255,255,255,.26);
+  background:rgba(255,255,255,.035);
+  color:#fff;
+}
+.field input:focus,.field select:focus,.field textarea:focus,
+.search-field input:focus,.select-field select:focus,
+.newsletter-controls input:focus{
+  outline:none;
+  border-color:var(--lav);
+  box-shadow:0 0 0 3px rgba(149,106,255,.22);
+}
+select option{background:#150d3b;color:#fff}
+.field-checks input{accent-color:var(--lav)}
+.contact-info{padding:clamp(24px,3vw,40px)}
+.contact-info h2{font-family:var(--display);font-weight:400;text-transform:uppercase;font-size:1.4rem}
+
+/* --- FAQ : lignes à fines bordures, plus/moins à droite --- */
+.faq-list{gap:0}
+.faq-list details:first-child{border-top:1px solid var(--line)}
+.faq-list details{padding:0 4px;background:none;border-radius:0;border-bottom:1px solid var(--line)}
+.faq-list summary{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:24px 0;
+  list-style:none;
+  font-family:var(--display);
+  font-weight:400;
+  text-transform:uppercase;
+  font-size:clamp(1.05rem,1.8vw,1.35rem);
+  letter-spacing:-.005em;
+}
+.faq-list summary::-webkit-details-marker{display:none}
+.faq-list summary::after{
+  content:"+";
+  margin-left:auto;
+  font-family:var(--text);
+  font-size:1.7rem;
+  line-height:1;
+  color:var(--lav);
+  transition:transform .25s ease;
+}
+.faq-list details[open] summary{color:var(--lav)}
+.faq-list details[open] summary::after{transform:rotate(45deg)}
+
+/* --- Détails divers --- */
+.quote-note{border-left:2px solid var(--lav);border-radius:0;background:rgba(149,106,255,.08)}
+.pill{border-radius:2px}
+.legal-content h2{font-family:var(--display);font-weight:400;text-transform:uppercase;font-size:1.35rem;color:var(--lav)}
+.newsletter-band{border-top:1px solid var(--line)}
+.btn-line{border-color:rgba(255,255,255,.4)}
