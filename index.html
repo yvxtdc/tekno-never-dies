@@ -40,6 +40,10 @@
       <div class="hero-glow hero-glow--one" aria-hidden="true"></div>
       <div class="hero-glow hero-glow--two" aria-hidden="true"></div>
 
+      <!-- Images décoratives chromées (charte TND) -->
+      <img class="decor decor-thorn decor--float" src="assets/img/decor/thorn.webp" alt="" aria-hidden="true" />
+      <img class="decor decor-star-pair decor--float" src="assets/img/decor/star-pair.webp" alt="" aria-hidden="true" style="--rot:-10deg" />
+
       <div class="container hero-content">
         <div class="hero-kicker hero-rise">
           <span>TND6TEM</span>
@@ -74,6 +78,7 @@
     <!-- UNIVERS / CARDS -->
     <section id="univers" class="home-work" aria-label="L'univers Tekno Never Dies">
       <div class="home-section-head container">
+        <img class="decor decor-spark decor--float" src="assets/img/decor/sparkle-blue.webp" alt="" aria-hidden="true" />
         <div>
           <p class="eyebrow">Tekno Never Dies · TND6TEM</p>
           <h2>Un son. Une équipe.<br><span>Une nuit qui continue.</span></h2>
@@ -82,6 +87,8 @@
       </div>
 
       <div class="home-grid">
+        <img class="decor decor-l" src="assets/img/decor/star-outline.webp" alt="" aria-hidden="true" />
+        <img class="decor decor-r" src="assets/img/decor/sparkles-lavender.webp" alt="" aria-hidden="true" />
         <a class="home-card" href="evenements.html" style="--card-image:url('assets/img/events/soiree1.webp')">
           <div class="home-card__media" style="background-image:url('assets/img/events/soiree1.webp')"></div>
           <div class="home-card__shade"></div>
@@ -124,68 +131,9 @@
       </div>
     </section>
 
-    <!-- Agenda et annonces -->
-    <!-- ============ Agenda (aperçu, alimenté par js/data/events.js) ============ -->
-    <section class="block block--flush-top container" id="agenda">
-      <div class="agenda-head">
-        <h2>Prochains événements</h2>
-        <div class="squiggle" aria-hidden="true"></div>
-      </div>
-      <ul class="card-grid" id="home-events"></ul>
-      <div class="actions" style="margin-top:2em">
-        <a class="btn btn-line" href="evenements.html">Voir tous les événements</a>
-      </div>
-    </section>
-
-    <!-- ============ Matériel (aperçu, alimenté par js/data/materiel.js) ============
-         Location de matériel retirée du site (voir note dans partials/footer.html).
-         Section conservée en commentaire, prête à être réactivée.
-    <section class="block block--flush-top container" id="materiel-apercu">
-      <h2 class="section-title">Le matériel à louer</h2>
-      <ul class="card-grid" id="home-materiel"></ul>
-      <div class="actions" style="margin-top:2em">
-        <a class="btn btn-line" href="location.html">Voir tout le catalogue</a>
-      </div>
-    </section>
-    -->
-
-    <!-- ============ Rejoindre ============ -->
-    <section class="container block--rejoindre" id="rejoindre">
-      <div class="rejoindre">
-        <h2>Une idée, un live, un coup de main ?</h2>
-        <p>L'asso avance grâce à celles et ceux qui s'y mettent. Écris-nous et on se retrouve devant les enceintes.</p>
-        <a class="btn btn-cyan" href="contact.html">Nous écrire</a>
-        <div class="chain" aria-hidden="true"></div>
-      </div>
-    </section>
-
-    <section class="newsletter-band" id="newsletter" aria-labelledby="newsletter-title">
-      <div class="container newsletter-inner">
-        <div class="newsletter-copy">
-          <span class="newsletter-kicker">TND6TEM · LES PROCHAINES DATES</span>
-          <h2 id="newsletter-title">La prochaine nuit, dans ta boîte mail.</h2>
-          <p>Une annonce quand une nouvelle date est publiée. Pas de calendrier imposé, pas de messages hors sujet.</p>
-        </div>
-        <form class="newsletter-form" id="newsletter-form" action="https://aeeb5d2e.sibforms.com/serve/MUIFAMuZe_ORIfGwhnoJ-D9e4ra4TW4Wlg_1iNe5DkkTIWQzFPuNEusQbGVek992AHi5x5QFum8nuCDIWKNik9IFlFP0w5lYvCVHf77yz8l-wtdfQcxOAqhiWpSmFe6kQNywagTAxyhCxMAwZ8Zm5LKDMX7FcBT5pXQ7jk0QemS2ocBKSI4c-fG9t5efTQrjrLjJH3ei3AntLzvryQ==" method="POST" target="_blank">
-          <label for="newsletter-email">Ton adresse e-mail</label>
-          <div class="newsletter-controls">
-            <input id="newsletter-email" name="EMAIL" type="email" required autocomplete="email" placeholder="toi@exemple.fr" />
-            <button class="btn btn-cyan" type="submit">M'inscrire</button>
-          </div>
-          <label class="newsletter-consent">
-            <input type="checkbox" required />
-            <span>J'accepte de recevoir les annonces des prochains événements TND6TEM.</span>
-          </label>
-          <input class="newsletter-honeypot" type="text" name="email_address_check" tabindex="-1" autocomplete="off" aria-hidden="true" />
-          <input type="hidden" name="locale" value="fr" />
-          <p class="newsletter-note">Brevo enregistre l'inscription. Si la confirmation est activée, vérifie ensuite ta boîte mail. <a href="confidentialite.html">Confidentialité</a></p>
-          <p class="newsletter-status" id="newsletter-status" role="status" aria-live="polite"></p>
-        </form>
-      </div>
-    </section>
-
     <!-- CTA -->
     <section class="home-contact">
+      <img class="decor decor-hollow decor--float" src="assets/img/decor/star-hollow.webp" alt="" aria-hidden="true" />
       <div class="container home-contact__inner">
         <div>
           <p class="eyebrow">Tu veux nous rejoindre ?</p>

@@ -20,16 +20,18 @@
 
   <main>
     <section class="page-head container">
-      <h1>L'association</h1>
+      <p class="page-kicker">tnd6tem — lauterbourg</p>
+      <h1><span class="l2">L'association</span></h1>
+      <img class="decor decor-r decor--float" src="assets/img/decor/thorn.webp" alt="" aria-hidden="true" />
       <p>Une association dédiée à la musique, aux événements et au partage de savoir-faire autour de la scène tekno.</p>
     </section>
 
-    <section class="container" style="padding-bottom:clamp(45px,7vw,85px)">
-      <article class="info-card">
-        <h2>Qui sommes-nous ?</h2>
-        <p>Tekno Never Dies est une association qui développe des projets musicaux et événementiels, organise des rendez-vous et met son matériel à disposition d'autres projets lorsque cela est possible.</p>
+    <section class="container about-intro">
+      <p class="about-intro__label">Qui sommes-nous ?</p>
+      <div class="about-intro__text">
+        <p>Tekno Never Dies est une association qui développe des projets musicaux et événementiels et organise des rendez-vous autour de la scène tekno.</p>
         <p class="content-placeholder">[CONTENU À REMPLACER] Cette présentation générale sera complétée avec l'histoire, les valeurs et les projets précis de l'association.</p>
-      </article>
+      </div>
     </section>
 
     <section class="container official-card" aria-labelledby="official-title">
@@ -63,7 +65,8 @@
       </div>
     </section>
 
-    <section class="container about-grid" style="padding-bottom:20px">
+    <section class="container about-grid has-decor" style="padding-bottom:20px">
+      <img class="decor decor-r2" style="top:-10px" src="assets/img/decor/star-outline.webp" alt="" aria-hidden="true" />
       <section>
         <h2>Nos actions</h2>
         <ul class="values-list">
@@ -84,11 +87,12 @@
       </section>
     </section>
 
-    <section class="container cta-panel">
-      <h2>Envie de participer ?</h2>
-      <p>Tu veux donner un coup de main, proposer un projet ou rejoindre l'équipe ?</p>
-      <a class="btn btn-cyan" href="rejoindre.html">Nous rejoindre</a>
-    </section>
+    <a class="cta-row" href="rejoindre.html">
+      <span class="cta-row__inner">
+        <span class="cta-row__kicker">Envie de participer ? Tu veux donner un coup de main, proposer un projet ou rejoindre l'équipe ?</span>
+        <span class="cta-row__title"><span>Nous rejoindre</span> <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18M14 5l7 7-7 7"/></svg></span>
+      </span>
+    </a>
   </main>
 
   <div class="team-modal" id="team-modal" hidden>
