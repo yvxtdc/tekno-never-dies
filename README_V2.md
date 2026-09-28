@@ -27,6 +27,7 @@ publiques et des informations de publication.
 - actualites.html
 - partenaires.html
 - faq.html
+- conditions-location.html
 - mentions-legales.html
 - confidentialite.html
 - 404.html
@@ -41,13 +42,14 @@ publiques et des informations de publication.
 - footer enrichi dans partials/footer.html
 - CSS commun ajouté dans css/style.css et css/pages.css
 - robots.txt et sitemap.xml (remplacer example.org)
-- formulaire de contact préremplissable avec les paramètres `type` et `evenement`
+- formulaire de contact préremplissable avec ?type=location
+- paramètres `type`, `evenement` et `materiel` harmonisés entre les fiches et le formulaire
 - chargement Three.js différé : les modules WebGL ne sont chargés que sur l'accueil
 - modale équipe avec restauration du focus, fermeture par Échap et piège de focus
 - libellé accessible du bouton de menu synchronisé avec son état
 
 ## Avant publication
-Remplacer les placeholders entre crochets, le domaine example.org, les coordonnées, les réseaux sociaux, les partenaires et les photos.
+Remplacer les placeholders entre crochets, le domaine example.org, les coordonnées, les réseaux sociaux, les partenaires, les photos et les conditions réelles de location.
 
 L'action Formspree de `contact.html` contient encore `VOTRE_ID`. Créer le
 formulaire Formspree puis remplacer cette valeur par l'identifiant fourni avant
@@ -57,4 +59,4 @@ la mise en ligne.
 
 Avec Node.js installé, lance `node tools/validate.mjs` depuis la racine du
 projet. Le script vérifie les références locales des pages, CSS et scripts,
-ainsi que l'unicité des slugs d'événements.
+ainsi que l'unicité des slugs d'événements et de matériel.

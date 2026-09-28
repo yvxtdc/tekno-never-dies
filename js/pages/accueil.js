@@ -1,4 +1,5 @@
 import { EVENTS } from "../data/events.js";
+import { MATERIEL } from "../data/materiel.js";
 import { formatDate, thumb } from "./helpers.js";
 
 // --- Aperçu des 3 prochains événements ------------------------------------
@@ -25,6 +26,25 @@ if (eventsRoot) {
         )
         .join("")
     : "<p>Prochaine date en préparation — revenez bientôt.</p>";
+}
+
+// --- Aperçu de 3 équipements du catalogue ----------------------------------
+const materielRoot = document.getElementById("home-materiel");
+if (materielRoot) {
+  materielRoot.innerHTML = MATERIEL.slice(0, 3)
+    .map(
+      (item) => `
+      <li class="material-card">
+        ${thumb(item.cover, item.name, "Photo à ajouter")}
+        <div class="material-card__body">
+          <h3>${item.name}</h3>
+          ${item.demo ? '<span class="demo-label">VISUEL DEMO</span>' : ""}
+          <p>${item.short}</p>
+          <span class="price">${item.price || "Sur devis"}</span>
+        </div>
+      </li>`
+    )
+    .join("");
 }
 
 const newsletterForm = document.getElementById("newsletter-form");

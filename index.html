@@ -64,41 +64,14 @@
 
           <div class="hero-actions">
             <a class="btn btn-solid" href="evenements.html">Voir les événements</a>
-            <a class="btn btn-line" href="association.html">Découvrir l'association</a>
+            <a class="btn btn-hero-line" href="association.html">Découvrir TND</a>
           </div>
         </div>
       </div>
 
-    <!-- ============ Bandeau défilant ============
-         8 copies identiques = deux moitiés égales => boucle sans coupure.
-         Pour changer le texte, modifie une ligne puis recopie-la 8 fois. -->
-    <div class="ticker" aria-hidden="true">
-      <div class="track">
-        <span>Tekno Never Dies<svg class="c"><use href="#spark"/></svg>Sound system<svg class="p"><use href="#spark"/></svg>TND6TEM<svg class="c"><use href="#spark"/></svg></span>
-        <span>Tekno Never Dies<svg class="c"><use href="#spark"/></svg>Sound system<svg class="p"><use href="#spark"/></svg>TND6TEM<svg class="c"><use href="#spark"/></svg></span>
-        <span>Tekno Never Dies<svg class="c"><use href="#spark"/></svg>Sound system<svg class="p"><use href="#spark"/></svg>TND6TEM<svg class="c"><use href="#spark"/></svg></span>
-        <span>Tekno Never Dies<svg class="c"><use href="#spark"/></svg>Sound system<svg class="p"><use href="#spark"/></svg>TND6TEM<svg class="c"><use href="#spark"/></svg></span>
-        <span>Tekno Never Dies<svg class="c"><use href="#spark"/></svg>Sound system<svg class="p"><use href="#spark"/></svg>TND6TEM<svg class="c"><use href="#spark"/></svg></span>
-        <span>Tekno Never Dies<svg class="c"><use href="#spark"/></svg>Sound system<svg class="p"><use href="#spark"/></svg>TND6TEM<svg class="c"><use href="#spark"/></svg></span>
-        <span>Tekno Never Dies<svg class="c"><use href="#spark"/></svg>Sound system<svg class="p"><use href="#spark"/></svg>TND6TEM<svg class="c"><use href="#spark"/></svg></span>
-        <span>Tekno Never Dies<svg class="c"><use href="#spark"/></svg>Sound system<svg class="p"><use href="#spark"/></svg>TND6TEM<svg class="c"><use href="#spark"/></svg></span>
-      </div>
-    </div>
-
-    <!-- ============ L'asso ============ -->
-    <section class="block" id="asso">
-      <div class="container asso-grid">
-        <h2>La fête ne s'arrête jamais. Nous non plus.</h2>
-        <div class="prose">
-          <p>Tekno Never Dies est une association de passionnés de musique électronique. On organise nos propres soirées, avec un sound system monté et entretenu par l'équipe.</p>
-          <p>Chaque événement se prépare à plusieurs : montage du son, lumières, accueil, rangement. Chacun peut y trouver sa place.</p>
-          <!-- TODO : remplacer par de vrais chiffres -->
-          <ul class="stats-row">
-            <li><strong>3</strong><span>événements organisés</span></li>
-            <li><strong>9</strong><span>membres actifs</span></li>
-            <li><strong>3</strong><span>bénévoles mobilisés</span></li>
-          </ul>
-        </div>
+      <div class="hero-scroll hero-rise" aria-hidden="true">
+        <span>scroll</span>
+        <i></i>
       </div>
     </section>
 
@@ -113,13 +86,48 @@
         <p class="home-section-intro">Retrouve les soirées, le sound system et l'équipe qui font vivre l'association.</p>
       </div>
 
-    <!-- ============ Rejoindre ============ -->
-    <section class="container block--rejoindre" id="rejoindre">
-      <div class="rejoindre">
-        <h2>Une idée, un live, un coup de main ?</h2>
-        <p>L'asso avance grâce à celles et ceux qui s'y mettent. Écris-nous et on se retrouve devant les enceintes.</p>
-        <a class="btn btn-cyan" href="contact.html">Nous écrire</a>
-        <div class="chain" aria-hidden="true"></div>
+      <div class="home-grid">
+        <img class="decor decor-l" src="assets/img/decor/star-outline.webp" alt="" aria-hidden="true" />
+        <img class="decor decor-r" src="assets/img/decor/sparkles-lavender.webp" alt="" aria-hidden="true" />
+        <a class="home-card" href="evenements.html" style="--card-image:url('assets/img/events/soiree1.webp')">
+          <div class="home-card__media" style="background-image:url('assets/img/events/soiree1.webp')"></div>
+          <div class="home-card__shade"></div>
+          <div class="home-card__body">
+            <p class="home-card__meta">01 · ÉVÉNEMENTS</p>
+            <h3>Nos soirées<br><span>commencent ici.</span></h3>
+            <span class="home-card__link">Voir l'agenda →</span>
+          </div>
+        </a>
+
+        <a class="home-card" href="association.html" style="--card-image:url('assets/img/img1.webp')">
+          <div class="home-card__media" style="background-image:url('assets/img/img1.webp')"></div>
+          <div class="home-card__shade"></div>
+          <div class="home-card__body">
+            <p class="home-card__meta">02 · L'ASSOCIATION</p>
+            <h3>Une culture<br><span>qui se transmet.</span></h3>
+            <span class="home-card__link">Découvrir l'asso →</span>
+          </div>
+        </a>
+
+        <a class="home-card" href="galerie.html" style="--card-image:url('assets/img/events/soiree2.webp')">
+          <div class="home-card__media" style="background-image:url('assets/img/events/soiree2.webp')"></div>
+          <div class="home-card__shade"></div>
+          <div class="home-card__body">
+            <p class="home-card__meta">03 · LE SOUND SYSTEM</p>
+            <h3>Le son<br><span>avant tout.</span></h3>
+            <span class="home-card__link">Voir la galerie →</span>
+          </div>
+        </a>
+
+        <a class="home-card" href="association.html#equipe" style="--card-image:url('assets/img/equipe/presentation.webp')">
+          <div class="home-card__media" style="background-image:url('assets/img/equipe/presentation.webp')"></div>
+          <div class="home-card__shade"></div>
+          <div class="home-card__body">
+            <p class="home-card__meta">04 · L'ÉQUIPE</p>
+            <h3>Des gens derrière<br><span>chaque nuit.</span></h3>
+            <span class="home-card__link">Rencontrer l'équipe →</span>
+          </div>
+        </a>
       </div>
     </section>
 
