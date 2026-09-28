@@ -56,7 +56,6 @@
           <label for="type">Type de demande</label>
           <select id="type" name="type" required>
             <option value="">Choisir…</option>
-            <!-- Location de matériel retirée du site : <option value="location">Location de matériel</option> -->
             <option value="evenement">Organisation d'un événement</option>
             <option value="info-soiree">Information sur une soirée</option>
             <option value="partenariat">Partenariat</option>
@@ -82,19 +81,6 @@
           <label for="participants">Nombre de personnes attendu</label>
           <input type="number" id="participants" name="participants" min="1" inputmode="numeric" />
         </div>
-        <!-- Champ lié à la location de matériel, retirée du site : conservé en commentaire.
-        <div class="field" id="field-materiel">
-          <label for="materiel">Matériel recherché</label>
-          <input type="text" id="materiel" name="materiel" placeholder="Ex : 2 enceintes actives, un jeu de lyres…" />
-        </div>
-        -->
-        <!-- Services (livraison / installation) liés à la location de matériel, retirée du site : conservés en commentaire.
-        <fieldset class="field field-checks">
-          <legend>Services souhaités</legend>
-          <label><input type="checkbox" name="livraison" value="oui" /> Livraison</label>
-          <label><input type="checkbox" name="installation" value="oui" /> Installation ou démontage</label>
-        </fieldset>
-        -->
         <div class="field">
           <label for="message">Message</label>
           <textarea id="message" name="message" required placeholder="Décris ton projet ou ta demande"></textarea>
