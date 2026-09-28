@@ -3,109 +3,128 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Tekno Never Dies — Association &amp; sound system</title>
-  <meta name="description" content="Tekno Never Dies : association et sound system tekno." />
+  <title>Tekno Never Dies — Sound System</title>
+  <meta name="description" content="Tekno Never Dies : association et sound system tekno. Événements, équipe et univers TND6TEM." />
   <link rel="icon" type="image/png" href="assets/img/favicon.png" />
 
-  <!-- Précharge la police du titre pour éviter un flash de texte -->
   <link rel="preload" href="assets/fonts/archivo-black-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/pages.css" />
 
-  <!-- Three.js est fourni localement (dossier vendor/) : le site marche hors ligne.
-       L'import map permet d'écrire `import ... from "three"` dans les fichiers JS. -->
   <script type="importmap">
     { "imports": { "three": "./vendor/three/three.module.min.js" } }
   </script>
   <script type="module" src="js/main.js"></script>
   <script type="module" src="js/partials.js"></script>
 </head>
-<body data-page="accueil">
+<body data-page="accueil" class="home-page">
 
-  <!-- Calque WebGL des étoiles 3D (voir js/stars/) -->
-
-  <!-- Petite étoile réutilisée dans le bandeau défilant -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-    <symbol id="spark" viewBox="0 0 24 24"><path d="M12 0C13 8 16 11 24 12 16 13 13 16 12 24 11 16 8 13 0 12 8 11 11 8 12 0Z"/></symbol>
+    <symbol id="spark" viewBox="0 0 24 24">
+      <path d="M12 0C13 8 16 11 24 12 16 13 13 16 12 24 11 16 8 13 0 12 8 11 11 8 12 0Z"/>
+    </symbol>
   </svg>
 
   <div data-include="partials/header.html"></div>
 
   <main id="top">
+    <!-- HERO -->
+    <section class="hero hero--home">
+      <div class="hero-photo" aria-hidden="true"></div>
+      <div class="hero-photo-shade" aria-hidden="true"></div>
+      <div class="hero-vignette" aria-hidden="true"></div>
 
-    <!-- ============ Accueil ============ -->
-    <section class="hero">
+      <!-- Étoiles 3D conservées au-dessus de la photo -->
+      <canvas id="stage" aria-hidden="true"></canvas>
 
-      <canvas id="stage" aria-hidden="true"></canvas> 
+      <div class="hero-glow hero-glow--one" aria-hidden="true"></div>
+      <div class="hero-glow hero-glow--two" aria-hidden="true"></div>
 
-      <div class="container hero-grid">
-        <h1 class="lockup" aria-label="Tekno Never Dies, TND6TEM">
-          <span class="l-tekno" aria-hidden="true">Tekno</span>
-          <span class="l-never" aria-hidden="true">Never</span>
-          <span class="l-dies" aria-hidden="true">Dies</span>
-          <span class="l-tnd" aria-hidden="true">TND6TEM</span>
-          <span class="badge" aria-hidden="true"></span>
+      <div class="container hero-content">
+        <div class="hero-kicker hero-rise">
+          <span>TND6TEM</span>
+          <i></i>
+          <span>Lauterbourg · Alsace</span>
+        </div>
+
+        <h1 class="home-lockup hero-rise" aria-label="Tekno Never Dies">
+          <span class="home-lockup__line home-lockup__line--white">Tekno</span>
+          <span class="home-lockup__line home-lockup__line--gradient">Never Dies</span>
         </h1>
-        <div class="hero-side">
-          <p class="lead">Association et sound system tekno.</p>
-          <p>Des basses, du monde devant les enceintes et une règle simple : la fête continue.</p>
-          <div class="actions">
+
+        <div class="hero-bottom hero-rise">
+          <div class="hero-copy">
+            <p class="hero-lead">Association &amp; sound system tekno.</p>
+            <p>Des soirées, du son, une équipe et tout ce qu'il faut pour faire vibrer le dancefloor.</p>
+          </div>
+
+          <div class="hero-actions">
             <a class="btn btn-solid" href="evenements.html">Voir les événements</a>
-            <!-- Location de matériel retirée du site (voir footer.html) : <a class="btn btn-line" href="location.html">Louer du matériel</a> -->
-            <a class="btn btn-line" href="association.html">Découvrir l'association</a>
+            <a class="btn btn-hero-line" href="association.html">Découvrir TND</a>
           </div>
         </div>
       </div>
-    </section>
 
-    <!-- ============ Bandeau défilant ============
-         8 copies identiques = deux moitiés égales => boucle sans coupure.
-         Pour changer le texte, modifie une ligne puis recopie-la 8 fois. -->
-    <div class="ticker" aria-hidden="true">
-      <div class="track">
-        <span>Tekno Never Dies<svg class="c"><use href="#spark"/></svg>Sound system<svg class="p"><use href="#spark"/></svg>TND6TEM<svg class="c"><use href="#spark"/></svg></span>
-        <span>Tekno Never Dies<svg class="c"><use href="#spark"/></svg>Sound system<svg class="p"><use href="#spark"/></svg>TND6TEM<svg class="c"><use href="#spark"/></svg></span>
-        <span>Tekno Never Dies<svg class="c"><use href="#spark"/></svg>Sound system<svg class="p"><use href="#spark"/></svg>TND6TEM<svg class="c"><use href="#spark"/></svg></span>
-        <span>Tekno Never Dies<svg class="c"><use href="#spark"/></svg>Sound system<svg class="p"><use href="#spark"/></svg>TND6TEM<svg class="c"><use href="#spark"/></svg></span>
-        <span>Tekno Never Dies<svg class="c"><use href="#spark"/></svg>Sound system<svg class="p"><use href="#spark"/></svg>TND6TEM<svg class="c"><use href="#spark"/></svg></span>
-        <span>Tekno Never Dies<svg class="c"><use href="#spark"/></svg>Sound system<svg class="p"><use href="#spark"/></svg>TND6TEM<svg class="c"><use href="#spark"/></svg></span>
-        <span>Tekno Never Dies<svg class="c"><use href="#spark"/></svg>Sound system<svg class="p"><use href="#spark"/></svg>TND6TEM<svg class="c"><use href="#spark"/></svg></span>
-        <span>Tekno Never Dies<svg class="c"><use href="#spark"/></svg>Sound system<svg class="p"><use href="#spark"/></svg>TND6TEM<svg class="c"><use href="#spark"/></svg></span>
-      </div>
-    </div>
-
-    <!-- ============ L'asso ============ -->
-    <section class="block" id="asso">
-      <div class="container asso-grid">
-        <h2>La fête ne s'arrête jamais. Nous non plus.</h2>
-        <div class="prose">
-          <p>Tekno Never Dies est une association de passionnés de musique électronique. On organise nos propres soirées, avec un sound system monté et entretenu par l'équipe.</p>
-          <p>Chaque événement se prépare à plusieurs : montage du son, lumières, accueil, rangement. Chacun peut y trouver sa place.</p>
-          <!-- TODO : remplacer par de vrais chiffres -->
-          <ul class="stats-row">
-            <li><strong>—</strong><span>événements organisés</span></li>
-            <li><strong>—</strong><span>membres actifs</span></li>
-            <li><strong>—</strong><span>bénévoles mobilisés</span></li>
-          </ul>
-        </div>
+      <div class="hero-scroll hero-rise" aria-hidden="true">
+        <span>scroll</span>
+        <i></i>
       </div>
     </section>
 
-    <!-- ============ Le système ============ -->
-    <section class="container block--systeme" id="systeme">
-      <div class="systeme">
-        <span class="badge" role="img" aria-label="Badge Tekno Never Dies Sound System"></span>
+    <!-- UNIVERS / CARDS -->
+    <section id="univers" class="home-work" aria-label="L'univers Tekno Never Dies">
+      <div class="home-section-head container">
         <div>
-          <h2>Notre sound system</h2>
-          <dl>
-            <div><dt>Le son</dt><dd>Des enceintes puissantes, réglées pour tenir la nuit entière.</dd></div>
-            <div class="i2"><dt>La lumière</dt><dd>Éclairage et déco pour transformer n'importe quel lieu en piste de danse.</dd></div>
-            <div class="i3"><dt>Les gens</dt><dd>Une équipe, des DJ invités et un public qui fait l'ambiance.</dd></div>
-          </dl>
+          <p class="eyebrow">Tekno Never Dies · TND6TEM</p>
+          <h2>Un son. Une équipe.<br><span>Une nuit qui continue.</span></h2>
         </div>
+        <p class="home-section-intro">Retrouve les soirées, le sound system et l'équipe qui font vivre l'association.</p>
+      </div>
+
+      <div class="home-grid">
+        <a class="home-card" href="evenements.html" style="--card-image:url('assets/img/events/soiree1.webp')">
+          <div class="home-card__media" style="background-image:url('assets/img/events/soiree1.webp')"></div>
+          <div class="home-card__shade"></div>
+          <div class="home-card__body">
+            <p class="home-card__meta">01 · ÉVÉNEMENTS</p>
+            <h3>Nos soirées<br><span>commencent ici.</span></h3>
+            <span class="home-card__link">Voir l'agenda →</span>
+          </div>
+        </a>
+
+        <a class="home-card" href="association.html" style="--card-image:url('assets/img/img1.webp')">
+          <div class="home-card__media" style="background-image:url('assets/img/img1.webp')"></div>
+          <div class="home-card__shade"></div>
+          <div class="home-card__body">
+            <p class="home-card__meta">02 · L'ASSOCIATION</p>
+            <h3>Une culture<br><span>qui se transmet.</span></h3>
+            <span class="home-card__link">Découvrir l'asso →</span>
+          </div>
+        </a>
+
+        <a class="home-card" href="galerie.html" style="--card-image:url('assets/img/events/soiree2.webp')">
+          <div class="home-card__media" style="background-image:url('assets/img/events/soiree2.webp')"></div>
+          <div class="home-card__shade"></div>
+          <div class="home-card__body">
+            <p class="home-card__meta">03 · LE SOUND SYSTEM</p>
+            <h3>Le son<br><span>avant tout.</span></h3>
+            <span class="home-card__link">Voir la galerie →</span>
+          </div>
+        </a>
+
+        <a class="home-card" href="association.html#equipe" style="--card-image:url('assets/img/equipe/presentation.webp')">
+          <div class="home-card__media" style="background-image:url('assets/img/equipe/presentation.webp')"></div>
+          <div class="home-card__shade"></div>
+          <div class="home-card__body">
+            <p class="home-card__meta">04 · L'ÉQUIPE</p>
+            <h3>Des gens derrière<br><span>chaque nuit.</span></h3>
+            <span class="home-card__link">Rencontrer l'équipe →</span>
+          </div>
+        </a>
       </div>
     </section>
 
+    <!-- Agenda et annonces -->
     <!-- ============ Agenda (aperçu, alimenté par js/data/events.js) ============ -->
     <section class="block block--flush-top container" id="agenda">
       <div class="agenda-head">
@@ -165,6 +184,16 @@
       </div>
     </section>
 
+    <!-- CTA -->
+    <section class="home-contact">
+      <div class="container home-contact__inner">
+        <div>
+          <p class="eyebrow">Tu veux nous rejoindre ?</p>
+          <h2>Une idée, un live,<br><span>un coup de main ?</span></h2>
+        </div>
+        <a class="btn btn-solid" href="contact.html">Nous contacter</a>
+      </div>
+    </section>
   </main>
 
   <div data-include="partials/footer.html"></div>
