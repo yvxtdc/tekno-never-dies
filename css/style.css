@@ -1916,3 +1916,80 @@ footer .decor-chain{width:clamp(90px,10vw,150px);right:var(--pad);bottom:-6px;--
 @media (hover:none){
   .home-card__media{opacity:.62}
 }
+
+
+/* ---------- 12. Ajustements : fondu hero -> grille, cartes "texte-fenêtre" ---------- */
+
+/* Supprime le filet visible en haut de la grille : la jonction devient un dégradé */
+.home-work{border-top:none}
+
+.hero--home::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:clamp(120px, 18vh, 240px);
+  z-index:3;
+  pointer-events:none;
+  background:linear-gradient(to bottom, transparent, var(--page) 92%);
+}
+
+/* Cartes sombres par défaut : la photo n'apparaît qu'à travers les lettres du titre */
+.home-card__media{
+  opacity:0;
+  transform:scale(1.05);
+  filter:saturate(.9) contrast(1.05) brightness(.85);
+  transition:opacity .6s cubic-bezier(.22,1,.36,1), transform 1s cubic-bezier(.22,1,.36,1);
+}
+.home-card__shade{
+  opacity:1;
+  background:linear-gradient(155deg, rgba(11,7,34,.97) 0%, rgba(11,7,34,.9) 100%);
+  transition:opacity .5s ease, background .5s ease;
+}
+.home-card h3,
+.home-card h3 span{
+  background-image:var(--card-image);
+  background-size:cover;
+  background-position:center;
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  filter:none;
+  text-shadow:none;
+  transition:background-image .4s ease, color .4s ease;
+}
+.home-card:hover .home-card__media,
+.home-card:focus-visible .home-card__media{
+  opacity:1;
+  transform:scale(1);
+}
+.home-card:hover .home-card__shade,
+.home-card:focus-visible .home-card__shade{
+  opacity:1;
+  background:linear-gradient(180deg, rgba(11,7,34,.12) 0%, rgba(11,7,34,.06) 45%, rgba(11,7,34,.82) 100%);
+}
+.home-card:hover h3,
+.home-card:focus-visible h3{
+  background-image:none;
+  -webkit-background-clip:border-box;
+  background-clip:border-box;
+  color:#fff;
+  filter:drop-shadow(.035em .035em 0 rgba(66,38,182,.7));
+}
+.home-card:hover h3 span,
+.home-card:focus-visible h3 span{
+  background-image:var(--gradient-card);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  filter:none;
+}
+
+
+
+
+
+
+
+
