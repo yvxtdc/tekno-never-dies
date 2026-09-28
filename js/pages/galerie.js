@@ -4,7 +4,7 @@ import { thumb } from "./helpers.js";
 const root = document.getElementById("gallery-root");
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-/* Une photo = un simple chemin "assets/…jpg" OU un objet { src, alt, w, h } */
+/* Une photo = un simple chemin "assets/…jpg" OU un objet { src, alt, w, h, full } */
 const norm = (p, title) => (typeof p === "string" ? { src: p, alt: title } : { alt: title, ...p });
 
 const sets = []; // sets[i] = photos de l'événement i (pour naviguer dans le lightbox)
@@ -76,9 +76,10 @@ function show(setIdx, i) {
   $(".lb-img").alt = p.alt;
   $(".lb-title").textContent = s.title;
   $(".lb-count").textContent = `${cur.i + 1} / ${n}`;
+  const file = p.full || p.src; // JPEG haute qualité si dispo, sinon le WebP
   const dl = $(".lb-dl");
-  dl.href = p.src;
-  dl.setAttribute("download", p.src.split("/").pop().split("?")[0]);
+  dl.href = file;
+  dl.setAttribute("download", file.split("/").pop().split("?")[0]);
   lb.classList.toggle("lb--single", n < 2);
 }
 
