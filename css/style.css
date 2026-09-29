@@ -1959,11 +1959,10 @@ footer .decor-chain{width:clamp(90px,10vw,150px);right:var(--pad);bottom:-6px;--
   background-position:center;
   -webkit-background-clip:text;
   background-clip:text;
-  -webkit-text-fill-color:transparent;
   color:transparent;
   filter:none;
   text-shadow:none;
-  transition:color .4s ease;
+  transition:background-image .4s ease, color .4s ease;
 }
 .home-card:hover .home-card__media,
 .home-card:focus-visible .home-card__media{
