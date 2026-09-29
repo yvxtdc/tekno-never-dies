@@ -1,0 +1,76 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Tekno Never Dies//Calendrier événements//FR
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Tekno Never Dies
+X-WR-CALDESC:Événements officiels Tekno Never Dies
+X-WR-TIMEZONE:Europe/Paris
+REFRESH-INTERVAL;VALUE=DURATION:PT1H
+X-PUBLISHED-TTL:PT1H
+BEGIN:VEVENT
+UID:soiree-ouverture-2026@tekno-never-dies.fr
+DTSTAMP:20260929T094922Z
+LAST-MODIFIED:20260929T094922Z
+SEQUENCE:0
+DTSTART;TZID=Europe/Paris:20261114T220000
+DTEND;TZID=Europe/Paris:20261115T050000
+SUMMARY:Soirée d'ouverture de saison
+LOCATION:Lieu communiqué prochainement\, Lauterbourg
+DESCRIPTION:Une première nuit TND6TEM avec le sound system complet\, des s
+ ets tekno et une équipe réunie autour du dancefloor.
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:session-plein-air-2026@tekno-never-dies.fr
+DTSTAMP:20260929T094922Z
+LAST-MODIFIED:20260929T094922Z
+SEQUENCE:0
+DTSTART;TZID=Europe/Paris:20261220T160000
+DTEND;TZID=Europe/Paris:20261220T230000
+SUMMARY:Session plein air
+LOCATION:Lieu communiqué prochainement\, environs de Lauterbourg
+DESCRIPTION:Un format extérieur plus court pour faire vibrer le système a
+ vant la pause hivernale.
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:atelier-son-2027@tekno-never-dies.fr
+DTSTAMP:20260929T094922Z
+LAST-MODIFIED:20260929T094922Z
+SEQUENCE:0
+DTSTART;TZID=Europe/Paris:20270130T140000
+DTEND;TZID=Europe/Paris:20270130T190000
+SUMMARY:Atelier son : du branchement au dancefloor
+LOCATION:Lauterbourg\, lieu associatif à confirmer
+DESCRIPTION:Un après-midi de transmission autour du câblage\, du réglage
+  et de la préparation d'une petite configuration son.
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:warm-up-printemps-2025@tekno-never-dies.fr
+DTSTAMP:20260929T094922Z
+LAST-MODIFIED:20260929T094922Z
+SEQUENCE:0
+DTSTART;TZID=Europe/Paris:20250412T210000
+DTEND;TZID=Europe/Paris:20250413T040000
+SUMMARY:Warm-up de printemps
+LOCATION:Strasbourg
+DESCRIPTION:La première soirée de démonstration du sound system : une nu
+ it pour tester le matériel grandeur nature.
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:premiere-chaine-2025@tekno-never-dies.fr
+DTSTAMP:20260929T094922Z
+LAST-MODIFIED:20260929T094922Z
+SEQUENCE:0
+DTSTART;TZID=Europe/Paris:20250927T180000
+DTEND;TZID=Europe/Paris:20250928T010000
+SUMMARY:Première chaîne : rencontre technique
+LOCATION:Lauterbourg
+DESCRIPTION:Une rencontre de rentrée dédiée aux idées\, aux branchement
+ s et aux premières collaborations de la saison.
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR

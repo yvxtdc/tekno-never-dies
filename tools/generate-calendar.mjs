@@ -13,7 +13,7 @@ const __dirname = path.dirname(__filename);
 
 const ROOT = path.resolve(__dirname, "..");
 
-const EVENTS_FILE = path.join(ROOT, "js", "data", "evenements.js");
+const EVENTS_FILE = path.join(ROOT, "js", "data", "events.js");
 
 const CALENDAR_DIR = path.join(ROOT, "calendar");
 const ICS_FILE = path.join(CALENDAR_DIR, "events.ics");
