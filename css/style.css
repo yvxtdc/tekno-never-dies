@@ -1503,7 +1503,7 @@ body{overflow-x:clip}
   padding-block:clamp(74px,10vw,136px);
   background:
     radial-gradient(circle at 88% 42%, rgba(182,38,154,.15), transparent 25%),
-    linear-gradient(135deg,#0a0624 0%,#120b38 58%,#0a0624 100%);
+    linear-gradient(180deg, #120b38 0%, #0d0828 55%, #070419 100%);
 }
 
 .home-contact__inner{
