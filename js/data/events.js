@@ -77,5 +77,18 @@ export const EVENTS = [
     description: "Une rencontre de rentrée dédiée aux idées, aux branchements et aux premières collaborations de la saison.",
     practical: ["Format associatif", "Programmation locale et invités"],
     gallerySlug: "premiere-chaine-2025"
+  },
+    {
+    slug: "ice-boiler-2025",
+    status: "passe",
+    title: "Ice Boiler",
+    date: "2026-09-28",
+    time: "22h00 – 5h00",
+    place: "À compléter",
+    ticketUrl: "",
+    cover: "assets/img/gallery/2026/ice-boiler/photo-01.webp",
+    description: "À compléter : quelques lignes sur cette soirée.",
+    practical: ["À compléter si besoin (dress code, âge minimum, etc.)"],
+    gallerySlug: "ice-boiler"
   }
 ];
