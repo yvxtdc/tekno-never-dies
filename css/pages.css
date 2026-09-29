@@ -873,7 +873,29 @@ select option{background:#150d3b;color:#fff}
 
 
 
+/* ---------- Vignettes des événements : même filtre violet que la galerie ---------- */
+.event-card .thumb img,
+#event-detail .thumb img{
+  filter:grayscale(1) contrast(1.05);
+  transition:filter .6s cubic-bezier(.22,1,.36,1);
+}
+.event-card .thumb::before,
+#event-detail .thumb::before{
+  content:"";
+  position:absolute;
+  inset:6px;
+  z-index:2;
+  pointer-events:none;
+  background:#4226b6;
+  mix-blend-mode:color;
+  opacity:.75;
+  transition:opacity .6s cubic-bezier(.22,1,.36,1);
+}
+.event-card:hover .thumb img{filter:grayscale(0)}
+.event-card:hover .thumb::before{opacity:0}
 
+#event-detail .thumb:hover img{filter:grayscale(0)}
+#event-detail .thumb:hover::before{opacity:0}
 
 
 
