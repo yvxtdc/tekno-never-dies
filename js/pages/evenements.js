@@ -1,6 +1,5 @@
 import { EVENTS } from "../data/events.js";
 import { formatDate, thumb } from "./helpers.js";
-import { downloadICS } from "./ics.js";
 
 const upcomingRoot = document.getElementById("upcoming-events");
 const pastRoot = document.getElementById("past-events");
@@ -59,8 +58,45 @@ search.addEventListener("input", render);
 filter.addEventListener("change", render);
 document.getElementById("copy-events-link")?.addEventListener("click", async (event) => {
   const button = event.currentTarget;
+  const url = "https://yvxtdc.github.io/tekno-never-dies/calendar/events.ics";
+  const ok = await copyToClipboard(url);
+  button.textContent = ok ? "Lien copié" : "Copie indisponible";
+  setTimeout(() => { button.textContent = "Partager l'agenda"; }, 1800);
+});
+
+async function copyToClipboard(text) {
+  // Méthode moderne (nécessite https:// ou localhost)
+  if (navigator.clipboard && window.isSecureContext) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      // on retente avec la méthode de repli ci-dessous
+    }
+  }
+  // Méthode de repli : fonctionne aussi en file:// et sur d'anciens navigateurs
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  document.body.appendChild(textarea);
+  textarea.focus();
+  textarea.select();
+  let ok = false;
   try {
-    await navigator.clipboard.writeText(location.href);
+    ok = document.execCommand("copy");
+  } catch {
+    ok = false;
+  }
+  textarea.remove();
+  return ok;
+}
+
+// Bouton "Ajouter à mon agenda" : un fichier .ics avec tous les événements à venir
+document.getElementById("copy-events-link")?.addEventListener("click", async (event) => {
+  const button = event.currentTarget;
+  try {
+    await navigator.clipboard.writeText("https://yvxtdc.github.io/tekno-never-dies/calendar/events.ics");
     button.textContent = "Lien copié";
   } catch {
     button.textContent = "Copie indisponible";
@@ -68,10 +104,48 @@ document.getElementById("copy-events-link")?.addEventListener("click", async (ev
   setTimeout(() => { button.textContent = "Partager l'agenda"; }, 1800);
 });
 
-// Bouton "Ajouter à mon agenda" : un fichier .ics avec tous les événements à venir
-document.getElementById("download-agenda")?.addEventListener("click", () => {
-  const upcoming = EVENTS.filter((e) => e.status === "a-venir");
-  downloadICS(upcoming, "tekno-never-dies-agenda.ics");
-});
-
 render();
+
+
+
+/* Bouton "S'abonner à l'agenda" : sur mobile, le lien webcal:// suffit tel quel
+   (l'app Calendrier s'ouvre directement). Sur ordinateur, on affiche un QR code
+   à scanner avec le téléphone, plutôt que de laisser le lien webcal:// échouer. */
+const AGENDA_WEBCAL = "webcal://yvxtdc.github.io/tekno-never-dies/calendar/events.ics";
+const subscribeLink = document.getElementById("download-agenda");
+const isDesktop = matchMedia("(pointer: fine)").matches;
+
+if (subscribeLink && isDesktop) {
+  subscribeLink.textContent = "S'abonner (QR code)";
+  subscribeLink.addEventListener("click", (event) => {
+    event.preventDefault();
+    openAgendaQrModal();
+  });
+}
+
+function openAgendaQrModal() {
+  const modal = document.createElement("div");
+  modal.className = "agenda-qr-modal";
+  modal.innerHTML = `
+    <div class="agenda-qr-modal__box" role="dialog" aria-modal="true" aria-label="S'abonner à l'agenda depuis un téléphone">
+      <button type="button" class="agenda-qr-modal__close" aria-label="Fermer">✕</button>
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(AGENDA_WEBCAL)}" alt="QR code d'abonnement à l'agenda TND" width="260" height="260" />
+      <p>Scanne ce code avec l'appareil photo de ton téléphone pour t'abonner directement à l'agenda.</p>
+    </div>`;
+  document.body.appendChild(modal);
+
+  const close = () => {
+    modal.remove();
+    document.removeEventListener("keydown", onKey);
+  };
+  function onKey(event) {
+    if (event.key === "Escape") close();
+  }
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal || event.target.closest(".agenda-qr-modal__close")) close();
+  });
+  document.addEventListener("keydown", onKey);
+}
+
+
+
