@@ -871,44 +871,97 @@ select option{background:#150d3b;color:#fff}
 }
 .agenda-qr-modal__close:hover{background:var(--lav);border-color:var(--lav);color:#fff}
 
-
-
-/* ---------- Vignettes des événements : même filtre violet que la galerie ---------- */
-.event-card .thumb img,
-#event-detail .thumb img{
-  filter:grayscale(1) contrast(1.05);
-  transition:filter .6s cubic-bezier(.22,1,.36,1);
+/* ---------- Sous-menu Année / Événement (galerie, en arbre) ---------- */
+.gallery-nav{
+  max-width:340px;
+  margin:0 0 clamp(28px,4vw,48px);
+  font-size:.95rem;
 }
-.event-card .thumb::before,
-#event-detail .thumb::before{
+.gallery-nav__year + .gallery-nav__year{margin-top:2px}
+
+.gallery-nav__toggle{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  width:100%;
+  padding:.5em 0;
+  background:none;
+  border:0;
+  color:#fff;
+  font-family:var(--display);
+  font-size:1.05rem;
+  text-transform:uppercase;
+  letter-spacing:-.01em;
+  cursor:pointer;
+  transition:color .2s ease;
+}
+.gallery-nav__toggle:hover,
+.gallery-nav__toggle:focus-visible{color:var(--lav)}
+
+.gallery-nav__chevron{
+  width:6px;
+  height:6px;
+  flex:none;
+  border-right:1.5px solid currentColor;
+  border-bottom:1.5px solid currentColor;
+  transform:rotate(-45deg);
+  transition:transform .25s ease;
+}
+.gallery-nav__toggle[aria-expanded="true"] .gallery-nav__chevron{
+  transform:rotate(45deg);
+}
+
+/* Le tronc : une ligne verticale à gauche des événements */
+.gallery-nav__list{
+  list-style:none;
+  margin:0 0 .3em;
+  padding:0 0 0 3px;
+  border-left:1px solid var(--line);
+}
+.gallery-nav__list[hidden]{display:none}
+
+.gallery-nav__list li{
+  position:relative;
+  padding-left:20px;
+  animation:gallery-nav-in .3s ease backwards;
+}
+.gallery-nav__list li:nth-child(1){animation-delay:0s}
+.gallery-nav__list li:nth-child(2){animation-delay:.03s}
+.gallery-nav__list li:nth-child(3){animation-delay:.06s}
+.gallery-nav__list li:nth-child(4){animation-delay:.09s}
+.gallery-nav__list li:nth-child(n+5){animation-delay:.12s}
+
+/* La branche : un petit trait horizontal qui part du tronc vers le lien */
+.gallery-nav__list li::before{
   content:"";
   position:absolute;
-  inset:6px;
-  z-index:2;
-  pointer-events:none;
-  background:#4226b6;
-  mix-blend-mode:color;
-  opacity:.75;
-  transition:opacity .6s cubic-bezier(.22,1,.36,1);
+  left:0;
+  top:1.1em;
+  width:14px;
+  height:1px;
+  background:var(--line);
 }
-.event-card:hover .thumb img{filter:grayscale(0)}
-.event-card:hover .thumb::before{opacity:0}
 
-#event-detail .thumb:hover img{filter:grayscale(0)}
-#event-detail .thumb:hover::before{opacity:0}
+.gallery-nav__list a{
+  display:block;
+  padding:.42em 0;
+  color:var(--muted);
+  text-decoration:none;
+  transition:color .2s ease, padding-left .2s ease;
+}
+.gallery-nav__list a:hover,
+.gallery-nav__list a:focus-visible{color:var(--lav);padding-left:.3em}
 
+@keyframes gallery-nav-in{
+  from{opacity:0;transform:translateY(-4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@media (prefers-reduced-motion:reduce){
+  .gallery-nav__list li{animation:none}
+}
 
-
-
-
-
-
-
-
-
-
-
-
+/* Pour que le saut d'ancre atterrisse sous le header fixe */
+.gallery-event{scroll-margin-top:100px}
 
 
 

@@ -43,6 +43,51 @@ if (!GALLERY.length) {
     .join("");
 }
 
+/* ---------- Sous-menu Année / Événement (accordéon) ---------- */
+const nav = document.getElementById("gallery-nav");
+if (nav && GALLERY.length) {
+  const slugify = (s) =>
+    s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+
+  nav.innerHTML = [...GALLERY]
+    .sort((a, b) => b.year - a.year)
+    .map((yearBlock, i) => {
+      const items = yearBlock.events
+        .map((ev) => {
+          const slug = ev.eventSlug || slugify(ev.title);
+          return `<li><a href="#${slug}">${esc(ev.title)}</a></li>`;
+        })
+        .join("");
+      return `
+        <div class="gallery-nav__year">
+          <button type="button" class="gallery-nav__toggle" aria-expanded="false" aria-controls="gallery-nav-list-${i}">
+            <span>${yearBlock.year}</span>
+            <i class="gallery-nav__chevron" aria-hidden="true"></i>
+          </button>
+          <ul class="gallery-nav__list" id="gallery-nav-list-${i}" hidden>${items}</ul>
+        </div>`;
+    })
+    .join("");
+
+  nav.addEventListener("click", (e) => {
+    const btn = e.target.closest(".gallery-nav__toggle");
+    if (!btn) return;
+    const list = document.getElementById(btn.getAttribute("aria-controls"));
+    const open = btn.getAttribute("aria-expanded") === "true";
+
+    // Referme les autres années ouvertes (un seul accordéon ouvert à la fois)
+    nav.querySelectorAll(".gallery-nav__toggle[aria-expanded='true']").forEach((other) => {
+      if (other !== btn) {
+        other.setAttribute("aria-expanded", "false");
+        document.getElementById(other.getAttribute("aria-controls")).hidden = true;
+      }
+    });
+
+    btn.setAttribute("aria-expanded", String(!open));
+    list.hidden = open;
+  });
+}
+
 /* ---------- Lightbox (agrandissement + enregistrement) ---------- */
 const lb = document.createElement("div");
 lb.className = "lightbox";
