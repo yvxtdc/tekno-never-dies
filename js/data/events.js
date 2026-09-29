@@ -79,16 +79,54 @@ export const EVENTS = [
     gallerySlug: "premiere-chaine-2025"
   },
     {
-    slug: "ice-boiler-2025",
-    status: "passe",
-    title: "Ice Boiler",
-    date: "2026-09-28",
-    time: "22h00 – 5h00",
-    place: "À compléter",
-    ticketUrl: "",
-    cover: "assets/img/gallery/2026/ice-boiler/photo-01.webp",
-    description: "À compléter : quelques lignes sur cette soirée.",
-    practical: ["À compléter si besoin (dress code, âge minimum, etc.)"],
-    gallerySlug: "ice-boiler"
-  }
+  slug: "ice-boiler-2025",
+  status: "passe",
+  title: "Ice Boiler",
+  date: "2026-09-28",
+  time: "22h00 – 5h00",
+  place: "Lieu à renseigner",
+  ticketUrl: "",
+
+  // Visuel utilisé pour la carte et l'aperçu de la soirée.
+  cover: "assets/img/gallery/2026/ice-boiler/photo-01.webp",
+
+  // Visuel principal du hero.
+  heroImage: "assets/img/gallery/2026/ice-boiler/photo-100.webp",
+
+  description:
+    "Retour en images sur la soirée Ice Boiler du 28 septembre 2026. La programmation et les informations complémentaires sont à renseigner.",
+
+  practical: [],
+  gallerySlug: "ice-boiler",
+
+  // Affiche le bandeau signalant le line-up de démonstration.
+  lineupPreview: true,
+
+  lineup: [
+    {
+      name: "Artiste à renseigner",
+      time: "",
+      style: "Style à renseigner",
+      image: "assets/img/gallery/2026/ice-boiler/photo-19.webp",
+      demo: true,
+      order: 1
+    },
+    {
+      name: "Artiste à renseigner",
+      time: "",
+      style: "Style à renseigner",
+      image: "assets/img/gallery/2026/ice-boiler/photo-24.webp",
+      demo: true,
+      order: 2
+    },
+    {
+      name: "Artiste à renseigner",
+      time: "",
+      style: "Style à renseigner",
+      image: "assets/img/gallery/2026/ice-boiler/photo-28.webp",
+      demo: true,
+      order: 3
+    }
+  ]
+}
 ];
