@@ -1987,7 +1987,9 @@ footer .decor-chain{width:clamp(90px,10vw,150px);right:var(--pad);bottom:-6px;--
 }
 
 
-
+/* ---------- 13. Suppression du bandeau de titre : grille directement sous le hero ---------- */
+.home-work{padding-top:clamp(56px, 7vw, 110px)}
+.home-grid{border-top:none}
 
 
 
