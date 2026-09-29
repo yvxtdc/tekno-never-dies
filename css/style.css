@@ -1998,6 +1998,29 @@ footer .decor-chain{width:clamp(90px,10vw,150px);right:var(--pad);bottom:-6px;--
 .home-grid{border-top:none}
 
 
-
+/* ---------- 14. Titres des cartes : seule la 1ère ligne visible au repos ---------- */
+.home-card h3{
+  background:none;
+  -webkit-background-clip:border-box;
+  background-clip:border-box;
+  color:#fff;
+  filter:drop-shadow(.035em .035em 0 rgba(66,38,182,.7));
+}
+.home-card h3 span{
+  display:block;
+  opacity:0;
+  transform:translateY(6px);
+  background-image:var(--gradient-card);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  filter:none;
+  transition:opacity .4s ease, transform .4s ease;
+}
+.home-card:hover h3 span,
+.home-card:focus-visible h3 span{
+  opacity:1;
+  transform:translateY(0);
+}
 
 
