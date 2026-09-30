@@ -5,19 +5,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Contact — Tekno Never Dies</title>
   <meta name="description" content="Contacter l'association Tekno Never Dies pour un événement, rejoindre l'équipe ou toute autre demande." />
+  <meta name="theme-color" content="#4226b6" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Tekno Never Dies" />
+  <meta property="og:locale" content="fr_FR" />
+  <meta property="og:title" content="Contact — Tekno Never Dies" />
+  <meta property="og:description" content="Contacter l'association Tekno Never Dies pour un événement, rejoindre l'équipe ou toute autre demande." />
   <link rel="icon" type="image/png" href="assets/img/favicon.png" />
+
   <link rel="preload" href="assets/fonts/archivo-black-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/pages.css" />
-  <script type="importmap">{ "imports": { "three": "./vendor/three/three.module.min.js" } }</script>
-  <script type="module" src="js/main.js"></script>
   <script type="module" src="js/partials.js"></script>
 </head>
 <body data-page="contact">
-  <canvas id="stage" aria-hidden="true"></canvas>
-  <div data-include="partials/header.html"></div>
+  <!-- partial:header -->
+<a class="skip-link" href="#main">Aller au contenu</a>
+<header class="top">
+  <a class="brand" href="./" aria-label="Tekno Never Dies, accueil">
+    <span class="badge" role="img" aria-label="Logo Tekno Never Dies Sound System"></span>
+  </a>
+  <button class="tnd-toggle" type="button" aria-expanded="false" aria-controls="main-navigation">
+    <span class="tnd-eq" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+    <span class="tnd-toggle-label">Menu</span>
+  </button>
+</header>
+<nav id="main-navigation" class="tnd-menu" aria-label="Navigation principale">
+  <span class="badge tnd-menu-badge" aria-hidden="true"></span>
+  <ul class="tnd-links">
+    <li style="--i:0"><a href="index.html" data-nav="accueil">Accueil</a></li>
+    <li style="--i:1"><a href="evenements.html" data-nav="evenements">Événements</a></li>
+    <li style="--i:2"><a href="association.html" data-nav="association">L'association</a></li>
+    <li style="--i:3"><a href="galerie.html" data-nav="galerie">Galerie</a></li>
+    <li style="--i:4"><a href="faq.html" data-nav="faq">FAQ</a></li>
+    <li style="--i:5"><a href="contact.html" data-nav="contact">Contact</a></li>
+  </ul>
+  <p class="tnd-menu-foot">Tekno Never Dies, Lauterbourg<br><a href="mailto:tnd6tem@gmail.com">tnd6tem@gmail.com</a></p>
+</nav>
+<!-- /partial:header -->
 
-  <main>
+  <main id="main">
     <section class="page-head container">
       <p class="page-kicker">un message ?</p>
       <h1><span class="l2">Contact</span></h1>
@@ -28,16 +55,11 @@
     <section class="container contact-layout has-decor" style="padding-bottom:clamp(72px,11vw,150px)">
       <img class="decor decor-r2" src="assets/img/decor/star-pair.webp" alt="" aria-hidden="true" />
       <!--
-        Ce formulaire poste vers Formspree (https://formspree.io), un service
-        gratuit (jusqu'à 50 messages/mois) qui envoie le contenu par e-mail —
-        nécessaire car GitHub Pages ne peut pas exécuter de code côté serveur.
-        1) Crée un compte sur formspree.io
-        2) Crée un formulaire, il te donne une adresse du type
-           https://formspree.io/f/xxxxabcd
-        3) Remplace l'action ci-dessous par cette adresse.
-        (Si le site est un jour hébergé sur Netlify, tu peux remplacer tout
-        ceci par Netlify Forms : il suffit d'ajouter data-netlify="true" sur
-        la balise <form>, sans service tiers.)
+        Ce formulaire poste vers Formspree (https://formspree.io), qui envoie le contenu par e-mail :
+        GitHub Pages ne peut pas exécuter de code côté serveur. Pour changer de boîte de réception,
+        remplace l'adresse de « action » par celle d'un autre formulaire Formspree.
+        js/pages/contact.js envoie le message en arrière-plan (sans quitter la page) ; sans JavaScript,
+        le formulaire s'envoie normalement.
       -->
       <form id="contact-form" action="https://formspree.io/f/xeaorpbw" method="POST">
         <div class="field">
@@ -56,7 +78,6 @@
           <label for="type">Type de demande</label>
           <select id="type" name="type" required>
             <option value="">Choisir…</option>
-            <!-- Location de matériel retirée du site : <option value="location">Location de matériel</option> -->
             <option value="evenement">Organisation d'un événement</option>
             <option value="info-soiree">Information sur une soirée</option>
             <option value="partenariat">Partenariat</option>
@@ -82,19 +103,7 @@
           <label for="participants">Nombre de personnes attendu</label>
           <input type="number" id="participants" name="participants" min="1" inputmode="numeric" />
         </div>
-        <!-- Champ lié à la location de matériel, retirée du site : conservé en commentaire.
-        <div class="field" id="field-materiel">
-          <label for="materiel">Matériel recherché</label>
-          <input type="text" id="materiel" name="materiel" placeholder="Ex : 2 enceintes actives, un jeu de lyres…" />
-        </div>
-        -->
-        <!-- Services (livraison / installation) liés à la location de matériel, retirée du site : conservés en commentaire.
-        <fieldset class="field field-checks">
-          <legend>Services souhaités</legend>
-          <label><input type="checkbox" name="livraison" value="oui" /> Livraison</label>
-          <label><input type="checkbox" name="installation" value="oui" /> Installation ou démontage</label>
-        </fieldset>
-        -->
+        <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" hidden />
         <div class="field">
           <label for="message">Message</label>
           <textarea id="message" name="message" required placeholder="Décris ton projet ou ta demande"></textarea>
@@ -116,7 +125,62 @@
     </section>
   </main>
 
-  <div data-include="partials/footer.html"></div>
+  
+
+  <!-- partial:footer -->
+<footer>
+  <img class="decor decor-chain" src="assets/img/decor/chain.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" />
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <span class="badge" role="img" aria-label="Logo Tekno Never Dies"></span>
+      <div>
+        <div class="tnd">TND6TEM</div>
+        <p>Association et sound system tekno, Lauterbourg.<br><a href="mailto:tnd6tem@gmail.com">tnd6tem@gmail.com</a></p>
+      </div>
+    </div>
+
+    <div class="footer-column">
+      <h2>Explorer</h2>
+      <nav aria-label="Pied de page">
+        <a href="association.html">L'asso</a>
+        <a href="evenements.html">Événements</a>
+        <a href="actualites.html">Actualités</a>
+        <a href="galerie.html">Galerie</a>
+        <a href="partenaires.html">Partenaires</a>
+        <a href="faq.html">FAQ</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+
+    <div class="footer-column footer-contact">
+      <h2>Nous suivre</h2>
+      <p>DEMO À REMPLACER par les réseaux officiels de l'association.</p>
+      <nav class="socials" aria-label="Réseaux sociaux de démonstration">
+        <a href="https://instagram.com/tekno.never.dies.demo" target="_blank" rel="noopener" aria-label="Instagram (lien de démonstration)">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" class="social-dot"/></svg>
+          <span>Instagram</span>
+        </a>
+        <a href="https://www.facebook.com/tekno.never.dies.demo" target="_blank" rel="noopener" aria-label="Facebook (lien de démonstration)">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 21v-8h3l.5-3H14V8.2c0-.9.3-1.5 1.6-1.5H17V4a15 15 0 0 0-2.3-.2c-2.3 0-3.7 1.4-3.7 3.9V10H8v3h3v8z"/></svg>
+          <span>Facebook</span>
+        </a>
+        <a href="https://soundcloud.com/tnd6tem-demo" target="_blank" rel="noopener" aria-label="SoundCloud (lien de démonstration)">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17.5h1.2l.4-4-.4-4H3l-.4 4zm2.2 0h1.3l.3-5-.3-5H5.2l-.3 5zm2.4 0H9l.2-5.8L9 6H7.8l-.2 5.7zm2.7 0h3.9a4.7 4.7 0 0 0 .5-9.4A6.2 6.2 0 0 0 9.9 9z"/></svg>
+          <span>SoundCloud</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="footer-bottom">
+      <small>© 2026 Tekno Never Dies, association</small>
+      <nav aria-label="Informations légales">
+        <a href="mentions-legales.html">Mentions légales</a>
+        <a href="confidentialite.html">Confidentialité</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+<!-- /partial:footer -->
   <script type="module" src="js/pages/contact.js"></script>
 </body>
 </html>

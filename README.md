@@ -1,91 +1,91 @@
 # Tekno Never Dies — site vitrine
 
-Page d'accueil de l'association **Tekno Never Dies** (TND6TEM) : charte graphique du PDF + étoiles chrome en 3D (Three.js) qui dérivent lentement à l'écran.
+Site de l'association **Tekno Never Dies** (TND6TEM) : pages statiques (HTML + CSS + JavaScript natif), contenus dans `js/data/`, étoiles chromées en 3D (Three.js, copie locale) sur l'accueil.
+Aucun build : le dossier est publié tel quel. Node.js n'est nécessaire que pour les petits outils dans `tools/`.
 
-Site 100 % statique : **HTML + CSS + JavaScript**, aucune installation (ni Node, ni npm) n'est nécessaire pour travailler dessus.
+## Lancer le site en local
 
----
+1. Ouvrir le dossier dans VS Code, installer l'extension **Live Server** (recommandée), clic droit sur `index.html` → **Open with Live Server**.
+   (Ou : `npm start`.) Un double-clic sur `index.html` ne marche pas : le navigateur bloque les modules JavaScript en `file://`.
+2. Facultatif : `npm install` (uniquement pour `tools/photos.mjs`, qui utilise `sharp`).
 
-## 1. Mise en place (depuis zéro)
-
-1. **Dézippe** le projet dans un dossier stable, par exemple `Documents/tekno-never-dies`.
-2. Ouvre **VS Code** → menu **Fichier › Ouvrir le dossier…** → choisis le dossier `tekno-never-dies` (celui qui contient `index.html`).
-   Si VS Code demande « Faites-vous confiance aux auteurs ? », clique sur **Oui**.
-3. **Installe l'extension Live Server** : en bas à droite, VS Code propose les extensions recommandées → *Installer*.
-   Sinon : icône Extensions (`Ctrl+Maj+X`, `Cmd+Maj+X` sur Mac) → cherche **Live Server** (auteur : *Ritwick Dey*) → *Installer*.
-   (Prettier, aussi recommandé, est un formateur de code : facultatif.)
-4. **Lance le site** : clic droit sur `index.html` → **Open with Live Server**
-   (ou le bouton **Go Live** en bas à droite de VS Code).
-   Le navigateur s'ouvre sur `http://127.0.0.1:5500` et **se recharge tout seul à chaque enregistrement** (`Ctrl+S`).
-
-> **Pourquoi pas un double-clic sur `index.html` ?** Le navigateur bloque les modules JavaScript quand la page est ouverte comme un simple fichier (`file://`) : le texte s'affiche mais les étoiles n'apparaissent pas. Il faut passer par Live Server (un mini serveur local).
-
-Pour arrêter : clic sur **Port : 5500** en bas à droite de VS Code.
-
----
-
-## 2. Structure du projet
+## Structure
 
 ```
-tekno-never-dies/
-├── index.html              Structure et textes de la page
-├── css/
-│   └── style.css           Charte (couleurs, polices), mise en page, mode sombre
-├── js/
-│   ├── main.js             Point d'entrée : lance les étoiles
-│   └── stars/
-│       ├── config.js       ★ Tous les réglages des étoiles (vitesse, couleurs, ombre…)
-│       ├── stars.js        Scène 3D, trajectoires aléatoires, animation
-│       ├── star-geometry.js  Fabrique la forme "coussin" arrondie de l'étoile
-│       └── environment.js  Le "studio" de reflets qui donne l'effet chrome
-├── assets/
-│   ├── img/                badge-black / badge-white, favicon
-│   │   └── decor/          Éléments chromés de la charte (chaîne, serpentin, étoiles…), non utilisés pour la plupart : ils t'attendent
-│   └── fonts/              Archivo Black + Montserrat (hébergées ici, licence OFL)
-├── vendor/three/           Three.js (copie locale, le site marche hors ligne)
-├── .vscode/                Réglages VS Code et extensions recommandées
-└── README.md
+index.html, evenements.html, …   Une page = un fichier HTML à la racine
+partials/header.html, footer.html  Header et footer communs (voir « Header et footer »)
+css/style.css                     Charte, composants, menu plein écran, accueil
+css/pages.css                     Pages intérieures (événements, galerie, formulaire, légal…)
+css/components/team.css            Page association (équipe)
+js/partials.js                    Menu, page active, en-tête au défilement, JSON-LD (toutes les pages)
+js/pages/*.js                     Un script par page (événements, galerie, FAQ, contact…)
+js/data/*.js                      Contenus : événements, galerie, FAQ, actualités, partenaires, équipe, infos du site
+js/stars/                         Étoiles 3D de l'accueil (réglages dans config.js)
+assets/                           Images, polices (auto-hébergées), photos de galerie, QR code de l'agenda
+calendar/                         Agenda .ics généré (ne pas modifier à la main)
+tools/                            Scripts Node (validation, header/footer, photos, agenda)
+vendor/three/                     Three.js
 ```
 
-## 3. Où modifier quoi
+## Où modifier quoi
 
 | Je veux… | Je vais dans… |
 |---|---|
-| Changer un texte, ajouter une section | `index.html` |
-| Changer une couleur, une taille, un espacement | `css/style.css` (couleurs = variables en haut, `:root`) |
-| Ralentir / accélérer les étoiles | `js/stars/config.js` → `motion.speed` |
-| Ajouter, retirer, recolorer une étoile | `js/stars/config.js` → liste `stars` |
-| Changer la forme (branches, épaisseur, concavité) | `js/stars/config.js` → `shapes` |
-| Ombre plus ou moins marquée | `js/stars/config.js` → `shadow.opacity` |
-| Chrome plus doux / plus miroir | `js/stars/config.js` → `chrome.roughness`, `envMapIntensity` |
-| Désactiver les étoiles | `js/stars/config.js` → `enabled: false` |
-| Mettre les étoiles derrière le texte | `css/style.css` → `#stage { z-index: 0 }` |
-| Changer l'adresse de contact | `index.html` → chercher `example.org` |
-| Utiliser un décor de la charte | `assets/img/decor/…` (images `.webp` transparentes) |
+| Ajouter / modifier un événement | `js/data/events.js`, puis `npm run calendar` |
+| Ajouter des photos à la galerie | `npm run photos -- import/mon-dossier --titre "…" --date AAAA-MM-JJ` |
+| Modifier la FAQ, les actualités, les partenaires | `js/data/faq.js`, `actualites.js`, `partenaires.js` |
+| Modifier l'équipe | `js/data/equipe.js` |
+| Modifier le header, le menu ou le footer | `partials/header.html` ou `footer.html`, puis `npm run partials` |
+| Changer couleurs, tailles, espacements | `css/style.css` (variables en haut, dans `:root`) |
+| Régler les étoiles (vitesse, couleurs, on/off) | `js/stars/config.js` |
+| Changer l'adresse du siège | `js/data/site.js` (+ `association.html` et `mentions-legales.html`) |
 
-Astuce : dans le navigateur, **F12 › Console**, tape `TND.stars.stars[0].mesh.material.color.set(0xff60dc)` pour tester une couleur en direct.
+## Header et footer
 
-## 4. Versionner avec Git (recommandé)
+Le header et le footer sont **écrits directement dans chaque page**, entre les balises
+`<!-- partial:header -->…<!-- /partial:header -->` (et `footer`). Ne modifie pas ce contenu dans les pages :
+modifie `partials/header.html` ou `partials/footer.html`, puis lance `npm run partials`.
+`npm run validate` échoue si une page n'est pas à jour.
 
-1. Installe Git : <https://git-scm.com/downloads> (puis redémarre VS Code).
-2. Dans VS Code : icône **Contrôle de code source** (`Ctrl+Maj+G`) → **Initialiser le dépôt**.
-3. Écris un message (« Première version ») → **Commit**.
-4. À chaque étape de travail : nouveau commit. Tu peux revenir en arrière à tout moment.
-5. Pour sauvegarder en ligne : compte sur <https://github.com> → bouton **Publier sur GitHub** dans VS Code.
+## Outils (`npm run …`)
 
-## 5. Mettre le site en ligne
+| Commande | Rôle |
+|---|---|
+| `validate` | Liens et images locaux, HTML bien fermé, meta, `id` uniques, header/footer à jour, sitemap, adresse cohérente. Liste aussi ce qui reste à compléter (`-- --strict` pour en faire une erreur). |
+| `partials` | Recopie header et footer dans toutes les pages. |
+| `calendar` | Régénère `calendar/events.ics` depuis `js/data/events.js`. |
+| `photos` | Convertit un dossier de photos (WebP + JPEG) et met à jour la galerie. |
 
-Comme il n'y a pas d'étape de compilation, tu publies simplement le dossier tel quel :
+## Contact (Formspree)
 
-- **GitHub Pages**, **Netlify** ou **Cloudflare Pages** (gratuits) : envoie le dossier, ils fournissent une adresse.
-- **Hébergeur classique** (OVH, o2switch…) : dépose tout le contenu du dossier par FTP à la racine du site.
+`contact.html` envoie le message à Formspree (GitHub Pages n'exécute pas de code serveur). Le formulaire part en arrière-plan
+(`js/pages/contact.js`), sans quitter la page, et contient un champ piège anti-spam (`_gotcha`). Pour changer la boîte de
+réception, remplacer l'adresse de l'attribut `action`. Sans JavaScript, le formulaire s'envoie normalement.
 
-## 6. Pour aller plus loin (plus tard)
+## Mise en ligne
 
-Quand le site grandira (plusieurs pages, composants, optimisation automatique), tu pourras migrer vers **Vite** : installe Node.js (version LTS, <https://nodejs.org>), puis `npm create vite@latest`. Le code de ce projet (modules ES, `import ... from "three"`) est déjà écrit pour s'y adapter facilement ; il suffira de remplacer `vendor/three/` par `npm install three`.
+Publier le dossier tel quel (GitHub Pages, Netlify, Cloudflare Pages). Avant de publier :
 
-## Crédits et licences
+1. **Domaine** : remplacer `www.example.org` dans `js/data/site.js` (`SITE.url`), `sitemap.xml` et `robots.txt`.
+   `robots.txt` et `sitemap.xml` ne sont lus que s'ils sont à la racine du domaine (pas dans un sous-dossier `/tekno-never-dies/`).
+   Une fois le domaine renseigné, `canonical` et `og:url` sont ajoutés automatiquement.
+2. **Agenda** : l'adresse `.ics` est dans `SITE.agenda` (`js/data/site.js`). Si elle change, régénérer le QR code
+   `assets/img/agenda-qr.svg` (encodant l'adresse `webcal://…`).
+3. **Aperçu sur les réseaux** : ajouter une image `og:image` (adresse absolue, donc après le point 1) dans le `<head>` des pages.
+4. **Placeholders** : `npm run validate` liste les champs `[… À REMPLACER]`, les événements `demo` et les partenaires d'exemple.
+5. **Page 404** : ses liens sont relatifs ; sur un hébergement en sous-dossier, elle s'affiche sans style si l'adresse erronée est imbriquée.
 
-- Charte, badge et éléments chromés : `CHARTE_TND.pdf`.
-- Three.js r180 — licence MIT (`vendor/three/LICENSE`).
-- Archivo Black et Montserrat — licence SIL OFL (`assets/fonts/LICENSE-*.txt`).
+## Informations publiques vérifiées
+
+Issues de l'API publique de recherche des entreprises, consultée le 23 septembre 2026 :
+
+- Nom : **TEKNO NEVER DIES** — sigle **TND** — association active
+- SIREN **939 301 768** — SIRET du siège **939 301 768 00015**
+- Siège déclaré : **51 avenue Georges Clemenceau, 67630 Lauterbourg** (à confirmer : une version antérieure indiquait « 5 avenue »)
+- Création : 4 décembre 2024 — activité : 90.01Z, arts du spectacle vivant
+
+Ces informations sont une base de travail : elles ne remplacent pas la validation par l'association des mentions légales.
+
+## Licences
+
+Polices Archivo Black et Montserrat : licence OFL (hébergées dans `assets/fonts/`). Three.js : licence MIT.

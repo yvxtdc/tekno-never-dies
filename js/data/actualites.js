@@ -8,14 +8,6 @@ export const ACTUALITES = [
     demo: true
   },
   {
-    date: "2026-10-01",
-    title: "Le catalogue matériel évolue",
-    excerpt: "DEMO À REMPLACER : de nouveaux éléments pourront rejoindre le parc au fil des besoins.",
-    content: "Le catalogue présente des exemples de configurations son, lumière, structure et câblage. Chaque demande est étudiée selon la date, le lieu et la jauge du projet.",
-    category: "Location",
-    demo: true
-  },
-  {
     date: "2026-10-18",
     title: "Préparation de la saison hivernale",
     excerpt: "DEMO À REMPLACER : l'équipe prépare une soirée et un atelier de transmission.",

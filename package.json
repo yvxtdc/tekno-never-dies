@@ -1,14 +1,17 @@
 {
-  "name": "web",
+  "name": "tekno-never-dies-site",
   "version": "1.0.0",
-  "description": "Page d'accueil de l'association **Tekno Never Dies** (TND6TEM) : charte graphique du PDF + étoiles chrome en 3D (Three.js) qui dérivent lentement à l'écran.",
-  "main": "index.js",
+  "private": true,
+  "description": "Site vitrine de l'association Tekno Never Dies (TND6TEM) : pages statiques, données en JavaScript et étoiles chrome en 3D (Three.js) sur l'accueil.",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npx --yes serve .",
+    "partials": "node tools/sync-partials.mjs",
+    "validate": "node tools/validate.mjs",
+    "calendar": "node tools/generate-calendar.mjs",
+    "photos": "node tools/photos.mjs"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "license": "UNLICENSED",
   "devDependencies": {
     "sharp": "^0.35.5"
   }

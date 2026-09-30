@@ -1,8 +1,7 @@
 import { GALLERY } from "../data/galerie.js";
-import { thumb } from "./helpers.js";
+import { thumb, esc } from "./helpers.js";
 
 const root = document.getElementById("gallery-root");
-const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 /* Une photo = un simple chemin "assets/…jpg" OU un objet { src, alt, w, h, full } */
 const norm = (p, title) => (typeof p === "string" ? { src: p, alt: title } : { alt: title, ...p });

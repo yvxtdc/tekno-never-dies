@@ -1,4 +1,4 @@
-/** Petits outils réutilisés par les scripts de pages (formatage de date, etc). */
+/** Petits outils réutilisés par les scripts de pages (formatage de date, échappement HTML, etc). */
 
 const MONTHS = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
 
@@ -8,15 +8,20 @@ export function formatDate(iso) {
   return `${d} ${MONTHS[m - 1]} ${y}`;
 }
 
+/** Échappe le texte avant de l'insérer dans du HTML (innerHTML). */
+export function esc(s) {
+  return String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+
 /** Vignette grise avec une légende, utilisée tant qu'aucune vraie photo n'est fournie. */
 export function placeholderThumb(label = "Photo à ajouter") {
-  return `<div class="thumb thumb--placeholder"><span>${label}</span></div>`;
+  return `<div class="thumb thumb--placeholder"><span>${esc(label)}</span></div>`;
 }
 
 /** Vignette réelle si une image est définie, sinon le placeholder ci-dessus. */
 export function thumb(src, alt, label) {
   return src
-    ? `<div class="thumb"><img src="${src}" alt="${alt}" loading="lazy" /></div>`
+    ? `<div class="thumb"><img src="${esc(src)}" alt="${esc(alt)}" loading="lazy" decoding="async" /></div>`
     : placeholderThumb(label);
 }
 

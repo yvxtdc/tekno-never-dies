@@ -1,0 +1,13 @@
+# Fins de ligne LF partout (évite les faux « fichiers modifiés » sous Windows)
+* text=auto eol=lf
+
+# Fichiers binaires
+*.webp binary
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.woff2 binary
+*.ico binary
+
+# Le format iCalendar exige des fins de ligne CRLF
+*.ics text eol=crlf
