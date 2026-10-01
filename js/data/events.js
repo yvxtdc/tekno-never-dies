@@ -27,12 +27,19 @@ export const EVENTS = [
     status: "passe",
     title: "Center Drop",
     date: "2026-04-04",
-    time: "",
+    time: "21h00 – 4h00",
     place: "Niederroedern",
     ticketUrl: "",
     cover: "assets/img/events/soiree2.webp",
     description: "Center Drop, soirée organisée à Niederroedern le samedi 4 avril 2026 par Tekno Never Dies.",
     practical: ["Dès 16 ans", "Informations détaillées : à compléter"],
+    lineup: [
+      { name: "Mogli", time: "21h00 – 22h00" },
+      { name: "Leander B2B Sven Gerber", time: "22h00 – 23h30" },
+      { name: "Daya Octa", time: "23h30 – 1h00" },
+      { name: "Humans", time: "1h00 – 2h30" },
+      { name: "KSCM", time: "2h30 – 4h00" }
+    ],
   },
   {
     slug: "ice-boiler-v1-2025",

@@ -106,7 +106,7 @@ if (!root) {
           <div class="lineup-row__info">
             <span class="lineup-row__time">${artist.time ? escapeHTML(artist.time) : "Horaire à confirmer"}</span>
             <h3>${escapeHTML(artist.name || "Artiste à renseigner")}</h3>
-            <p class="lineup-row__style">${escapeHTML(artist.style || "Style à renseigner")}</p>
+            ${artist.style ? `<p class="lineup-row__style">${escapeHTML(artist.style)}</p>` : ""}
           </div>
           ${artist.demo ? `<span class="lineup-row__draft">À compléter</span>` : artist.collective ? `<span class="lineup-row__collective">${escapeHTML(artist.collective)}</span>` : ""}
         </li>
