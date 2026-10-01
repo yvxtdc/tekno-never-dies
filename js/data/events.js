@@ -32,7 +32,7 @@ export const EVENTS = [
     ticketUrl: "",
     cover: "assets/img/events/soiree2.webp",
     description: "Center Drop, soirée organisée à Niederroedern le samedi 4 avril 2026 par Tekno Never Dies.",
-    practical: ["Dès 16 ans", "Informations détaillées : à compléter"],
+    practical: ["Dès 16 ans", "250 participant·es"],
     lineup: [
       { name: "Mogli", time: "21h00 – 22h00" },
       { name: "Leander B2B Sven Gerber", time: "22h00 – 23h30" },
@@ -40,6 +40,18 @@ export const EVENTS = [
       { name: "Humans", time: "1h00 – 2h30" },
       { name: "KSCM", time: "2h30 – 4h00" }
     ],
+  },
+  {
+    slug: "fete-musique-wissembourg-2025",
+    status: "passe",
+    title: "Fête de la musique",
+    date: "2025-06-21",
+    time: "",
+    place: "Wissembourg",
+    ticketUrl: "",
+    cover: "",
+    description: "Tekno Never Dies à la Fête de la musique de Wissembourg, le 21 juin 2025.",
+    practical: ["150 participant·es"]
   },
   {
     slug: "ice-boiler-v1-2025",
@@ -51,7 +63,7 @@ export const EVENTS = [
     ticketUrl: "",
     cover: "assets/img/events/soiree1.webp",
     description: "Première édition d'Ice Boiler, organisée à Munchhausen en novembre 2025 par Tekno Never Dies.",
-    practical: ["Dès 16 ans", "Informations détaillées : à compléter"],
+    practical: ["Dès 16 ans", "200 participant·es"],
     lineup: [
       { name: "DANN OCTA b2b DJ NIKOTYN", time: "20h00 – 21h00" },
       { name: "VALK b2b REDFOX", time: "21h00 – 22h00" },
