@@ -66,9 +66,9 @@ réception, remplacer l'adresse de l'attribut `action`. Sans JavaScript, le form
 
 Publier le dossier tel quel (GitHub Pages, Netlify, Cloudflare Pages). Avant de publier :
 
-1. **Domaine** : remplacer `www.example.org` dans `js/data/site.js` (`SITE.url`), `sitemap.xml` et `robots.txt`.
-   `robots.txt` et `sitemap.xml` ne sont lus que s'ils sont à la racine du domaine (pas dans un sous-dossier `/tekno-never-dies/`).
-   Une fois le domaine renseigné, `canonical` et `og:url` sont ajoutés automatiquement.
+1. **Adresse du site** : l’URL GitHub Pages connue est `https://yannismetzinger06-ship-it.github.io/tekno-never-dies/`.
+   Si le dépôt ou l’hébergement change, mettre à jour `js/data/site.js`, `sitemap.xml`, `robots.txt` et `calendar/events.ics`.
+   Le sitemap est à l’URL du projet. Attention : sur GitHub Pages projet, `robots.txt` est servi sous `/tekno-never-dies/`, alors que les robots le recherchent à la racine de l’hôte (`/robots.txt`). Pour rendre cette directive officiellement accessible, il faudra un domaine dédié ou un site GitHub Pages utilisateur/organisation à la racine ; à défaut, soumettre le sitemap séparément aux moteurs de recherche.
 2. **Agenda** : l'adresse `.ics` est dans `SITE.agenda` (`js/data/site.js`). Si elle change, régénérer le QR code
    `assets/img/agenda-qr.svg` (encodant l'adresse `webcal://…`).
 3. **Aperçu sur les réseaux** : ajouter une image `og:image` (adresse absolue, donc après le point 1) dans le `<head>` des pages.
@@ -81,10 +81,20 @@ Issues de l'API publique de recherche des entreprises, consultée le 23 septembr
 
 - Nom : **TEKNO NEVER DIES** — sigle **TND** — association active
 - SIREN **939 301 768** — SIRET du siège **939 301 768 00015**
-- Siège déclaré : **51 avenue Georges Clemenceau, 67630 Lauterbourg** (à confirmer : une version antérieure indiquait « 5 avenue »)
+- Siège : **5 avenue Georges Clemenceau, 67630 Lauterbourg** (confirmation de l’association, 1er octobre 2026)
+- Responsable de publication : **Yannis Metzinger**, président
 - Création : 4 décembre 2024 — activité : 90.01Z, arts du spectacle vivant
 
 Ces informations sont une base de travail : elles ne remplacent pas la validation par l'association des mentions légales.
+
+## Informations à finaliser avant publication
+
+- Confirmer le numéro RNA et le code APE.
+- Appliquer la suppression des demandes au plus tard trois ans après le dernier échange, y compris dans la boîte mail et Formspree ; vérifier les conditions de sous-traitance et les garanties de transfert international du compte.
+- Ajouter les horaires, l’adresse précise et les modalités de billetterie d’ICE BOILER v2.
+- Vérifier les autorisations de publication des photos et informations de l’équipe et des personnes photographiées.
+- Remplacer ou confirmer les contenus de démonstration (partenaires, actualités et autres profils sociaux) avant de les présenter comme réels.
+- Confirmer l’exactitude du QR code d’agenda après changement de l’URL d’hébergement.
 
 ## Licences
 

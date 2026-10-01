@@ -57,8 +57,9 @@ function foldICSLine(line) {
     const candidate = current + char;
 
     if (Buffer.byteLength(candidate, "utf8") > MAX_BYTES) {
-      lines.push(current);
-      current = " " + char;
+      const carriesSpace = /\s$/.test(current);
+      lines.push(carriesSpace ? current.trimEnd() : current);
+      current = (carriesSpace ? "  " : " ") + char;
     } else {
       current = candidate;
     }
@@ -584,9 +585,9 @@ async function main() {
 
   const rawEvents = await loadEvents();
 
-  const events = rawEvents.map(
-    normalizeEvent
-  );
+  const events = rawEvents
+    .filter((event) => event.datePrecision !== "month")
+    .map(normalizeEvent);
 
   /*
    * Empêche deux événements d'avoir le même UID.

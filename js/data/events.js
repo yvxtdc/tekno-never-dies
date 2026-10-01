@@ -9,124 +9,42 @@
  */
 export const EVENTS = [
   {
-    slug: "soiree-ouverture-2026",
+    slug: "ice-boiler-v2-2026",
     status: "a-venir",
-    demo: true,
-    title: "Soirée d'ouverture de saison",
-    date: "2026-11-14",
-    time: "22h00 – 5h00",
-    place: "Lieu communiqué prochainement, Lauterbourg",
+    title: "ICE BOILER v2",
+    date: "2026-11-28",
+    time: "",
+    place: "Munchhausen",
+    price: "15 €",
+    age: "Dès 16 ans",
     ticketUrl: "",
-    cover: "assets/img/decor/star-pair.webp",
-    description: "Une première nuit TND6TEM avec le sound system complet, des sets tekno et une équipe réunie autour du dancefloor.",
-    practical: ["Entrée à partir de 22h00", "Vestiaire sur place", "Lieu et billetterie à confirmer"],
-    gallerySlug: "ouverture-2026"
+    cover: "",
+    description: "Rendez-vous le samedi 28 novembre 2026 à Munchhausen pour ICE BOILER v2, une soirée organisée par Tekno Never Dies.",
+    practical: ["Entrée : 15 €", "Dès 16 ans", "Horaires, adresse précise et billetterie : à compléter"],
   },
   {
-    slug: "session-plein-air-2026",
-    status: "a-venir",
-    demo: true,
-    title: "Session plein air",
-    date: "2026-12-20",
-    time: "16h00 – 23h00",
-    place: "Lieu communiqué prochainement, environs de Lauterbourg",
-    ticketUrl: "",
-    cover: "assets/img/decor/sparkles-lavender.webp",
-    description: "Un format extérieur plus court pour faire vibrer le système avant la pause hivernale.",
-    practical: ["Prévoir des vêtements chauds", "Événement soumis à la météo", "Lieu à confirmer"],
-    gallerySlug: "session-plein-air-2026"
-  },
-  {
-    slug: "atelier-son-2027",
-    status: "a-venir",
-    demo: true,
-    title: "Atelier son : du branchement au dancefloor",
-    date: "2027-01-30",
-    time: "14h00 – 19h00",
-    place: "Lauterbourg, lieu associatif à confirmer",
-    ticketUrl: "",
-    cover: "assets/img/decor/chain.webp",
-    description: "Un après-midi de transmission autour du câblage, du réglage et de la préparation d'une petite configuration son.",
-    practical: ["Places limitées", "Aucun prérequis technique", "Inscription à ouvrir"],
-    gallerySlug: "atelier-son-2027"
-  },
-  {
-    slug: "warm-up-printemps-2025",
+    slug: "center-drop-2026",
     status: "passe",
-    demo: true,
-    title: "Warm-up de printemps",
-    date: "2025-04-12",
-    time: "21h00 – 4h00",
-    place: "Strasbourg",
+    title: "Center Drop",
+    date: "2026-04-04",
+    time: "",
+    place: "Niederroedern",
     ticketUrl: "",
-    cover: "assets/img/decor/burst.webp",
-    description: "La première soirée de démonstration du sound system : une nuit pour tester le matériel grandeur nature.",
-    practical: ["Première sortie publique du collectif", "Montage assuré par l'équipe"],
-    gallerySlug: "warm-up-printemps-2025"
+    cover: "assets/img/events/soiree2.webp",
+    description: "Center Drop, soirée organisée à Niederroedern le samedi 4 avril 2026 par Tekno Never Dies.",
+    practical: ["Dès 16 ans", "Informations détaillées : à compléter"],
   },
   {
-    slug: "premiere-chaine-2025",
+    slug: "ice-boiler-v1-2025",
     status: "passe",
-    demo: true,
-    title: "Première chaîne : rencontre technique",
-    date: "2025-09-27",
-    time: "18h00 – 1h00",
-    place: "Lauterbourg",
+    date: "2025-11-22",
+    title: "Ice Boiler v1",
+    time: "",
+    place: "Munchhausen",
     ticketUrl: "",
-    cover: "assets/img/decor/star-outline.webp",
-    description: "Une rencontre de rentrée dédiée aux idées, aux branchements et aux premières collaborations de la saison.",
-    practical: ["Format associatif", "Programmation locale et invités"],
-    gallerySlug: "premiere-chaine-2025"
-  },
-    {
-  slug: "ice-boiler-2025",
-  status: "passe",
-  title: "Ice Boiler",
-  date: "2026-09-28",
-  time: "22h00 – 5h00",
-  place: "Lieu à renseigner",
-  ticketUrl: "",
-
-  // Visuel utilisé pour la carte et l'aperçu de la soirée.
-  cover: "assets/img/gallery/2026/ice-boiler/photo-01.webp",
-
-  // Visuel principal du hero.
-  heroImage: "assets/img/gallery/2026/ice-boiler/photo-100.webp",
-
-  description:
-    "Retour en images sur la soirée Ice Boiler du 28 septembre 2026. La programmation et les informations complémentaires sont à renseigner.",
-
-  practical: [],
-  gallerySlug: "ice-boiler",
-
-  // Affiche le bandeau signalant le line-up de démonstration.
-  lineupPreview: true,
-
-  lineup: [
-    {
-      name: "Artiste à renseigner",
-      time: "",
-      style: "Style à renseigner",
-      image: "assets/img/gallery/2026/ice-boiler/photo-19.webp",
-      demo: true,
-      order: 1
-    },
-    {
-      name: "Artiste à renseigner",
-      time: "",
-      style: "Style à renseigner",
-      image: "assets/img/gallery/2026/ice-boiler/photo-24.webp",
-      demo: true,
-      order: 2
-    },
-    {
-      name: "Artiste à renseigner",
-      time: "",
-      style: "Style à renseigner",
-      image: "assets/img/gallery/2026/ice-boiler/photo-28.webp",
-      demo: true,
-      order: 3
-    }
-  ]
-}
+    cover: "assets/img/events/soiree1.webp",
+    description: "Première édition d'Ice Boiler, organisée à Munchhausen en novembre 2025 par Tekno Never Dies.",
+    practical: ["Dès 16 ans", "Informations détaillées : à compléter"],
+    gallerySlug: "ice-boiler"
+  }
 ];

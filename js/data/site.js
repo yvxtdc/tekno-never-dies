@@ -1,20 +1,16 @@
-// Adresse déclarée du siège : une seule source pour le JSON-LD (js/partials.js).
-// TODO à vérifier avec l'autre dev : la version tekno-never-dies_2 indique « 5 avenue Georges
-// Clemenceau » (au lieu de « 51 »). Adresse laissée telle quelle ; si elle change, il faut aussi
-// la corriger dans association.html et mentions-legales.html (tools/validate.mjs le vérifie).
 const ADDRESS = {
-  street: "51 avenue Georges Clemenceau",
+  street: "5 avenue Georges Clemenceau",
   postalCode: "67630",
   city: "Lauterbourg"
 };
 
-const AGENDA_PATH = "yvxtdc.github.io/tekno-never-dies/calendar/events.ics";
+const AGENDA_PATH = "yannismetzinger06-ship-it.github.io/tekno-never-dies/calendar/events.ics";
 
 export const SITE = {
   name: "Tekno Never Dies",
   shortName: "TND6TEM",
-  description: "Association et sound system tekno : événements et technique.",
-  url: "https://www.example.org",
+  description: "Association de musique électronique et sound system basée à Lauterbourg, dans le Bas-Rhin.",
+  url: "https://yannismetzinger06-ship-it.github.io/tekno-never-dies/",
   // Agenda .ics à jour (généré par tools/generate-calendar.mjs). Si l'adresse du site change,
   // mettre à jour AGENDA_PATH puis régénérer assets/img/agenda-qr.svg (voir README).
   agenda: {
@@ -32,12 +28,6 @@ export const SITE = {
     soundSystemCreatedAt: "2023-06-26",
     activity: "90.01Z - Arts du spectacle vivant"
   },
-  placeholders: {
-    contact: "[COORDONNEES A REMPLACER]",
-    social: "[RESEAU SOCIAL A REMPLACER]",
-    copy: "[CONTENU A REMPLACER PAR UNE INFORMATION VALIDEE]",
-    image: "[PHOTO A REMPLACER]"
-  }
 };
 
 export function isPlaceholder(value) {

@@ -2,9 +2,10 @@
 
 const MONTHS = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
 
-/** "2026-11-14" -> "14 novembre 2026" */
-export function formatDate(iso) {
+/** "2026-11-14" -> "14 novembre 2026"; month precision omits an unknown day. */
+export function formatDate(iso, precision = "day") {
   const [y, m, d] = iso.split("-").map(Number);
+  if (precision === "month") return `${MONTHS[m - 1]} ${y}`;
   return `${d} ${MONTHS[m - 1]} ${y}`;
 }
 

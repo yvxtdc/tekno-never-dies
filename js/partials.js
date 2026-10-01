@@ -49,7 +49,7 @@ function initSeo() {
     description,
     address: {
       "@type": "PostalAddress",
-      streetAddress: address.street,
+      ...(address.street ? { streetAddress: address.street } : {}),
       postalCode: address.postalCode,
       addressLocality: address.city,
       addressCountry: "FR"

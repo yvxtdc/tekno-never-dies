@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Remplacer www.example.org par le vrai domaine (voir README, section « Mise en ligne »). -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://www.example.org/</loc></url>
-  <url><loc>https://www.example.org/evenements.html</loc></url>
-  <url><loc>https://www.example.org/association.html</loc></url>
-  <url><loc>https://www.example.org/nos-actions.html</loc></url>
-  <url><loc>https://www.example.org/rejoindre.html</loc></url>
-  <url><loc>https://www.example.org/actualites.html</loc></url>
-  <url><loc>https://www.example.org/partenaires.html</loc></url>
-  <url><loc>https://www.example.org/galerie.html</loc></url>
-  <url><loc>https://www.example.org/faq.html</loc></url>
-  <url><loc>https://www.example.org/contact.html</loc></url>
-  <url><loc>https://www.example.org/mentions-legales.html</loc></url>
-  <url><loc>https://www.example.org/confidentialite.html</loc></url>
+  <url><loc>https://yannismetzinger06-ship-it.github.io/tekno-never-dies/</loc></url>
+  <url><loc>https://yannismetzinger06-ship-it.github.io/tekno-never-dies/evenements.html</loc></url>
+  <url><loc>https://yannismetzinger06-ship-it.github.io/tekno-never-dies/association.html</loc></url>
+  <url><loc>https://yannismetzinger06-ship-it.github.io/tekno-never-dies/nos-actions.html</loc></url>
+  <url><loc>https://yannismetzinger06-ship-it.github.io/tekno-never-dies/rejoindre.html</loc></url>
+  <url><loc>https://yannismetzinger06-ship-it.github.io/tekno-never-dies/actualites.html</loc></url>
+  <url><loc>https://yannismetzinger06-ship-it.github.io/tekno-never-dies/partenaires.html</loc></url>
+  <url><loc>https://yannismetzinger06-ship-it.github.io/tekno-never-dies/galerie.html</loc></url>
+  <url><loc>https://yannismetzinger06-ship-it.github.io/tekno-never-dies/faq.html</loc></url>
+  <url><loc>https://yannismetzinger06-ship-it.github.io/tekno-never-dies/contact.html</loc></url>
+  <url><loc>https://yannismetzinger06-ship-it.github.io/tekno-never-dies/mentions-legales.html</loc></url>
+  <url><loc>https://yannismetzinger06-ship-it.github.io/tekno-never-dies/confidentialite.html</loc></url>
+  <url><loc>https://yannismetzinger06-ship-it.github.io/tekno-never-dies/conditions-utilisation.html</loc></url>
+  <url><loc>https://yannismetzinger06-ship-it.github.io/tekno-never-dies/conditions-evenements.html</loc></url>
 </urlset>

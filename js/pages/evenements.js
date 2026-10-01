@@ -24,7 +24,7 @@ function card(ev) {
     <li class="event-card">
       ${thumb(ev.cover, ev.title, "Photo à venir")}
       <div class="event-card__body">
-        <span class="event-card__date">${formatDate(ev.date)}</span>
+        <span class="event-card__date">${formatDate(ev.date, ev.datePrecision)}</span>
         ${ev.demo ? '<span class="demo-label">DEMO À REMPLACER</span>' : ""}
         <h3>${esc(ev.title)}</h3>
         <p>${esc(ev.place)}</p>

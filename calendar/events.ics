@@ -9,80 +9,39 @@ X-WR-TIMEZONE:Europe/Paris
 REFRESH-INTERVAL;VALUE=DURATION:PT1H
 X-PUBLISHED-TTL:PT1H
 BEGIN:VEVENT
-UID:soiree-ouverture-2026@tekno-never-dies.fr
-DTSTAMP:20260930T041310Z
-LAST-MODIFIED:20260929T094922Z
+UID:ice-boiler-v2-2026@tekno-never-dies.fr
+DTSTAMP:20261001T160034Z
+LAST-MODIFIED:20261001T153413Z
 SEQUENCE:0
-DTSTART;TZID=Europe/Paris:20261114T220000
-DTEND;TZID=Europe/Paris:20261115T050000
-SUMMARY:Soirée d'ouverture de saison
-LOCATION:Lieu communiqué prochainement\, Lauterbourg
-DESCRIPTION:Une première nuit TND6TEM avec le sound system complet\, des s
- ets tekno et une équipe réunie autour du dancefloor.
+DTSTART;VALUE=DATE:20261128
+SUMMARY:ICE BOILER v2
+LOCATION:Munchhausen
+DESCRIPTION:Rendez-vous le samedi 28 novembre 2026 à Munchhausen pour ICE
+  BOILER v2\, une soirée organisée par Tekno Never Dies.
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:session-plein-air-2026@tekno-never-dies.fr
-DTSTAMP:20260930T041310Z
-LAST-MODIFIED:20260929T094922Z
+UID:center-drop-2026@tekno-never-dies.fr
+DTSTAMP:20261001T160034Z
+LAST-MODIFIED:20261001T153413Z
 SEQUENCE:0
-DTSTART;TZID=Europe/Paris:20261220T160000
-DTEND;TZID=Europe/Paris:20261220T230000
-SUMMARY:Session plein air
-LOCATION:Lieu communiqué prochainement\, environs de Lauterbourg
-DESCRIPTION:Un format extérieur plus court pour faire vibrer le système a
- vant la pause hivernale.
+DTSTART;VALUE=DATE:20260404
+SUMMARY:Center Drop
+LOCATION:Niederroedern
+DESCRIPTION:Center Drop\, soirée organisée à Niederroedern le samedi 4 a
+ vril 2026 par Tekno Never Dies.
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:atelier-son-2027@tekno-never-dies.fr
-DTSTAMP:20260930T041310Z
-LAST-MODIFIED:20260929T094922Z
+UID:ice-boiler-v1-2025@tekno-never-dies.fr
+DTSTAMP:20261001T160034Z
+LAST-MODIFIED:20261001T160034Z
 SEQUENCE:0
-DTSTART;TZID=Europe/Paris:20270130T140000
-DTEND;TZID=Europe/Paris:20270130T190000
-SUMMARY:Atelier son : du branchement au dancefloor
-LOCATION:Lauterbourg\, lieu associatif à confirmer
-DESCRIPTION:Un après-midi de transmission autour du câblage\, du réglage
-  et de la préparation d'une petite configuration son.
-STATUS:CONFIRMED
-END:VEVENT
-BEGIN:VEVENT
-UID:warm-up-printemps-2025@tekno-never-dies.fr
-DTSTAMP:20260930T041310Z
-LAST-MODIFIED:20260929T094922Z
-SEQUENCE:0
-DTSTART;TZID=Europe/Paris:20250412T210000
-DTEND;TZID=Europe/Paris:20250413T040000
-SUMMARY:Warm-up de printemps
-LOCATION:Strasbourg
-DESCRIPTION:La première soirée de démonstration du sound system : une nu
- it pour tester le matériel grandeur nature.
-STATUS:CONFIRMED
-END:VEVENT
-BEGIN:VEVENT
-UID:premiere-chaine-2025@tekno-never-dies.fr
-DTSTAMP:20260930T041310Z
-LAST-MODIFIED:20260929T094922Z
-SEQUENCE:0
-DTSTART;TZID=Europe/Paris:20250927T180000
-DTEND;TZID=Europe/Paris:20250928T010000
-SUMMARY:Première chaîne : rencontre technique
-LOCATION:Lauterbourg
-DESCRIPTION:Une rencontre de rentrée dédiée aux idées\, aux branchement
- s et aux premières collaborations de la saison.
-STATUS:CONFIRMED
-END:VEVENT
-BEGIN:VEVENT
-UID:ice-boiler-2025@tekno-never-dies.fr
-DTSTAMP:20260930T041310Z
-LAST-MODIFIED:20260930T041310Z
-SEQUENCE:0
-DTSTART;TZID=Europe/Paris:20260928T220000
-DTEND;TZID=Europe/Paris:20260929T050000
-SUMMARY:Ice Boiler
-LOCATION:À compléter
-DESCRIPTION:À compléter : quelques lignes sur cette soirée.
+DTSTART;VALUE=DATE:20251122
+SUMMARY:Ice Boiler v1
+LOCATION:Munchhausen
+DESCRIPTION:Première édition d'Ice Boiler\, organisée à Munchhausen en
+  novembre 2025 par Tekno Never Dies.
 STATUS:CONFIRMED
 END:VEVENT
 END:VCALENDAR

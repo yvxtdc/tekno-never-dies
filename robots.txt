@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://www.example.org/sitemap.xml
+Sitemap: https://yannismetzinger06-ship-it.github.io/tekno-never-dies/sitemap.xml

@@ -74,7 +74,7 @@ if (!root) {
     "@type": "Event",
     name: ev.title,
     description: ev.description,
-    startDate: `${ev.date}T${startTime}:00` + parisOffset(ev.date, Number(startTime.split(":")[0])),
+    ...(ev.datePrecision !== "month" && ev.time ? { startDate: `${ev.date}T${startTime}:00` + parisOffset(ev.date, Number(startTime.split(":")[0])) } : {}),
     location: { "@type": "Place", name: ev.place },
     organizer: { "@type": "Organization", name: "TEKNO NEVER DIES" }
   };
@@ -83,7 +83,8 @@ if (!root) {
   schema.textContent = JSON.stringify(eventSchema);
   document.head.append(schema);
 
-  const [dateDay, dateMonth, dateYear] = formatDate(ev.date).split(" ");
+  const eventDate = formatDate(ev.date, ev.datePrecision).split(" ");
+  const [dateDay, dateMonth, dateYear] = eventDate;
   const coverImage = ev.heroImage || ev.cover;
   const cover = coverImage ? `style="--event-cover:url('${escapeHTML(coverImage)}')"` : "";
 
@@ -152,8 +153,9 @@ if (!root) {
         <h1 id="event-title">${escapeHTML(ev.title)}<span class="event-title__dot">.</span></h1>
 
         <p class="event-hero__when">
-          <b>${escapeHTML(dateDay)} ${escapeHTML(dateMonth)}</b>
-          <span>${escapeHTML(dateYear)}</span>
+          ${ev.datePrecision === "month"
+            ? `<b>${escapeHTML(dateDay)} ${escapeHTML(dateMonth)}</b>`
+            : `<b>${escapeHTML(dateDay)} ${escapeHTML(dateMonth)}</b><span>${escapeHTML(dateYear)}</span>`}
           ${ev.time ? `— ${escapeHTML(ev.time)}` : ""}
           <span>${escapeHTML(ev.place || "Lieu à confirmer")}</span>
         </p>

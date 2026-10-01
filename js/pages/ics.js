@@ -53,8 +53,9 @@ function fold(line) {
   for (const ch of line) {
     const limit = out.length ? 74 : 75; // les lignes suivantes commencent par une espace
     if (enc.encode(current + ch).length > limit) {
-      out.push(current);
-      current = ch;
+      const carriesSpace = /\s$/.test(current);
+      out.push(carriesSpace ? current.trimEnd() : current);
+      current = (carriesSpace ? " " : "") + ch;
     } else {
       current += ch;
     }
@@ -143,7 +144,7 @@ export function buildICS(events, baseUrl = location.href) {
     "X-WR-CALNAME:Tekno Never Dies",
     "X-WR-TIMEZONE:Europe/Paris",
     ...VTIMEZONE,
-    ...events.flatMap((ev) => vevent(ev, baseUrl, stamp)),
+    ...events.filter((ev) => ev.datePrecision !== "month").flatMap((ev) => vevent(ev, baseUrl, stamp)),
     "END:VCALENDAR"
   ];
   return lines.map(fold).join("\r\n") + "\r\n";

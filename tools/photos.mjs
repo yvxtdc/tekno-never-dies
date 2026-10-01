@@ -87,6 +87,7 @@ if (await exists(GALLERY_DIR)) {
       const metaFile = path.join(dir, "evenement.json");
       if (!(await exists(metaFile))) continue;
       const meta = JSON.parse(await readFile(metaFile, "utf8"));
+      const year = /^\d{4}/.test(meta.date || "") ? meta.date.slice(0, 4) : y;
       const names = (await readdir(dir)).filter((f) => /^photo-\d+\.webp$/.test(f))
         .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
       const photos = [];
@@ -98,8 +99,8 @@ if (await exists(GALLERY_DIR)) {
         p.w = width; p.h = height;
         photos.push(p);
       }
-      if (!byYear.has(y)) byYear.set(y, []);
-      byYear.get(y).push({ title: meta.title, eventSlug: slug, date: meta.date || `${y}-01-01`, photos });
+      if (!byYear.has(year)) byYear.set(year, []);
+      byYear.get(year).push({ title: meta.title, eventSlug: slug, date: meta.date || `${year}-01-01`, photos });
     }
   }
 }
