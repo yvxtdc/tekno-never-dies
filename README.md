@@ -64,7 +64,9 @@ réception, remplacer l'adresse de l'attribut `action`. Sans JavaScript, le form
 
 ## Mise en ligne
 
-Publier le dossier tel quel (GitHub Pages, Netlify, Cloudflare Pages). Avant de publier :
+Le workflow `.github/workflows/deploy-pages.yml` vérifie puis déploie le site statique sur GitHub Pages. Pour l’activer dans ce dépôt, ouvrir **Settings → Pages** et choisir **GitHub Actions** comme source de publication. Le déploiement par branche actuel est géré par GitHub et ne permet pas de définir les permissions OIDC depuis les fichiers du dépôt.
+
+Avant de publier :
 
 1. **Adresse du site** : l’URL GitHub Pages connue est `https://yannismetzinger06-ship-it.github.io/tekno-never-dies/`.
    Si le dépôt ou l’hébergement change, mettre à jour `js/data/site.js`, `sitemap.xml`, `robots.txt` et `calendar/events.ics`.
