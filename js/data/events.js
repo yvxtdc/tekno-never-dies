@@ -36,7 +36,7 @@ export const EVENTS = [
     lineup: [
       { name: "Mogli", time: "21h00 – 22h00" },
       { name: "Leander B2B Sven Gerber", time: "22h00 – 23h30" },
-      { name: "Daya Octa", time: "23h30 – 1h00" },
+      { name: "Dann Octa", time: "23h30 – 1h00" },
       { name: "Humans", time: "1h00 – 2h30" },
       { name: "KSCM", time: "2h30 – 4h00" }
     ],
@@ -46,12 +46,20 @@ export const EVENTS = [
     status: "passe",
     date: "2025-11-22",
     title: "Ice Boiler v1",
-    time: "",
+    time: "20h00 – 4h00",
     place: "Munchhausen",
     ticketUrl: "",
     cover: "assets/img/events/soiree1.webp",
     description: "Première édition d'Ice Boiler, organisée à Munchhausen en novembre 2025 par Tekno Never Dies.",
     practical: ["Dès 16 ans", "Informations détaillées : à compléter"],
+    lineup: [
+      { name: "DANN OCTA b2b DJ NIKOTYN", time: "20h00 – 21h00" },
+      { name: "VALK b2b REDFOX", time: "21h00 – 22h00" },
+      { name: "SVEN GERBER", time: "22h00 – 23h30" },
+      { name: "LEANDER", time: "23h30 – 1h00" },
+      { name: "TNB", time: "1h00 – 2h30" },
+      { name: "BLACKCHILLS", time: "2h30 – 4h00" }
+    ],
     gallerySlug: "ice-boiler"
   }
 ];

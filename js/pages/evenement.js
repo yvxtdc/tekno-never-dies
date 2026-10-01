@@ -178,7 +178,6 @@ if (!root) {
       </div>
       ${lineupIsPreview ? `<p class="lineup-preview-note">APERÇU — à remplacer avant publication.</p>` : ""}
       ${lineupContent}
-      ${lineup.length ? `<p class="lineup-footnote"><span>↳</span>${lineup.some((a) => a.demo) ? "Champs de démonstration à remplacer." : "Ordre chronologique, y compris après minuit."}</p>` : ""}
     </section>
 
     <section class="event-story">
