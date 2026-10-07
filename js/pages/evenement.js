@@ -104,7 +104,9 @@ if (!root) {
           <span class="lineup-row__num">${String(i + 1).padStart(2, "0")}</span>
           <span class="lineup-row__photo">${artist.image ? `<img src="${escapeHTML(artist.image)}" alt="" loading="lazy" />` : ""}</span>
           <div class="lineup-row__info">
-            <span class="lineup-row__time">${artist.time ? escapeHTML(artist.time) : "Horaire à confirmer"}</span>
+            ${artist.time
+              ? `<span class="lineup-row__time">${escapeHTML(artist.time)}</span>`
+              : ev.status === "a-venir" ? `<span class="lineup-row__time">Horaire à confirmer</span>` : ""}
             <h3>${escapeHTML(artist.name || "Artiste à renseigner")}</h3>
             ${artist.style ? `<p class="lineup-row__style">${escapeHTML(artist.style)}</p>` : ""}
           </div>

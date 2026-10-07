@@ -10,7 +10,7 @@ const filter = document.getElementById("event-filter");
 const status = document.getElementById("events-status");
 
 function matches(ev, query) {
-  return [ev.title, ev.place, ev.description, ...(ev.practical || [])]
+  return [ev.title, ev.place, ev.description, ...(ev.genres || []), ...(ev.practical || [])]
     .join(" ")
     .toLocaleLowerCase("fr")
     .includes(query);
@@ -22,7 +22,12 @@ function card(ev) {
     : "";
   return `
     <li class="event-card">
-      ${thumb(ev.cover, ev.title, "Photo à venir")}
+      ${ev.flyer
+        ? `<div class="thumb thumb--poster">
+            <img class="thumb__blur" src="${esc(ev.flyer)}" alt="" aria-hidden="true" loading="lazy" decoding="async" />
+            <img class="thumb__poster" src="${esc(ev.flyer)}" alt="Flyer de ${esc(ev.title)}" loading="lazy" decoding="async" />
+          </div>`
+        : thumb(ev.cover, ev.title, "Visuel à venir")}
       <div class="event-card__body">
         <span class="event-card__date">${formatDate(ev.date, ev.datePrecision)}</span>
         ${ev.demo ? '<span class="demo-label">DEMO À REMPLACER</span>' : ""}
