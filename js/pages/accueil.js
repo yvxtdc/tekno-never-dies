@@ -34,3 +34,21 @@ if (canvas && hero) {
 } else {
   canvas?.remove();
 }
+
+/* ---------- Les 4 blocs : photo au défilement sur téléphone ----------
+   Sur un écran tactile (pas de souris), le bloc qui traverse la zone de déclenchement
+   s'allume tout seul pendant qu'on fait défiler la page (styles : css/components/home-cards-mobile.css).
+   Sur ordinateur, rien ne change : la photo apparaît au survol. */
+const homeCards = document.querySelectorAll(".home-card");
+
+if (homeCards.length && "IntersectionObserver" in window && matchMedia("(hover: none)").matches) {
+  const cardObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => entry.target.classList.toggle("is-active", entry.isIntersecting));
+    },
+    // Zone de déclenchement placée aux 2/3 de l'écran (entre 65 % et 75 % depuis le haut) :
+    // un bloc s'allume dès qu'il monte dans l'écran. Plus le 1er chiffre est grand, plus c'est tôt.
+    { rootMargin: "-65% 0px -25% 0px" }
+  );
+  homeCards.forEach((card) => cardObserver.observe(card));
+}

@@ -1,0 +1,58 @@
+/* =====================================================================
+   Accueil — les 4 blocs sur téléphone et tablette (écrans tactiles)
+   Sur ordinateur, la photo apparaît au survol de la souris (css/style.css).
+   Sur un écran tactile, il n'y a pas de survol : js/pages/accueil.js ajoute
+   la classe .is-active au bloc qui passe au milieu de l'écran pendant le
+   défilement, et ce bloc prend exactement l'apparence « survolée ».
+   Chargé par index.html, après style.css et pages.css.
+   ===================================================================== */
+
+@media (hover:none){
+  /* Photo visible */
+  .home-card.is-active .home-card__media{
+    opacity:1;
+    transform:scale(1);
+    filter:saturate(1) contrast(1.05) brightness(.82);
+  }
+
+  /* Voile allégé pour laisser voir la photo */
+  .home-card.is-active .home-card__shade{
+    opacity:1;
+    background:linear-gradient(180deg, rgba(11,7,34,.12) 0%, rgba(11,7,34,.06) 45%, rgba(11,7,34,.82) 100%);
+  }
+
+  /* Titre : 1re ligne blanche, 2e ligne qui apparaît en dégradé */
+  .home-card.is-active h3{
+    background-image:none;
+    -webkit-background-clip:border-box;
+    background-clip:border-box;
+    color:#fff;
+    text-shadow:none;
+    filter:drop-shadow(.035em .035em 0 rgba(66,38,182,.7));
+  }
+
+  .home-card.is-active h3 span{
+    opacity:1;
+    transform:translateY(0);
+    background-image:var(--gradient-card);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    filter:none;
+  }
+
+  .home-card.is-active .home-card__meta{color:#fff}
+
+  /* Bouton « Voir… » rempli */
+  .home-card.is-active .home-card__link{
+    opacity:1;
+    color:#fff;
+    transform:none;
+    background:linear-gradient(120deg,var(--violet),var(--pink));
+    border-color:transparent;
+  }
+
+  /* Coins de viseur roses */
+  .home-card.is-active{--bracket:#e05cc8}
+  .home-card.is-active::after{opacity:1}
+}
