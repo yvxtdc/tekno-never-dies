@@ -1,0 +1,130 @@
+/* =====================================================================
+   Flyers des soirées
+   - Liste des événements : vignettes au format affiche (4/5)
+   - Fiche événement : flyer montré en entier à côté du titre,
+     et fond du hero = le même flyer, très flouté
+   Chargé par evenements.html et evenement.html (après pages.css).
+   ===================================================================== */
+
+/* ---------- Liste : toutes les vignettes au même format portrait ---------- */
+.event-card .thumb{aspect-ratio:4/5}
+
+/* Flyer montré en entier (carré, 4/5 ou 9/16), sur un fond flouté de ses couleurs */
+.thumb--poster{overflow:hidden}
+.thumb--poster .thumb__blur{
+  position:absolute;
+  inset:6px;
+  width:calc(100% - 12px);
+  height:calc(100% - 12px);
+  object-fit:cover;
+  filter:blur(18px) brightness(.5) saturate(1.3);
+  transform:scale(1.25);
+}
+.thumb--poster .thumb__poster{
+  position:relative;
+  z-index:1;
+  object-fit:contain;
+  transition:transform .8s cubic-bezier(.22,1,.36,1);
+}
+.event-card:hover .thumb__poster{transform:scale(1.04)}
+
+/* ---------- Fiche : fond du hero = flyer flouté ---------- */
+.event-hero.has-flyer::before{
+  filter:blur(42px) saturate(1.35) brightness(.5);
+  transform:scale(1.25);
+}
+
+/* Texte à gauche, flyer à droite */
+.event-hero.has-flyer .event-hero__inner{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:end;
+  column-gap:clamp(28px,5vw,80px);
+}
+.event-hero__text{
+  display:flex;
+  flex-direction:column;
+  gap:clamp(20px,3vw,32px);
+  min-width:0;
+}
+.event-hero.has-flyer .event-hero__text{grid-column:1;grid-row:1}
+
+/* Le flyer, comme une affiche collée */
+.event-flyer{
+  grid-column:2;
+  grid-row:1;
+  align-self:center;
+  margin:0;
+  width:clamp(220px,26vw,380px);
+  transform:rotate(2.5deg);
+  transition:transform .6s cubic-bezier(.22,1,.36,1);
+}
+.event-flyer:hover{transform:rotate(0) scale(1.02)}
+
+.event-flyer__media{
+  display:block;
+  width:100%;
+  height:auto;
+  border-radius:4px;
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:
+    0 30px 60px rgba(0,0,0,.55),
+    0 0 50px rgba(149,106,255,.35);
+  background:#0a0722;
+}
+
+.event-flyer figcaption{
+  margin-top:12px;
+  text-align:right;
+  font-size:.7rem;
+  font-weight:700;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.event-flyer figcaption a{color:rgba(255,255,255,.6);text-decoration:none}
+.event-flyer figcaption a:hover{color:var(--lav)}
+
+/* ---------- Styles musicaux ---------- */
+.detail .event-genres,
+.event-genres{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:0;
+  padding:0;
+  list-style:none;
+}
+.event-genres li{
+  padding:6px 12px;
+  border:1px solid rgba(149,106,255,.55);
+  border-radius:999px;
+  background:rgba(66,38,182,.22);
+  color:#fff;
+  font-size:.72rem;
+  font-weight:700;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+
+/* ---------- Mobile : flyer au-dessus du titre ---------- */
+@media (max-width:760px){
+  .event-hero.has-flyer .event-hero__inner{
+    grid-template-columns:1fr;
+    row-gap:28px;
+  }
+  .event-flyer{
+    grid-column:1;
+    grid-row:1;
+    justify-self:start;
+    width:min(64vw,280px);
+    transform:rotate(-2deg);
+  }
+  .event-hero.has-flyer .event-hero__text{grid-row:2}
+  .event-flyer figcaption{text-align:left}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .event-flyer,
+  .thumb--poster .thumb__poster{transition:none}
+  .event-flyer:hover{transform:rotate(2.5deg)}
+}

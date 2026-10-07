@@ -10,52 +10,56 @@ REFRESH-INTERVAL;VALUE=DURATION:PT1H
 X-PUBLISHED-TTL:PT1H
 BEGIN:VEVENT
 UID:ice-boiler-v2-2026@tekno-never-dies.fr
-DTSTAMP:20261001T205756Z
-LAST-MODIFIED:20261001T153413Z
-SEQUENCE:0
-DTSTART;VALUE=DATE:20261128
+DTSTAMP:20261007T073415Z
+LAST-MODIFIED:20261007T073317Z
+SEQUENCE:2
+DTSTART;TZID=Europe/Paris:20261128T210000
+DTEND;TZID=Europe/Paris:20261129T040000
 SUMMARY:ICE BOILER v2
-LOCATION:Munchhausen
-DESCRIPTION:Rendez-vous le samedi 28 novembre 2026 à Munchhausen pour ICE
-  BOILER v2\, une soirée organisée par Tekno Never Dies.
+LOCATION:Salle polyvalente\, 81 rue du Rhin\, Munchhausen
+DESCRIPTION:Rendez-vous le samedi 28 novembre 2026 à 21h00 à la salle pol
+ yvalente de Munchhausen pour ICE BOILER v2\, une soirée trance\, groovy\,
+  bouncy et techno organisée par Tekno Never Dies.
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
 UID:center-drop-2026@tekno-never-dies.fr
-DTSTAMP:20261001T205756Z
-LAST-MODIFIED:20261001T163901Z
-SEQUENCE:1
+DTSTAMP:20261007T073415Z
+LAST-MODIFIED:20261007T073026Z
+SEQUENCE:2
 DTSTART;TZID=Europe/Paris:20260404T210000
 DTEND;TZID=Europe/Paris:20260405T040000
 SUMMARY:Center Drop
-LOCATION:Niederroedern
-DESCRIPTION:Center Drop\, soirée organisée à Niederroedern le samedi 4 a
- vril 2026 par Tekno Never Dies.
+LOCATION:1 rue du Stade\, Niederroedern
+DESCRIPTION:Center Drop\, soirée techno organisée à Niederroedern le sam
+ edi 4 avril 2026 par Tekno Never Dies.
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
 UID:fete-musique-wissembourg-2025@tekno-never-dies.fr
-DTSTAMP:20261001T205756Z
-LAST-MODIFIED:20261001T205756Z
-SEQUENCE:0
-DTSTART;VALUE=DATE:20250621
+DTSTAMP:20261007T073415Z
+LAST-MODIFIED:20261007T073026Z
+SEQUENCE:1
+DTSTART;TZID=Europe/Paris:20250621T160000
+DTEND;TZID=Europe/Paris:20250622T000000
 SUMMARY:Fête de la musique
 LOCATION:Wissembourg
-DESCRIPTION:Tekno Never Dies à la Fête de la musique de Wissembourg\, le
-  21 juin 2025.
+DESCRIPTION:Techno Party de la Fête de la musique à Wissembourg\, présen
+ tée par RRC & TND le 21 juin 2025.
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
 UID:ice-boiler-v1-2025@tekno-never-dies.fr
-DTSTAMP:20261001T205756Z
-LAST-MODIFIED:20261001T164344Z
-SEQUENCE:1
+DTSTAMP:20261007T073415Z
+LAST-MODIFIED:20261007T073026Z
+SEQUENCE:2
 DTSTART;TZID=Europe/Paris:20251122T200000
 DTEND;TZID=Europe/Paris:20251123T040000
 SUMMARY:Ice Boiler v1
-LOCATION:Munchhausen
-DESCRIPTION:Première édition d'Ice Boiler\, organisée à Munchhausen en
-  novembre 2025 par Tekno Never Dies.
+LOCATION:Salle des fêtes\, Munchhausen
+DESCRIPTION:Première édition d'Ice Boiler\, soirée techno organisée à
+  la salle des fêtes de Munchhausen le 22 novembre 2025 par Tekno Never Di
+ es.
 STATUS:CONFIRMED
 END:VEVENT
 END:VCALENDAR
