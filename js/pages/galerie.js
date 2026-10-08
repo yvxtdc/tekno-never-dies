@@ -104,7 +104,9 @@ if (nav && GALLERY.length) {
 /* ---------- Téléphone : la photo passe en couleur en arrivant au milieu de l'écran ----------
    Sur un écran tactile (pas de survol), même effet que le survol sur ordinateur. Les photos
    masquées derrière « Voir plus » sont observées aussi : elles s'allument une fois affichées. */
-if ("IntersectionObserver" in window && matchMedia("(hover: none)").matches) {
+// Pas de souris = téléphone/tablette. Certains Android (Samsung…) annoncent « hover: hover »
+// alors qu'ils n'ont pas de souris : on teste donc l'inverse (souris précise), plus fiable.
+if ("IntersectionObserver" in window && !matchMedia("(hover: hover) and (pointer: fine)").matches) {
   const tileObserver = new IntersectionObserver(
     (entries) => entries.forEach((entry) => entry.target.classList.toggle("is-active", entry.isIntersecting)),
     { rootMargin: "-35% 0px -35% 0px" } // bande centrale (30 % de la hauteur de l'écran)
