@@ -748,6 +748,10 @@ select option{background:#150d3b;color:#fff}
   transition:border-color .4s, box-shadow .4s;
 }
 
+.g-tile[hidden]{display:none}
+
+.gallery-more{display:flex;margin:18px auto 0}
+
 .g-tile img{
   display:block;
   width:100%;
@@ -1159,21 +1163,6 @@ select option{background:#150d3b;color:#fff}
   color:var(--pink);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
 }
 
-/* Bandeau défilant : plein écran lui aussi, direct enfant du hero */
-.event-hero .ticker{
-  position:relative;z-index:2;
-  transform:rotate(0);
-  margin:6px 0 0;
-  background:transparent;
-  border-top:1px solid rgba(255,255,255,.14);
-  border-bottom:1px solid rgba(255,255,255,.14);
-}
-.event-hero .ticker .track span{
-  font-family:var(--text);font-size:.85rem;font-weight:700;
-  letter-spacing:.06em;text-transform:none;color:rgba(255,255,255,.7);
-}
-.event-hero .ticker .track span::after{content:"✳";margin-left:.9em;color:var(--lav)}
-
 .event-draft-note{
   position:relative;z-index:2;
   display:inline-flex;align-items:center;gap:9px;
@@ -1258,6 +1247,12 @@ select option{background:#150d3b;color:#fff}
   filter:grayscale(0) brightness(.95);
   transform:scale(1);
 }
+/* B2B : un deuxième cercle qui chevauche le premier */
+.lineup-row__photos{display:flex;flex:none}
+.lineup-row__photos .lineup-row__photo + .lineup-row__photo{
+  margin-left:calc(clamp(64px,7vw,104px) * -.3);
+  box-shadow:0 0 0 3px var(--page);
+}
 .lineup-row__photo:empty::after{
   content:"✳";
   position:absolute;inset:0;display:grid;place-items:center;
@@ -1275,6 +1270,10 @@ select option{background:#150d3b;color:#fff}
   transition:color .2s ease;
 }
 .lineup-row:hover h3{color:var(--lav)}
+.lineup-row h3 a{color:inherit;text-decoration:none;border-bottom:2px solid transparent;transition:color .2s ease,border-color .2s ease}
+.lineup-row h3 a::after{content:"↗";margin-left:.25em;font-size:.45em;vertical-align:super;color:var(--lav)}
+.lineup-row h3 a:hover,
+.lineup-row h3 a:focus-visible{color:#fff;border-bottom-color:var(--lav)}
 .lineup-row__style{margin:0;color:var(--muted);font-size:.82rem}
 .lineup-row__collective,
 .lineup-row__draft{

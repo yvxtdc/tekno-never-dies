@@ -13,11 +13,18 @@ const slugify = (s) =>
   s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 const anchorOf = (ev) => ev.eventSlug || slugify(ev.title);
 
+/* Nombre de photos affichées par événement avant le bouton « Voir plus de photos » */
+const PAGE_SIZE = 24;
+
 function tile(p, setIdx, i) {
   const size = p.w && p.h ? ` width="${p.w}" height="${p.h}"` : "";
-  return `<button class="g-tile" type="button" data-set="${setIdx}" data-i="${i}" aria-label="Agrandir : ${esc(p.alt)}">
+  return `<button class="g-tile" type="button" data-set="${setIdx}" data-i="${i}" aria-label="Agrandir : ${esc(p.alt)}"${i >= PAGE_SIZE ? " hidden" : ""}>
     <img src="${esc(p.src)}" alt="${esc(p.alt)}"${size} loading="lazy" decoding="async" />
   </button>`;
+}
+
+function moreButton(left) {
+  return `<button class="btn btn-line gallery-more" type="button">Voir plus de photos (${left})</button>`;
 }
 
 if (!GALLERY.length) {
@@ -39,6 +46,7 @@ if (!GALLERY.length) {
             <div class="gallery-masonry">
               ${photos.length ? photos.map((p, i) => tile(p, setIdx, i)).join("") : thumb(null, ev.title, "Photos à venir")}
             </div>
+            ${photos.length > PAGE_SIZE ? moreButton(photos.length - PAGE_SIZE) : ""}
           </div>`;
           })
           .join("")}
@@ -150,7 +158,17 @@ function close() {
 
 root.addEventListener("click", (e) => {
   const t = e.target.closest(".g-tile");
-  if (t) open(+t.dataset.set, +t.dataset.i, t);
+  if (t) return open(+t.dataset.set, +t.dataset.i, t);
+
+  // « Voir plus de photos » : affiche le lot suivant de l'événement
+  const more = e.target.closest(".gallery-more");
+  if (!more) return;
+  const hidden = [...more.closest(".gallery-event").querySelectorAll(".g-tile[hidden]")];
+  hidden.slice(0, PAGE_SIZE).forEach((el) => (el.hidden = false));
+  hidden[0]?.focus();
+  const left = hidden.length - PAGE_SIZE;
+  if (left > 0) more.outerHTML = moreButton(left);
+  else more.remove();
 });
 
 lb.addEventListener("click", (e) => {

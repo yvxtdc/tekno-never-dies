@@ -315,14 +315,14 @@ a{
 }
 
 .btn-cyan{
-  background:var(--cyan);
-  border-color:var(--cyan);
-  color:#000
+  background:#fff;
+  border-color:#fff;
+  color:var(--page)
 }
 
 .btn-cyan:hover{
-  background:#fff;
-  border-color:#fff
+  background:var(--lav);
+  border-color:var(--lav)
 }
 
 .track{
@@ -1256,6 +1256,30 @@ main{position:relative;overflow-x:clip}
 
 .home-contact{position:relative;overflow:hidden}
 
+/* Accueil — bandeau « Prochaine soirée » sous le hero (rempli par js/pages/accueil.js) */
+.home-next{
+  border-top:1px solid var(--line);
+  background:linear-gradient(100deg,rgba(66,38,182,.38) 0%,rgba(182,38,154,.16) 100%),var(--page);
+}
+.home-next__inner{
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;
+  gap:24px 40px;
+  padding-block:clamp(32px,4vw,52px);
+}
+.home-next h2{
+  margin:.25em 0 .3em;
+  font-size:clamp(2rem,4.6vw,3.6rem);line-height:.95;
+}
+.home-next h2 a{color:#fff;text-decoration:none}
+.home-next h2 a:hover{color:var(--lav)}
+.home-next__when{margin:0;font-weight:700;color:#fff}
+.home-next__price{margin:.35em 0 0;color:var(--muted)}
+.home-next__actions{display:flex;flex-wrap:wrap;gap:12px}
+@media (max-width:640px){
+  .home-next__actions{width:100%}
+  .home-next__actions .btn{flex:1 1 100%;text-align:center}
+}
+
 .home-contact .decor-hollow{width:clamp(70px,9vw,140px);right:16%;top:14%;--rot:14deg;opacity:.9}
 
 footer .decor-chain{width:clamp(90px,10vw,150px);right:var(--pad);bottom:-6px;--rot:6deg;opacity:.5}
@@ -1454,9 +1478,9 @@ footer .decor-chain{width:clamp(90px,10vw,150px);right:var(--pad);bottom:-6px;--
   background:linear-gradient(to bottom, transparent, var(--page) 92%);
 }
 
-/* Cartes sombres par défaut : la photo n'apparaît qu'à travers les lettres du titre */
+/* Cartes sombres par défaut : la photo reste en léger fond, et s'allume au survol */
 .home-card__media{
-  opacity:0;
+  opacity:.55;
   transform:scale(1.05);
   filter:saturate(.9) contrast(1.05) brightness(.85);
   transition:opacity .6s cubic-bezier(.22,1,.36,1), transform 1s cubic-bezier(.22,1,.36,1);
@@ -1464,7 +1488,7 @@ footer .decor-chain{width:clamp(90px,10vw,150px);right:var(--pad);bottom:-6px;--
 
 .home-card__shade{
   opacity:1;
-  background-image:linear-gradient(to bottom, #0b0722 0%, #120b38 100%);
+  background-image:linear-gradient(to bottom, rgba(11,7,34,.72) 0%, rgba(18,11,56,.78) 100%);
   background-size:100% 220%;
   background-repeat:no-repeat;
   transition:opacity .5s ease, background-position .5s ease;

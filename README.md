@@ -33,6 +33,8 @@ vendor/three/                     Three.js
 |---|---|
 | Ajouter / modifier un événement | `js/data/events.js`, puis `npm run calendar` (« à venir » / « passé » est calculé depuis la date) |
 | Ajouter des photos à la galerie | `npm run photos -- import/mon-dossier --titre "…" --date AAAA-MM-JJ` |
+| Lien Instagram d'un artiste du line-up | `js/data/artistes.js` |
+| Photo de profil d'un artiste (cercle du line-up) | déposer `Nom de l'artiste.jpg` dans `import/artistes/`, puis `npm run artistes` |
 | Modifier la FAQ, les actualités, les partenaires | `js/data/faq.js`, `actualites.js`, `partenaires.js` |
 | Modifier l'équipe | `js/data/equipe.js` |
 | Modifier le header, le menu ou le footer | `partials/header.html` ou `footer.html`, puis `npm run partials` |
@@ -55,6 +57,7 @@ modifie `partials/header.html` ou `partials/footer.html`, puis lance `npm run pa
 | `partials` | Recopie header et footer dans toutes les pages. |
 | `calendar` | Régénère `calendar/events.ics` depuis `js/data/events.js`. |
 | `photos` | Convertit un dossier de photos (WebP + JPEG) et met à jour la galerie. |
+| `artistes` | Convertit les photos de `import/artistes/` (carrés WebP) et met à jour `js/data/artistes-photos.js`. |
 
 ## Contact (Formspree)
 
