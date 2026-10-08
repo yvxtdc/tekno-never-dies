@@ -26,6 +26,7 @@
   <link rel="manifest" href="site.webmanifest" />
 
   <link rel="preload" href="assets/fonts/archivo-black-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="assets/fonts/montserrat-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/pages.css" />
   <link rel="stylesheet" href="css/components/event-flyer.css" />
@@ -53,13 +54,20 @@
     <li style="--i:4"><a href="faq.html" data-nav="faq">FAQ</a></li>
     <li style="--i:5"><a href="contact.html" data-nav="contact">Contact</a></li>
   </ul>
+  <!-- Colonne de droite (ordinateur uniquement) : prochaine soirée remplie par js/partials.js -->
+  <aside class="tnd-menu-side" aria-label="Prochaine soirée">
+    <div class="tnd-next" hidden></div>
+    <a class="tnd-menu-insta" href="https://www.instagram.com/tnd6tem/" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" class="social-dot"/></svg>
+      Instagram <span aria-hidden="true">↗</span>
+    </a>
+  </aside>
   <p class="tnd-menu-foot">Tekno Never Dies, Lauterbourg<br><a href="mailto:tnd6tem@gmail.com">tnd6tem@gmail.com</a></p>
 </nav>
 <!-- /partial:header -->
 
   <main id="main">
     <section class="page-head container">
-      <p class="page-kicker">l'agenda</p>
       <h1><span class="l2">Événements</span></h1>
       <img class="decor decor-r decor--float" src="assets/img/decor/star-pair.webp" alt="" aria-hidden="true" />
       <p>Nos prochaines soirées, et un aperçu de celles déjà organisées.</p>
@@ -74,6 +82,17 @@
         </div>
       </div>
       <p class="agenda-hint">Abonne-toi à l'agenda TND : tous les événements arrivent directement dans ton calendrier, sans jamais en rater un.</p>
+      <a class="artists-teaser" href="artistes.html">
+        <span class="artists-teaser__photos" aria-hidden="true"></span>
+        <span class="artists-teaser__text">
+          <span class="artists-teaser__kicker">Line-ups</span>
+          <span class="artists-teaser__title">Les artistes</span>
+          <span class="artists-teaser__sub">Tous les DJ passés chez TND</span>
+        </span>
+        <span class="artists-teaser__arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 12h18M14 5l7 7-7 7"/></svg></span>
+      </a>
+      <!-- Recherche et filtre masqués tant qu'il y a peu de soirées : retirer « hidden » ci-dessous pour les réafficher. -->
+      <div hidden>
       <div class="listing-tools" aria-label="Filtres des événements">
         <label class="search-field">
           <span>Rechercher</span>
@@ -89,6 +108,7 @@
         </label>
       </div>
       <p class="form-status" id="events-status" role="status" aria-live="polite"></p>
+      </div>
       <ul class="card-grid" id="upcoming-events"></ul>
     </section>
 
@@ -126,6 +146,7 @@
         <a href="association.html">L'asso</a>
         <a href="nos-actions.html">Nos actions</a>
         <a href="evenements.html">Événements</a>
+        <a href="artistes.html">Artistes</a>
         <a href="actualites.html">Actualités</a>
         <a href="galerie.html">Galerie</a>
         <a href="partenaires.html">Partenaires</a>

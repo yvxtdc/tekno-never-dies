@@ -110,6 +110,30 @@ export function parisOffset(isoDate, hour = 12) {
   return key >= summerStart && key < summerEnd ? "+02:00" : "+01:00";
 }
 
+/** { y, mo, d, h, mi } (heure de Paris) -> Date */
+export function partsToDate({ y, mo, d, h = 0, mi = 0 }) {
+  const isoDate = `${y}-${pad(mo)}-${pad(d)}`;
+  return new Date(`${isoDate}T${pad(h)}:${pad(mi)}:00${parisOffset(isoDate, h)}`);
+}
+
+/**
+ * Début et fin réels (Date) d'une soirée, ou d'un créneau du line-up si `time` est donné
+ * ("1h00 – 2h30" pour une soirée qui commence à 21h00 = le lendemain). null sans horaire.
+ */
+export function eventRange(ev, time = ev.time) {
+  if (ev.datePrecision === "month") return null;
+  const slot = eventTimes({ date: ev.date, time });
+  if (slot.allDay) return null;
+  let start = partsToDate(slot.start);
+  let end = partsToDate(slot.end);
+  const evStart = parseHour(ev.time);
+  if (time !== ev.time && evStart && slot.start.h * 60 + slot.start.mi < evStart.h * 60 + evStart.m) {
+    start = new Date(start.getTime() + 864e5);
+    end = new Date(end.getTime() + 864e5);
+  }
+  return { start, end };
+}
+
 function vevent(ev, baseUrl, stamp) {
   const { allDay, start, end } = eventTimes(ev);
   const url = new URL(`evenement.html?slug=${ev.slug}`, baseUrl).href;

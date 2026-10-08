@@ -44,6 +44,12 @@ jobs:
             --exclude 'package.json' --exclude 'package-lock.json' --exclude 'serve.json' \
             ./ _site/
 
+      # Fichiers CSS et JS compactés (commentaires et espaces retirés) dans la copie publiée
+      # uniquement : les fichiers du dépôt restent lisibles et commentés.
+      - name: Minify CSS and JS
+        working-directory: _site
+        run: npx --yes esbuild@0.25.0 "js/**/*.js" "css/**/*.css" --minify --outdir=. --outbase=. --allow-overwrite --log-level=warning
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 

@@ -14,6 +14,8 @@ const WEBP_QUALITY = 78;
 const KEEP_JPEG = true;   // true = crée aussi un .jpg haute qualité pour le bouton « Enregistrer »
 const JPEG_MAX = 2800;
 const JPEG_QUALITY = 88;
+const THUMB_MAX = 720;    // px, vignette de la grille (affichée à ~350 px, nette sur écran Retina)
+const THUMB_QUALITY = 72;
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const GALLERY_DIR = path.join(ROOT, "assets/img/gallery");
@@ -95,6 +97,14 @@ if (await exists(GALLERY_DIR)) {
         const { width, height } = await sharp(path.join(dir, name)).metadata();
         const jpg = name.replace(/\.webp$/, ".jpg");
         const p = { src: web(path.join(dir, name)) };
+        // Vignette légère pour la grille (créée une seule fois, à partir du WebP)
+        const thumbName = name.replace(/\.webp$/, "-thumb.webp");
+        if (!(await exists(path.join(dir, thumbName)))) {
+          await sharp(path.join(dir, name))
+            .resize({ width: THUMB_MAX, height: THUMB_MAX, fit: "inside", withoutEnlargement: true })
+            .webp({ quality: THUMB_QUALITY }).toFile(path.join(dir, thumbName));
+        }
+        p.thumb = web(path.join(dir, thumbName));
         if (await exists(path.join(dir, jpg))) p.full = web(path.join(dir, jpg));
         p.w = width; p.h = height;
         photos.push(p);
