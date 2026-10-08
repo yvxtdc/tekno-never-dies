@@ -1,5 +1,5 @@
 import { EVENTS } from "../data/events.js";
-import { splitB2B, artistsOf, artistUrl, artistPhoto } from "./artists.js";
+import { splitB2B, artistsOf, artistUrl, artistPhoto, slotStyle } from "./artists.js";
 import { SITE } from "../data/site.js";
 import { formatDate, readParam, eventStatus } from "./helpers.js";
 import { downloadICS, eventTimes, eventRange, parisOffset } from "./ics.js";
@@ -191,7 +191,7 @@ if (!root) {
               : status === "a-venir" ? `<span class="lineup-row__time">Horaire à confirmer</span>` : ""}
             <span class="lineup-row__live">En ce moment</span>
             <h3>${artist.name ? artistName(artist.name) : "Artiste à renseigner"}</h3>
-            ${artist.style ? `<p class="lineup-row__style">${escapeHTML(artist.style)}</p>` : ""}
+            ${(artist.style || slotStyle(artist.name)) ? `<p class="lineup-row__style">${escapeHTML(artist.style || slotStyle(artist.name))}</p>` : ""}
           </div>
           ${artist.demo ? `<span class="lineup-row__draft">À compléter</span>` : artist.collective ? `<span class="lineup-row__collective">${escapeHTML(artist.collective)}</span>` : ""}
         </li>
