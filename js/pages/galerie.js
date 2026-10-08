@@ -101,6 +101,17 @@ if (nav && GALLERY.length) {
   });
 }
 
+/* ---------- Téléphone : la photo passe en couleur en arrivant au milieu de l'écran ----------
+   Sur un écran tactile (pas de survol), même effet que le survol sur ordinateur. Les photos
+   masquées derrière « Voir plus » sont observées aussi : elles s'allument une fois affichées. */
+if ("IntersectionObserver" in window && matchMedia("(hover: none)").matches) {
+  const tileObserver = new IntersectionObserver(
+    (entries) => entries.forEach((entry) => entry.target.classList.toggle("is-active", entry.isIntersecting)),
+    { rootMargin: "-20% 0px -20% 0px" } // zone centrale de l'écran
+  );
+  root.querySelectorAll(".g-tile").forEach((tile) => tileObserver.observe(tile));
+}
+
 /* ---------- Lightbox (agrandissement + enregistrement) ---------- */
 const lb = document.createElement("div");
 lb.className = "lightbox";

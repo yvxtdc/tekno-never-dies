@@ -661,9 +661,11 @@ select option{background:#150d3b;color:#fff}
 .g-tile:focus-visible{border-color:var(--lav);box-shadow:var(--glow-lav)}
 
 .g-tile:hover img,
+.g-tile.is-active img,
 .g-tile:focus-visible img{filter:grayscale(0);transform:scale(1.06)}
 
 .g-tile:hover::after,
+.g-tile.is-active::after,
 .g-tile:focus-visible::after{opacity:0}
 
 .g-tile:focus-visible{outline:2px solid var(--lav);outline-offset:2px}
