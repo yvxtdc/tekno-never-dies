@@ -9,6 +9,16 @@ export function formatDate(iso, precision = "day") {
   return `${d} ${MONTHS[m - 1]} ${y}`;
 }
 
+/**
+ * "a-venir" ou "passe", calculé depuis la date : plus besoin de changer le statut à la main.
+ * Une soirée reste « à venir » toute la journée de sa date (elle peut finir après minuit).
+ */
+export function eventStatus(ev) {
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  return ev.date >= today ? "a-venir" : "passe";
+}
+
 /** Échappe le texte avant de l'insérer dans du HTML (innerHTML). */
 export function esc(s) {
   return String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));

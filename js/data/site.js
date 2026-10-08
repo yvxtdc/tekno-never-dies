@@ -4,13 +4,13 @@ const ADDRESS = {
   city: "Lauterbourg"
 };
 
-const AGENDA_PATH = "yannismetzinger06-ship-it.github.io/tekno-never-dies/calendar/events.ics";
+const AGENDA_PATH = "yvxtdc.github.io/tekno-never-dies/calendar/events.ics";
 
 export const SITE = {
   name: "Tekno Never Dies",
   shortName: "TND6TEM",
   description: "Association de musique électronique et sound system basée à Lauterbourg, dans le Bas-Rhin.",
-  url: "https://yannismetzinger06-ship-it.github.io/tekno-never-dies/",
+  url: "https://yvxtdc.github.io/tekno-never-dies/",
   // Agenda .ics à jour (généré par tools/generate-calendar.mjs). Si l'adresse du site change,
   // mettre à jour AGENDA_PATH puis régénérer assets/img/agenda-qr.svg (voir README).
   agenda: {

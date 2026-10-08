@@ -25,6 +25,9 @@ const CALENDAR_DOMAIN = "tekno-never-dies.fr";
 
 const DEFAULT_TIMEZONE = "Europe/Paris";
 
+// --check : vérifie seulement que calendar/events.ics correspond à events.js (utilisé au déploiement).
+const CHECK = process.argv.includes("--check");
+
 
 /* ============================================================
    UTILITAIRES
@@ -613,6 +616,21 @@ async function main() {
       event,
       previousState
     );
+  }
+
+  if (CHECK) {
+    const upToDate =
+      JSON.stringify(newState) === JSON.stringify(previousState);
+
+    if (!upToDate) {
+      console.error(
+        "✗ calendar/events.ics n'est pas à jour : lance « npm run calendar »."
+      );
+      process.exit(1);
+    }
+
+    console.log("✓ Agenda à jour.");
+    return;
   }
 
   const calendar = generateCalendar(

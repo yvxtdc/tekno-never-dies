@@ -8,6 +8,11 @@ const norm = (p, title) => (typeof p === "string" ? { src: p, alt: title } : { a
 
 const sets = []; // sets[i] = photos de l'événement i (pour naviguer dans le lightbox)
 
+/* Ancre d'un événement (galerie.html#ice-boiler) : son eventSlug, sinon tirée du titre */
+const slugify = (s) =>
+  s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+const anchorOf = (ev) => ev.eventSlug || slugify(ev.title);
+
 function tile(p, setIdx, i) {
   const size = p.w && p.h ? ` width="${p.w}" height="${p.h}"` : "";
   return `<button class="g-tile" type="button" data-set="${setIdx}" data-i="${i}" aria-label="Agrandir : ${esc(p.alt)}">
@@ -29,8 +34,8 @@ if (!GALLERY.length) {
             const photos = ev.photos.map((p) => norm(p, ev.title));
             const setIdx = sets.push({ title: ev.title, photos }) - 1;
             return `
-          <div class="gallery-event" id="${ev.eventSlug || ""}">
-            <h3>${ev.title}</h3>
+          <div class="gallery-event" id="${esc(anchorOf(ev))}">
+            <h3>${esc(ev.title)}</h3>
             <div class="gallery-masonry">
               ${photos.length ? photos.map((p, i) => tile(p, setIdx, i)).join("") : thumb(null, ev.title, "Photos à venir")}
             </div>
@@ -40,21 +45,22 @@ if (!GALLERY.length) {
       </section>`
     )
     .join("");
+
+  // La galerie est construite après le chargement : on rejoint ensuite l'ancre demandée
+  // (lien « Voir la galerie » d'une fiche événement).
+  const target = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+  if (target) requestAnimationFrame(() => target.scrollIntoView());
 }
 
 /* ---------- Sous-menu Année / Événement (accordéon) ---------- */
 const nav = document.getElementById("gallery-nav");
 if (nav && GALLERY.length) {
-  const slugify = (s) =>
-    s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-
   nav.innerHTML = [...GALLERY]
     .sort((a, b) => b.year - a.year)
     .map((yearBlock, i) => {
       const items = yearBlock.events
         .map((ev) => {
-          const slug = ev.eventSlug || slugify(ev.title);
-          return `<li><a href="#${slug}">${esc(ev.title)}</a></li>`;
+          return `<li><a href="#${esc(anchorOf(ev))}">${esc(ev.title)}</a></li>`;
         })
         .join("");
       return `
@@ -159,6 +165,15 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") close();
   else if (e.key === "ArrowLeft") show(cur.set, cur.i - 1);
   else if (e.key === "ArrowRight") show(cur.set, cur.i + 1);
+  else if (e.key === "Tab") {
+    // Le focus reste dans la photo agrandie tant qu'elle est ouverte
+    const items = [...lb.querySelectorAll("button, a[href]")].filter((el) => el.offsetParent !== null);
+    const i = items.indexOf(document.activeElement);
+    if (i === -1 || (e.shiftKey && i === 0) || (!e.shiftKey && i === items.length - 1)) {
+      e.preventDefault();
+      items.at(e.shiftKey ? -1 : 0)?.focus();
+    }
+  }
 });
 
 /* Swipe tactile */

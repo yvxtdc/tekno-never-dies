@@ -31,7 +31,7 @@ vendor/three/                     Three.js
 
 | Je veux… | Je vais dans… |
 |---|---|
-| Ajouter / modifier un événement | `js/data/events.js`, puis `npm run calendar` |
+| Ajouter / modifier un événement | `js/data/events.js`, puis `npm run calendar` (« à venir » / « passé » est calculé depuis la date) |
 | Ajouter des photos à la galerie | `npm run photos -- import/mon-dossier --titre "…" --date AAAA-MM-JJ` |
 | Modifier la FAQ, les actualités, les partenaires | `js/data/faq.js`, `actualites.js`, `partenaires.js` |
 | Modifier l'équipe | `js/data/equipe.js` |
@@ -51,7 +51,7 @@ modifie `partials/header.html` ou `partials/footer.html`, puis lance `npm run pa
 
 | Commande | Rôle |
 |---|---|
-| `validate` | Liens et images locaux, HTML bien fermé, meta, `id` uniques, header/footer à jour, sitemap, adresse cohérente. Liste aussi ce qui reste à compléter (`-- --strict` pour en faire une erreur). |
+| `validate` | Liens et images locaux, HTML bien fermé, meta, `id` uniques, header/footer à jour, agenda `.ics` à jour, `og:image`, images citées dans `js/data`, sitemap, adresse cohérente. Liste aussi ce qui reste à compléter (`-- --strict` pour en faire une erreur). |
 | `partials` | Recopie header et footer dans toutes les pages. |
 | `calendar` | Régénère `calendar/events.ics` depuis `js/data/events.js`. |
 | `photos` | Convertit un dossier de photos (WebP + JPEG) et met à jour la galerie. |
@@ -68,14 +68,14 @@ Le workflow `.github/workflows/deploy-pages.yml` vérifie puis déploie le site 
 
 Avant de publier :
 
-1. **Adresse du site** : l’URL GitHub Pages connue est `https://yannismetzinger06-ship-it.github.io/tekno-never-dies/`.
+1. **Adresse du site** : l’URL GitHub Pages connue est `https://yvxtdc.github.io/tekno-never-dies/`.
    Si le dépôt ou l’hébergement change, mettre à jour `js/data/site.js`, `sitemap.xml`, `robots.txt` et `calendar/events.ics`.
    Le sitemap est à l’URL du projet. Attention : sur GitHub Pages projet, `robots.txt` est servi sous `/tekno-never-dies/`, alors que les robots le recherchent à la racine de l’hôte (`/robots.txt`). Pour rendre cette directive officiellement accessible, il faudra un domaine dédié ou un site GitHub Pages utilisateur/organisation à la racine ; à défaut, soumettre le sitemap séparément aux moteurs de recherche.
 2. **Agenda** : l'adresse `.ics` est dans `SITE.agenda` (`js/data/site.js`). Si elle change, régénérer le QR code
    `assets/img/agenda-qr.svg` (encodant l'adresse `webcal://…`).
-3. **Aperçu sur les réseaux** : ajouter une image `og:image` (adresse absolue, donc après le point 1) dans le `<head>` des pages.
-4. **Placeholders** : `npm run validate` liste les champs `[… À REMPLACER]`, les événements `demo` et les partenaires d'exemple.
-5. **Page 404** : ses liens sont relatifs ; sur un hébergement en sous-dossier, elle s'affiche sans style si l'adresse erronée est imbriquée.
+3. **Aperçu sur les réseaux** : `assets/img/og-image.jpg` (1200×630) est déclarée dans le `<head>` de chaque page, avec `og:url` et `canonical` en adresse absolue. Si l'adresse du site change, les remplacer dans toutes les pages. Les fiches événement utilisent leur flyer.
+4. **Contenus de démo** : les partenaires et actualités marqués `demo: true` ne sont jamais affichés au public. `npm run validate` les liste, ainsi que les champs `[… À REMPLACER]`, les réponses FAQ `needsValidation` et la billetterie ou le line-up manquants des prochaines soirées.
+5. **Page 404** : une balise `<base>` (ajoutée par un petit script) garde styles et liens corrects, même sur une adresse imbriquée. Si le nom du dépôt change, mettre à jour `/tekno-never-dies/` dans `404.html`.
 
 ## Informations publiques vérifiées
 
@@ -91,9 +91,10 @@ Ces informations sont une base de travail : elles ne remplacent pas la validatio
 
 ## Informations à finaliser avant publication
 
-- Confirmer le numéro RNA et le code APE.
+- Ajouter le numéro RNA dans `mentions-legales.html` (emplacement signalé par un commentaire).
 - Appliquer la suppression des demandes au plus tard trois ans après le dernier échange, y compris dans la boîte mail et Formspree ; vérifier les conditions de sous-traitance et les garanties de transfert international du compte.
-- Ajouter les horaires, l’adresse précise et les modalités de billetterie d’ICE BOILER v2.
+- ICE BOILER v2 : ajouter le lien de billetterie (`ticketUrl`) et le line-up dans `js/data/events.js`.
+- Désactiver GitHub Pages sur l’ancienne copie `yannismetzinger06-ship-it/tekno-never-dies` (contenu en double).
 - Vérifier les autorisations de publication des photos et informations de l’équipe et des personnes photographiées.
 - Remplacer ou confirmer les contenus de démonstration (partenaires, actualités et autres profils sociaux) avant de les présenter comme réels.
 - Confirmer l’exactitude du QR code d’agenda après changement de l’URL d’hébergement.

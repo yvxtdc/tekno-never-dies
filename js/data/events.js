@@ -5,7 +5,7 @@
  * Pour ajouter un événement : copie un objet ci-dessous, change les valeurs.
  * "slug" doit être unique (utilisé dans l'adresse de la fiche, ex :
  * evenement.html?slug=soiree-halloween-2026), sans espaces ni accents.
- * "status" : "a-venir" ou "passe".
+ * "À venir" / "passé" est calculé automatiquement depuis "date" (rien à changer après la soirée).
  *
  * Visuels :
  *   "flyer"      → affiche de la soirée (portrait), montrée en entier sur la fiche
@@ -16,10 +16,9 @@
 export const EVENTS = [
   {
     slug: "ice-boiler-v2-2026",
-    status: "a-venir",
     title: "ICE BOILER v2",
     date: "2026-11-28",
-    time: "21h00 - 4h00",
+    time: "21h00 – 4h00",
     place: "Salle polyvalente, 81 rue du Rhin, Munchhausen",
     price: "15 €",
     age: "Dès 16 ans",
@@ -32,7 +31,6 @@ export const EVENTS = [
   },
   {
     slug: "center-drop-2026",
-    status: "passe",
     title: "Center Drop",
     date: "2026-04-04",
     time: "21h00 – 4h00",
@@ -53,7 +51,6 @@ export const EVENTS = [
   },
   {
     slug: "fete-musique-wissembourg-2025",
-    status: "passe",
     title: "Fête de la musique",
     date: "2025-06-21",
     time: "16h00 – 00h00",
@@ -78,16 +75,15 @@ export const EVENTS = [
   },
   {
     slug: "ice-boiler-v1-2025",
-    status: "passe",
     date: "2025-11-22",
-    title: "Ice Boiler v1",
+    title: "ICE BOILER v1",
     time: "20h00 – 4h00",
     place: "Salle des fêtes, Munchhausen",
     ticketUrl: "",
     flyer: "assets/img/events/flyer-ice-boiler-v1-2025.webp",
     cover: "assets/img/events/soiree1.webp",
     genres: ["Techno"],
-    description: "Première édition d'Ice Boiler, soirée techno organisée à la salle des fêtes de Munchhausen le 22 novembre 2025 par Tekno Never Dies.",
+    description: "Première édition d'ICE BOILER, soirée techno organisée à la salle des fêtes de Munchhausen le 22 novembre 2025 par Tekno Never Dies.",
     practical: ["Dès 16 ans", "200 participant·es"],
     lineup: [
       { name: "DANN OCTA b2b DJ NIKOTYN", time: "20h00 – 21h00" },

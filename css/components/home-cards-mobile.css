@@ -22,7 +22,7 @@
   }
 
   /* Titre : 1re ligne blanche, 2e ligne qui apparaît en dégradé */
-  .home-card.is-active h3{
+  .home-card.is-active h2{
     background-image:none;
     -webkit-background-clip:border-box;
     background-clip:border-box;
@@ -31,7 +31,7 @@
     filter:drop-shadow(.035em .035em 0 rgba(66,38,182,.7));
   }
 
-  .home-card.is-active h3 span{
+  .home-card.is-active h2 span{
     opacity:1;
     transform:translateY(0);
     background-image:var(--gradient-card);

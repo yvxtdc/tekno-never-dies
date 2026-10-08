@@ -28,10 +28,13 @@ function addMeta(name, content, attribute = "name") {
 }
 
 function initSeo() {
-  // og:title, og:description, theme-color… sont écrits en dur dans chaque page (les robots des
-  // réseaux sociaux n'exécutent pas de JavaScript). Ici : uniquement ce qui dépend du domaine.
-  if (SITE.url && !SITE.url.includes("example.org")) {
-    const url = new URL(location.pathname, SITE.url).href;
+  // og:title, og:description, og:url, canonical… sont écrits en dur dans chaque page (les robots des
+  // réseaux sociaux n'exécutent pas de JavaScript). Ici : uniquement les pages qui n'en ont pas,
+  // comme evenement.html dont l'adresse dépend de ?slug=.
+  if (SITE.url && !document.head.querySelector('link[rel="canonical"]') && !document.querySelector('meta[name="robots"][content*="noindex"]')) {
+    const slug = new URLSearchParams(location.search).get("slug");
+    const page = location.pathname.split("/").pop();
+    const url = new URL(page + (slug ? `?slug=${encodeURIComponent(slug)}` : ""), SITE.url).href;
     addMeta("og:url", url, "property");
     const canonical = document.createElement("link");
     canonical.rel = "canonical";
@@ -47,6 +50,10 @@ function initSeo() {
     name: legalName,
     alternateName: SITE.shortName,
     description,
+    url: SITE.url,
+    logo: new URL("assets/img/badge-white.webp", SITE.url).href,
+    email: "tnd6tem@gmail.com",
+    sameAs: ["https://www.instagram.com/tnd6tem/"],
     address: {
       "@type": "PostalAddress",
       ...(address.street ? { streetAddress: address.street } : {}),
@@ -111,6 +118,15 @@ function initScrolledHeader() {
   window.addEventListener("scroll", update, { passive: true });
 }
 
+// Page 404 (balise <base>) : les ancres "#main" doivent rester sur la page courante.
+function fixAnchorsWithBase() {
+  if (!document.querySelector("base")) return;
+  document.querySelectorAll('a[href^="#"]').forEach((a) => {
+    a.href = location.href.split("#")[0] + a.getAttribute("href");
+  });
+}
+
+fixAnchorsWithBase();
 markActiveLink();
 initMenu();
 initScrolledHeader();

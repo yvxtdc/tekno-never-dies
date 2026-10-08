@@ -47,6 +47,10 @@ for (const file of files.filter((f) => /\.(html|css|js)$/.test(f))) {
 const sync = spawnSync(process.execPath, [path.join(root, "tools", "sync-partials.mjs"), "--check"], { encoding: "utf8" });
 if (sync.status !== 0) errors.push(...sync.stderr.trim().split("\n").filter(Boolean));
 
+/* ---------- 2 bis. agenda .ics à jour ---------- */
+const calendar = spawnSync(process.execPath, [path.join(root, "tools", "generate-calendar.mjs"), "--check"], { encoding: "utf8" });
+if (calendar.status !== 0) errors.push(calendar.stderr.trim().split("\n").filter(Boolean).at(-1) || "calendar/events.ics pas à jour");
+
 /* ---------- 3. structure HTML de chaque page ---------- */
 const VOID = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"]);
 for (const file of pages) {
@@ -71,6 +75,7 @@ for (const file of pages) {
   if (!/<html lang="fr"/.test(html)) err(file, "attribut lang manquant");
   if (!/<title>[^<]+<\/title>/.test(html)) err(file, "balise <title> manquante");
   if (!noindex && !/<meta name="description" content="[^"]+"/.test(html)) err(file, "meta description manquante");
+  if (!noindex && !/<meta property="og:image" content="https:\/\/[^"]+"/.test(html)) err(file, "og:image manquante (aperçu sur les réseaux sociaux)");
   if ((clean.match(/<h1[\s>]/g) || []).length > 1) err(file, "plusieurs <h1>");
   if (!/<main id="main"/.test(html)) err(file, '<main id="main"> manquant (cible du lien « Aller au contenu »)');
   for (const m of clean.matchAll(/<img\b[^>]*>/g)) if (!/\salt=/.test(m[0])) err(file, `image sans alt : ${m[0].slice(0, 70)}`);
@@ -82,6 +87,31 @@ const slugs = events.map((e) => e.slug);
 const dupSlugs = slugs.filter((s, i) => slugs.indexOf(s) !== i);
 if (dupSlugs.length) err(path.join(root, "js/data/events.js"), `slugs en double : ${[...new Set(dupSlugs)].join(", ")}`);
 for (const e of events) if (e.demo) todo.push(`événement « ${e.slug} » encore marqué demo`);
+
+// Contenus de démonstration (masqués au public, mais à remplacer) et réponses à faire relire
+const dataModule = async (name) => import(pathToFileURL(path.join(root, "js/data", name)).href);
+const { PARTENAIRES } = await dataModule("partenaires.js");
+const { ACTUALITES } = await dataModule("actualites.js");
+const { TEAM } = await dataModule("equipe.js");
+const { FAQ } = await dataModule("faq.js");
+const demoCount = (list) => list.filter((x) => x.demo).length;
+if (demoCount(PARTENAIRES)) todo.push(`js/data/partenaires.js : ${demoCount(PARTENAIRES)} partenaire(s) de démo (non affichés) à remplacer`);
+if (demoCount(ACTUALITES)) todo.push(`js/data/actualites.js : ${demoCount(ACTUALITES)} actualité(s) de démo (non affichées) à remplacer`);
+if (demoCount(TEAM)) todo.push(`js/data/equipe.js : ${demoCount(TEAM)} profil(s) de démo`);
+const toCheck = FAQ.filter((x) => x.needsValidation).length;
+if (toCheck) todo.push(`js/data/faq.js : ${toCheck} réponse(s) marquée(s) needsValidation à faire valider par l'équipe`);
+for (const e of events.filter((e) => e.date >= new Date().toISOString().slice(0, 10))) {
+  if (!e.ticketUrl) todo.push(`événement « ${e.slug} » : lien de billetterie (ticketUrl) vide`);
+  if (!e.lineup?.length) todo.push(`événement « ${e.slug} » : line-up pas encore renseigné`);
+}
+
+// Images et fichiers cités dans les données (js/data/*.js)
+for (const name of fs.readdirSync(path.join(root, "js/data"))) {
+  const file = path.join(root, "js/data", name);
+  for (const [, ref] of read(file).matchAll(/["'](assets\/[^"']+)["']/g)) {
+    if (!fs.existsSync(path.join(root, ref))) err(file, `fichier absent : ${ref}`);
+  }
+}
 
 const { SITE } = await import(pathToFileURL(path.join(root, "js/data/site.js")).href);
 const streets = new Set();

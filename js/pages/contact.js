@@ -6,13 +6,20 @@ const eventField = document.querySelector("#field-evenement");
 const locationField = document.querySelector("#field-lieu");
 const participantsField = document.querySelector("#field-participants");
 
-// Champs supplémentaires selon le type de demande
+// Champs supplémentaires selon le type de demande. Un champ masqué est aussi désactivé :
+// sa valeur (même pré-remplie depuis l'adresse) n'est alors pas envoyée.
+function showField(field, visible) {
+  if (!field) return;
+  field.hidden = !visible;
+  field.querySelectorAll("input, select, textarea").forEach((input) => { input.disabled = !visible; });
+}
+
 function updateFields() {
   const value = type?.value;
-  dateField?.toggleAttribute("hidden", value !== "evenement");
-  eventField?.toggleAttribute("hidden", !["evenement", "info-soiree"].includes(value));
-  locationField?.toggleAttribute("hidden", !["evenement", "projet"].includes(value));
-  participantsField?.toggleAttribute("hidden", !["evenement", "projet"].includes(value));
+  showField(dateField, value === "evenement");
+  showField(eventField, ["evenement", "info-soiree"].includes(value));
+  showField(locationField, ["evenement", "projet"].includes(value));
+  showField(participantsField, ["evenement", "projet"].includes(value));
 }
 
 type?.addEventListener("change", updateFields);
@@ -31,6 +38,10 @@ updateFields();
 form?.addEventListener("submit", async (event) => {
   event.preventDefault();
   const button = form.querySelector('button[type="submit"]');
+  // Objet de l'e-mail reçu : « [Site TND] Bénévolat — Prénom Nom »
+  const subject = document.querySelector("#contact-subject");
+  const name = form.elements.nom?.value.trim();
+  if (subject && type?.value) subject.value = `[Site TND] ${type.selectedOptions[0].text}${name ? ` — ${name}` : ""}`;
   button.disabled = true;
   status.textContent = "Envoi en cours…";
   try {

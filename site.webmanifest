@@ -1,0 +1,13 @@
+{
+  "name": "Tekno Never Dies",
+  "short_name": "TND6TEM",
+  "lang": "fr",
+  "start_url": "./",
+  "display": "browser",
+  "background_color": "#120b38",
+  "theme_color": "#4226b6",
+  "icons": [
+    { "src": "assets/img/favicon.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/img/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}
