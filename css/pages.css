@@ -214,7 +214,7 @@
 
 .legal-content > *{max-width:850px}
 
-/* 4. Titres dans les cartes (Nos actions, Partenaires, Qui sommes-nous,
+/* 4. Titres dans les cartes (Nos actions, Qui sommes-nous,
       catégories Location) : ils héritaient de la taille des grands titres
       de section et sortaient des cartes. */
 .info-card h2{font-size:clamp(1.5rem,2.6vw,2.3rem);line-height:1;margin-bottom:.5em;overflow-wrap:anywhere}
@@ -1254,7 +1254,7 @@ button.event-gallery-link{background:none;border-width:0 0 1px;border-radius:0;f
 .lineup-row.is-live::before{background:var(--pink);box-shadow:0 0 14px var(--pink)}
 .event-hero.is-live .event-hero__top .event-eyebrow{display:inline-flex;align-items:center;gap:10px}
 .event-hero.is-live .event-hero__top .event-eyebrow::before{background:var(--pink)}
-.event-hero.is-live .event-hero__top .event-eyebrow::after{content:"EN DIRECT";color:var(--pink);margin-left:.6em}
+.event-hero.is-live .event-hero__top .event-eyebrow::after{content:var(--t-live,"EN DIRECT");color:var(--pink);margin-left:.6em}
 @media (prefers-reduced-motion:reduce){
   .lineup-row.is-live .lineup-row__live::before,
   .event-hero.is-live .event-hero__top .event-eyebrow::before{animation:none}

@@ -1,4 +1,5 @@
 import { TEAM } from '../data/equipe.js';
+import { t } from '../i18n/i18n.js';
 
 const carousel = document.querySelector('.team-carousel');
 const track = document.querySelector('.team-track');
@@ -21,7 +22,7 @@ const cards = TEAM.map(member => {
   button.dataset.member = member.slug;
   button.setAttribute(
     'aria-label',
-    `Voir la fiche de ${member.name}`
+    t('Voir la fiche de {name}', { name: member.name })
   );
 
   const img = document.createElement('img');
@@ -71,6 +72,7 @@ let dragging = false;
 
 let startX = 0;
 let startOffset = 0;
+let dragged = false; // vrai si le doigt / la souris a vraiment bougé (ce n'est plus un clic)
 
 
 /* =========================================================
@@ -212,6 +214,7 @@ carousel.addEventListener(
 
     startX = event.clientX;
     startOffset = offset;
+    dragged = false;
   }
 );
 
@@ -225,6 +228,8 @@ carousel.addEventListener(
   (event) => {
 
     if (!dragging) return;
+
+    if (Math.abs(event.clientX - startX) > 6) dragged = true;
 
     offset =
       startOffset +
@@ -410,6 +415,8 @@ function openModal(member, trigger) {
 
   document.body.style.overflow =
     'hidden';
+
+  modal.querySelector('.team-modal-close')?.focus();
 }
 
 
@@ -442,6 +449,11 @@ track.addEventListener(
 
     if (!button) return;
 
+    // Fin d'un glisser sur une carte : on ne l'ouvre pas.
+    if (dragged && event.detail !== 0) {
+      dragged = false;
+      return;
+    }
 
     const member =
       TEAM.find(

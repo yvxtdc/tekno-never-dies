@@ -1,6 +1,7 @@
 /** Artistes : noms, liens Instagram et photos, partagés par la fiche soirée et la page Artistes. */
 import { ARTISTS, ARTIST_STYLES } from "../data/artistes.js";
 import { ARTIST_PHOTOS } from "../data/artistes-photos.js";
+import { safeUrl } from "./helpers.js";
 
 /** "Dann Octa" -> "dannocta" : majuscules, espaces et ponctuation ne comptent pas. */
 export const artistKey = (name) => name.toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -13,7 +14,7 @@ export const splitB2B = (name) => name.split(/(\s+b2b\s+)/i);
 /** Les artistes d'une ligne du line-up : ["Leander", "Sven Gerber"]. */
 export const artistsOf = (name = "") => splitB2B(name).filter((_, i) => i % 2 === 0).map((part) => part.trim()).filter(Boolean);
 
-export const artistUrl = (name) => byKey.get(artistKey(name))?.url;
+export const artistUrl = (name) => safeUrl(byKey.get(artistKey(name))?.url) || undefined;
 export const artistPhoto = (name) => ARTIST_PHOTOS[artistKey(name)];
 const styleByKey = new Map(Object.entries(ARTIST_STYLES).map(([name, style]) => [artistKey(name), style]));
 export const artistStyle = (name) => styleByKey.get(artistKey(name));
