@@ -107,7 +107,7 @@ if (nav && GALLERY.length) {
 if ("IntersectionObserver" in window && matchMedia("(hover: none)").matches) {
   const tileObserver = new IntersectionObserver(
     (entries) => entries.forEach((entry) => entry.target.classList.toggle("is-active", entry.isIntersecting)),
-    { rootMargin: "-20% 0px -20% 0px" } // zone centrale de l'écran
+    { rootMargin: "-35% 0px -35% 0px" } // bande centrale (30 % de la hauteur de l'écran)
   );
   root.querySelectorAll(".g-tile").forEach((tile) => tileObserver.observe(tile));
 }

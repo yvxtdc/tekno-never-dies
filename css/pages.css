@@ -657,16 +657,23 @@ select option{background:#150d3b;color:#fff}
   pointer-events:none;
 }
 
-.g-tile:hover,
+/* Photo « allumée » : survol sur ordinateur, focus clavier, ou milieu de l'écran sur téléphone
+   (classe .is-active posée par js/pages/galerie.js). Le :hover est réservé aux écrans à souris,
+   sinon sur téléphone la photo touchée resterait en couleur après la fermeture de l'agrandissement. */
+.g-tile.is-active,
 .g-tile:focus-visible{border-color:var(--lav);box-shadow:var(--glow-lav)}
 
-.g-tile:hover img,
 .g-tile.is-active img,
 .g-tile:focus-visible img{filter:grayscale(0);transform:scale(1.06)}
 
-.g-tile:hover::after,
 .g-tile.is-active::after,
 .g-tile:focus-visible::after{opacity:0}
+
+@media (hover:hover){
+  .g-tile:hover{border-color:var(--lav);box-shadow:var(--glow-lav)}
+  .g-tile:hover img{filter:grayscale(0);transform:scale(1.06)}
+  .g-tile:hover::after{opacity:0}
+}
 
 .g-tile:focus-visible{outline:2px solid var(--lav);outline-offset:2px}
 
