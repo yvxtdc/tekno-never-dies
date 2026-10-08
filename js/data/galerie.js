@@ -750,11 +750,6 @@ export const GALLERY = [
             "h": 1800
           }
         ]
-      },
-      {
-        "title": "ICE BOILER v1",
-        "eventSlug": "ice-boiler",
-        "photos": []
       }
     ]
   }
