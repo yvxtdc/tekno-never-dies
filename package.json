@@ -9,7 +9,8 @@
     "partials": "node tools/sync-partials.mjs",
     "validate": "node tools/validate.mjs",
     "calendar": "node tools/generate-calendar.mjs",
-    "photos": "node tools/photos.mjs"
+    "photos": "node tools/photos.mjs",
+    "artistes": "node tools/artistes.mjs"
   },
   "license": "UNLICENSED",
   "devDependencies": {

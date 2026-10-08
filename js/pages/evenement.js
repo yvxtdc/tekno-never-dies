@@ -1,4 +1,6 @@
 import { EVENTS } from "../data/events.js";
+import { ARTISTS } from "../data/artistes.js";
+import { ARTIST_PHOTOS } from "../data/artistes-photos.js";
 import { SITE } from "../data/site.js";
 import { formatDate, readParam, eventStatus } from "./helpers.js";
 import { downloadICS, eventTimes, parisOffset } from "./ics.js";
@@ -15,6 +17,25 @@ const timeToMinutes = (value = "") => {
   const match = value.match(/(\d{1,2})h(\d{2})/i);
   return match ? Number(match[1]) * 60 + Number(match[2]) : null;
 };
+
+/* Nom d'artiste -> lien Instagram (js/data/artistes.js). Un B2B donne un lien par artiste. */
+const artistKey = (name) => name.toLowerCase().replace(/[^a-z0-9]/g, "");
+const artistLinks = new Map(Object.entries(ARTISTS).map(([name, url]) => [artistKey(name), url]));
+const splitB2B = (name) => name.split(/(\s+b2b\s+)/i);
+// Photos de profil du cercle (js/data/artistes-photos.js) : une par artiste, un deuxième cercle pour un B2B.
+const artistPhotos = (artist) =>
+  artist.image
+    ? [artist.image]
+    : splitB2B(artist.name || "").filter((_, i) => i % 2 === 0).map((part) => ARTIST_PHOTOS[artistKey(part)]).filter(Boolean);
+const artistName = (name) =>
+  splitB2B(name)
+    .map((part, i) => {
+      const url = i % 2 ? null : artistLinks.get(artistKey(part));
+      return url
+        ? `<a href="${escapeHTML(url)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHTML(part)} sur Instagram">${escapeHTML(part)}</a>`
+        : escapeHTML(part);
+    })
+    .join("");
 
 const orderedLineup = (lineup = [], eventStart = "") => {
   const start = timeToMinutes(eventStart) ?? 0;
@@ -168,12 +189,12 @@ if (!root) {
     ? `<ul class="lineup-rows">${lineup.map((artist, i) => `
         <li class="lineup-row">
           <span class="lineup-row__num">${String(i + 1).padStart(2, "0")}</span>
-          <span class="lineup-row__photo">${artist.image ? `<img src="${escapeHTML(artist.image)}" alt="" loading="lazy" />` : ""}</span>
+          <span class="lineup-row__photos">${(artistPhotos(artist).length ? artistPhotos(artist).slice(0, 2) : [null]).map((src) => `<span class="lineup-row__photo">${src ? `<img src="${escapeHTML(src)}" alt="" loading="lazy" />` : ""}</span>`).join("")}</span>
           <div class="lineup-row__info">
             ${artist.time
               ? `<span class="lineup-row__time">${escapeHTML(artist.time)}</span>`
               : status === "a-venir" ? `<span class="lineup-row__time">Horaire à confirmer</span>` : ""}
-            <h3>${escapeHTML(artist.name || "Artiste à renseigner")}</h3>
+            <h3>${artist.name ? artistName(artist.name) : "Artiste à renseigner"}</h3>
             ${artist.style ? `<p class="lineup-row__style">${escapeHTML(artist.style)}</p>` : ""}
           </div>
           ${artist.demo ? `<span class="lineup-row__draft">À compléter</span>` : artist.collective ? `<span class="lineup-row__collective">${escapeHTML(artist.collective)}</span>` : ""}
@@ -235,12 +256,6 @@ if (!root) {
         ${flyer}
       </div>
 
-      <div class="ticker" aria-hidden="true">
-        <div class="track">
-          <span>${escapeHTML(ev.description || "Une nuit signée Tekno Never Dies.")}</span>
-          <span>${escapeHTML(ev.description || "Une nuit signée Tekno Never Dies.")}</span>
-        </div>
-      </div>
     </section>
 
     <section class="event-lineup" aria-labelledby="lineup-title">

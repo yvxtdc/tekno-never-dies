@@ -1,3 +1,25 @@
+import { EVENTS } from "../data/events.js";
+import { eventStatus, formatDate, esc } from "./helpers.js";
+
+/* ---------- Prochaine soirée (sous le hero) ----------
+   Prend la première date à venir de js/data/events.js ; le bloc reste masqué s'il n'y en a aucune. */
+const nextBlock = document.getElementById("home-next");
+const next = EVENTS
+  .filter((ev) => eventStatus(ev) === "a-venir")
+  .sort((a, b) => a.date.localeCompare(b.date))[0];
+
+if (nextBlock && next) {
+  const ficheUrl = `evenement.html?slug=${encodeURIComponent(next.slug)}`;
+  nextBlock.querySelector("h2").innerHTML = `<a href="${ficheUrl}">${esc(next.title)}</a>`;
+  nextBlock.querySelector(".home-next__when").textContent =
+    [formatDate(next.date, next.datePrecision), next.time, next.place].filter(Boolean).join(" · ");
+  nextBlock.querySelector(".home-next__price").textContent = [next.price, next.age].filter(Boolean).join(" · ");
+  nextBlock.querySelector(".home-next__actions").innerHTML = `
+    ${next.ticketUrl ? `<a class="btn btn-solid" href="${esc(next.ticketUrl)}" target="_blank" rel="noopener">Prendre ma place ↗</a>` : ""}
+    <a class="btn btn-hero-line" href="${ficheUrl}">Voir la soirée</a>`;
+  nextBlock.hidden = false;
+}
+
 // Accueil : étoiles 3D chromées derrière le hero (Three.js, chargé seulement ici).
 // Le rendu attend que le navigateur soit au repos pour ne pas retarder l'affichage du texte et
 // de la photo ; il est mis en pause dès que le hero sort de l'écran.

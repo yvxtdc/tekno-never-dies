@@ -88,47 +88,6 @@ button.team-card{
   pointer-events: none;
 }
 
-.team-card__overlay{
-  position: absolute;
-  left: 5px;
-  right: 5px;
-  bottom: 5px;
-  display: grid;
-  gap: 3px;
-  padding: 46px 16px 15px;
-  border-radius: 0 0 14px 14px;
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    rgba(0,0,0,.18) 22%,
-    rgba(0,0,0,.82) 100%
-  );
-  pointer-events: none;
-}
-
-.team-card__name{
-  font-family: var(--display);
-  font-size: clamp(1.15rem, 2vw, 1.45rem);
-  font-weight: 400;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.team-card__role{
-  font-size: .86rem;
-  line-height: 1.25;
-  opacity: .92;
-}
-
-.team-card__hint{
-  margin-top: 4px;
-  font-size: .72rem;
-  font-weight: 700;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  opacity: .72;
-}
-
 button.team-card:hover{
   transform: translateY(-4px);
   box-shadow: var(--glow-violet), 0 14px 30px rgba(0,0,0,.14);

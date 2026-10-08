@@ -29,23 +29,7 @@ const cards = TEAM.map(member => {
   img.alt = member.name;
   img.loading = 'lazy';
 
-  const overlay = document.createElement('span');
-  overlay.className = 'team-card__overlay';
-
-  const name = document.createElement('strong');
-  name.className = 'team-card__name';
-  name.textContent = member.name;
-
-  const role = document.createElement('span');
-  role.className = 'team-card__role';
-  role.textContent = member.role;
-
-  const hint = document.createElement('span');
-  hint.className = 'team-card__hint';
-  hint.textContent = member.demo ? 'Profil demo - voir la fiche' : 'Voir la fiche';
-
-  overlay.append(name, role, hint);
-  button.append(img, overlay);
+  button.append(img);
   li.append(button);
 
   return li;

@@ -18,7 +18,7 @@ function matches(ev, query) {
 
 function card(ev) {
   const ticket = ev.ticketUrl
-    ? `<a class="btn btn-cyan btn-sm" href="${esc(ev.ticketUrl)}" target="_blank" rel="noopener">Billetterie</a>`
+    ? `<a class="btn btn-solid btn-sm" href="${esc(ev.ticketUrl)}" target="_blank" rel="noopener">Billetterie</a>`
     : "";
   return `
     <li class="event-card">
