@@ -1,6 +1,6 @@
 import { EVENTS } from "../data/events.js";
 import { SITE } from "../data/site.js";
-import { formatDate, thumb, esc } from "./helpers.js";
+import { formatDate, thumb, esc, eventStatus } from "./helpers.js";
 
 const upcomingRoot = document.getElementById("upcoming-events");
 const pastRoot = document.getElementById("past-events");
@@ -45,10 +45,10 @@ function render() {
   const query = search.value.trim().toLocaleLowerCase("fr");
   const selected = filter.value;
   const filtered = EVENTS.filter((ev) =>
-    (selected === "tous" || ev.status === selected) && matches(ev, query)
+    (selected === "tous" || eventStatus(ev) === selected) && matches(ev, query)
   );
-  const upcoming = filtered.filter((ev) => ev.status === "a-venir").sort((a, b) => a.date.localeCompare(b.date));
-  const past = filtered.filter((ev) => ev.status === "passe").sort((a, b) => b.date.localeCompare(a.date));
+  const upcoming = filtered.filter((ev) => eventStatus(ev) === "a-venir").sort((a, b) => a.date.localeCompare(b.date));
+  const past = filtered.filter((ev) => eventStatus(ev) === "passe").sort((a, b) => b.date.localeCompare(a.date));
 
   upcomingRoot.innerHTML = upcoming.length
     ? upcoming.map(card).join("")
@@ -57,6 +57,7 @@ function render() {
     ? past.map(card).join("")
     : '<li class="empty-state">Aucun événement passé ne correspond à cette recherche.</li>';
   pastBlock.hidden = selected === "a-venir";
+  upcomingRoot.hidden = selected === "passe";
   status.textContent = `${filtered.length} événement${filtered.length > 1 ? "s" : ""} affiché${filtered.length > 1 ? "s" : ""}.`;
 }
 
@@ -133,6 +134,11 @@ function openAgendaQrModal() {
   };
   function onKey(event) {
     if (event.key === "Escape") close();
+    // Un seul élément interactif dans la fenêtre : le focus reste sur le bouton Fermer
+    if (event.key === "Tab") {
+      event.preventDefault();
+      modal.querySelector(".agenda-qr-modal__close").focus();
+    }
   }
   modal.addEventListener("click", (event) => {
     if (event.target === modal || event.target.closest(".agenda-qr-modal__close")) close();

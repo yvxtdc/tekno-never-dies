@@ -11,7 +11,19 @@
   <meta property="og:locale" content="fr_FR" />
   <meta property="og:title" content="L'association — Tekno Never Dies" />
   <meta property="og:description" content="Découvrez Tekno Never Dies, ses actions, ses valeurs et son équipe." />
+  <meta property="og:url" content="https://yvxtdc.github.io/tekno-never-dies/association.html" />
+  <meta property="og:image" content="https://yvxtdc.github.io/tekno-never-dies/assets/img/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Logo Tekno Never Dies Sound System sur une photo de soirée" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="L'association — Tekno Never Dies" />
+  <meta name="twitter:description" content="Découvrez Tekno Never Dies, ses actions, ses valeurs et son équipe." />
+  <meta name="twitter:image" content="https://yvxtdc.github.io/tekno-never-dies/assets/img/og-image.jpg" />
+  <link rel="canonical" href="https://yvxtdc.github.io/tekno-never-dies/association.html" />
   <link rel="icon" type="image/png" href="assets/img/favicon.png" />
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png" />
+  <link rel="manifest" href="site.webmanifest" />
 
   <link rel="preload" href="assets/fonts/archivo-black-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="css/style.css" />
@@ -92,21 +104,25 @@
       <ol class="history-line">
         <li>
           <span class="history-line__dot" aria-hidden="true"></span>
+          <time class="history-line__date" datetime="2023-06">Juin 2023</time>
           <strong>L'idée naît</strong>
           <p>Passion commune pour la musique électronique et envie d'organiser des événements.</p>
         </li>
         <li>
           <span class="history-line__dot" aria-hidden="true"></span>
+          <time class="history-line__date" datetime="2024">2024</time>
           <strong>Le projet se construit</strong>
           <p>Définition des objectifs, constitution de l'équipe, recherche de matériel et préparation du projet.</p>
         </li>
         <li>
           <span class="history-line__dot" aria-hidden="true"></span>
+          <time class="history-line__date" datetime="2024-12-04">4 décembre 2024</time>
           <strong>Création de l'association</strong>
           <p>Déclaration officielle de l'association et lancement des premières activités.</p>
         </li>
         <li>
           <span class="history-line__dot" aria-hidden="true"></span>
+          <time class="history-line__date" datetime="2025-06-21">Juin 2025</time>
           <strong>Premières réalisations</strong>
           <p>Organisation des premiers événements et développement des prestations techniques.</p>
         </li>
@@ -154,17 +170,17 @@
       <h2 id="event-path-title">Une asso qui grandit.</h2>
       <ul class="event-path__list">
         <li style="--level:0">
-          <span class="event-path__photo"><img src="assets/img/events/soiree1.webp" alt="" aria-hidden="true" /><b>150</b></span>
+          <span class="event-path__photo"><img src="assets/img/events/soiree1.webp" alt="" aria-hidden="true" /><b>150<span class="sr-only"> participant·es</span></b></span>
           <strong>Fête de la musique</strong>
           <span>21 juin 2025 · Wissembourg</span>
         </li>
         <li style="--level:1">
-          <span class="event-path__photo"><img src="assets/img/events/soiree2.webp" alt="" aria-hidden="true" /><b>200</b></span>
-          <strong>Ice Boiler</strong>
+          <span class="event-path__photo"><img src="assets/img/events/soiree2.webp" alt="" aria-hidden="true" /><b>200<span class="sr-only"> participant·es</span></b></span>
+          <strong>ICE BOILER</strong>
           <span>22 novembre 2025 · Munchhausen</span>
         </li>
         <li style="--level:2">
-          <span class="event-path__photo"><img src="assets/img/img1.webp" alt="" aria-hidden="true" /><b>250</b></span>
+          <span class="event-path__photo"><img src="assets/img/img1.webp" alt="" aria-hidden="true" /><b>250<span class="sr-only"> participant·es</span></b></span>
           <strong>Center Drop</strong>
           <span>4 avril 2026 · Niederroedern</span>
         </li>
@@ -175,8 +191,8 @@
       <p class="project-current__label">Projet en cours</p>
       <div>
         <h2 id="project-title">Le prochain rendez-vous<span>.</span></h2>
-        <p>La prochaine date annoncée est ICE BOILER v2, le samedi 28 novembre 2026 à Munchhausen. Les horaires, l'adresse précise et les modalités de billetterie restent à confirmer.</p>
-        <a class="btn btn-line" href="evenements.html">Voir les événements</a>
+        <p id="next-event-text">La prochaine date annoncée est ICE BOILER v2, le samedi 28 novembre 2026 à 21h00, à la salle polyvalente de Munchhausen. Entrée 15 €, dès 16 ans.</p>
+        <a class="btn btn-line" id="next-event-link" href="evenement.html?slug=ice-boiler-v2-2026">Voir la soirée</a>
       </div>
     </section>
 
@@ -223,11 +239,13 @@
       <h2>Explorer</h2>
       <nav aria-label="Pied de page">
         <a href="association.html">L'asso</a>
+        <a href="nos-actions.html">Nos actions</a>
         <a href="evenements.html">Événements</a>
         <a href="actualites.html">Actualités</a>
         <a href="galerie.html">Galerie</a>
         <a href="partenaires.html">Partenaires</a>
         <a href="faq.html">FAQ</a>
+        <a href="rejoindre.html">Nous rejoindre</a>
         <a href="contact.html">Contact</a>
       </nav>
     </div>
@@ -255,5 +273,6 @@
 </footer>
 <!-- /partial:footer -->
   <script type="module" src="js/components/team.js"></script>
+  <script type="module" src="js/pages/association.js"></script>
 </body>
 </html>

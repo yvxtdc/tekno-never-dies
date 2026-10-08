@@ -1,6 +1,7 @@
 import { EVENTS } from "../data/events.js";
-import { formatDate, readParam } from "./helpers.js";
-import { downloadICS, parisOffset } from "./ics.js";
+import { SITE } from "../data/site.js";
+import { formatDate, readParam, eventStatus } from "./helpers.js";
+import { downloadICS, eventTimes, parisOffset } from "./ics.js";
 
 const root = document.getElementById("event-detail");
 const ev = EVENTS.find((event) => event.slug === readParam("slug"));
@@ -66,17 +67,70 @@ if (!root) {
     </section>
   `;
 } else {
-  document.title = `${ev.title} — Tekno Never Dies`;
+  const status = eventStatus(ev);
+  const pageTitle = `${ev.title} — Tekno Never Dies`;
+  const summary = `${formatDate(ev.date, ev.datePrecision)}${ev.place ? ` · ${ev.place}` : ""}. ${ev.description || ""}`.trim();
+  const visual = ev.flyer || ev.cover;
+  document.title = pageTitle;
+  const setMeta = (selector, value) => document.head.querySelector(selector)?.setAttribute("content", value);
+  setMeta('meta[name="description"]', summary);
+  setMeta('meta[property="og:title"]', pageTitle);
+  setMeta('meta[property="og:description"]', summary);
+  setMeta('meta[name="twitter:title"]', pageTitle);
+  setMeta('meta[name="twitter:description"]', summary);
+  if (visual) {
+    const visualUrl = new URL(visual, SITE.url).href;
+    setMeta('meta[property="og:image"]', visualUrl);
+    setMeta('meta[name="twitter:image"]', visualUrl);
+    setMeta('meta[property="og:image:alt"]', `Flyer de ${ev.title}`);
+    document.head.querySelectorAll('meta[property="og:image:width"], meta[property="og:image:height"]').forEach((m) => m.remove());
+  }
 
-  const startTime = (ev.time?.match(/\d{1,2}h\d{2}/)?.[0] || "20h00").replace("h", ":");
+  // Données structurées (résultats enrichis Google) : date de début et de fin, lieu, tarif, visuel.
+  const iso = ({ y, mo, d, h, mi }) =>
+    `${y}-${String(mo).padStart(2, "0")}-${String(d).padStart(2, "0")}T${String(h).padStart(2, "0")}:${String(mi).padStart(2, "0")}:00`;
+  const times = ev.datePrecision !== "month" && ev.time ? eventTimes(ev) : null;
+  const dateOf = ({ y, mo, d }) => `${y}-${String(mo).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+  const [placeName, ...placeRest] = (ev.place || "").split(",").map((part) => part.trim());
+  const price = ev.price?.match(/\d+(?:[.,]\d+)?/)?.[0];
   const eventSchema = {
     "@context": "https://schema.org",
     "@type": "Event",
     name: ev.title,
     description: ev.description,
-    ...(ev.datePrecision !== "month" && ev.time ? { startDate: `${ev.date}T${startTime}:00` + parisOffset(ev.date, Number(startTime.split(":")[0])) } : {}),
-    location: { "@type": "Place", name: ev.place },
-    organizer: { "@type": "Organization", name: "TEKNO NEVER DIES" }
+    url: new URL(`evenement.html?slug=${encodeURIComponent(ev.slug)}`, SITE.url).href,
+    startDate: times ? iso(times.start) + parisOffset(dateOf(times.start), times.start.h) : ev.date,
+    ...(times ? { endDate: iso(times.end) + parisOffset(dateOf(times.end), times.end.h) } : {}),
+    eventStatus: "https://schema.org/EventScheduled",
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    ...(visual ? { image: [new URL(visual, SITE.url).href] } : {}),
+    location: {
+      "@type": "Place",
+      name: placeName || ev.place,
+      address: {
+        "@type": "PostalAddress",
+        ...(placeRest.length > 1
+          ? { streetAddress: placeRest.slice(0, -1).join(", ") }
+          : placeRest.length === 1 && /^\d/.test(placeName) ? { streetAddress: placeName } : {}),
+        addressLocality: placeRest.at(-1) || placeName,
+        addressRegion: "Grand Est",
+        addressCountry: "FR"
+      }
+    },
+    ...(ev.genres?.length ? { keywords: ev.genres.join(", ") } : {}),
+    ...(ev.lineup?.length ? { performer: ev.lineup.map((artist) => ({ "@type": "PerformingGroup", name: artist.name })) } : {}),
+    ...(price
+      ? {
+          offers: {
+            "@type": "Offer",
+            price: price.replace(",", "."),
+            priceCurrency: "EUR",
+            availability: status === "a-venir" ? "https://schema.org/InStock" : "https://schema.org/SoldOut",
+            url: ev.ticketUrl || new URL(`evenement.html?slug=${encodeURIComponent(ev.slug)}`, SITE.url).href
+          }
+        }
+      : {}),
+    organizer: { "@type": "Organization", name: SITE.official.legalName, url: SITE.url }
   };
   const schema = document.createElement("script");
   schema.type = "application/ld+json";
@@ -85,7 +139,8 @@ if (!root) {
 
   const eventDate = formatDate(ev.date, ev.datePrecision).split(" ");
   const [dateDay, dateMonth, dateYear] = eventDate;
-  const coverImage = ev.heroImage || ev.cover;
+  // Fond du hero : la photo si elle existe, sinon le flyer (flouté par css/components/event-flyer.css).
+  const coverImage = ev.heroImage || ev.cover || ev.flyer;
   const cover = coverImage ? `style="--event-cover:url('${escapeHTML(coverImage)}')"` : "";
 
   const practical = (ev.practical || []).map((item) => `<li>${escapeHTML(item)}</li>`).join("");
@@ -98,6 +153,17 @@ if (!root) {
   const lineup = orderedLineup(ev.lineup || [], ev.time);
   const lineupIsPreview = Boolean(ev.lineupPreview);
 
+  const genres = ev.genres?.length
+    ? `<ul class="event-genres" aria-label="Styles musicaux">${ev.genres.map((genre) => `<li>${escapeHTML(genre)}</li>`).join("")}</ul>`
+    : "";
+
+  const flyer = ev.flyer
+    ? `<figure class="event-flyer">
+        <img class="event-flyer__media" src="${escapeHTML(ev.flyer)}" alt="Flyer de ${escapeHTML(ev.title)}" decoding="async" />
+        <figcaption><a href="${escapeHTML(ev.flyer)}" target="_blank" rel="noopener">Voir le flyer en grand ↗</a></figcaption>
+      </figure>`
+    : "";
+
   const lineupContent = lineup.length
     ? `<ul class="lineup-rows">${lineup.map((artist, i) => `
         <li class="lineup-row">
@@ -106,7 +172,7 @@ if (!root) {
           <div class="lineup-row__info">
             ${artist.time
               ? `<span class="lineup-row__time">${escapeHTML(artist.time)}</span>`
-              : ev.status === "a-venir" ? `<span class="lineup-row__time">Horaire à confirmer</span>` : ""}
+              : status === "a-venir" ? `<span class="lineup-row__time">Horaire à confirmer</span>` : ""}
             <h3>${escapeHTML(artist.name || "Artiste à renseigner")}</h3>
             ${artist.style ? `<p class="lineup-row__style">${escapeHTML(artist.style)}</p>` : ""}
           </div>
@@ -137,16 +203,17 @@ if (!root) {
   root.innerHTML = `
     <a class="back-link event-back-link" href="evenements.html"><span aria-hidden="true">←</span> Tous les événements</a>
 
-      <section class="event-hero" ${cover} aria-labelledby="event-title">
+      <section class="event-hero${flyer ? " has-flyer" : ""}" ${cover} aria-labelledby="event-title">
       <div class="event-hero__grain" aria-hidden="true"></div>
       <div class="event-hero__wire">${wireframeSVG()}</div>
 
       <div class="event-hero__inner">
+        <div class="event-hero__text">
         <div class="event-hero__top">
           <p class="event-eyebrow">TEKNO NEVER DIES <span>/</span> EVENT FILE</p>
           <nav class="event-quicklinks" aria-label="Actions rapides">
             ${ev.ticketUrl ? `<a class="is-primary" href="${escapeHTML(ev.ticketUrl)}" target="_blank" rel="noopener">Billetterie ↗</a>` : ""}
-            ${ev.status === "a-venir" ? `<button type="button" id="add-to-calendar">Ajouter à l'agenda</button>` : ""}
+            ${status === "a-venir" ? `<button type="button" id="add-to-calendar">Ajouter à l'agenda</button>` : ""}
             ${ev.gallerySlug ? `<a href="galerie.html#${encodeURIComponent(ev.gallerySlug)}">Voir la galerie</a>` : ""}
             <a href="contact.html?type=evenement&evenement=${encodeURIComponent(ev.title)}">Une question ?</a>
           </nav>
@@ -162,7 +229,10 @@ if (!root) {
           <span>${escapeHTML(ev.place || "Lieu à confirmer")}</span>
         </p>
 
+        ${genres}
         ${demoNote}
+        </div>
+        ${flyer}
       </div>
 
       <div class="ticker" aria-hidden="true">

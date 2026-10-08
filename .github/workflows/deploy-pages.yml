@@ -14,6 +14,8 @@ concurrency:
 
 jobs:
   deploy:
+    # Le site officiel est publié uniquement depuis ce dépôt (évite des copies en double ailleurs).
+    if: github.repository == 'yvxtdc/tekno-never-dies'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -29,13 +31,26 @@ jobs:
       - name: Validate site
         run: npm run validate
 
+      - name: Check calendar is up to date
+        run: node tools/generate-calendar.mjs --check
+
+      # Seuls les fichiers utiles aux visiteurs sont publiés (pas les outils, le README, etc.).
+      - name: Build public folder
+        run: |
+          mkdir _site
+          rsync -a \
+            --exclude '.*' --exclude '_site' --exclude 'node_modules' --exclude 'import' --exclude 'dist' \
+            --exclude 'tools' --exclude 'partials' --exclude 'README.md' \
+            --exclude 'package.json' --exclude 'package-lock.json' --exclude 'serve.json' \
+            ./ _site/
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
       - name: Upload site artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
 
       - name: Deploy to GitHub Pages
         id: deployment
