@@ -458,7 +458,7 @@ footer{
 
 .footer-grid{
   display:grid;
-  grid-template-columns:minmax(220px,1.15fr) minmax(150px,.75fr) minmax(240px,1fr);
+  grid-template-columns:minmax(220px,1.15fr) minmax(240px,1fr) minmax(200px,.8fr);
   gap:clamp(28px,6vw,88px)
 }
 
@@ -473,7 +473,7 @@ footer{
 
 .footer-column h2{margin:0 0 14px;font-family:var(--text);font-size:.85rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#a99aff}
 
-.footer-column nav{display:grid;gap:8px}
+.footer-column nav{display:grid;grid-template-columns:repeat(2,max-content);gap:6px 28px;font-size:.88rem}
 
 .footer-column nav a,
 .footer-bottom a{font-weight:700;text-decoration:none}
@@ -1317,7 +1317,6 @@ main{position:relative;overflow-x:clip}
 }
 .home-next h2 a{color:#fff;text-decoration:none}
 .home-next h2 a:hover{color:var(--lav)}
-.home-next__when{margin:0;font-weight:700;color:#fff}
 .home-next__price{margin:.35em 0 0;color:var(--muted)}
 .home-next__actions{display:flex;flex-wrap:wrap;gap:12px}
 /* Compte à rebours : chiffres en contour, comme les numéros du line-up */
