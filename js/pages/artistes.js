@@ -1,6 +1,6 @@
 import { EVENTS } from "../data/events.js";
 import { eventStatus, esc } from "./helpers.js";
-import { collectArtists, artistUrl, artistPhoto, instagramHandle } from "./artists.js";
+import { collectArtists, artistUrl, artistPhoto, artistStyle, instagramHandle } from "./artists.js";
 
 /* ---------- Tous les artistes passés par une soirée TND ----------
    Rien à saisir : la liste est construite à partir des line-ups de js/data/events.js.
@@ -13,6 +13,7 @@ const year = (ev) => ev.date.slice(0, 4);
 const card = (artist) => {
   const url = artistUrl(artist.name);
   const photo = artistPhoto(artist.name);
+  const style = artistStyle(artist.name);
   const upcoming = artist.sets.some(({ ev }) => eventStatus(ev) === "a-venir");
   const count = artist.sets.length;
   return `
@@ -21,6 +22,7 @@ const card = (artist) => {
       <h2 class="artist-card__name">${url
         ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(artist.name)}</a>`
         : esc(artist.name)}</h2>
+      ${style ? `<p class="artist-card__style">${esc(style)}</p>` : ""}
       ${url ? `<p class="artist-card__handle">${esc(instagramHandle(url))}</p>` : ""}
       <p class="artist-card__count">${count} soirée${count > 1 ? "s" : ""} chez TND</p>
       <ul class="artist-card__sets" role="list">

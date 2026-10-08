@@ -1,5 +1,5 @@
 /** Artistes : noms, liens Instagram et photos, partagés par la fiche soirée et la page Artistes. */
-import { ARTISTS } from "../data/artistes.js";
+import { ARTISTS, ARTIST_STYLES } from "../data/artistes.js";
 import { ARTIST_PHOTOS } from "../data/artistes-photos.js";
 
 /** "Dann Octa" -> "dannocta" : majuscules, espaces et ponctuation ne comptent pas. */
@@ -15,6 +15,10 @@ export const artistsOf = (name = "") => splitB2B(name).filter((_, i) => i % 2 ==
 
 export const artistUrl = (name) => byKey.get(artistKey(name))?.url;
 export const artistPhoto = (name) => ARTIST_PHOTOS[artistKey(name)];
+const styleByKey = new Map(Object.entries(ARTIST_STYLES).map(([name, style]) => [artistKey(name), style]));
+export const artistStyle = (name) => styleByKey.get(artistKey(name));
+/** Style d'une ligne du line-up : "Valk b2b Redfox" -> "Bouncy" (styles en double fusionnés). */
+export const slotStyle = (name = "") => [...new Set(artistsOf(name).map(artistStyle).filter(Boolean))].join(" × ");
 /** Nom tel qu'écrit dans js/data/artistes.js ("DANN OCTA" -> "Dann Octa"), sinon tel quel. */
 export const artistDisplayName = (name) => byKey.get(artistKey(name))?.name || name.trim();
 /** "https://www.instagram.com/dann_octa.watt/" -> "@dann_octa.watt" */

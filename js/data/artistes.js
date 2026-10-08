@@ -23,3 +23,25 @@ export const ARTISTS = {
   "VS": "https://www.instagram.com/vs__techno/",
   "Rayy3k": "https://www.instagram.com/rayy_dj_/"
 };
+
+/**
+ * Style joué par chaque artiste : affiché sous son nom sur la page Artistes
+ * et dans le line-up des soirées (un "style" écrit dans events.js reste prioritaire).
+ * Même règle pour les noms que ci-dessus. Un artiste absent s'affiche sans style.
+ */
+export const ARTIST_STYLES = {
+  "Mogli": "Trance",
+  "Leander": "Hard Trance",
+  "Sven Gerber": "Bouncy / Trancy",
+  "Dann Octa": "Trancy / Bouncy / Groovy",
+  "Meinos": "Hard Techno",
+  "KSCMD": "Schranz",
+  "Valk": "Bouncy",
+  "Redfox": "Bouncy",
+  "TNB": "Trance / Groovy / Techno",
+  "Blackchills": "Hard Techno",
+  "D0molly": "Trance / Acid",
+  "Jakobee": "Hard Techno",
+  "VS": "Hard Techno",
+  "Rayy3k": "Trance"
+};
