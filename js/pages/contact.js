@@ -1,3 +1,5 @@
+import { lang } from "../i18n/i18n.js";
+
 const form = document.querySelector("#contact-form");
 const type = document.querySelector("#type");
 const status = document.querySelector("#contact-status");
@@ -30,18 +32,23 @@ const typeParam = params.get("type");
 if (typeParam && type && [...type.options].some((option) => option.value === typeParam)) type.value = typeParam;
 const eventInput = document.querySelector("#evenement-nom");
 const locationInput = document.querySelector("#lieu");
-if (params.get("evenement") && eventInput) eventInput.value = params.get("evenement");
-if (params.get("lieu") && locationInput) locationInput.value = params.get("lieu");
+// Texte venu d'un lien : coupé à la longueur maximale du champ (maxlength ne s'applique qu'à la saisie).
+const prefill = (input, value) => { if (value && input) input.value = value.slice(0, input.maxLength > 0 ? input.maxLength : 120); };
+prefill(eventInput, params.get("evenement"));
+prefill(locationInput, params.get("lieu"));
 updateFields();
 
 // Envoi en arrière-plan : le visiteur reste sur la page et voit le résultat.
 form?.addEventListener("submit", async (event) => {
   event.preventDefault();
   const button = form.querySelector('button[type="submit"]');
+  if (button.disabled) return;
   // Objet de l'e-mail reçu : « [Site TND] Bénévolat — Prénom Nom »
   const subject = document.querySelector("#contact-subject");
   const name = form.elements.nom?.value.trim();
-  if (subject && type?.value) subject.value = `[Site TND] ${type.selectedOptions[0].text}${name ? ` — ${name}` : ""}`;
+  // Visiteur en allemand ou en anglais : la langue est signalée dans l'objet pour répondre dans la bonne langue.
+  const langTag = lang === "fr" ? "" : ` [${lang.toUpperCase()}]`;
+  if (subject && type?.value) subject.value = `[Site TND]${langTag} ${type.selectedOptions[0].text}${name ? ` — ${name}` : ""}`;
   button.disabled = true;
   status.textContent = "Envoi en cours…";
   try {

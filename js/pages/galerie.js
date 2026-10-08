@@ -1,5 +1,6 @@
 import { GALLERY } from "../data/galerie.js";
 import { thumb, esc } from "./helpers.js";
+import { t } from "../i18n/i18n.js";
 
 const root = document.getElementById("gallery-root");
 
@@ -18,13 +19,13 @@ const PAGE_SIZE = 24;
 
 function tile(p, setIdx, i) {
   const size = p.w && p.h ? ` width="${p.w}" height="${p.h}"` : "";
-  return `<button class="g-tile" type="button" data-set="${setIdx}" data-i="${i}" aria-label="Agrandir : ${esc(p.alt)}"${i >= PAGE_SIZE ? " hidden" : ""}>
+  return `<button class="g-tile" type="button" data-set="${setIdx}" data-i="${i}" aria-label="${esc(t("Agrandir : {title}", { title: p.alt }))}"${i >= PAGE_SIZE ? " hidden" : ""}>
     <img src="${esc(p.thumb || p.src)}" alt="${esc(p.alt)}"${size} loading="lazy" decoding="async" />
   </button>`;
 }
 
 function moreButton(left) {
-  return `<button class="btn btn-line gallery-more" type="button">Voir plus de photos (${left})</button>`;
+  return `<button class="btn btn-line gallery-more" type="button">${esc(t("Voir plus de photos ({n})", { n: left }))}</button>`;
 }
 
 if (!GALLERY.length) {
@@ -56,7 +57,10 @@ if (!GALLERY.length) {
 
   // La galerie est construite après le chargement : on rejoint ensuite l'ancre demandée
   // (lien « Voir la galerie » d'une fiche événement).
-  const target = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+  // Une ancre mal encodée (galerie.html#%E0) ferait planter decodeURIComponent, et avec elle la page.
+  let anchor = location.hash.slice(1);
+  try { anchor = decodeURIComponent(anchor); } catch { /* ancre gardée telle quelle */ }
+  const target = anchor && document.getElementById(anchor);
   if (target) requestAnimationFrame(() => target.scrollIntoView());
 }
 

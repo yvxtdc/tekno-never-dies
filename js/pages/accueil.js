@@ -1,5 +1,6 @@
 import { EVENTS } from "../data/events.js";
-import { eventStatus, esc } from "./helpers.js";
+import { eventStatus, esc, safeUrl } from "./helpers.js";
+import { t, tr } from "../i18n/i18n.js";
 import { eventRange } from "./ics.js";
 
 /* ---------- Prochaine soirée (sous le hero) ----------
@@ -11,10 +12,11 @@ const next = EVENTS
 
 if (nextBlock && next) {
   const ficheUrl = `evenement.html?slug=${encodeURIComponent(next.slug)}`;
+  const ticketUrl = safeUrl(next.ticketUrl);
   nextBlock.querySelector("h2").innerHTML = `<a href="${ficheUrl}">${esc(next.title)}</a>`;
-  nextBlock.querySelector(".home-next__price").textContent = [next.price, next.age].filter(Boolean).join(" · ");
+  nextBlock.querySelector(".home-next__price").textContent = [next.price, next.age].filter(Boolean).map(tr).join(" · ");
   nextBlock.querySelector(".home-next__actions").innerHTML = `
-    ${next.ticketUrl ? `<a class="btn btn-solid" href="${esc(next.ticketUrl)}" target="_blank" rel="noopener">Prendre ma place ↗</a>` : ""}
+    ${ticketUrl ? `<a class="btn btn-solid" href="${esc(ticketUrl)}" target="_blank" rel="noopener">Prendre ma place ↗</a>` : ""}
     <a class="btn btn-hero-line" href="${ficheUrl}">Voir la soirée</a>`;
   nextBlock.hidden = false;
   startCountdown(next);
@@ -44,7 +46,7 @@ function startCountdown(ev) {
       units.m.textContent = pad(Math.floor(s / 60) % 60);
       units.s.textContent = pad(s % 60);
       box.querySelector(".countdown__units").setAttribute("aria-label",
-        `Plus que ${Math.floor(s / 86400)} jours et ${Math.floor(s / 3600) % 24} heures avant ${ev.title}`);
+        t("Plus que {j} jours et {h} heures avant {title}", { j: Math.floor(s / 86400), h: Math.floor(s / 3600) % 24, title: ev.title }));
     }
     box.hidden = false;
   };

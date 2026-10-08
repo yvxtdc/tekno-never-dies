@@ -5,6 +5,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -79,6 +80,16 @@ for (const file of pages) {
   if ((clean.match(/<h1[\s>]/g) || []).length > 1) err(file, "plusieurs <h1>");
   if (!/<main id="main"/.test(html)) err(file, '<main id="main"> manquant (cible du lien « Aller au contenu »)');
   for (const m of clean.matchAll(/<img\b[^>]*>/g)) if (!/\salt=/.test(m[0])) err(file, `image sans alt : ${m[0].slice(0, 70)}`);
+
+  // Politique de sécurité : présente, et autorise chaque script écrit dans la page (empreinte sha256).
+  const csp = html.match(/<meta http-equiv="Content-Security-Policy" content="([^"]+)"/)?.[1];
+  if (!csp) err(file, "meta Content-Security-Policy manquante");
+  else {
+    for (const m of html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)) {
+      const hash = `'sha256-${createHash("sha256").update(m[1]).digest("base64")}'`;
+      if (!csp.includes(hash)) err(file, `script en ligne modifié : ajouter ${hash} au script-src de la CSP (toutes les pages)`);
+    }
+  }
 }
 
 /* ---------- 4. données ---------- */
@@ -90,16 +101,26 @@ for (const e of events) if (e.demo) todo.push(`événement « ${e.slug} » encor
 
 // Contenus de démonstration (masqués au public, mais à remplacer) et réponses à faire relire
 const dataModule = async (name) => import(pathToFileURL(path.join(root, "js/data", name)).href);
-const { PARTENAIRES } = await dataModule("partenaires.js");
-const { ACTUALITES } = await dataModule("actualites.js");
 const { TEAM } = await dataModule("equipe.js");
 const { FAQ } = await dataModule("faq.js");
 const demoCount = (list) => list.filter((x) => x.demo).length;
-if (demoCount(PARTENAIRES)) todo.push(`js/data/partenaires.js : ${demoCount(PARTENAIRES)} partenaire(s) de démo (non affichés) à remplacer`);
-if (demoCount(ACTUALITES)) todo.push(`js/data/actualites.js : ${demoCount(ACTUALITES)} actualité(s) de démo (non affichées) à remplacer`);
 if (demoCount(TEAM)) todo.push(`js/data/equipe.js : ${demoCount(TEAM)} profil(s) de démo`);
 const toCheck = FAQ.filter((x) => x.needsValidation).length;
 if (toCheck) todo.push(`js/data/faq.js : ${toCheck} réponse(s) marquée(s) needsValidation à faire valider par l'équipe`);
+
+// Traductions (js/i18n/de.js et en.js) des textes de js/data : un nouvel événement, une nouvelle
+// question de FAQ ou un nouveau membre s'affichent en français tant qu'ils ne sont pas traduits.
+const norm = (s) => String(s).replace(/\s+/g, " ").trim();
+const dataTexts = [
+  ...events.flatMap((e) => [e.description, e.price, e.age, ...(e.practical || [])]),
+  ...FAQ.flatMap((x) => [x.q, x.a]),
+  ...TEAM.flatMap((m) => [m.role, m.bio, ...(m.tags || []), ...Object.entries(m.extra || {}).flat()])
+].filter((s) => s && /\p{L}{2}/u.test(s)).map(norm);
+for (const lang of ["de", "en"]) {
+  const dict = (await import(pathToFileURL(path.join(root, "js/i18n", `${lang}.js`)).href)).default;
+  const untranslated = [...new Set(dataTexts)].filter((s) => !(s in dict));
+  if (untranslated.length) todo.push(`js/i18n/${lang}.js : ${untranslated.length} texte(s) de js/data sans traduction, ex. « ${untranslated[0].slice(0, 60)} »`);
+}
 for (const e of events.filter((e) => e.date >= new Date().toISOString().slice(0, 10))) {
   if (!e.ticketUrl) todo.push(`événement « ${e.slug} » : lien de billetterie (ticketUrl) vide`);
   if (!e.lineup?.length) todo.push(`événement « ${e.slug} » : line-up pas encore renseigné`);

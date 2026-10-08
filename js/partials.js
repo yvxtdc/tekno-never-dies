@@ -3,7 +3,8 @@
 // page courante, l'en-tête au défilement et les données de référencement.
 import { SITE } from "./data/site.js";
 import { EVENTS } from "./data/events.js";
-import { eventStatus, formatDate, esc } from "./pages/helpers.js";
+import { eventStatus, formatDate, formatTime, esc, safeUrl } from "./pages/helpers.js";
+import { lang, setLang } from "./i18n/i18n.js";
 
 function markActiveLink() {
   const page = document.body.dataset.page;
@@ -34,14 +35,21 @@ function initSeo() {
   // réseaux sociaux n'exécutent pas de JavaScript). Ici : uniquement les pages qui n'en ont pas,
   // comme evenement.html dont l'adresse dépend de ?slug=.
   if (SITE.url && !document.head.querySelector('link[rel="canonical"]') && !document.querySelector('meta[name="robots"][content*="noindex"]')) {
-    const slug = new URLSearchParams(location.search).get("slug");
     const page = location.pathname.split("/").pop();
-    const url = new URL(page + (slug ? `?slug=${encodeURIComponent(slug)}` : ""), SITE.url).href;
-    addMeta("og:url", url, "property");
-    const canonical = document.createElement("link");
-    canonical.rel = "canonical";
-    canonical.href = url;
-    document.head.append(canonical);
+    let slug = new URLSearchParams(location.search).get("slug");
+    // Fiche d'un slug inconnu (evenement.html?slug=n-importe-quoi) : pas d'adresse canonique et
+    // pas d'indexation, sinon n'importe qui pourrait créer des pages « valides » pour les moteurs.
+    if (page === "evenement.html" && !EVENTS.some((ev) => ev.slug === slug)) {
+      addMeta("robots", "noindex");
+    } else {
+      if (page !== "evenement.html") slug = null;
+      const url = new URL(page + (slug ? `?slug=${encodeURIComponent(slug)}` : ""), SITE.url).href;
+      addMeta("og:url", url, "property");
+      const canonical = document.createElement("link");
+      canonical.rel = "canonical";
+      canonical.href = url;
+      document.head.append(canonical);
+    }
   }
 
   const description = document.querySelector('meta[name="description"]')?.content || SITE.description;
@@ -78,7 +86,7 @@ function initMenu() {
   if (!button || !nav) return;
 
   const label = button.querySelector(".tnd-toggle-label");
-  const links = [...nav.querySelectorAll("a")];
+  const links = [...nav.querySelectorAll("a, button")];
   const isOpen = () => button.getAttribute("aria-expanded") === "true";
 
   const setOpen = (open) => {
@@ -90,7 +98,7 @@ function initMenu() {
   };
 
   button.addEventListener("click", () => setOpen(!isOpen()));
-  links.forEach((a) => a.addEventListener("click", () => setOpen(false)));
+  links.filter((a) => a.matches("a")).forEach((a) => a.addEventListener("click", () => setOpen(false)));
 
   document.addEventListener("keydown", (e) => {
     if (!isOpen()) return;
@@ -120,15 +128,24 @@ function initMenuNext() {
   if (!box || !next) return;
   const ficheUrl = `evenement.html?slug=${encodeURIComponent(next.slug)}`;
   const visual = next.flyer || next.cover;
+  const ticketUrl = safeUrl(next.ticketUrl);
   box.innerHTML = `
     <p class="tnd-next__eyebrow">Prochaine soirée</p>
     <a class="tnd-next__card" href="${ficheUrl}">
       ${visual ? `<img src="${esc(visual)}" alt="" loading="lazy" decoding="async" />` : ""}
       <span class="tnd-next__title">${esc(next.title)}</span>
-      <span class="tnd-next__when">${esc([formatDate(next.date, next.datePrecision), next.time].filter(Boolean).join(" · "))}</span>
+      <span class="tnd-next__when">${esc([formatDate(next.date, next.datePrecision), formatTime(next.time)].filter(Boolean).join(" · "))}</span>
     </a>
-    ${next.ticketUrl ? `<a class="tnd-next__ticket" href="${esc(next.ticketUrl)}" target="_blank" rel="noopener">Prendre ma place ↗</a>` : ""}`;
+    ${ticketUrl ? `<a class="tnd-next__ticket" href="${esc(ticketUrl)}" target="_blank" rel="noopener">Prendre ma place ↗</a>` : ""}`;
   box.hidden = false;
+}
+
+// Choix de la langue en bas du menu : FR / DE / EN
+function initLangSwitch() {
+  document.querySelectorAll(".tnd-lang [data-lang]").forEach((button) => {
+    button.setAttribute("aria-pressed", String(button.dataset.lang === lang));
+    button.addEventListener("click", () => setLang(button.dataset.lang));
+  });
 }
 
 // Header opaque dès qu'on a défilé
@@ -152,5 +169,6 @@ fixAnchorsWithBase();
 markActiveLink();
 initMenuNext();
 initMenu();
+initLangSwitch();
 initScrolledHeader();
 initSeo();

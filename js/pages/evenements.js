@@ -1,7 +1,8 @@
 import { EVENTS } from "../data/events.js";
 import { SITE } from "../data/site.js";
-import { formatDate, thumb, esc, eventStatus } from "./helpers.js";
+import { formatDate, thumb, esc, eventStatus, safeUrl } from "./helpers.js";
 import { collectArtists, artistPhoto } from "./artists.js";
+import { t, plural } from "../i18n/i18n.js";
 
 const upcomingRoot = document.getElementById("upcoming-events");
 const pastRoot = document.getElementById("past-events");
@@ -18,15 +19,16 @@ function matches(ev, query) {
 }
 
 function card(ev) {
-  const ticket = ev.ticketUrl
-    ? `<a class="btn btn-solid btn-sm" href="${esc(ev.ticketUrl)}" target="_blank" rel="noopener">Billetterie</a>`
+  const ticketUrl = safeUrl(ev.ticketUrl);
+  const ticket = ticketUrl
+    ? `<a class="btn btn-solid btn-sm" href="${esc(ticketUrl)}" target="_blank" rel="noopener">Billetterie</a>`
     : "";
   return `
     <li class="event-card">
       ${ev.flyer
         ? `<div class="thumb thumb--poster">
             <img class="thumb__blur" src="${esc(ev.flyer)}" alt="" aria-hidden="true" loading="lazy" decoding="async" />
-            <img class="thumb__poster" src="${esc(ev.flyer)}" alt="Flyer de ${esc(ev.title)}" loading="lazy" decoding="async" />
+            <img class="thumb__poster" src="${esc(ev.flyer)}" alt="${esc(t("Flyer de {title}", { title: ev.title }))}" loading="lazy" decoding="async" />
           </div>`
         : thumb(ev.cover, ev.title, "Visuel à venir")}
       <div class="event-card__body">
@@ -59,7 +61,7 @@ function render() {
     : `<li class="empty-state">${query ? "Aucun événement passé ne correspond à cette recherche." : "Les soirées passées apparaîtront ici."}</li>`;
   pastBlock.hidden = selected === "a-venir";
   upcomingRoot.hidden = selected === "passe";
-  status.textContent = `${filtered.length} événement${filtered.length > 1 ? "s" : ""} affiché${filtered.length > 1 ? "s" : ""}.`;
+  status.textContent = t("{n} {events} affiché(s).", { n: filtered.length, events: plural(filtered.length, "événement", "événements") });
 }
 
 search.addEventListener("input", render);
@@ -74,7 +76,7 @@ if (teaser) {
   teaser.querySelector(".artists-teaser__photos").innerHTML =
     photos.map((src) => `<img src="${esc(src)}" alt="" decoding="async" />`).join("") +
     (artists.length > photos.length ? `<span>+${artists.length - photos.length}</span>` : "");
-  teaser.querySelector(".artists-teaser__sub").textContent = `${artists.length} DJ passés chez TND`;
+  teaser.querySelector(".artists-teaser__sub").textContent = t("{n} DJ passés chez TND", { n: artists.length });
 }
 
 /* ---------- Abonnement à l'agenda ---------- */
