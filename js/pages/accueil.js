@@ -1,5 +1,5 @@
 import { EVENTS } from "../data/events.js";
-import { eventStatus, formatDate, esc } from "./helpers.js";
+import { eventStatus, esc } from "./helpers.js";
 import { eventRange } from "./ics.js";
 
 /* ---------- Prochaine soirée (sous le hero) ----------
@@ -12,8 +12,6 @@ const next = EVENTS
 if (nextBlock && next) {
   const ficheUrl = `evenement.html?slug=${encodeURIComponent(next.slug)}`;
   nextBlock.querySelector("h2").innerHTML = `<a href="${ficheUrl}">${esc(next.title)}</a>`;
-  nextBlock.querySelector(".home-next__when").textContent =
-    [formatDate(next.date, next.datePrecision), next.time, next.place].filter(Boolean).join(" · ");
   nextBlock.querySelector(".home-next__price").textContent = [next.price, next.age].filter(Boolean).join(" · ");
   nextBlock.querySelector(".home-next__actions").innerHTML = `
     ${next.ticketUrl ? `<a class="btn btn-solid" href="${esc(next.ticketUrl)}" target="_blank" rel="noopener">Prendre ma place ↗</a>` : ""}
