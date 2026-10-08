@@ -2,6 +2,8 @@
 // (insérés par tools/sync-partials.mjs) : ce script ne fait qu'activer le menu, le lien de la
 // page courante, l'en-tête au défilement et les données de référencement.
 import { SITE } from "./data/site.js";
+import { EVENTS } from "./data/events.js";
+import { eventStatus, formatDate, esc } from "./pages/helpers.js";
 
 function markActiveLink() {
   const page = document.body.dataset.page;
@@ -76,7 +78,7 @@ function initMenu() {
   if (!button || !nav) return;
 
   const label = button.querySelector(".tnd-toggle-label");
-  const links = [...nav.querySelectorAll(".tnd-links a")];
+  const links = [...nav.querySelectorAll("a")];
   const isOpen = () => button.getAttribute("aria-expanded") === "true";
 
   const setOpen = (open) => {
@@ -109,6 +111,26 @@ function initMenu() {
   });
 }
 
+// Menu (ordinateur) : la prochaine soirée de js/data/events.js dans la colonne de droite
+function initMenuNext() {
+  const box = document.querySelector(".tnd-next");
+  const next = EVENTS
+    .filter((ev) => eventStatus(ev) === "a-venir")
+    .sort((a, b) => a.date.localeCompare(b.date))[0];
+  if (!box || !next) return;
+  const ficheUrl = `evenement.html?slug=${encodeURIComponent(next.slug)}`;
+  const visual = next.flyer || next.cover;
+  box.innerHTML = `
+    <p class="tnd-next__eyebrow">Prochaine soirée</p>
+    <a class="tnd-next__card" href="${ficheUrl}">
+      ${visual ? `<img src="${esc(visual)}" alt="" loading="lazy" decoding="async" />` : ""}
+      <span class="tnd-next__title">${esc(next.title)}</span>
+      <span class="tnd-next__when">${esc([formatDate(next.date, next.datePrecision), next.time].filter(Boolean).join(" · "))}</span>
+    </a>
+    ${next.ticketUrl ? `<a class="tnd-next__ticket" href="${esc(next.ticketUrl)}" target="_blank" rel="noopener">Prendre ma place ↗</a>` : ""}`;
+  box.hidden = false;
+}
+
 // Header opaque dès qu'on a défilé
 function initScrolledHeader() {
   const header = document.querySelector(".top");
@@ -128,6 +150,7 @@ function fixAnchorsWithBase() {
 
 fixAnchorsWithBase();
 markActiveLink();
+initMenuNext();
 initMenu();
 initScrolledHeader();
 initSeo();

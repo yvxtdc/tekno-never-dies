@@ -3,7 +3,7 @@ import { thumb, esc } from "./helpers.js";
 
 const root = document.getElementById("gallery-root");
 
-/* Une photo = un simple chemin "assets/…jpg" OU un objet { src, alt, w, h, full } */
+/* Une photo = un simple chemin "assets/…jpg" OU un objet { src, thumb, alt, w, h, full } */
 const norm = (p, title) => (typeof p === "string" ? { src: p, alt: title } : { alt: title, ...p });
 
 const sets = []; // sets[i] = photos de l'événement i (pour naviguer dans le lightbox)
@@ -19,7 +19,7 @@ const PAGE_SIZE = 24;
 function tile(p, setIdx, i) {
   const size = p.w && p.h ? ` width="${p.w}" height="${p.h}"` : "";
   return `<button class="g-tile" type="button" data-set="${setIdx}" data-i="${i}" aria-label="Agrandir : ${esc(p.alt)}"${i >= PAGE_SIZE ? " hidden" : ""}>
-    <img src="${esc(p.src)}" alt="${esc(p.alt)}"${size} loading="lazy" decoding="async" />
+    <img src="${esc(p.thumb || p.src)}" alt="${esc(p.alt)}"${size} loading="lazy" decoding="async" />
   </button>`;
 }
 
@@ -115,7 +115,7 @@ lb.innerHTML = `
     <img class="lb-img" alt="" />
     <figcaption class="lb-cap">
       <span><span class="lb-title"></span> · <span class="lb-count"></span></span>
-      <a class="lb-dl" download>Enregistrer</a>
+      <a class="lb-dl" href="galerie.html" download>Enregistrer</a>
     </figcaption>
   </figure>
   <button class="lb-btn lb-next" type="button" data-act="next" aria-label="Photo suivante">›</button>`;

@@ -156,7 +156,7 @@ button.team-card:hover{
 @media (max-width: 700px){
   .team-track{ padding-inline: 20px; }
 
-  .team-card{ width: 155px; border-radius: 15px; }
+  .team-card{ width: min(62vw, 240px); border-radius: 15px; }
 
   .team-modal-card{ grid-template-columns: 1fr; max-height: calc(100vh - 40px); overflow:auto; }
 

@@ -1,9 +1,8 @@
 import { EVENTS } from "../data/events.js";
-import { ARTISTS } from "../data/artistes.js";
-import { ARTIST_PHOTOS } from "../data/artistes-photos.js";
+import { splitB2B, artistsOf, artistUrl, artistPhoto } from "./artists.js";
 import { SITE } from "../data/site.js";
 import { formatDate, readParam, eventStatus } from "./helpers.js";
-import { downloadICS, eventTimes, parisOffset } from "./ics.js";
+import { downloadICS, eventTimes, eventRange, parisOffset } from "./ics.js";
 
 const root = document.getElementById("event-detail");
 const ev = EVENTS.find((event) => event.slug === readParam("slug"));
@@ -19,18 +18,13 @@ const timeToMinutes = (value = "") => {
 };
 
 /* Nom d'artiste -> lien Instagram (js/data/artistes.js). Un B2B donne un lien par artiste. */
-const artistKey = (name) => name.toLowerCase().replace(/[^a-z0-9]/g, "");
-const artistLinks = new Map(Object.entries(ARTISTS).map(([name, url]) => [artistKey(name), url]));
-const splitB2B = (name) => name.split(/(\s+b2b\s+)/i);
 // Photos de profil du cercle (js/data/artistes-photos.js) : une par artiste, un deuxième cercle pour un B2B.
 const artistPhotos = (artist) =>
-  artist.image
-    ? [artist.image]
-    : splitB2B(artist.name || "").filter((_, i) => i % 2 === 0).map((part) => ARTIST_PHOTOS[artistKey(part)]).filter(Boolean);
+  artist.image ? [artist.image] : artistsOf(artist.name).map(artistPhoto).filter(Boolean);
 const artistName = (name) =>
   splitB2B(name)
     .map((part, i) => {
-      const url = i % 2 ? null : artistLinks.get(artistKey(part));
+      const url = i % 2 ? null : artistUrl(part);
       return url
         ? `<a href="${escapeHTML(url)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHTML(part)} sur Instagram">${escapeHTML(part)}</a>`
         : escapeHTML(part);
@@ -162,7 +156,8 @@ if (!root) {
   const [dateDay, dateMonth, dateYear] = eventDate;
   // Fond du hero : la photo si elle existe, sinon le flyer (flouté par css/components/event-flyer.css).
   const coverImage = ev.heroImage || ev.cover || ev.flyer;
-  const cover = coverImage ? `style="--event-cover:url('${escapeHTML(coverImage)}')"` : "";
+  // Adresse complète : une url() relative dans une variable CSS serait résolue depuis css/pages.css (404).
+  const cover = coverImage ? `style="--event-cover:url('${escapeHTML(new URL(coverImage, location.href).href)}')"` : "";
 
   const practical = (ev.practical || []).map((item) => `<li>${escapeHTML(item)}</li>`).join("");
   const galleryLink = ev.gallerySlug
@@ -180,20 +175,21 @@ if (!root) {
 
   const flyer = ev.flyer
     ? `<figure class="event-flyer">
-        <img class="event-flyer__media" src="${escapeHTML(ev.flyer)}" alt="Flyer de ${escapeHTML(ev.title)}" decoding="async" />
+        <img class="event-flyer__media" src="${escapeHTML(ev.flyer)}" alt="Flyer de ${escapeHTML(ev.title)}" width="1080" height="1350" decoding="async" />
         <figcaption><a href="${escapeHTML(ev.flyer)}" target="_blank" rel="noopener">Voir le flyer en grand ↗</a></figcaption>
       </figure>`
     : "";
 
   const lineupContent = lineup.length
     ? `<ul class="lineup-rows">${lineup.map((artist, i) => `
-        <li class="lineup-row">
+        <li class="lineup-row" data-slot="${escapeHTML(artist.time || "")}">
           <span class="lineup-row__num">${String(i + 1).padStart(2, "0")}</span>
           <span class="lineup-row__photos">${(artistPhotos(artist).length ? artistPhotos(artist).slice(0, 2) : [null]).map((src) => `<span class="lineup-row__photo">${src ? `<img src="${escapeHTML(src)}" alt="" loading="lazy" />` : ""}</span>`).join("")}</span>
           <div class="lineup-row__info">
             ${artist.time
               ? `<span class="lineup-row__time">${escapeHTML(artist.time)}</span>`
               : status === "a-venir" ? `<span class="lineup-row__time">Horaire à confirmer</span>` : ""}
+            <span class="lineup-row__live">En ce moment</span>
             <h3>${artist.name ? artistName(artist.name) : "Artiste à renseigner"}</h3>
             ${artist.style ? `<p class="lineup-row__style">${escapeHTML(artist.style)}</p>` : ""}
           </div>
@@ -213,6 +209,26 @@ if (!root) {
     ? `<p class="event-draft-note"><span aria-hidden="true">✳</span> Fiche de démonstration — informations à confirmer.</p>`
     : "";
 
+  // Itinéraire (soirées à venir) : ouvre l'appli GPS du téléphone sur l'adresse de la salle.
+  const destination = encodeURIComponent(ev.place || "");
+  const routes = ev.place && status === "a-venir"
+    ? [
+        ["Google Maps", `https://www.google.com/maps/dir/?api=1&destination=${destination}`],
+        ["Waze", `https://waze.com/ul?q=${destination}&navigate=yes`],
+        ...(/iPhone|iPad|Macintosh/.test(navigator.userAgent) ? [["Plans", `https://maps.apple.com/?daddr=${destination}`]] : [])
+      ]
+    : [];
+  const accessContent = routes.length
+    ? `<section class="event-access" aria-labelledby="access-title">
+        <p class="event-eyebrow">Y ALLER</p>
+        <h2 id="access-title">Itinéraire<span>.</span></h2>
+        <p class="event-access__place">${escapeHTML(ev.place)}</p>
+        <div class="event-access__links">
+          ${routes.map(([label, url]) => `<a href="${escapeHTML(url)}" target="_blank" rel="noopener">${label} <span aria-hidden="true">↗</span></a>`).join("")}
+        </div>
+      </section>`
+    : "";
+
   const practicalContent = practical
     ? `<section class="event-practical">
         <p class="event-eyebrow">À SAVOIR</p>
@@ -222,11 +238,13 @@ if (!root) {
     : "";
 
   root.innerHTML = `
-    <a class="back-link event-back-link" href="evenements.html"><span aria-hidden="true">←</span> Tous les événements</a>
-
       <section class="event-hero${flyer ? " has-flyer" : ""}" ${cover} aria-labelledby="event-title">
       <div class="event-hero__grain" aria-hidden="true"></div>
       <div class="event-hero__wire">${wireframeSVG()}</div>
+
+      <div class="event-hero__back">
+        <a class="event-back" href="evenements.html"><span aria-hidden="true">←</span> Retour aux événements</a>
+      </div>
 
       <div class="event-hero__inner">
         <div class="event-hero__text">
@@ -235,7 +253,9 @@ if (!root) {
           <nav class="event-quicklinks" aria-label="Actions rapides">
             ${ev.ticketUrl ? `<a class="is-primary" href="${escapeHTML(ev.ticketUrl)}" target="_blank" rel="noopener">Billetterie ↗</a>` : ""}
             ${status === "a-venir" ? `<button type="button" id="add-to-calendar">Ajouter à l'agenda</button>` : ""}
+            ${routes.length ? `<a href="#access-title">Itinéraire</a>` : ""}
             ${ev.gallerySlug ? `<a href="galerie.html#${encodeURIComponent(ev.gallerySlug)}">Voir la galerie</a>` : ""}
+            <button type="button" class="js-share">Partager</button>
             <a href="contact.html?type=evenement&evenement=${encodeURIComponent(ev.title)}">Une question ?</a>
           </nav>
         </div>
@@ -279,10 +299,14 @@ if (!root) {
       </div>
     </section>
 
+    ${accessContent}
     ${practicalContent}
 
     <section class="event-bottom-actions">
       <div class="actions">
+        <button type="button" class="event-gallery-link js-share">
+          <span>Partager la soirée</span><span aria-hidden="true">↗</span>
+        </button>
         <a class="event-gallery-link" href="contact.html?type=evenement&evenement=${encodeURIComponent(ev.title)}">
           <span>Contacter l'équipe</span><span aria-hidden="true">↗</span>
         </a>
@@ -303,4 +327,44 @@ if (!root) {
   document.getElementById("add-to-calendar")?.addEventListener("click", () => {
     downloadICS([ev], `tnd-${ev.slug}.ics`);
   });
+
+  // Partager : menu de partage du téléphone (Insta, WhatsApp, SMS…), sinon copie du lien.
+  const shareData = {
+    title: pageTitle,
+    text: `${ev.title} — ${[formatDate(ev.date, ev.datePrecision), ev.place].filter(Boolean).join(" · ")}`,
+    url: location.href
+  };
+  root.querySelectorAll(".js-share").forEach((button) => {
+    const label = button.querySelector("span") || button;
+    const original = label.textContent;
+    button.addEventListener("click", async () => {
+      if (navigator.share) {
+        try { await navigator.share(shareData); } catch { /* partage annulé */ }
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(shareData.url);
+        label.textContent = "Lien copié ✓";
+      } catch {
+        label.textContent = "Copie impossible";
+      }
+      setTimeout(() => { label.textContent = original; }, 2200);
+    });
+  });
+
+  // Line-up en direct : le soir même, l'artiste en train de jouer s'allume (vérifié toutes les 30 s).
+  const range = eventRange(ev);
+  if (range && Date.now() < range.end.getTime()) {
+    const rows = [...root.querySelectorAll(".lineup-row[data-slot]")]
+      .map((row) => ({ row, slot: row.dataset.slot && eventRange(ev, row.dataset.slot) }))
+      .filter(({ slot }) => slot);
+    const updateLive = () => {
+      const now = Date.now();
+      rows.forEach(({ row, slot }) => row.classList.toggle("is-live", now >= slot.start.getTime() && now < slot.end.getTime()));
+      root.querySelector(".event-hero")?.classList.toggle("is-live", now >= range.start.getTime() && now < range.end.getTime());
+      if (now >= range.end.getTime()) clearInterval(timer);
+    };
+    const timer = setInterval(updateLive, 30_000);
+    updateLive();
+  }
 }

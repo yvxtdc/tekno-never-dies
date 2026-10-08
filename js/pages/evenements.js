@@ -1,6 +1,7 @@
 import { EVENTS } from "../data/events.js";
 import { SITE } from "../data/site.js";
 import { formatDate, thumb, esc, eventStatus } from "./helpers.js";
+import { collectArtists, artistPhoto } from "./artists.js";
 
 const upcomingRoot = document.getElementById("upcoming-events");
 const pastRoot = document.getElementById("past-events");
@@ -52,10 +53,10 @@ function render() {
 
   upcomingRoot.innerHTML = upcoming.length
     ? upcoming.map(card).join("")
-    : '<li class="empty-state">Aucun événement à venir ne correspond à cette recherche.</li>';
+    : `<li class="empty-state">${query ? "Aucun événement à venir ne correspond à cette recherche." : "Pas de soirée annoncée pour le moment : la prochaine date arrive bientôt."}</li>`;
   pastRoot.innerHTML = past.length
     ? past.map(card).join("")
-    : '<li class="empty-state">Aucun événement passé ne correspond à cette recherche.</li>';
+    : `<li class="empty-state">${query ? "Aucun événement passé ne correspond à cette recherche." : "Les soirées passées apparaîtront ici."}</li>`;
   pastBlock.hidden = selected === "a-venir";
   upcomingRoot.hidden = selected === "passe";
   status.textContent = `${filtered.length} événement${filtered.length > 1 ? "s" : ""} affiché${filtered.length > 1 ? "s" : ""}.`;
@@ -64,6 +65,17 @@ function render() {
 search.addEventListener("input", render);
 filter.addEventListener("change", render);
 render();
+
+/* ---------- Bandeau « Les artistes » : les photos rondes qui se chevauchent ---------- */
+const teaser = document.querySelector(".artists-teaser");
+if (teaser) {
+  const artists = collectArtists(EVENTS);
+  const photos = artists.map((artist) => artistPhoto(artist.name)).filter(Boolean).slice(0, 7);
+  teaser.querySelector(".artists-teaser__photos").innerHTML =
+    photos.map((src) => `<img src="${esc(src)}" alt="" decoding="async" />`).join("") +
+    (artists.length > photos.length ? `<span>+${artists.length - photos.length}</span>` : "");
+  teaser.querySelector(".artists-teaser__sub").textContent = `${artists.length} DJ passés chez TND`;
+}
 
 /* ---------- Abonnement à l'agenda ---------- */
 const subscribeLink = document.getElementById("download-agenda");
