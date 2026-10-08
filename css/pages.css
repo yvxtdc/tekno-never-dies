@@ -669,7 +669,7 @@ select option{background:#150d3b;color:#fff}
 .g-tile.is-active::after,
 .g-tile:focus-visible::after{opacity:0}
 
-@media (hover:hover){
+@media (hover:hover) and (pointer:fine){
   .g-tile:hover{border-color:var(--lav);box-shadow:var(--glow-lav)}
   .g-tile:hover img{filter:grayscale(0);transform:scale(1.06)}
   .g-tile:hover::after{opacity:0}
