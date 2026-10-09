@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <!-- Sécurité : le navigateur ne charge que les fichiers du site (et Formspree pour le formulaire). Les empreintes sha256 autorisent les seuls scripts écrits dans les pages (langue, importmap d'index.html, <base> de 404.html) ; npm run validate signale si l'un d'eux change. -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-FfLivJcL7W2eA89N8QIgHMHmdYqlT/xwiPDN2ENYmBc=' 'sha256-ZcmVnkp/+QTaBlAE1mjV7ppCAHuIFcNg3mxcWK65VKM=' 'sha256-0bF9PY4Y9tkkwPNbHep+GABLK+IJZIYOYeUrAk1EjHs='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://formspree.io; form-action https://formspree.io; base-uri 'self'; object-src 'none'; frame-src 'none'; upgrade-insecure-requests" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://gc.zgo.at 'sha256-FfLivJcL7W2eA89N8QIgHMHmdYqlT/xwiPDN2ENYmBc=' 'sha256-ZcmVnkp/+QTaBlAE1mjV7ppCAHuIFcNg3mxcWK65VKM=' 'sha256-0bF9PY4Y9tkkwPNbHep+GABLK+IJZIYOYeUrAk1EjHs='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://teknoneverdies.goatcounter.com; font-src 'self'; connect-src 'self' https://formspree.io https://teknoneverdies.goatcounter.com; form-action https://formspree.io; base-uri 'self'; object-src 'none'; frame-src 'none'; upgrade-insecure-requests" />
   <script>
     // Langue de la page (FR / DE / EN), avant l'affichage : voir js/i18n/i18n.js
     (function () {

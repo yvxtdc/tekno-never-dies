@@ -17,6 +17,9 @@ export const SITE = {
     https: `https://${AGENDA_PATH}`,
     webcal: `webcal://${AGENDA_PATH}`
   },
+  // Statistiques de visite (GoatCounter, sans cookie). Tableau de bord : https://teknoneverdies.goatcounter.com
+  // Vide = pas de comptage. Si cette adresse change, la mettre aussi dans la CSP de chaque page.
+  goatcounter: "https://teknoneverdies.goatcounter.com/count",
   official: {
     legalName: "TEKNO NEVER DIES",
     acronym: "TND",

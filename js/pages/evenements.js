@@ -1,6 +1,6 @@
 import { EVENTS } from "../data/events.js";
 import { SITE } from "../data/site.js";
-import { formatDate, thumb, esc, eventStatus, safeUrl } from "./helpers.js";
+import { formatDate, thumb, esc, eventStatus, safeUrl, track } from "./helpers.js";
 import { collectArtists, artistPhoto } from "./artists.js";
 import { t, plural } from "../i18n/i18n.js";
 
@@ -114,6 +114,7 @@ async function copyToClipboard(text) {
 document.getElementById("copy-events-link")?.addEventListener("click", async (event) => {
   const button = event.currentTarget;
   const ok = await copyToClipboard(SITE.agenda.https);
+  track("Agenda · lien copié");
   button.textContent = ok ? "Lien copié" : "Copie indisponible";
   setTimeout(() => { button.textContent = "Partager l'agenda"; }, 1800);
 });
