@@ -111,7 +111,10 @@ function isMixed(el) {
 }
 
 function translateElement(el) {
-  if (el.getAttribute("translate") === "no" || SKIP.has(el.nodeName.toUpperCase())) return;
+  if (el.getAttribute("translate") === "no") return;
+  // Champ de saisie : seul son placeholder (ou titre) est traduit, jamais ce qui est tapé.
+  if (el.nodeName === "TEXTAREA") for (const name of ATTRS) translateAttr(el, name);
+  if (SKIP.has(el.nodeName.toUpperCase())) return;
   for (const name of ATTRS) translateAttr(el, name);
   if (isMixed(el)) {
     const key = norm(el.innerHTML);
