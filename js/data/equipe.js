@@ -105,5 +105,18 @@ export const TEAM = [
       'Pôle': 'Création'
     },
     bio: 'Noah contribue bénévolement aux graffitis et aux créations visuelles.'
+  },
+  {
+    slug: 'josephine',
+    demo: false,
+    name: 'Joséphine',
+    role: 'Bénévole',
+    photo: 'assets/img/equipe/josephine.webp',
+    tags: ['Événementiel'],
+    extra: {
+      'Rôle': 'Bénévole',
+      'Pôle': 'Événementiel'
+    },
+    bio: 'Joséphine donne un coup de main bénévole lors des événements.'
   }
 ];

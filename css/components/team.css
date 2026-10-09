@@ -120,16 +120,27 @@ button.team-card:hover{
   z-index: 1;
   display: grid;
   grid-template-columns: minmax(220px, 320px) minmax(280px, 1fr);
+  align-items: center;
   width: min(860px, 100%);
+  max-height: calc(100vh - 48px);
   overflow: hidden;
   border-radius: 24px;
   background: var(--page);
   box-shadow: 0 30px 70px rgba(0,0,0,.32);
 }
 
-.team-modal-photo{ min-height: 320px; background: var(--card); }
+.team-modal-photo{
+  align-self: start;
+  margin: 14px;
+  aspect-ratio: 4 / 5;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--card);
+}
 
-.team-modal-photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+.team-modal-photo img{ width:100%; height:100%; object-fit:cover; object-position:center top; display:block; }
+
+.team-modal-body{ max-height: calc(100vh - 48px); overflow:auto; }
 
 .team-modal-body{ padding: clamp(24px, 4vw, 42px); }
 
@@ -160,5 +171,7 @@ button.team-card:hover{
 
   .team-modal-card{ grid-template-columns: 1fr; max-height: calc(100vh - 40px); overflow:auto; }
 
-  .team-modal-photo{ min-height: 280px; max-height: 48vh; }
+  .team-modal-photo{ width: min(calc(100% - 28px), 300px); justify-self: center; margin: 14px auto 0; }
+
+  .team-modal-body{ max-height: none; overflow: visible; }
 }
