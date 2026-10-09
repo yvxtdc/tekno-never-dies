@@ -797,6 +797,10 @@ body.tnd-lock{overflow:hidden}
 body.tnd-lock .top{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;border-bottom-color:transparent;box-shadow:none}
 
 body.tnd-lock .top .brand{visibility:hidden}
+/* Menu ouvert : la barre du haut laisse passer les clics vers le logo du menu (lien vers l'accueil),
+   seuls ses boutons (langue, Fermer) restent cliquables. */
+body.tnd-lock .top{pointer-events:none}
+body.tnd-lock .top :is(.tnd-lang,.tnd-toggle){pointer-events:auto}
 
 /* Bandeau défilant incliné : 1 px de défilement horizontal parasite. */
 body{overflow-x:clip}

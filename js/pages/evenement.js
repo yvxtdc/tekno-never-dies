@@ -220,8 +220,8 @@ if (!root) {
   const destination = encodeURIComponent(ev.place || "");
   const routes = ev.place && status === "a-venir"
     ? [
-        ["Google Maps", `https://www.google.com/maps/dir/?api=1&destination=${destination}`],
         ["Waze", `https://waze.com/ul?q=${destination}&navigate=yes`],
+        ["Google Maps", `https://www.google.com/maps/dir/?api=1&destination=${destination}`],
         ...(/iPhone|iPad|Macintosh/.test(navigator.userAgent) ? [["Plans", `https://maps.apple.com/?daddr=${destination}`]] : [])
       ]
     : [];

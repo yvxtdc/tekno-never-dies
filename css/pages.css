@@ -1347,7 +1347,7 @@ button.event-gallery-link{background:none;border-width:0 0 1px;border-radius:0;f
   .lineup-row__time{order:-1}
   .lineup-row__style,.lineup-row__collective,.lineup-row__draft{grid-column:1}
   .event-story{grid-template-columns:1fr}
-  .event-story__stamp{justify-self:start;width:150px}
+  .event-story__stamp{display:none} /* téléphone : pas de tampon « TND » tournant */
 }
 
 @media (prefers-reduced-motion:reduce){
