@@ -140,9 +140,7 @@ button.team-card:hover{
 
 .team-modal-photo img{ width:100%; height:100%; object-fit:cover; object-position:center top; display:block; }
 
-.team-modal-body{ max-height: calc(100vh - 48px); overflow:auto; }
-
-.team-modal-body{ padding: clamp(24px, 4vw, 42px); }
+.team-modal-body{ max-height: calc(100vh - 48px); overflow: auto; padding: clamp(24px, 4vw, 42px); }
 
 .team-modal-body h3{ font-family: var(--display); font-weight:400; text-transform:uppercase; margin:.2em 0 .2em; font-size:clamp(1.8rem, 4vw, 3rem); }
 

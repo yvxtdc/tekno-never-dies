@@ -90,7 +90,7 @@ export default {
   "événements": "Events",
   "{n} {events} affiché(s).": "{n} {events} angezeigt.",
   "{n} DJ passés chez TND": "{n} DJs haben bei TND aufgelegt",
-  "Voir la fiche": "Zum Event",
+  "Découvrir la soirée": "Zur Party",
   "Billetterie": "Tickets",
   "S'abonner (QR code)": "Abonnieren (QR-Code)",
   "S'abonner à l'agenda depuis un téléphone": "Kalender vom Handy aus abonnieren",

@@ -19,16 +19,21 @@ const timeToMinutes = (value = "") => {
   return match ? Number(match[1]) * 60 + Number(match[2]) : null;
 };
 
-/* Nom d'artiste -> lien Instagram (js/data/artistes.js). Un B2B donne un lien par artiste. */
+// Petit logo Instagram blanc + main « clic » collés au nom, pour montrer qu'on peut appuyer dessus.
+const IG_HINT = `<span class="lineup-row__ig" aria-hidden="true">`
+  + `<svg class="lineup-row__ig-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>`
+  + `<svg class="lineup-row__ig-tap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V11"/><path d="M12 10.5V9a1.5 1.5 0 0 1 3 0v2"/><path d="M15 10.5a1.5 1.5 0 0 1 3 0V15a6 6 0 0 1-6 6h-1.2a5 5 0 0 1-3.9-1.9L4.6 16a1.6 1.6 0 0 1 2.4-2.1L9 15.5"/></svg>`
+  + `</span>`;
 // Photos de profil du cercle (js/data/artistes-photos.js) : une par artiste, un deuxième cercle pour un B2B.
 const artistPhotos = (artist) =>
   artist.image ? [artist.image] : artistsOf(artist.name).map(artistPhoto).filter(Boolean);
+/* Nom d'artiste -> lien Instagram (js/data/artistes.js). Un B2B donne un lien par artiste. */
 const artistName = (name) =>
   splitB2B(name)
     .map((part, i) => {
       const url = i % 2 ? null : artistUrl(part);
       return url
-        ? `<a href="${escapeHTML(url)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHTML(t("{name} sur Instagram", { name: part }))}">${escapeHTML(part)}</a>`
+        ? `<a href="${escapeHTML(url)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHTML(t("{name} sur Instagram", { name: part }))}">${escapeHTML(part)}${IG_HINT}</a>`
         : escapeHTML(part);
     })
     .join("");
@@ -296,8 +301,12 @@ if (!root) {
         <p>${escapeHTML(ev.description || "Une nuit signée Tekno Never Dies.")}</p>
         ${galleryLink}
       </div>
-      <div class="event-story__stamp" aria-hidden="true">
-        <span>TND</span><small>NEVER DIES</small>
+      <div class="event-story__stamp" aria-hidden="true" translate="no">
+        <svg class="event-story__ring" viewBox="0 0 200 200">
+          <defs><path id="stamp-circle" d="M100,100 m-82,0 a82,82 0 1,1 164,0 a82,82 0 1,1 -164,0" /></defs>
+          <text><textPath href="#stamp-circle" textLength="512" lengthAdjust="spacing">TEKNO NEVER DIES ✦ ${escapeHTML(ev.title)} ✦ ${ev.date ? `${escapeHTML(ev.date.slice(0, 4))} ✦` : ""}</textPath></text>
+        </svg>
+        <span class="event-story__core">TND</span>
       </div>
     </section>
 

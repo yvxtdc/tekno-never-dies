@@ -84,7 +84,7 @@ export default {
   "événements": "events",
   "{n} {events} affiché(s).": "{n} {events} shown.",
   "{n} DJ passés chez TND": "{n} DJs have played at TND",
-  "Voir la fiche": "View event",
+  "Découvrir la soirée": "Discover the night",
   "Billetterie": "Tickets",
   "S'abonner (QR code)": "Subscribe (QR code)",
   "S'abonner à l'agenda depuis un téléphone": "Subscribe to the calendar from your phone",
