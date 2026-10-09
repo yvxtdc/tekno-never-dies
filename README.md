@@ -85,14 +85,14 @@ Le workflow `.github/workflows/deploy-pages.yml` vérifie puis déploie le site 
 
 Avant de publier :
 
-1. **Adresse du site** : l’URL GitHub Pages connue est `https://yvxtdc.github.io/tekno-never-dies/`.
-   Si le dépôt ou l’hébergement change, mettre à jour `js/data/site.js`, `sitemap.xml`, `robots.txt` et `calendar/events.ics`.
-   Le sitemap est à l’URL du projet. Attention : sur GitHub Pages projet, `robots.txt` est servi sous `/tekno-never-dies/`, alors que les robots le recherchent à la racine de l’hôte (`/robots.txt`). Pour rendre cette directive officiellement accessible, il faudra un domaine dédié ou un site GitHub Pages utilisateur/organisation à la racine ; à défaut, soumettre le sitemap séparément aux moteurs de recherche.
+1. **Adresse du site** : `https://teknoneverdies.fr/` (domaine acheté chez Gandi, publié par GitHub Pages ; le fichier `CNAME` contient le domaine).
+   L'ancienne adresse `https://yvxtdc.github.io/tekno-never-dies/` redirige automatiquement vers le domaine.
+   Si l'adresse change, mettre à jour `js/data/site.js`, `CNAME`, `sitemap.xml`, `robots.txt` et le `<head>` de chaque page (`og:url`, `og:image`, `canonical`).
 2. **Agenda** : l'adresse `.ics` est dans `SITE.agenda` (`js/data/site.js`). Si elle change, régénérer le QR code
    `assets/img/agenda-qr.svg` (encodant l'adresse `webcal://…`).
 3. **Aperçu sur les réseaux** : `assets/img/og-image.jpg` (1200×630) est déclarée dans le `<head>` de chaque page, avec `og:url` et `canonical` en adresse absolue. Si l'adresse du site change, les remplacer dans toutes les pages. Les fiches événement utilisent leur flyer.
 4. **À compléter** : `npm run validate` liste les champs `[… À REMPLACER]`, les réponses FAQ `needsValidation` et la billetterie ou le line-up manquants des prochaines soirées.
-5. **Page 404** : une balise `<base>` (ajoutée par un petit script) garde styles et liens corrects, même sur une adresse imbriquée. Si le nom du dépôt change, mettre à jour `/tekno-never-dies/` dans `404.html`.
+5. **Page 404** : une balise `<base>` (ajoutée par un petit script) garde styles et liens corrects, même sur une adresse imbriquée. Elle fonctionne à la racine du domaine comme sous l'ancienne adresse `/tekno-never-dies/`.
 
 ## Informations publiques vérifiées
 
