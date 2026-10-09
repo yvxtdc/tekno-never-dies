@@ -1,12 +1,17 @@
 /** Petits outils réutilisés par les scripts de pages (formatage de date, échappement HTML, etc). */
 
-const MONTHS = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+import { lang, locale } from "../i18n/i18n.js";
 
-/** "2026-11-14" -> "14 novembre 2026"; month precision omits an unknown day. */
+/** "2026-11-14" -> "14 novembre 2026" (« 14. November 2026 », « 14 November 2026 ») ; précision « month » : sans le jour. */
 export function formatDate(iso, precision = "day") {
   const [y, m, d] = iso.split("-").map(Number);
-  if (precision === "month") return `${MONTHS[m - 1]} ${y}`;
-  return `${d} ${MONTHS[m - 1]} ${y}`;
+  const options = precision === "month" ? { month: "long", year: "numeric" } : { day: "numeric", month: "long", year: "numeric" };
+  return new Intl.DateTimeFormat(locale, { ...options, timeZone: "UTC" }).format(new Date(Date.UTC(y, m - 1, d)));
+}
+
+/** Horaires : "21h00 – 4h00" en français, "21:00 – 4:00" en allemand et en anglais. */
+export function formatTime(text = "") {
+  return lang === "fr" ? text : String(text).replace(/(\d{1,2})h(\d{2})/g, "$1:$2");
 }
 
 /**
@@ -22,6 +27,19 @@ export function eventStatus(ev) {
 /** Échappe le texte avant de l'insérer dans du HTML (innerHTML). */
 export function esc(s) {
   return String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+
+/**
+ * Lien externe sûr : seules les adresses https:// (ou http://) sont gardées. Évite qu'une faute de
+ * frappe ou un lien piégé dans js/data (« javascript:… ») se retrouve dans un href. Sinon : "".
+ */
+export function safeUrl(url) {
+  try {
+    const { protocol, href } = new URL(String(url ?? ""));
+    return protocol === "https:" || protocol === "http:" ? href : "";
+  } catch {
+    return "";
+  }
 }
 
 /** Vignette grise avec une légende, utilisée tant qu'aucune vraie photo n'est fournie. */

@@ -684,6 +684,44 @@ footer{
 
 .tnd-menu-foot a:focus-visible{outline-color:var(--cyan)}
 
+/* Bas du menu : coordonnées + choix de la langue (FR / DE / EN) */
+.tnd-menu-bottom{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 32px}
+
+.tnd-lang{display:inline-flex;gap:4px;padding:4px;border:1px solid rgba(255,255,255,.3);border-radius:999px}
+
+.tnd-lang button{
+  min-width:48px;min-height:40px;padding:0 14px;border:0;border-radius:999px;
+  background:transparent;color:#fff;font:inherit;font-weight:700;font-size:.85rem;letter-spacing:.12em;
+  cursor:pointer;transition:background .2s,color .2s;
+}
+
+.tnd-lang button:hover{color:var(--pink)}
+
+.tnd-lang button[aria-pressed="true"]{background:#fff;color:var(--navy)}
+
+.tnd-lang button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
+
+/* Choix de la langue dans le bandeau du haut, juste avant le bouton Menu :
+   le bouton Menu suit le bandeau (au lieu d'être fixé seul) pour qu'ils restent alignés. */
+.top .tnd-lang{margin-left:auto;background:rgba(11,7,34,.55);flex-shrink:0}
+
+.top .tnd-toggle{position:relative;top:auto;right:auto;flex-shrink:0}
+
+@media (max-width:760px){
+  .top{gap:10px}
+
+  .top .tnd-lang{gap:2px;padding:3px}
+
+  .top .tnd-lang button{min-width:34px;min-height:34px;padding:0 6px;font-size:.75rem;letter-spacing:.06em}
+}
+
+/* Traduction en cours (js/i18n/i18n.js) : la page reste masquée un instant pour ne pas
+   afficher le français puis l'allemand ou l'anglais. */
+html.i18n-pending body{visibility:hidden}
+
+/* Pages légales traduites : rappel que la version française fait foi */
+.legal-lang-note{margin-top:1em!important;font-size:.9rem!important;font-style:italic}
+
 /* Colonne de droite du menu : prochaine soirée + Instagram (ordinateur uniquement) */
 .tnd-menu-side{display:none}
 

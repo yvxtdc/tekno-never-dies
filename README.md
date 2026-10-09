@@ -19,7 +19,8 @@ css/pages.css                     Pages intérieures (événements, galerie, for
 css/components/team.css            Page association (équipe)
 js/partials.js                    Menu, page active, en-tête au défilement, JSON-LD (toutes les pages)
 js/pages/*.js                     Un script par page (événements, galerie, FAQ, contact…)
-js/data/*.js                      Contenus : événements, galerie, FAQ, actualités, partenaires, équipe, infos du site
+js/data/*.js                      Contenus : événements, galerie, FAQ, équipe, infos du site
+js/i18n/                          Traduction allemand / anglais (i18n.js + dictionnaires de.js, en.js)
 js/stars/                         Étoiles 3D de l'accueil (réglages dans config.js)
 assets/                           Images, polices (auto-hébergées), photos de galerie, QR code de l'agenda
 calendar/                         Agenda .ics généré (ne pas modifier à la main)
@@ -35,8 +36,9 @@ vendor/three/                     Three.js
 | Ajouter des photos à la galerie | `npm run photos -- import/mon-dossier --titre "…" --date AAAA-MM-JJ` |
 | Lien Instagram d'un artiste du line-up | `js/data/artistes.js` |
 | Photo de profil d'un artiste (cercle du line-up) | déposer `Nom de l'artiste.jpg` dans `import/artistes/`, puis `npm run artistes` |
-| Modifier la FAQ, les actualités, les partenaires | `js/data/faq.js`, `actualites.js`, `partenaires.js` |
+| Modifier la FAQ | `js/data/faq.js` |
 | Modifier l'équipe | `js/data/equipe.js` |
+| Traduire un texte (allemand, anglais) | `js/i18n/de.js` et `en.js` : `"texte français": "traduction"` (voir « Langues ») |
 | Modifier le header, le menu ou le footer | `partials/header.html` ou `footer.html`, puis `npm run partials` |
 | Changer couleurs, tailles, espacements | `css/style.css` (variables en haut, dans `:root`) |
 | Régler les étoiles (vitesse, couleurs, on/off) | `js/stars/config.js` |
@@ -48,6 +50,17 @@ Le header et le footer sont **écrits directement dans chaque page**, entre les 
 `<!-- partial:header -->…<!-- /partial:header -->` (et `footer`). Ne modifie pas ce contenu dans les pages :
 modifie `partials/header.html` ou `partials/footer.html`, puis lance `npm run partials`.
 `npm run validate` échoue si une page n'est pas à jour.
+
+## Langues (FR / DE / EN)
+
+Le site est écrit en français ; le bouton FR / DE / EN en bas du menu traduit chaque page dans le navigateur.
+`js/i18n/i18n.js` remplace les textes français par leur traduction trouvée dans `js/i18n/de.js` et `en.js`
+(clé = texte français exact, paragraphe avec liens = son HTML). Un texte sans traduction reste en français.
+Le choix est mémorisé dans le navigateur ; à la première visite, la langue du navigateur est utilisée.
+`?lang=de` dans une adresse force une langue (lien à partager à un public germanophone, par exemple).
+
+Après avoir ajouté un événement, une question de FAQ ou un membre : `npm run validate` liste les textes de
+`js/data` encore sans traduction. Les pages légales traduites affichent que seule la version française fait foi.
 
 ## Outils (`npm run …`)
 
@@ -77,7 +90,7 @@ Avant de publier :
 2. **Agenda** : l'adresse `.ics` est dans `SITE.agenda` (`js/data/site.js`). Si elle change, régénérer le QR code
    `assets/img/agenda-qr.svg` (encodant l'adresse `webcal://…`).
 3. **Aperçu sur les réseaux** : `assets/img/og-image.jpg` (1200×630) est déclarée dans le `<head>` de chaque page, avec `og:url` et `canonical` en adresse absolue. Si l'adresse du site change, les remplacer dans toutes les pages. Les fiches événement utilisent leur flyer.
-4. **Contenus de démo** : les partenaires et actualités marqués `demo: true` ne sont jamais affichés au public. `npm run validate` les liste, ainsi que les champs `[… À REMPLACER]`, les réponses FAQ `needsValidation` et la billetterie ou le line-up manquants des prochaines soirées.
+4. **À compléter** : `npm run validate` liste les champs `[… À REMPLACER]`, les réponses FAQ `needsValidation` et la billetterie ou le line-up manquants des prochaines soirées.
 5. **Page 404** : une balise `<base>` (ajoutée par un petit script) garde styles et liens corrects, même sur une adresse imbriquée. Si le nom du dépôt change, mettre à jour `/tekno-never-dies/` dans `404.html`.
 
 ## Informations publiques vérifiées
@@ -99,7 +112,6 @@ Ces informations sont une base de travail : elles ne remplacent pas la validatio
 - ICE BOILER v2 : ajouter le lien de billetterie (`ticketUrl`) et le line-up dans `js/data/events.js`.
 - Désactiver GitHub Pages sur l’ancienne copie `yannismetzinger06-ship-it/tekno-never-dies` (contenu en double).
 - Vérifier les autorisations de publication des photos et informations de l’équipe et des personnes photographiées.
-- Remplacer ou confirmer les contenus de démonstration (partenaires, actualités et autres profils sociaux) avant de les présenter comme réels.
 - Confirmer l’exactitude du QR code d’agenda après changement de l’URL d’hébergement.
 
 ## Licences

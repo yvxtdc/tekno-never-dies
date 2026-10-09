@@ -1,11 +1,13 @@
 import { EVENTS } from "../data/events.js";
 import { splitB2B, artistsOf, artistUrl, artistPhoto, slotStyle } from "./artists.js";
 import { SITE } from "../data/site.js";
-import { formatDate, readParam, eventStatus } from "./helpers.js";
+import { formatDate, formatTime, readParam, eventStatus, safeUrl } from "./helpers.js";
+import { t, tr } from "../i18n/i18n.js";
 import { downloadICS, eventTimes, eventRange, parisOffset } from "./ics.js";
 
 const root = document.getElementById("event-detail");
 const ev = EVENTS.find((event) => event.slug === readParam("slug"));
+const ticketUrl = safeUrl(ev?.ticketUrl);
 
 const escapeHTML = (value = "") =>
   String(value).replace(/[&<>"']/g, (char) => ({
@@ -31,7 +33,7 @@ const artistName = (name) =>
     .map((part, i) => {
       const url = i % 2 ? null : artistUrl(part);
       return url
-        ? `<a href="${escapeHTML(url)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHTML(part)} sur Instagram">${escapeHTML(part)}${IG_HINT}</a>`
+        ? `<a href="${escapeHTML(url)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHTML(t("{name} sur Instagram", { name: part }))}">${escapeHTML(part)}${IG_HINT}</a>`
         : escapeHTML(part);
     })
     .join("");
@@ -89,7 +91,7 @@ if (!root) {
 } else {
   const status = eventStatus(ev);
   const pageTitle = `${ev.title} — Tekno Never Dies`;
-  const summary = `${formatDate(ev.date, ev.datePrecision)}${ev.place ? ` · ${ev.place}` : ""}. ${ev.description || ""}`.trim();
+  const summary = `${formatDate(ev.date, ev.datePrecision)}${ev.place ? ` · ${ev.place}` : ""}. ${tr(ev.description) || ""}`.trim();
   const visual = ev.flyer || ev.cover;
   document.title = pageTitle;
   const setMeta = (selector, value) => document.head.querySelector(selector)?.setAttribute("content", value);
@@ -102,7 +104,7 @@ if (!root) {
     const visualUrl = new URL(visual, SITE.url).href;
     setMeta('meta[property="og:image"]', visualUrl);
     setMeta('meta[name="twitter:image"]', visualUrl);
-    setMeta('meta[property="og:image:alt"]', `Flyer de ${ev.title}`);
+    setMeta('meta[property="og:image:alt"]', t("Flyer de {title}", { title: ev.title }));
     document.head.querySelectorAll('meta[property="og:image:width"], meta[property="og:image:height"]').forEach((m) => m.remove());
   }
 
@@ -146,7 +148,7 @@ if (!root) {
             price: price.replace(",", "."),
             priceCurrency: "EUR",
             availability: status === "a-venir" ? "https://schema.org/InStock" : "https://schema.org/SoldOut",
-            url: ev.ticketUrl || new URL(`evenement.html?slug=${encodeURIComponent(ev.slug)}`, SITE.url).href
+            url: ticketUrl || new URL(`evenement.html?slug=${encodeURIComponent(ev.slug)}`, SITE.url).href
           }
         }
       : {}),
@@ -162,7 +164,7 @@ if (!root) {
   // Fond du hero : la photo si elle existe, sinon le flyer (flouté par css/components/event-flyer.css).
   const coverImage = ev.heroImage || ev.cover || ev.flyer;
   // Adresse complète : une url() relative dans une variable CSS serait résolue depuis css/pages.css (404).
-  const cover = coverImage ? `style="--event-cover:url('${escapeHTML(new URL(coverImage, location.href).href)}')"` : "";
+  const cover = coverImage ? `style="--event-cover:url('${escapeHTML(new URL(coverImage, location.href).href.replace(/['()\\]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`))}')"` : "";
 
   const practical = (ev.practical || []).map((item) => `<li>${escapeHTML(item)}</li>`).join("");
   const galleryLink = ev.gallerySlug
@@ -175,12 +177,12 @@ if (!root) {
   const lineupIsPreview = Boolean(ev.lineupPreview);
 
   const genres = ev.genres?.length
-    ? `<ul class="event-genres" aria-label="Styles musicaux">${ev.genres.map((genre) => `<li>${escapeHTML(genre)}</li>`).join("")}</ul>`
+    ? `<ul class="event-genres" aria-label="Styles musicaux" translate="no">${ev.genres.map((genre) => `<li>${escapeHTML(genre)}</li>`).join("")}</ul>`
     : "";
 
   const flyer = ev.flyer
     ? `<figure class="event-flyer">
-        <img class="event-flyer__media" src="${escapeHTML(ev.flyer)}" alt="Flyer de ${escapeHTML(ev.title)}" width="1080" height="1350" decoding="async" />
+        <img class="event-flyer__media" src="${escapeHTML(ev.flyer)}" alt="${escapeHTML(t("Flyer de {title}", { title: ev.title }))}" width="1080" height="1350" decoding="async" />
         <figcaption><a href="${escapeHTML(ev.flyer)}" target="_blank" rel="noopener">Voir le flyer en grand ↗</a></figcaption>
       </figure>`
     : "";
@@ -192,11 +194,11 @@ if (!root) {
           <span class="lineup-row__photos">${(artistPhotos(artist).length ? artistPhotos(artist).slice(0, 2) : [null]).map((src) => `<span class="lineup-row__photo">${src ? `<img src="${escapeHTML(src)}" alt="" loading="lazy" />` : ""}</span>`).join("")}</span>
           <div class="lineup-row__info">
             ${artist.time
-              ? `<span class="lineup-row__time">${escapeHTML(artist.time)}</span>`
+              ? `<span class="lineup-row__time">${escapeHTML(formatTime(artist.time))}</span>`
               : status === "a-venir" ? `<span class="lineup-row__time">Horaire à confirmer</span>` : ""}
             <span class="lineup-row__live">En ce moment</span>
-            <h3>${artist.name ? artistName(artist.name) : "Artiste à renseigner"}</h3>
-            ${(artist.style || slotStyle(artist.name)) ? `<p class="lineup-row__style">${escapeHTML(artist.style || slotStyle(artist.name))}</p>` : ""}
+            <h3 translate="no">${artist.name ? artistName(artist.name) : escapeHTML(tr("Artiste à renseigner"))}</h3>
+            ${(artist.style || slotStyle(artist.name)) ? `<p class="lineup-row__style" translate="no">${escapeHTML(artist.style || slotStyle(artist.name))}</p>` : ""}
           </div>
           ${artist.demo ? `<span class="lineup-row__draft">À compléter</span>` : artist.collective ? `<span class="lineup-row__collective">${escapeHTML(artist.collective)}</span>` : ""}
         </li>
@@ -256,7 +258,7 @@ if (!root) {
         <div class="event-hero__top">
           <p class="event-eyebrow">TEKNO NEVER DIES <span>/</span> EVENT FILE</p>
           <nav class="event-quicklinks" aria-label="Actions rapides">
-            ${ev.ticketUrl ? `<a class="is-primary" href="${escapeHTML(ev.ticketUrl)}" target="_blank" rel="noopener">Billetterie ↗</a>` : ""}
+            ${ticketUrl ? `<a class="is-primary" href="${escapeHTML(ticketUrl)}" target="_blank" rel="noopener">Billetterie ↗</a>` : ""}
             ${status === "a-venir" ? `<button type="button" id="add-to-calendar">Ajouter à l'agenda</button>` : ""}
             ${routes.length ? `<a href="#access-title">Itinéraire</a>` : ""}
             ${ev.gallerySlug ? `<a href="galerie.html#${encodeURIComponent(ev.gallerySlug)}">Voir la galerie</a>` : ""}
@@ -265,14 +267,14 @@ if (!root) {
           </nav>
         </div>
 
-        <h1 id="event-title">${escapeHTML(ev.title)}<span class="event-title__dot">.</span></h1>
+        <h1 id="event-title" translate="no">${escapeHTML(ev.title)}<span class="event-title__dot">.</span></h1>
 
-        <p class="event-hero__when">
+        <p class="event-hero__when" translate="no">
           ${ev.datePrecision === "month"
             ? `<b>${escapeHTML(dateDay)} ${escapeHTML(dateMonth)}</b>`
             : `<b>${escapeHTML(dateDay)} ${escapeHTML(dateMonth)}</b><span>${escapeHTML(dateYear)}</span>`}
-          ${ev.time ? `— ${escapeHTML(ev.time)}` : ""}
-          <span>${escapeHTML(ev.place || "Lieu à confirmer")}</span>
+          ${ev.time ? `— ${escapeHTML(formatTime(ev.time))}` : ""}
+          <span>${escapeHTML(ev.place || tr("Lieu à confirmer"))}</span>
         </p>
 
         ${genres}
@@ -299,7 +301,7 @@ if (!root) {
         <p>${escapeHTML(ev.description || "Une nuit signée Tekno Never Dies.")}</p>
         ${galleryLink}
       </div>
-      <div class="event-story__stamp" aria-hidden="true">
+      <div class="event-story__stamp" aria-hidden="true" translate="no">
         <svg class="event-story__ring" viewBox="0 0 200 200">
           <defs><path id="stamp-circle" d="M100,100 m-82,0 a82,82 0 1,1 164,0 a82,82 0 1,1 -164,0" /></defs>
           <text><textPath href="#stamp-circle" textLength="512" lengthAdjust="spacing">TEKNO NEVER DIES ✦ ${escapeHTML(ev.title)} ✦ ${ev.date ? `${escapeHTML(ev.date.slice(0, 4))} ✦` : ""}</textPath></text>
