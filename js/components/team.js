@@ -29,6 +29,7 @@ const cards = TEAM.map(member => {
   img.src = member.photo;
   img.alt = member.name;
   img.loading = 'lazy';
+  img.draggable = false; // sinon le navigateur « attrape » la photo au lieu de faire défiler
 
   button.append(img);
   li.append(button);
@@ -196,6 +197,9 @@ carousel.addEventListener(
   'pointerdown',
   (event) => {
 
+    // Clic droit / molette : pas de défilement.
+    if (event.button !== 0) return;
+
     dragging = true;
     paused = true;
 
@@ -258,18 +262,18 @@ function endDrag(event) {
   paused =
     carousel.matches(':hover');
 
-try {
-  if (
-    captureTarget &&
-    captureTarget.hasPointerCapture(event.pointerId)
-  ) {
-    captureTarget.releasePointerCapture(
-      event.pointerId
-    );
-  }
-} catch (_) {}
+  try {
+    if (
+      captureTarget &&
+      captureTarget.hasPointerCapture(event.pointerId)
+    ) {
+      captureTarget.releasePointerCapture(
+        event.pointerId
+      );
+    }
+  } catch (_) {}
 
-captureTarget = null; 
+  captureTarget = null;
 }
 
 

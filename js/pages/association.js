@@ -30,3 +30,19 @@ if (text && link) {
     link.textContent = "Voir les événements";
   }
 }
+
+/* ---------- « Ce qui nous porte » : halo sous la souris, carte allumée au défilement sur téléphone ---------- */
+const pillars = document.querySelectorAll(".pillars__list li");
+if (matchMedia("(hover: hover) and (pointer: fine)").matches) {
+  pillars.forEach((card) => card.addEventListener("pointermove", (event) => {
+    const r = card.getBoundingClientRect();
+    card.style.setProperty("--mx", `${event.clientX - r.left}px`);
+    card.style.setProperty("--my", `${event.clientY - r.top}px`);
+  }));
+} else if ("IntersectionObserver" in window) {
+  const observer = new IntersectionObserver(
+    (entries) => entries.forEach((entry) => entry.target.classList.toggle("is-active", entry.isIntersecting)),
+    { rootMargin: "-40% 0px -40% 0px" } // bande centrale de l'écran
+  );
+  pillars.forEach((card) => observer.observe(card));
+}
