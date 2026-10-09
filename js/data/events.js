@@ -29,7 +29,7 @@ export const EVENTS = [
     description: "Rendez-vous le samedi 28 novembre 2026 à 21h00 à la salle polyvalente de Munchhausen pour ICE BOILER v2, une soirée trance, groovy, bouncy et techno organisée par Tekno Never Dies.",
     practical: ["Début : 21h00", "Prévente en ligne sur HelloAsso : 10 €, 13 € ou 16 €", "Sur place (caisse du soir) : 18 €", "Dès 16 ans"],
     lineup: [
-      { name: "DJ Contest", time: "21h00 – 22h00" },
+      { name: "T.B.R", style: "DJ Contest", time: "21h00 – 22h00" },
       { name: "Mogli", time: "22h00 – 23h30" },
       { name: "Dann Octa", time: "23h30 – 1h00" },
       { name: "Leander", time: "1h00 – 2h30" },

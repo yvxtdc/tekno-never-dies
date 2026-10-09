@@ -35,7 +35,7 @@ function card(ev) {
         <h3>${esc(ev.title)}</h3>
         <p>${esc(ev.place)}</p>
         <div class="event-card__actions">
-          <a class="btn btn-line btn-sm" href="evenement.html?slug=${encodeURIComponent(ev.slug)}">Voir la fiche</a>
+          <a class="btn btn-cyan btn-sm btn-discover" href="evenement.html?slug=${encodeURIComponent(ev.slug)}">Découvrir la soirée<span class="btn-discover__arrow" aria-hidden="true">→</span></a>
           ${ticket}
         </div>
       </div>

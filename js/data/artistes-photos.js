@@ -11,6 +11,7 @@ export const ARTIST_PHOTOS = {
   "rayy3k": "assets/img/artistes/rayy3k.webp",
   "redfox": "assets/img/artistes/redfox.webp",
   "svengerber": "assets/img/artistes/svengerber.webp",
+  "tbr": "assets/img/artistes/tbr.webp",
   "tnb": "assets/img/artistes/tnb.webp",
   "valk": "assets/img/artistes/valk.webp",
   "vs": "assets/img/artistes/vs.webp"
