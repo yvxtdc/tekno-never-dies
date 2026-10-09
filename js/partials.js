@@ -3,7 +3,7 @@
 // page courante, l'en-tête au défilement et les données de référencement.
 import { SITE } from "./data/site.js";
 import { EVENTS } from "./data/events.js";
-import { eventStatus, formatDate, formatTime, esc, safeUrl } from "./pages/helpers.js";
+import { eventStatus, formatDate, formatTime, esc, safeUrl, track } from "./pages/helpers.js";
 import { lang, setLang } from "./i18n/i18n.js";
 
 function markActiveLink() {
@@ -165,6 +165,50 @@ function fixAnchorsWithBase() {
   });
 }
 
+// Statistiques de visite (GoatCounter, sans cookie ; voir confidentialite.html). Pas de comptage en local.
+function initAnalytics() {
+  if (!SITE.goatcounter) return;
+  // Page comptée depuis la racine du site (« /evenements.html ») : les statistiques continuent
+  // sans coupure le jour où le site change d'adresse (domaine en .fr). Une fiche soirée garde son
+  // ?slug=, mais pas ?lang= : une page reste une seule ligne, quelle que soit la langue.
+  const root = new URL("../", import.meta.url).pathname;
+  window.goatcounter = {
+    path() {
+      const { pathname, search } = location;
+      let page = pathname.startsWith(root) ? pathname.slice(root.length) : pathname.replace(/^\//, "");
+      if (page === "index.html") page = "";
+      const slug = page === "evenement.html" && new URLSearchParams(search).get("slug");
+      return `/${page}${slug ? `?slug=${encodeURIComponent(slug)}` : ""}`;
+    }
+  };
+  const script = document.createElement("script");
+  script.async = true;
+  script.src = "https://gc.zgo.at/count.js";
+  script.dataset.goatcounter = SITE.goatcounter;
+  document.head.append(script);
+}
+
+// Clics sur les liens qui quittent la page sans être une page du site (comptés par GoatCounter).
+function trackLinkClicks() {
+  document.addEventListener("click", (event) => {
+    const link = event.target.closest?.("a[href]");
+    if (!link) return;
+    const url = new URL(link.href, location.href);
+    if (url.protocol === "mailto:") return track("E-mail");
+    if (url.protocol === "tel:") return track("Téléphone");
+    if (url.protocol === "webcal:") return track("Agenda · abonnement");
+    if (url.origin === location.origin) return; // page du site : déjà comptée à son ouverture
+    const host = url.hostname.replace(/^www\./, "");
+    const ticketFor = EVENTS.find((ev) => ev.ticketUrl && safeUrl(ev.ticketUrl) === url.href);
+    const current = EVENTS.find((ev) => ev.slug === new URLSearchParams(location.search).get("slug"));
+    if (ticketFor) track(`Billetterie · ${ticketFor.title}`);
+    else if (host === "instagram.com") track(`Instagram · @${url.pathname.split("/")[1] || "tnd6tem"}`);
+    else if (/google\.[a-z.]+$/.test(host) && url.pathname.startsWith("/maps") || host === "waze.com" || host === "maps.apple.com") {
+      track(`Itinéraire · ${current?.title || "?"}`);
+    } else track(`Lien externe · ${host}`);
+  }, { capture: true });
+}
+
 fixAnchorsWithBase();
 markActiveLink();
 initMenuNext();
@@ -172,3 +216,5 @@ initMenu();
 initLangSwitch();
 initScrolledHeader();
 initSeo();
+initAnalytics();
+trackLinkClicks();

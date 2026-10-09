@@ -43,6 +43,7 @@ vendor/three/                     Three.js
 | Changer couleurs, tailles, espacements | `css/style.css` (variables en haut, dans `:root`) |
 | Régler les étoiles (vitesse, couleurs, on/off) | `js/stars/config.js` |
 | Changer l'adresse du siège | `js/data/site.js` (+ `association.html` et `mentions-legales.html`) |
+| Statistiques de visite (GoatCounter) | tableau de bord : https://teknoneverdies.goatcounter.com — réglage : `SITE.goatcounter` dans `js/data/site.js` (vide = désactivé ; si l'adresse change, la mettre aussi dans la CSP de chaque page) |
 
 ## Header et footer
 

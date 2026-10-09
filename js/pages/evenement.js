@@ -1,7 +1,7 @@
 import { EVENTS } from "../data/events.js";
 import { splitB2B, artistsOf, artistUrl, artistPhoto, slotStyle } from "./artists.js";
 import { SITE } from "../data/site.js";
-import { formatDate, formatTime, readParam, eventStatus, safeUrl } from "./helpers.js";
+import { formatDate, formatTime, readParam, eventStatus, safeUrl, track } from "./helpers.js";
 import { t, tr } from "../i18n/i18n.js";
 import { downloadICS, eventTimes, eventRange, parisOffset } from "./ics.js";
 
@@ -337,6 +337,7 @@ if (!root) {
 
   document.getElementById("add-to-calendar")?.addEventListener("click", () => {
     downloadICS([ev], `tnd-${ev.slug}.ics`);
+    track(`Ajouter à l'agenda · ${ev.title}`);
   });
 
   // Partager : menu de partage du téléphone (Insta, WhatsApp, SMS…), sinon copie du lien.
@@ -349,6 +350,7 @@ if (!root) {
     const label = button.querySelector("span") || button;
     const original = label.textContent;
     button.addEventListener("click", async () => {
+      track(`Partager · ${ev.title}`);
       if (navigator.share) {
         try { await navigator.share(shareData); } catch { /* partage annulé */ }
         return;

@@ -54,6 +54,15 @@ export function thumb(src, alt, label) {
     : placeholderThumb(label);
 }
 
+/**
+ * Statistiques : compte un clic dans GoatCounter (rubrique « événements » du tableau de bord),
+ * ex. track("Billetterie · ICE BOILER v2"). Sans effet si le compteur n'est pas chargé
+ * (site ouvert en local, bloqueur de traceurs…).
+ */
+export function track(name) {
+  window.goatcounter?.count?.({ path: name, title: document.title, event: true });
+}
+
 /** Lit un paramètre de l'URL, ex : readParam("slug") pour ?slug=xyz */
 export function readParam(name) {
   return new URLSearchParams(location.search).get(name);

@@ -1,5 +1,5 @@
 import { GALLERY } from "../data/galerie.js";
-import { thumb, esc } from "./helpers.js";
+import { thumb, esc, track } from "./helpers.js";
 import { t } from "../i18n/i18n.js";
 
 const root = document.getElementById("gallery-root");
@@ -137,6 +137,7 @@ lb.innerHTML = `
   </figure>
   <button class="lb-btn lb-next" type="button" data-act="next" aria-label="Photo suivante">›</button>`;
 document.body.appendChild(lb);
+lb.querySelector(".lb-dl").addEventListener("click", () => track(`Galerie · photo enregistrée · ${sets[cur.set].title}`));
 
 const $ = (s) => lb.querySelector(s);
 let cur = { set: 0, i: 0 };
@@ -161,6 +162,7 @@ function show(setIdx, i) {
 function open(setIdx, i, from) {
   opener = from;
   show(setIdx, i);
+  track(`Galerie · ${sets[setIdx].title}`);
   lb.hidden = false;
   document.body.style.overflow = "hidden";
   $(".lb-close").focus();

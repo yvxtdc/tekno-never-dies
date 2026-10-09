@@ -1,5 +1,6 @@
 import { TEAM } from '../data/equipe.js';
 import { t } from '../i18n/i18n.js';
+import { track as trackClick } from '../pages/helpers.js';
 
 const carousel = document.querySelector('.team-carousel');
 const track = document.querySelector('.team-track');
@@ -346,6 +347,7 @@ if (
 function openModal(member, trigger) {
 
   lastFocused = trigger;
+  trackClick(`Équipe · ${member.name}`);
 
   modalImg.src =
     member.photo;
