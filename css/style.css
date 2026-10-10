@@ -473,7 +473,7 @@ footer{
 
 .footer-column h2{margin:0 0 14px;font-family:var(--text);font-size:.85rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#a99aff}
 
-.footer-column nav{display:grid;grid-template-columns:repeat(2,max-content);gap:6px 28px;font-size:.88rem}
+.footer-column nav{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.88rem}
 
 .footer-column nav a,
 .footer-bottom a{font-weight:700;text-decoration:none}
@@ -975,6 +975,33 @@ body{overflow-x:clip}
   gap:12px;
   flex:none;
 }
+
+/* Boutons du hero : appel aux DJ */
+.hero-cta{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:.7em;
+  font-family:var(--display);
+  font-weight:400;
+  font-size:.92rem;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  padding:1.05em 1.6em;
+}
+
+.hero-cta__arrow{
+  display:inline-block;
+  transition:transform .2s ease;
+}
+
+.hero-cta:hover .hero-cta__arrow{transform:translateX(5px)}
+
+.hero-cta.btn-solid{box-shadow:0 10px 34px rgba(182,38,154,.35)}
+
+.hero-cta.btn-solid:hover{box-shadow:0 14px 40px rgba(182,38,154,.5)}
+
+.hero-cta.btn-hero-line:hover{border-color:var(--pink)}
 
 .btn-hero-line{
   color:#fff;
