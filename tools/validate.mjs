@@ -85,7 +85,8 @@ for (const file of pages) {
   const csp = html.match(/<meta http-equiv="Content-Security-Policy" content="([^"]+)"/)?.[1];
   if (!csp) err(file, "meta Content-Security-Policy manquante");
   else {
-    for (const m of html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)) {
+    // Les blocs JSON-LD ne sont pas exécutés : la CSP ne les concerne pas.
+    for (const m of html.matchAll(/<script(?![^>]*\bsrc=)(?![^>]*application\/ld\+json)[^>]*>([\s\S]*?)<\/script>/g)) {
       const hash = `'sha256-${createHash("sha256").update(m[1]).digest("base64")}'`;
       if (!csp.includes(hash)) err(file, `script en ligne modifié : ajouter ${hash} au script-src de la CSP (toutes les pages)`);
     }
