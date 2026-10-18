@@ -398,6 +398,7 @@ export default {
   "Rendez-vous le samedi 28 novembre 2026 à 21h00 à la salle polyvalente de Munchhausen pour ICE BOILER v2, une soirée trance, groovy, bouncy et techno organisée par Tekno Never Dies.": "Join us on Saturday 28 November 2026 at 21:00 at the Munchhausen community hall for ICE BOILER v2, a trance, groovy, bouncy and techno party organised by Tekno Never Dies.",
   "{name} sur Instagram": "{name} on Instagram",
   "Actions rapides": "Quick actions",
+  "Billetterie : {title}": "Tickets: {title}",
   "Billetterie ↗": "Tickets ↗",
   "Ajouter à l'agenda": "Add to calendar",
   "Itinéraire": "Directions",

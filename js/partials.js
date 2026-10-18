@@ -4,7 +4,7 @@
 import { SITE } from "./data/site.js";
 import { EVENTS } from "./data/events.js";
 import { eventStatus, formatDate, formatTime, esc, safeUrl, track, eventPath } from "./pages/helpers.js";
-import { lang, setLang, savedLang, pageInLang } from "./i18n/i18n.js";
+import { lang, setLang, savedLang, pageInLang, t } from "./i18n/i18n.js";
 
 function markActiveLink() {
   const page = document.body.dataset.page;
@@ -131,12 +131,54 @@ function initMenuNext() {
   box.hidden = false;
 }
 
-// Choix de la langue en bas du menu : FR / DE / EN
+// Choix de la langue dans le header : bouton planète qui ouvre un mini menu FR / DE / EN.
+// Se ferme au clic à côté, avec Échap ou après un choix ; flèches haut / bas pour passer d'une langue à l'autre.
 function initLangSwitch() {
-  document.querySelectorAll(".tnd-lang [data-lang]").forEach((button) => {
+  const toggle = document.querySelector(".tnd-lang-toggle");
+  const menu = document.querySelector(".tnd-lang-menu");
+  const items = [...document.querySelectorAll(".tnd-lang [data-lang]")];
+  const setOpen = (open) => {
+    if (!toggle || !menu) return;
+    toggle.setAttribute("aria-expanded", String(open));
+    menu.hidden = !open;
+    if (open) (items.find((b) => b.dataset.lang === lang) || items[0])?.focus();
+  };
+  items.forEach((button) => {
     button.setAttribute("aria-pressed", String(button.dataset.lang === lang));
-    button.addEventListener("click", () => setLang(button.dataset.lang));
+    button.addEventListener("click", () => {
+      setOpen(false);
+      setLang(button.dataset.lang);
+    });
   });
+  if (!toggle || !menu) return;
+  toggle.addEventListener("click", () => setOpen(menu.hidden));
+  document.addEventListener("click", (e) => {
+    if (!menu.hidden && !e.target.closest(".tnd-lang")) setOpen(false);
+  });
+  document.addEventListener("keydown", (e) => {
+    if (menu.hidden) return;
+    if (e.key === "Escape") {
+      setOpen(false);
+      toggle.focus();
+    } else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      e.preventDefault();
+      const i = items.indexOf(document.activeElement);
+      items[(i + (e.key === "ArrowDown" ? 1 : items.length - 1)) % items.length].focus();
+    }
+  });
+}
+
+// Bouton « Billetterie » du header : la prochaine soirée à venir qui a une billetterie en ligne.
+// Sans date à venir (ou sans billetterie), le bouton reste masqué.
+function initHeaderTicket() {
+  const link = document.querySelector(".top-ticket");
+  const next = EVENTS
+    .filter((ev) => eventStatus(ev) === "a-venir" && safeUrl(ev.ticketUrl))
+    .sort((a, b) => a.date.localeCompare(b.date))[0];
+  if (!link || !next) return;
+  link.href = safeUrl(next.ticketUrl);
+  link.setAttribute("aria-label", t("Billetterie : {title}", { title: next.title }));
+  link.hidden = false;
 }
 
 // Première visite d'un navigateur réglé en allemand ou en anglais : proposition de changer de langue.
@@ -235,6 +277,7 @@ markActiveLink();
 initMenuNext();
 initMenu();
 initLangSwitch();
+initHeaderTicket();
 initLangSuggestion();
 initScrolledHeader();
 initSeo();

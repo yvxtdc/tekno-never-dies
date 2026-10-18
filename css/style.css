@@ -567,23 +567,25 @@ footer{
    Bouton ".tnd-toggle" toujours visible en haut à droite, ouvre le menu
    plein écran ".tnd-menu". Logique JS : initMenu() dans js/partials.js.
    ===================================================================== */
+/* Bouton Menu : mêmes hauteur et matière que la planète et la billetterie (violet translucide,
+   filet lavande) ; ouvert, il devient blanc pour bien se lire sur le menu. */
 .tnd-toggle{
   position:fixed;z-index:1001;
-  top:calc(clamp(14px,2.4vw,28px) + var(--logo)/2 - 23px + env(safe-area-inset-top,0px));
+  top:calc(clamp(14px,2.4vw,28px) + var(--logo)/2 - 21px + env(safe-area-inset-top,0px));
   right:var(--pad);
   display:flex;align-items:center;gap:10px;
-  padding:10px 20px;border-radius:999px;cursor:pointer;
-  background:var(--navy);color:#fff;border:2px solid var(--pink);
-  font:700 1rem var(--text);
-  box-shadow:.18em .18em 0 var(--pink);
-  transition:background-color .2s,color .2s,box-shadow .2s,transform .2s;
+  height:42px;padding:0 18px;border-radius:999px;cursor:pointer;
+  background:rgba(66,38,182,.38);color:#fff;border:1px solid rgba(149,106,255,.65);
+  font:700 .95rem var(--text);
+  box-shadow:0 0 22px rgba(149,106,255,.18);
+  transition:background-color .2s,color .2s,box-shadow .2s,border-color .2s,transform .2s;
 }
 
-.tnd-toggle:hover{transform:translate(-2px,-2px);box-shadow:.3em .3em 0 var(--pink)}
+.tnd-toggle:hover{background:rgba(149,106,255,.36);border-color:var(--lav);box-shadow:0 0 26px rgba(149,106,255,.35);transform:translateY(-1px)}
 
-.tnd-toggle[aria-expanded="true"]{background:var(--pink);color:var(--navy);box-shadow:none;transform:none}
+.tnd-toggle[aria-expanded="true"]{background:#fff;color:var(--page);border-color:#fff;box-shadow:none;transform:none}
 
-.tnd-toggle:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
+.tnd-toggle:focus-visible{outline:3px solid var(--lav);outline-offset:3px}
 
 /* Mini égaliseur : quatre rythmes et niveaux différents, comme un vu-mètre. */
 .tnd-eq{display:inline-flex;align-items:flex-end;gap:3px;height:16px}
@@ -598,37 +600,41 @@ footer{
 
 .tnd-eq span:nth-child(4){height:100%;animation:tnd-level-4 2.9s linear -1.8s infinite}
 
+/* Couleurs de la charte : du violet au rose en passant par la lavande (au lieu du vert-jaune-rouge
+   d'un vu-mètre). Bouton Menu ouvert (fond blanc) : barres violettes, voir plus bas. */
 @keyframes tnd-level-1{
-  0%,100%{transform:scaleY(.22);background-color:#58df82}
-  24%{transform:scaleY(.52);background-color:#a8dc50}
-  48%{transform:scaleY(.86);background-color:#f0cb3c}
-  68%{transform:scaleY(1.28);background-color:#ef4943}
-  84%{transform:scaleY(.76);background-color:#ff9d36}
+  0%,100%{transform:scaleY(.22);background-color:#956aff}
+  24%{transform:scaleY(.52);background-color:#c1b1ff}
+  48%{transform:scaleY(.86);background-color:#d54fc0}
+  68%{transform:scaleY(1.28);background-color:#b6269a}
+  84%{transform:scaleY(.76);background-color:#956aff}
 }
 
 @keyframes tnd-level-2{
-  0%,100%{transform:scaleY(.3);background-color:#58df82}
-  19%{transform:scaleY(.74);background-color:#b4df4c}
-  43%{transform:scaleY(1.12);background-color:#f4bd37}
-  61%{transform:scaleY(1.38);background-color:#ed403f}
-  82%{transform:scaleY(.8);background-color:#ff9c35}
+  0%,100%{transform:scaleY(.3);background-color:#c1b1ff}
+  19%{transform:scaleY(.74);background-color:#956aff}
+  43%{transform:scaleY(1.12);background-color:#d54fc0}
+  61%{transform:scaleY(1.38);background-color:#fff}
+  82%{transform:scaleY(.8);background-color:#956aff}
 }
 
 @keyframes tnd-level-3{
-  0%,100%{transform:scaleY(.18);background-color:#58df82}
-  31%{transform:scaleY(.64);background-color:#b1df4d}
-  51%{transform:scaleY(.98);background-color:#f2c13a}
-  73%{transform:scaleY(1.32);background-color:#ed403f}
-  89%{transform:scaleY(.7);background-color:#ffa037}
+  0%,100%{transform:scaleY(.18);background-color:#956aff}
+  31%{transform:scaleY(.64);background-color:#d54fc0}
+  51%{transform:scaleY(.98);background-color:#c1b1ff}
+  73%{transform:scaleY(1.32);background-color:#b6269a}
+  89%{transform:scaleY(.7);background-color:#c1b1ff}
 }
 
 @keyframes tnd-level-4{
-  0%,100%{transform:scaleY(.26);background-color:#58df82}
-  17%{transform:scaleY(.6);background-color:#a8dc50}
-  42%{transform:scaleY(.94);background-color:#f0c83b}
-  64%{transform:scaleY(1.24);background-color:#ef4943}
-  81%{transform:scaleY(.68);background-color:#ff9d36}
+  0%,100%{transform:scaleY(.26);background-color:#d54fc0}
+  17%{transform:scaleY(.6);background-color:#956aff}
+  42%{transform:scaleY(.94);background-color:#c1b1ff}
+  64%{transform:scaleY(1.24);background-color:#fff}
+  81%{transform:scaleY(.68);background-color:#b6269a}
 }
+
+.tnd-toggle[aria-expanded="true"] .tnd-eq span{animation-name:none;background:var(--violet);transform:scaleY(.6)}
 
 /* Le menu plein écran */
 .tnd-menu{
@@ -636,7 +642,13 @@ footer{
   display:flex;flex-direction:column;justify-content:space-between;gap:40px;
   overflow-y:auto;overscroll-behavior:contain;
   padding:calc(var(--logo) + 64px + env(safe-area-inset-top,0px)) var(--pad) calc(32px + env(safe-area-inset-bottom,0px));
-  background:var(--navy);color:#fff;
+  /* Même nuit violette que les pages (au lieu d'un bleu roi uni) : halo lavande en haut à droite,
+     halo rose en bas à gauche, fond un peu plus clair en haut qu'en bas. */
+  background:
+    radial-gradient(70% 55% at 88% 6%, rgba(149,106,255,.30), transparent 70%),
+    radial-gradient(60% 50% at 0% 100%, rgba(182,38,154,.24), transparent 70%),
+    linear-gradient(180deg,#120b38 0%,#0b0722 55%,#080518 100%);
+  color:#fff;
   visibility:hidden;opacity:0;
   transition:opacity .25s,visibility 0s .25s;
 }
@@ -650,9 +662,16 @@ footer{
   width:var(--logo);background-image:var(--badge-white);
 }
 
-.tnd-links{list-style:none;margin:0;padding:0}
+.tnd-links{list-style:none;margin:0;padding:0;counter-reset:tnd-link}
 
-.tnd-links li{opacity:0;transform:translateY(24px);transition:opacity .35s,transform .35s cubic-bezier(.2,.8,.2,1)}
+.tnd-links li{display:flex;align-items:flex-start;gap:clamp(10px,1.4vw,20px);opacity:0;transform:translateY(24px);transition:opacity .35s,transform .35s cubic-bezier(.2,.8,.2,1)}
+
+/* Numéro « 01 », « 02 »… comme sur les cartes de l'accueil */
+.tnd-links li::before{
+  counter-increment:tnd-link;content:"0" counter(tnd-link);
+  margin-top:clamp(.5em,1.2vh,1.1em);
+  color:var(--lav);font:700 clamp(.66rem,1vw,.8rem) var(--text);letter-spacing:.2em;
+}
 
 .tnd-menu.is-open .tnd-links li{opacity:1;transform:none;transition-delay:calc(var(--i) * 55ms + 80ms)}
 
@@ -666,10 +685,11 @@ footer{
   transition:color .18s,-webkit-text-stroke-color .18s,transform .18s,text-shadow .18s;
 }
 
+/* Survol : les lettres se remplissent du dégradé des titres (blanc → lavande → rose) */
 .tnd-links a:hover,
 .tnd-links a:focus-visible{
-  color:var(--pink);-webkit-text-stroke-color:var(--pink);
-  text-shadow:.045em .045em 0 var(--violet);
+  background:var(--gradient-title);-webkit-background-clip:text;background-clip:text;
+  color:transparent;-webkit-text-stroke-color:transparent;
   transform:translateX(.1em);outline:none;
 }
 
@@ -677,7 +697,7 @@ footer{
    La classe .active est posée par markActiveLink() dans js/partials.js. */
 .tnd-links a.active{color:#fff;-webkit-text-stroke-color:#fff;text-shadow:.045em .045em 0 var(--violet)}
 
-.tnd-links a.active:hover{color:var(--pink);-webkit-text-stroke-color:var(--pink)}
+.tnd-links a.active:hover{text-shadow:none}
 
 .tnd-links .tnd-eq{height:.5em;gap:.07em}
 
@@ -687,39 +707,88 @@ footer{
 
 .tnd-menu-foot a{color:#fff}
 
-.tnd-menu-foot a:hover{color:var(--pink)}
+.tnd-menu-foot a:hover{color:var(--lav)}
 
-.tnd-menu-foot a:focus-visible{outline-color:var(--cyan)}
+.tnd-menu-foot a:focus-visible{outline-color:var(--lav)}
 
 /* Bas du menu : coordonnées + choix de la langue (FR / DE / EN) */
 .tnd-menu-bottom{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 32px}
 
-.tnd-lang{display:inline-flex;gap:4px;padding:4px;border:1px solid rgba(255,255,255,.3);border-radius:999px}
+/* ---------- Choix de la langue : bouton planète + mini menu (js/partials.js) ----------
+   Le code de la langue affichée vient de <html lang> (pas de JavaScript, pas de saut à l'affichage). */
+.tnd-lang{position:relative;flex-shrink:0;margin-left:auto}
 
-.tnd-lang button{
-  min-width:48px;min-height:40px;padding:0 14px;border:0;border-radius:999px;
-  background:transparent;color:#fff;font:inherit;font-weight:700;font-size:.85rem;letter-spacing:.12em;
-  cursor:pointer;transition:background .2s,color .2s;
+.tnd-lang-toggle{
+  display:inline-flex;align-items:center;gap:6px;
+  height:42px;padding:0 12px 0 10px;border-radius:999px;cursor:pointer;
+  border:1px solid rgba(255,255,255,.22);background:rgba(11,7,34,.55);color:#fff;
+  font:700 .72rem var(--text);letter-spacing:.12em;
+  transition:border-color .2s,background-color .2s,color .2s;
 }
+.tnd-lang-toggle:hover,
+.tnd-lang-toggle[aria-expanded="true"]{border-color:var(--lav);background:rgba(66,38,182,.35)}
+.tnd-lang-toggle:focus-visible{outline:3px solid var(--lav);outline-offset:3px}
+.tnd-lang-globe{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.5;transition:stroke .2s}
+.tnd-lang-toggle:hover .tnd-lang-globe,
+.tnd-lang-toggle[aria-expanded="true"] .tnd-lang-globe{stroke:var(--lav)}
+.tnd-lang-code::before{content:"FR"}
+:root:lang(de) .tnd-lang-code::before{content:"DE"}
+:root:lang(en) .tnd-lang-code::before{content:"EN"}
 
-.tnd-lang button:hover{color:var(--pink)}
+.tnd-lang-menu{
+  position:absolute;top:calc(100% + 8px);right:0;z-index:5;
+  display:grid;gap:2px;min-width:96px;margin:0;padding:6px;list-style:none;
+  border:1px solid rgba(149,106,255,.35);border-radius:14px;
+  background:rgba(16,10,46,.96);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  box-shadow:0 14px 36px rgba(0,0,0,.45),0 0 24px rgba(149,106,255,.12);
+  animation:tnd-lang-in .18s ease-out;
+}
+.tnd-lang-menu[hidden]{display:none}
+@keyframes tnd-lang-in{from{opacity:0;transform:translateY(-4px)}}
 
-.tnd-lang button[aria-pressed="true"]{background:#fff;color:var(--navy)}
+.tnd-lang-menu button{
+  display:flex;align-items:center;gap:10px;width:100%;
+  min-height:36px;padding:0 12px 0 8px;border:0;border-radius:9px;cursor:pointer;
+  background:transparent;color:rgba(255,255,255,.86);
+  font:700 .78rem var(--text);letter-spacing:.12em;text-align:left;
+  transition:background-color .15s,color .15s;
+}
+.tnd-lang-menu button:hover,
+.tnd-lang-menu button:focus-visible{background:rgba(149,106,255,.2);color:#fff;outline:none}
+.tnd-lang-menu button[aria-pressed="true"]{color:var(--lav)}
+.tnd-lang-menu button[aria-pressed="true"]::after{content:"";flex:none;width:6px;height:6px;margin-left:auto;border-radius:50%;background:var(--lav);box-shadow:0 0 8px var(--lav)}
+.tnd-flag{width:20px;height:14px;flex:none;border-radius:3px;box-shadow:0 0 0 1px rgba(255,255,255,.28)}
 
-.tnd-lang button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
-
-/* Choix de la langue dans le bandeau du haut, juste avant le bouton Menu :
-   le bouton Menu suit le bandeau (au lieu d'être fixé seul) pour qu'ils restent alignés. */
-.top .tnd-lang{margin-left:auto;background:rgba(11,7,34,.55);flex-shrink:0}
+/* ---------- Bouton « Billetterie » du header (prochaine soirée, js/partials.js) ---------- */
+.top-ticket{
+  display:inline-flex;align-items:center;gap:8px;flex-shrink:0;
+  height:42px;padding:0 16px 0 13px;border-radius:999px;
+  border:1px solid transparent;
+  background:var(--gradient-tnd) border-box;color:#fff;
+  font:700 .78rem var(--text);letter-spacing:.1em;text-transform:uppercase;text-decoration:none;white-space:nowrap;
+  box-shadow:0 6px 22px rgba(182,38,154,.32);
+  transition:transform .2s,box-shadow .2s;
+}
+.top-ticket[hidden]{display:none}
+.top-ticket:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(182,38,154,.48)}
+.top-ticket:focus-visible{outline:3px solid var(--lav);outline-offset:3px}
+.top-ticket svg{width:19px;height:19px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linejoin:round}
 
 .top .tnd-toggle{position:relative;top:auto;right:auto;flex-shrink:0}
 
 @media (max-width:760px){
-  .top{gap:10px}
+  .top{gap:8px}
+  .tnd-lang-toggle{height:38px;padding:0 9px 0 8px}
+  .top-ticket{height:38px;padding:0 13px 0 11px;font-size:.7rem}
+}
 
-  .top .tnd-lang{gap:2px;padding:3px}
-
-  .top .tnd-lang button{min-width:34px;min-height:34px;padding:0 6px;font-size:.75rem;letter-spacing:.06em}
+/* Petit téléphone : la billetterie garde son icône, le mot « Billetterie » est lu par aria-label */
+@media (max-width:440px){
+  .tnd-lang-code{display:none}
+  .tnd-lang-toggle{width:38px;padding:0;justify-content:center}
+  .top-ticket{width:42px;padding:0;justify-content:center}
+  .top-ticket__label{display:none}
 }
 
 /* Proposition de langue (navigateur en allemand ou en anglais, js/partials.js) */
@@ -731,43 +800,62 @@ footer{
 /* Pages légales traduites : rappel que la version française fait foi */
 .legal-lang-note{margin-top:1em!important;font-size:.9rem!important;font-style:italic}
 
-/* Colonne de droite du menu : prochaine soirée + Instagram (ordinateur uniquement) */
-.tnd-menu-side{display:none}
+/* Prochaine soirée + Instagram dans le menu.
+   Téléphone et tablette : carte compacte sous les liens (le bas du menu restait vide).
+   Grand écran : colonne à droite avec le flyer en grand. */
+.tnd-menu-side{
+  display:grid;gap:12px;max-width:440px;
+  opacity:0;transform:translateY(16px);
+  transition:opacity .4s,transform .4s cubic-bezier(.2,.8,.2,1);
+}
+.tnd-menu.is-open .tnd-menu-side{opacity:1;transform:none;transition-delay:.38s}
+.tnd-next{display:grid;gap:10px}
+.tnd-next[hidden]{display:none}
+.tnd-next__eyebrow{margin:0;color:var(--lav);font-size:.7rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase}
+.tnd-next__card{
+  display:grid;grid-template-columns:62px 1fr;column-gap:14px;align-items:center;
+  padding:10px;border:1px solid rgba(149,106,255,.32);border-radius:16px;
+  background:rgba(66,38,182,.2);color:#fff;text-decoration:none;
+  transition:border-color .2s,background-color .2s;
+}
+.tnd-next__card:hover{border-color:var(--lav);background:rgba(66,38,182,.34)}
+.tnd-next__card img{grid-row:1 / 3;width:62px;aspect-ratio:4/5;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,.18)}
+.tnd-next__title{align-self:end;font-family:var(--display);font-size:1.12rem;line-height:1.05;text-transform:uppercase}
+.tnd-next__when{align-self:start;color:rgba(255,255,255,.7);font-size:.8rem}
+.tnd-next__ticket,
+.tnd-menu-insta{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  min-height:42px;padding:0 1.2em;border-radius:999px;
+  font-size:.74rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;
+  white-space:nowrap;transition:background .2s,color .2s,border-color .2s,box-shadow .2s;
+}
+.tnd-next__ticket{border:1px solid transparent;background:var(--gradient-tnd) border-box;color:#fff;box-shadow:0 6px 22px rgba(182,38,154,.3)}
+.tnd-next__ticket:hover{box-shadow:0 10px 28px rgba(182,38,154,.5)}
+.tnd-menu-insta{justify-self:start;border:1px solid rgba(255,255,255,.3);color:#fff}
+.tnd-menu-insta:hover{border-color:var(--lav);color:var(--lav)}
+.tnd-menu-insta svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8}
+.tnd-menu-insta .social-dot{fill:currentColor;stroke:none}
 
 @media (min-width:1100px) and (hover:hover){
   .tnd-menu-side{
     position:absolute;right:var(--pad);top:50%;
-    display:grid;gap:18px;width:clamp(240px,22vw,320px);
-    opacity:0;transform:translate(24px,-50%);
-    transition:opacity .4s,transform .4s cubic-bezier(.2,.8,.2,1);
+    gap:18px;width:clamp(240px,22vw,320px);max-width:none;
+    transform:translate(24px,-50%);
   }
-  .tnd-menu.is-open .tnd-menu-side{opacity:1;transform:translate(0,-50%);transition-delay:.3s}
-  .tnd-next{display:grid;gap:12px}
-  .tnd-next[hidden]{display:none}
-  .tnd-next__eyebrow{margin:0;color:var(--lav);font-size:.72rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase}
-  .tnd-next__card{display:grid;gap:6px;color:#fff;text-decoration:none}
+  .tnd-menu.is-open .tnd-menu-side{transform:translate(0,-50%);transition-delay:.3s}
+  .tnd-next{gap:12px}
+  .tnd-next__card{display:grid;grid-template-columns:1fr;gap:6px;padding:0;border:0;background:none}
+  .tnd-next__card:hover{background:none}
   .tnd-next__card img{
-    width:100%;max-height:48vh;aspect-ratio:4/5;object-fit:cover;border-radius:14px;
-    border:1px solid rgba(255,255,255,.2);
+    grid-row:auto;width:100%;max-height:48vh;aspect-ratio:4/5;border-radius:14px;
+    border:1px solid rgba(149,106,255,.35);
     transition:transform .3s ease,box-shadow .3s ease;
   }
-  .tnd-next__card:hover img{transform:translateY(-4px);box-shadow:.4em .4em 0 var(--violet)}
-  .tnd-next__title{margin-top:6px;font-family:var(--display);font-size:1.7rem;line-height:1;text-transform:uppercase}
-  .tnd-next__card:hover .tnd-next__title{color:var(--pink)}
-  .tnd-next__when{color:rgba(255,255,255,.7);font-size:.9rem}
-  .tnd-next__ticket,
-  .tnd-menu-insta{
-    display:inline-flex;align-items:center;justify-content:center;gap:8px;
-    padding:.75em 1.2em;border-radius:999px;
-    font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;
-    white-space:nowrap;transition:background .2s,color .2s,border-color .2s;
-  }
-  .tnd-next__ticket{background:#fff;color:var(--navy)}
-  .tnd-next__ticket:hover{background:var(--pink);color:#fff}
-  .tnd-menu-insta{border:1px solid rgba(255,255,255,.35);color:#fff}
-  .tnd-menu-insta:hover{border-color:var(--pink);color:var(--pink)}
-  .tnd-menu-insta svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8}
-  .tnd-menu-insta .social-dot{fill:currentColor;stroke:none}
+  .tnd-next__card:hover img{transform:translateY(-4px);box-shadow:0 18px 40px rgba(149,106,255,.3)}
+  .tnd-next__title{margin-top:6px;font-size:1.7rem;line-height:1}
+  .tnd-next__card:hover .tnd-next__title{color:var(--lav)}
+  .tnd-next__when{font-size:.9rem}
+  .tnd-menu-insta{justify-self:stretch}
 }
 
 body.tnd-lock{overflow:hidden}
@@ -775,9 +863,10 @@ body.tnd-lock{overflow:hidden}
 .team-modal{z-index:1100}
 
 @media (max-width:520px){
-  .tnd-toggle{padding:8px 16px}
+  .tnd-toggle{padding:0 14px}
 
-  .tnd-links a{-webkit-text-stroke-width:1.5px}
+  /* Le numéro prend de la place : « L'ASSOCIATION » tient encore sur un écran de 320 px */
+  .tnd-links a{font-size:clamp(1.6rem,min(8.8vw,10.5vh),2.6rem);-webkit-text-stroke-width:1.5px}
 }
 
 @supports not (-webkit-text-stroke:1px){
@@ -809,7 +898,7 @@ body.tnd-lock .top .brand{visibility:hidden}
 /* Menu ouvert : la barre du haut laisse passer les clics vers le logo du menu (lien vers l'accueil),
    seuls ses boutons (langue, Fermer) restent cliquables. */
 body.tnd-lock .top{pointer-events:none}
-body.tnd-lock .top :is(.tnd-lang,.tnd-toggle){pointer-events:auto}
+body.tnd-lock .top :is(.tnd-lang,.tnd-toggle,.top-ticket){pointer-events:auto}
 
 /* Bandeau défilant incliné : 1 px de défilement horizontal parasite. */
 body{overflow-x:clip}
