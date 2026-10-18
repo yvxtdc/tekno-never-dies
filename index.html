@@ -201,14 +201,38 @@
 
     <!-- Prochaine soirée : remplie par js/pages/accueil.js depuis js/data/events.js (masquée s'il n'y en a pas) -->
     <section class="home-next" id="home-next" aria-labelledby="home-next-title" hidden>
-      <!-- Filtre « métal liquide » du cadre chromé : bruit animé qui fait onduler le contour
-           (intensité pilotée par js/pages/accueil.js) -->
+      <!-- Filtres du cadre chromé (css/style.css, « Cadre chromé ») : l'anneau est découpé dans le
+           rectangle arrondi, ondule (bruit 1, intensité pilotée par js/pages/accueil.js), puis est lissé
+           (flou + seuil : bords nets, sans marches de pixels) ; juste avant le seuil, un second bruit lent
+           l'épaissit ou l'amincit par endroits (3,5 à 6 px environ), comme un fluide. -->
       <svg class="home-next__defs" width="0" height="0" aria-hidden="true" focusable="false">
-        <filter id="tnd-liquid" x="-4%" y="-8%" width="108%" height="116%" color-interpolation-filters="sRGB">
-          <feTurbulence type="fractalNoise" baseFrequency="0.0028 0.0065" numOctaves="1" seed="7" result="noise">
+        <filter id="tnd-liquid" x="-3%" y="-8%" width="106%" height="116%" color-interpolation-filters="sRGB">
+          <feMorphology in="SourceAlpha" operator="erode" radius="5" result="inner" />
+          <feComposite in="SourceAlpha" in2="inner" operator="out" result="ring" />
+          <feTurbulence type="fractalNoise" baseFrequency="0.0028 0.0065" numOctaves="1" seed="7" result="wave">
             <animate attributeName="baseFrequency" dur="18s" values="0.0028 0.0065;0.0045 0.004;0.0028 0.0065" repeatCount="indefinite" />
           </feTurbulence>
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="7" xChannelSelector="R" yChannelSelector="G" />
+          <feDisplacementMap in="ring" in2="wave" scale="7" xChannelSelector="R" yChannelSelector="G" result="moved" />
+          <feGaussianBlur in="moved" stdDeviation="1.6" result="soft" />
+          <feTurbulence type="fractalNoise" baseFrequency="0.0035 0.009" numOctaves="1" seed="23" result="swell">
+            <animate attributeName="baseFrequency" dur="11s" values="0.0035 0.009;0.006 0.005;0.0035 0.009" repeatCount="indefinite" />
+          </feTurbulence>
+          <feColorMatrix in="swell" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2.5 0 0 0 -0.75" result="thickness" />
+          <feComposite in="soft" in2="thickness" operator="arithmetic" k1="0.7" k2="0.75" k3="0" k4="0" result="swollen" />
+          <feComponentTransfer in="swollen" result="shape">
+            <feFuncA type="linear" slope="5" intercept="-2.05" />
+          </feComponentTransfer>
+          <feComposite in="SourceGraphic" in2="shape" operator="in" />
+        </filter>
+        <!-- Même anneau, immobile et d'épaisseur constante (mouvement réduit demandé par le système) -->
+        <filter id="tnd-ring" x="-2%" y="-4%" width="104%" height="108%" color-interpolation-filters="sRGB">
+          <feMorphology in="SourceAlpha" operator="erode" radius="4" result="inner" />
+          <feComposite in="SourceAlpha" in2="inner" operator="out" result="ring" />
+          <feGaussianBlur in="ring" stdDeviation="1.2" result="soft" />
+          <feComponentTransfer in="soft" result="shape">
+            <feFuncA type="linear" slope="4" intercept="-1.4" />
+          </feComponentTransfer>
+          <feComposite in="SourceGraphic" in2="shape" operator="in" />
         </filter>
       </svg>
       <div class="container home-next__inner">

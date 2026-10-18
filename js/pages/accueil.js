@@ -62,7 +62,7 @@ function liquidFrame(section) {
   let current = REST, target = REST, raf = 0, calm = 0, last = 0;
   // Lissage selon le temps écoulé (et non par image) : même rythme sur un écran à 30 ou 120 images/s
   const step = (now) => {
-    const dt = last ? Math.min(now - last, 100) : 16;
+    const dt = last ? Math.min(now - last, 250) : 16;
     last = now;
     current += (target - current) * (1 - Math.exp(-dt / 260));
     map.setAttribute("scale", current.toFixed(2));
