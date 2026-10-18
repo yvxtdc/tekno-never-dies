@@ -497,6 +497,9 @@ footer{
 
 .footer-bottom{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:18px;padding-top:22px;border-top:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.68);font-size:.82rem}
 
+/* Mention du bas : volontairement discrète (petite, sans gras, peu contrastée) */
+.footer-copy{color:rgba(255,255,255,.42);font-size:.72rem;letter-spacing:.02em}
+
 .footer-bottom nav{display:flex;flex-wrap:wrap;gap:18px}
 
 /* ---------- 7. Étoiles 3D (calque fixe, au-dessus de la page) ---------- */
