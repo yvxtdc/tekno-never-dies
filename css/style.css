@@ -1521,10 +1521,10 @@ main{position:relative;overflow-x:clip}
 }
 
 /* ---------- Cadre chromé « métal liquide » ----------
-   Anneau d'environ 4 px aux coins arrondis, en dégradé métallique (blancs, gris, touches lavande et
+   Anneau de 4 px aux coins arrondis, en dégradé métallique (blancs, gris, touches lavande et
    rose) dont les reflets tournent lentement (--chrome-angle). Le ::before est un rectangle arrondi
-   plein ; c'est le filtre SVG #tnd-liquid (index.html) qui en découpe l'anneau, le fait onduler,
-   fait varier son épaisseur et lisse ses bords. js/pages/accueil.js agite l'ondulation à l'arrivée
+   plein ; c'est le filtre SVG #tnd-liquid (index.html) qui en découpe l'anneau (épaisseur fixe),
+   le fait onduler et lisse ses bords. js/pages/accueil.js agite l'ondulation à l'arrivée
    de la section et quand la souris bouge, et fait suivre un reflet blanc au curseur (--mx, --my). */
 @property --chrome-angle{syntax:"<angle>";inherits:true;initial-value:0deg}
 .home-next__defs{position:absolute;width:0;height:0;overflow:hidden}
