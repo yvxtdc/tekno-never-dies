@@ -202,7 +202,19 @@
 
     <!-- Prochaine soirée : remplie par js/pages/accueil.js depuis js/data/events.js (masquée s'il n'y en a pas) -->
     <section class="home-next" id="home-next" aria-labelledby="home-next-title" hidden>
+      <!-- Filtre « métal liquide » du cadre chromé : bruit animé qui fait onduler le contour
+           (intensité pilotée par js/pages/accueil.js) -->
+      <svg class="home-next__defs" width="0" height="0" aria-hidden="true" focusable="false">
+        <filter id="tnd-liquid" x="-4%" y="-8%" width="108%" height="116%" color-interpolation-filters="sRGB">
+          <feTurbulence type="fractalNoise" baseFrequency="0.0028 0.0065" numOctaves="1" seed="7" result="noise">
+            <animate attributeName="baseFrequency" dur="18s" values="0.0028 0.0065;0.0045 0.004;0.0028 0.0065" repeatCount="indefinite" />
+          </feTurbulence>
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="7" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </svg>
       <div class="container home-next__inner">
+        <!-- Cadre chromé arrondi autour des infos (css/style.css, section « Prochaine soirée ») -->
+        <div class="home-next__frame" aria-hidden="true"></div>
         <!-- Flyer de la soirée, incliné, avec un objet chromé accroché au coin (js/pages/accueil.js) -->
         <a class="home-next__flyer" hidden>
           <img class="home-next__flyer-img" src="data:," alt="" decoding="async" />

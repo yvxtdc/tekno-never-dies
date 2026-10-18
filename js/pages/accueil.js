@@ -40,12 +40,59 @@ if (nextBlock && next) {
 function revealOnScroll(section) {
   if (!("IntersectionObserver" in window) || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   section.classList.add("is-ready");
+  const liquid = liquidFrame(section);
   const observer = new IntersectionObserver((entries) => {
     if (!entries[0].isIntersecting) return;
     section.classList.add("is-in");
+    liquid?.splash();
     observer.disconnect();
   }, { threshold: 0.3 });
   observer.observe(section);
+}
+
+/* ---------- Cadre chromé « métal liquide » ----------
+   Le filtre SVG #tnd-liquid fait onduler le contour du cadre. Son intensité (scale) est lissée :
+   onde à l'arrivée de la section (splash), plus forte quand la souris bouge sur la section, puis
+   retour au calme. Un reflet blanc suit la souris le long du cadre (variables --mx / --my). */
+function liquidFrame(section) {
+  const frame = section.querySelector(".home-next__frame");
+  const map = document.querySelector("#tnd-liquid feDisplacementMap");
+  if (!frame || !map) return null;
+  const REST = 7;
+  let current = REST, target = REST, raf = 0, calm = 0, last = 0;
+  // Lissage selon le temps écoulé (et non par image) : même rythme sur un écran à 30 ou 120 images/s
+  const step = (now) => {
+    const dt = last ? Math.min(now - last, 100) : 16;
+    last = now;
+    current += (target - current) * (1 - Math.exp(-dt / 260));
+    map.setAttribute("scale", current.toFixed(2));
+    raf = Math.abs(target - current) > 0.05 ? requestAnimationFrame(step) : 0;
+    if (!raf) last = 0;
+  };
+  const push = (value) => {
+    target = value;
+    if (!raf) raf = requestAnimationFrame(step);
+  };
+  section.addEventListener("pointermove", (e) => {
+    if (e.pointerType !== "mouse") return;
+    const r = frame.getBoundingClientRect();
+    frame.style.setProperty("--mx", `${e.clientX - r.left}px`);
+    frame.style.setProperty("--my", `${e.clientY - r.top}px`);
+    frame.classList.add("is-lit");
+    push(18);
+    clearTimeout(calm);
+    calm = setTimeout(() => push(REST), 450);
+  });
+  section.addEventListener("pointerleave", () => {
+    frame.classList.remove("is-lit");
+    push(REST);
+  });
+  return {
+    splash() {
+      current = 34;
+      push(REST);
+    }
+  };
 }
 
 /* ---------- Compte à rebours jusqu'à la prochaine soirée ----------

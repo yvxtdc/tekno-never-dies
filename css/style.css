@@ -1500,11 +1500,51 @@ main{position:relative;overflow-x:clip}
   transition:opacity 1.2s ease;
 }
 .home-next__inner{
+  position:relative;isolation:isolate;
   display:grid;align-items:center;
   grid-template-columns:auto minmax(0,1fr) auto;
   gap:16px clamp(28px,3.4vw,52px);
-  padding-block:clamp(26px,3.4vw,48px);
+  padding-block:clamp(40px,4.4vw,60px);
 }
+
+/* ---------- Cadre chromé « métal liquide » ----------
+   Un anneau de 3 px aux coins arrondis, en dégradé métallique (blancs, gris, touches lavande et rose)
+   dont les reflets tournent lentement (--chrome-angle). Le filtre SVG #tnd-liquid (index.html) fait
+   onduler son contour comme du mercure ; js/pages/accueil.js l'agite à l'arrivée de la section et
+   quand la souris bouge, et fait suivre un reflet blanc au curseur (--mx, --my).
+   Le filtre est sur le cadre, l'anneau (masque) sur son ::before : c'est bien le contour qui ondule. */
+@property --chrome-angle{syntax:"<angle>";inherits:true;initial-value:0deg}
+.home-next__defs{position:absolute;width:0;height:0;overflow:hidden}
+.home-next__frame{
+  --mx:-400px;--my:-400px;
+  position:absolute;z-index:-1;pointer-events:none;
+  inset:clamp(8px,1.2vw,16px) max(0px,calc(var(--pad) - 36px));
+  filter:url(#tnd-liquid) drop-shadow(0 0 18px rgba(149,106,255,.28));
+}
+.home-next__frame::before{
+  content:"";position:absolute;inset:0;
+  padding:4px;border-radius:30px;
+  background:
+    radial-gradient(130px circle at var(--mx) var(--my), #fff 0%, rgba(255,255,255,.9) 22%, rgba(201,191,255,.5) 45%, transparent 72%),
+    conic-gradient(from var(--chrome-angle),
+      #f4f1ff 0deg, #6c6390 22deg, #2a2342 44deg, #9d95c2 70deg, #ffffff 92deg, #4a4170 120deg,
+      #c9bfff 150deg, #241d3a 178deg, #8f88ad 205deg, #ffffff 228deg, #b6269a 250deg, #3d355c 275deg,
+      #e9e4ff 300deg, #5b5280 330deg, #f4f1ff 360deg);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);
+  animation:chrome-flow 14s linear infinite;
+}
+/* Très léger voile à l'intérieur du cadre : les infos se détachent sans créer de bloc de couleur */
+.home-next__frame::after{
+  content:"";position:absolute;inset:4px;border-radius:26px;
+  background:radial-gradient(120% 90% at 30% 0%, rgba(149,106,255,.07), rgba(11,7,34,.12) 70%);
+}
+@keyframes chrome-flow{to{--chrome-angle:360deg}}
+
+/* Entrée : le cadre apparaît avec le halo */
+.home-next.is-ready .home-next__frame{opacity:0;transition:opacity .9s ease}
+.home-next.is-in .home-next__frame{opacity:1}
 
 /* Flyer : posé de travers sur la page, avec la rafale chromée qui tourne lentement au coin */
 .home-next__flyer{
@@ -1596,7 +1636,10 @@ main{position:relative;overflow-x:clip}
 
 @media (prefers-reduced-motion:reduce){
   .countdown__live span,
-  .home-next__chrome{animation:none}
+  .home-next__chrome,
+  .home-next__frame::before{animation:none}
+  /* Cadre chromé immobile : pas d'ondulation */
+  .home-next__frame{filter:drop-shadow(0 0 18px rgba(149,106,255,.28))}
 }
 
 /* Tablette : le compte à rebours passe sous le texte */
@@ -1611,7 +1654,10 @@ main{position:relative;overflow-x:clip}
 
 /* Téléphone : petit flyer à côté du titre, compte à rebours et boutons sur toute la largeur */
 @media (max-width:640px){
-  .home-next__inner{grid-template-columns:96px minmax(0,1fr);gap:14px 18px;padding-block:28px 36px}
+  .home-next__inner{grid-template-columns:96px minmax(0,1fr);gap:14px 18px;padding:34px calc(var(--pad) + 14px) 40px}
+  .home-next__frame{inset:10px 8px}
+  .home-next__frame::before{padding:3px;border-radius:24px}
+  .home-next__frame::after{inset:3px;border-radius:21px}
   .home-next__flyer{grid-row:1;width:96px;align-self:start;margin-top:6px}
   .home-next__flyer-img{border-radius:10px}
   .home-next__chrome{top:-24%;left:-16%;width:56%}
