@@ -296,15 +296,18 @@ a{
   box-shadow:var(--glow-violet)
 }
 
-/* Bouton principal : gradient TND */
+/* Bouton principal : gradient TND.
+   border-box : le dégradé couvre aussi la bordure transparente de 2 px. Sans cela, il est calculé
+   sur l'intérieur du bouton puis répété sous la bordure : un filet rose (la fin du dégradé)
+   apparaissait sur le bord gauche et un filet violet (le début) sur le bord droit. */
 .btn-solid{
-  background:var(--gradient-tnd);
+  background:var(--gradient-tnd) border-box;
   border-color:transparent;
   color:#fff
 }
 
 .btn-solid:hover{
-  background:var(--gradient-tnd);
+  background:var(--gradient-tnd) border-box;
   border-color:transparent;
   box-shadow:var(--glow-lav);
   transform:translateY(-3px)
@@ -403,7 +406,8 @@ h2{
 
 /* ---------- Rejoindre ---------- */
 .rejoindre{
-  background:var(--gradient-tnd);
+  /* border-box : voir .btn-solid (pas de filet de couleur inversée sous la bordure) */
+  background:var(--gradient-tnd) border-box;
   color:#fff;
   border-radius:clamp(24px,3.4vw,44px);
   padding:clamp(32px,6vw,88px);
