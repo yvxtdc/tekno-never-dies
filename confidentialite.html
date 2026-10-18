@@ -3,14 +3,20 @@
 <head>
   <meta charset="utf-8" />
   <!-- Sécurité : le navigateur ne charge que les fichiers du site (et Formspree pour le formulaire). Les empreintes sha256 autorisent les seuls scripts écrits dans les pages (langue, importmap d'index.html, <base> de 404.html) ; npm run validate signale si l'un d'eux change. -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://gc.zgo.at 'sha256-WH8NTvo+7SVajfiorzslKAyTdPR8zR29Ma4SesGKpSk=' 'sha256-ZcmVnkp/+QTaBlAE1mjV7ppCAHuIFcNg3mxcWK65VKM=' 'sha256-0bF9PY4Y9tkkwPNbHep+GABLK+IJZIYOYeUrAk1EjHs='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://teknoneverdies.goatcounter.com; font-src 'self'; connect-src 'self' https://formspree.io https://teknoneverdies.goatcounter.com; form-action https://formspree.io; base-uri 'self'; object-src 'none'; frame-src 'none'; upgrade-insecure-requests" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://gc.zgo.at 'sha256-tDuDEDAPvwNgLOiR/Npt20DVaoRN9Eh0Pc7HLQt5TfA=' 'sha256-ZcmVnkp/+QTaBlAE1mjV7ppCAHuIFcNg3mxcWK65VKM=' 'sha256-0bF9PY4Y9tkkwPNbHep+GABLK+IJZIYOYeUrAk1EjHs='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://teknoneverdies.goatcounter.com; font-src 'self'; connect-src 'self' https://formspree.io https://teknoneverdies.goatcounter.com; form-action https://formspree.io; base-uri 'self'; object-src 'none'; frame-src 'none'; upgrade-insecure-requests" />
   <script>
     // Langue (FR / DE / EN) : les pages allemandes et anglaises sont dans de/ et en/ (tools/langues.mjs).
     // Avant l'affichage, ?lang=de (lien partagé) ou la langue choisie avec les boutons FR / DE / EN
     // (enregistrée dans le navigateur) mène à la bonne version de la page. Voir js/i18n/i18n.js.
     (function () {
       var d = document.documentElement, l = null;
-      if (d.hasAttribute("data-no-lang-redirect")) return;
+      // Page 404 : GitHub Pages la sert pour toute adresse introuvable, y compris sous de/ ou en/.
+      // Pas de redirection : elle prend la langue de l'adresse (traduite par js/i18n/i18n.js).
+      if (d.hasAttribute("data-no-lang-redirect")) {
+        var m = location.pathname.match(/\/(de|en)\//);
+        if (m) d.lang = m[1];
+        return;
+      }
       try { l = new URLSearchParams(location.search).get("lang") || (d.lang === "fr" && localStorage.getItem("tnd-lang")); } catch (e) {}
       if (!l || l === d.lang || ["fr", "de", "en"].indexOf(l) < 0) return;
       // ?lang= est gardé : la page d'arrivée, déjà dans cette langue, ne redirige pas une seconde fois.
