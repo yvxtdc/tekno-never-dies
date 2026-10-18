@@ -89,6 +89,19 @@
   box-sizing:inherit
 }
 
+/* Fonds calculés sur la boîte entière, bordure comprise (partout sur le site).
+   Par défaut, un dégradé est calculé sur l'intérieur seulement, puis répété sous une bordure
+   transparente ou semi-transparente : on voyait alors un filet de la fin du dégradé sur un bord et
+   du début sur l'autre (« couleurs inversées » des boutons violets, cartes, pastilles…).
+   !important : chaque déclaration « background: » remettrait sinon la valeur par défaut. Sans effet
+   visible pour un fond uni ou une photo. Pour un cas qui aurait besoin de l'ancien comportement :
+   background-origin:padding-box!important sur ce seul élément. */
+*,
+*::before,
+*::after{
+  background-origin:border-box!important
+}
+
 html{
   scroll-padding-top:env(safe-area-inset-top,0px)
 }
