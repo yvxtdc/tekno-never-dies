@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <base href="../" />
+  <!-- Sécurité : le navigateur ne charge que les fichiers du site (et Formspree pour le formulaire). Les empreintes sha256 autorisent les seuls scripts écrits dans les pages (langue, importmap d'index.html, <base> de 404.html) ; npm run validate signale si l'un d'eux change. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://gc.zgo.at 'sha256-WH8NTvo+7SVajfiorzslKAyTdPR8zR29Ma4SesGKpSk=' 'sha256-ZcmVnkp/+QTaBlAE1mjV7ppCAHuIFcNg3mxcWK65VKM=' 'sha256-0bF9PY4Y9tkkwPNbHep+GABLK+IJZIYOYeUrAk1EjHs='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://teknoneverdies.goatcounter.com; font-src 'self'; connect-src 'self' https://formspree.io https://teknoneverdies.goatcounter.com; form-action https://formspree.io; base-uri 'self'; object-src 'none'; frame-src 'none'; upgrade-insecure-requests" />
+  <script>
+    // Langue (FR / DE / EN) : les pages allemandes et anglaises sont dans de/ et en/ (tools/langues.mjs).
+    // Avant l'affichage, ?lang=de (lien partagé) ou la langue choisie avec les boutons FR / DE / EN
+    // (enregistrée dans le navigateur) mène à la bonne version de la page. Voir js/i18n/i18n.js.
+    (function () {
+      var d = document.documentElement, l = null;
+      if (d.hasAttribute("data-no-lang-redirect")) return;
+      try { l = new URLSearchParams(location.search).get("lang") || (d.lang === "fr" && localStorage.getItem("tnd-lang")); } catch (e) {}
+      if (!l || l === d.lang || ["fr", "de", "en"].indexOf(l) < 0) return;
+      // ?lang= est gardé : la page d'arrivée, déjà dans cette langue, ne redirige pas une seconde fois.
+      location.replace(new URL((l === "fr" ? "" : l + "/") + location.pathname.split("/").pop() + location.search + location.hash, document.baseURI).href);
+    })();
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Galerie — Tekno Never Dies</title>
+  <meta name="description" content="Fotos von den Partys und Events von Tekno Never Dies." />
+  <meta name="theme-color" content="#4226b6" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Tekno Never Dies" />
+  <meta property="og:locale" content="de_DE" />
+  <meta property="og:title" content="Galerie — Tekno Never Dies" />
+  <meta property="og:description" content="Fotos von den Partys und Events von Tekno Never Dies." />
+  <meta property="og:url" content="https://teknoneverdies.fr/de/galerie.html" />
+  <meta property="og:image" content="https://teknoneverdies.fr/assets/img/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Logo Tekno Never Dies Sound System auf einem Partyfoto" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Galerie — Tekno Never Dies" />
+  <meta name="twitter:description" content="Fotos von den Partys und Events von Tekno Never Dies." />
+  <meta name="twitter:image" content="https://teknoneverdies.fr/assets/img/og-image.jpg" />
+  <link rel="canonical" href="https://teknoneverdies.fr/de/galerie.html" />
+  <link rel="icon" type="image/png" href="assets/img/favicon.png" />
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png" />
+  <link rel="manifest" href="site.webmanifest" />
+
+  <link rel="preload" href="assets/fonts/archivo-black-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="assets/fonts/montserrat-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="css/style.css?v=2" />
+  <link rel="stylesheet" href="css/pages.css" />
+  <script type="module" src="js/partials.js"></script>
+</head>
+<body data-page="galerie">
+  <!-- partial:header -->
+<a class="skip-link" href="#main">Zum Inhalt springen</a>
+<header class="top">
+  <a class="brand" href="de/" aria-label="Tekno Never Dies, Startseite">
+    <span class="badge" role="img" aria-label="Logo Tekno Never Dies Sound System"></span>
+  </a>
+  <!-- Choix de la langue en haut, à côté du menu (js/partials.js + js/i18n/i18n.js) -->
+  <div class="tnd-lang" role="group" aria-label="Langue · Sprache · Language" translate="no">
+    <button type="button" data-lang="fr" lang="fr" aria-label="Français">FR</button>
+    <button type="button" data-lang="de" lang="de" aria-label="Deutsch">DE</button>
+    <button type="button" data-lang="en" lang="en" aria-label="English">EN</button>
+  </div>
+  <button class="tnd-toggle" type="button" aria-expanded="false" aria-controls="main-navigation">
+    <span class="tnd-eq" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+    <span class="tnd-toggle-label">Menü</span>
+  </button>
+</header>
+<nav id="main-navigation" class="tnd-menu" aria-label="Hauptnavigation">
+  <a class="badge tnd-menu-badge" href="de/" aria-label="Tekno Never Dies, Startseite"></a>
+  <ul class="tnd-links">
+    <li style="--i:0"><a href="de/index.html" data-nav="accueil">Startseite</a></li>
+    <li style="--i:1"><a href="de/evenements.html" data-nav="evenements">Events</a></li>
+    <li style="--i:2"><a href="de/association.html" data-nav="association">Der Verein</a></li>
+    <li style="--i:3"><a href="de/galerie.html" data-nav="galerie">Galerie</a></li>
+    <li style="--i:4"><a href="de/faq.html" data-nav="faq">FAQ</a></li>
+    <li style="--i:5"><a href="de/contact.html" data-nav="contact">Kontakt</a></li>
+  </ul>
+  <!-- Colonne de droite (ordinateur uniquement) : prochaine soirée remplie par js/partials.js -->
+  <aside class="tnd-menu-side" aria-label="Nächste Party">
+    <div class="tnd-next" hidden></div>
+    <a class="tnd-menu-insta" href="https://www.instagram.com/tnd6tem/" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" class="social-dot"/></svg>
+      Instagram <span aria-hidden="true">↗</span>
+    </a>
+  </aside>
+  <div class="tnd-menu-bottom">
+    <p class="tnd-menu-foot">Tekno Never Dies, Lauterburg<br><a href="mailto:tnd6tem@gmail.com">tnd6tem@gmail.com</a></p>
+  </div>
+</nav>
+<!-- /partial:header -->
+
+  <main id="main">
+    <section class="page-head container">
+      <h1><span class="l2">Galerie</span></h1>
+      <img class="decor decor-r decor--float" src="assets/img/decor/sparkles-lavender.webp" alt="" aria-hidden="true" />
+      <p>Die Fotos unserer Partys, nach Jahr und Event sortiert. Klick auf ein Foto, um es zu vergrößern oder zu speichern.</p>
+    </section>
+
+    <section class="container has-decor" style="padding-bottom:clamp(20px,4vw,50px)">
+      <img class="decor decor-r2" style="top:38%" src="assets/img/decor/star-lavender.webp" alt="" aria-hidden="true" />
+      <nav class="gallery-nav" id="gallery-nav" aria-label="Nach Jahr und Event filtern"></nav>
+      <div id="gallery-root"></div>
+    </section>
+
+    <a class="cta-row" href="de/evenements.html">
+      <span class="cta-row__inner">
+        <span class="cta-row__kicker">die nächsten Partys</span>
+        <span class="cta-row__title"><span>Zum Kalender</span> <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18M14 5l7 7-7 7"/></svg></span>
+      </span>
+    </a>
+  </main>
+
+  
+
+  <!-- partial:footer -->
+<footer>
+  <img class="decor decor-chain" src="assets/img/decor/chain.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" />
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <span class="badge" role="img" aria-label="Logo Tekno Never Dies"></span>
+      <div>
+        <div class="tnd">TND6TEM</div>
+        <p>Verein und Tekno-Soundsystem, Lauterburg.<br><a href="mailto:tnd6tem@gmail.com">tnd6tem@gmail.com</a></p>
+      </div>
+    </div>
+
+    <div class="footer-column">
+      <h2>Entdecken</h2>
+      <nav aria-label="Fußzeile">
+        <a href="de/association.html">Der Verein</a>
+        <a href="de/nos-actions.html">Unsere Aktionen</a>
+        <a href="de/evenements.html">Events</a>
+        <a href="de/artistes.html">Künstler</a>
+        <a href="de/galerie.html">Galerie</a>
+        <a href="de/faq.html">FAQ</a>
+        <a href="de/rejoindre.html">Mitmachen</a>
+        <a href="de/contact.html">Kontakt</a>
+      </nav>
+    </div>
+
+    <div class="footer-column footer-contact">
+      <h2>Folge uns</h2>
+      <nav class="socials" aria-label="Soziale Netzwerke des Vereins">
+        <a href="https://www.instagram.com/tnd6tem/" target="_blank" rel="noopener noreferrer" aria-label="Instagram Tekno Never Dies">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" class="social-dot"/></svg>
+          <span>Instagram</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="footer-bottom">
+      <small>© 2026 Tekno Never Dies, Verein · Website von <strong class="footer-credits">YANNIV &amp; YANNIS</strong></small>
+      <nav aria-label="Rechtliche Informationen">
+        <a href="de/mentions-legales.html">Impressum</a>
+        <a href="de/confidentialite.html">Datenschutz</a>
+        <a href="de/conditions-utilisation.html">Nutzungsbedingungen</a>
+        <a href="de/conditions-evenements.html">Veranstaltungsbedingungen</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+<!-- /partial:footer -->
+  <script type="module" src="js/pages/galerie.js"></script>
+</body>
+</html>

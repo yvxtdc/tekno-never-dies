@@ -27,6 +27,8 @@ const files = [];
   }
 })(root);
 const pages = files.filter((f) => path.dirname(f) === root && f.endsWith(".html"));
+// Pages allemandes et anglaises générées par tools/langues.mjs (contrôlées par sa vérification, plus bas)
+const generated = (f) => /^(de|en)\//.test(rel(f));
 
 /* ---------- 1. liens et ressources locaux ---------- */
 const skip = /^(https?:|webcal:|mailto:|tel:|#|data:|javascript:|\/\/|\?)/;
@@ -39,7 +41,8 @@ for (const file of files.filter((f) => /\.(html|css|js)$/.test(f))) {
     if (!ref) continue;
     // Les chemins écrits dans les scripts de pages sont relatifs à la page (racine du site).
     // Idem pour les partials : leur contenu est copié dans les pages, à la racine.
-    const base = file.endsWith(".js") || rel(file).startsWith("partials/") ? root : path.dirname(file);
+    // Pages de/ et en/ : <base href="../">, leurs chemins partent aussi de la racine.
+    const base = file.endsWith(".js") || rel(file).startsWith("partials/") || generated(file) ? root : path.dirname(file);
     if (!fs.existsSync(path.resolve(base, ref))) err(file, `référence absente : ${raw}`);
   }
 }
@@ -55,6 +58,10 @@ if (calendar.status !== 0) errors.push(calendar.stderr.trim().split("\n").filter
 /* ---------- 2 ter. fiches événement (evenement-….html) à jour ---------- */
 const eventPages = spawnSync(process.execPath, [path.join(root, "tools", "event-pages.mjs"), "--check"], { encoding: "utf8" });
 if (eventPages.status !== 0) errors.push(...eventPages.stderr.trim().split("\n").filter(Boolean));
+
+/* ---------- 2 quater. pages de/ et en/, sitemap à jour ---------- */
+const langPages = spawnSync(process.execPath, [path.join(root, "tools", "langues.mjs"), "--check"], { encoding: "utf8" });
+if (langPages.status !== 0) errors.push(...langPages.stderr.trim().split("\n").filter(Boolean));
 
 /* ---------- 3. structure HTML de chaque page ---------- */
 const VOID = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"]);
@@ -179,7 +186,7 @@ for (const file of pages) {
 
 /* ---------- 6. à compléter avant la mise en ligne ---------- */
 const placeholderRe = /\[[A-ZÉÈÀÂÔ][A-ZÉÈÀÂÔ' ]{5,}[^\]]*\]/g;
-for (const file of files.filter((f) => /\.(html|js)$/.test(f) && !f.includes("tools"))) {
+for (const file of files.filter((f) => /\.(html|js)$/.test(f) && !f.includes("tools") && !generated(f))) {
   const found = [...new Set(read(file).match(placeholderRe) || [])];
   if (found.length) todo.push(`${rel(file)} : ${found.length} champ(s) à remplacer, ex. ${found[0]}`);
 }

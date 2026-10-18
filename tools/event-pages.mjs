@@ -1,6 +1,6 @@
 // Crée une page HTML par soirée de js/data/events.js : evenement-<slug>.html
 //
-//   node tools/event-pages.mjs           (re)génère les fiches et la liste du sitemap (lancé par npm run calendar)
+//   node tools/event-pages.mjs           (re)génère les fiches (lancé par npm run calendar ; le sitemap est fait par tools/langues.mjs)
 //   node tools/event-pages.mjs --check   vérifie seulement qu'elles sont à jour (utilisé par validate)
 //
 // Pourquoi : les robots des réseaux sociaux (WhatsApp, Instagram, Facebook…) et beaucoup de moteurs
@@ -142,16 +142,6 @@ for (const name of fs.readdirSync(ROOT).filter((f) => /^evenement-.+\.html$/.tes
     fs.rmSync(path.join(ROOT, name));
     console.log(`✗ ${name} supprimée`);
   }
-}
-
-// Sitemap : liste des fiches entre deux commentaires
-const sitemapFile = path.join(ROOT, "sitemap.xml");
-const sitemap = fs.readFileSync(sitemapFile, "utf8");
-const block = /<!-- fiches:debut[^>]*-->[\s\S]*?<!-- fiches:fin -->/;
-if (!block.test(sitemap)) problems.push("sitemap.xml : commentaires « fiches:debut » / « fiches:fin » absents");
-else {
-  const urls = [...expected.keys()].map((name) => `  <url><loc>${new URL(name, SITE.url).href}</loc></url>`).join("\n");
-  write("sitemap.xml", sitemap.replace(block, `<!-- fiches:debut (généré par npm run calendar) -->\n${urls}\n  <!-- fiches:fin -->`));
 }
 
 if (problems.length) {

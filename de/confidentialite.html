@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <base href="../" />
+  <!-- Sécurité : le navigateur ne charge que les fichiers du site (et Formspree pour le formulaire). Les empreintes sha256 autorisent les seuls scripts écrits dans les pages (langue, importmap d'index.html, <base> de 404.html) ; npm run validate signale si l'un d'eux change. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://gc.zgo.at 'sha256-WH8NTvo+7SVajfiorzslKAyTdPR8zR29Ma4SesGKpSk=' 'sha256-ZcmVnkp/+QTaBlAE1mjV7ppCAHuIFcNg3mxcWK65VKM=' 'sha256-0bF9PY4Y9tkkwPNbHep+GABLK+IJZIYOYeUrAk1EjHs='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://teknoneverdies.goatcounter.com; font-src 'self'; connect-src 'self' https://formspree.io https://teknoneverdies.goatcounter.com; form-action https://formspree.io; base-uri 'self'; object-src 'none'; frame-src 'none'; upgrade-insecure-requests" />
+  <script>
+    // Langue (FR / DE / EN) : les pages allemandes et anglaises sont dans de/ et en/ (tools/langues.mjs).
+    // Avant l'affichage, ?lang=de (lien partagé) ou la langue choisie avec les boutons FR / DE / EN
+    // (enregistrée dans le navigateur) mène à la bonne version de la page. Voir js/i18n/i18n.js.
+    (function () {
+      var d = document.documentElement, l = null;
+      if (d.hasAttribute("data-no-lang-redirect")) return;
+      try { l = new URLSearchParams(location.search).get("lang") || (d.lang === "fr" && localStorage.getItem("tnd-lang")); } catch (e) {}
+      if (!l || l === d.lang || ["fr", "de", "en"].indexOf(l) < 0) return;
+      // ?lang= est gardé : la page d'arrivée, déjà dans cette langue, ne redirige pas une seconde fois.
+      location.replace(new URL((l === "fr" ? "" : l + "/") + location.pathname.split("/").pop() + location.search + location.hash, document.baseURI).href);
+    })();
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Datenschutz — Tekno Never Dies</title>
+  <meta name="description" content="Datenschutzerklärung der Website Tekno Never Dies." />
+  <meta name="theme-color" content="#4226b6" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Tekno Never Dies" />
+  <meta property="og:locale" content="de_DE" />
+  <meta property="og:title" content="Datenschutz — Tekno Never Dies" />
+  <meta property="og:description" content="Datenschutzerklärung der Website Tekno Never Dies." />
+  <meta property="og:url" content="https://teknoneverdies.fr/de/confidentialite.html" />
+  <meta property="og:image" content="https://teknoneverdies.fr/assets/img/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Logo Tekno Never Dies Sound System auf einem Partyfoto" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Datenschutz — Tekno Never Dies" />
+  <meta name="twitter:description" content="Datenschutzerklärung der Website Tekno Never Dies." />
+  <meta name="twitter:image" content="https://teknoneverdies.fr/assets/img/og-image.jpg" />
+  <link rel="canonical" href="https://teknoneverdies.fr/de/confidentialite.html" />
+  <link rel="icon" type="image/png" href="assets/img/favicon.png" />
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png" />
+  <link rel="manifest" href="site.webmanifest" />
+
+  <link rel="preload" href="assets/fonts/archivo-black-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="assets/fonts/montserrat-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="css/style.css?v=2" />
+  <link rel="stylesheet" href="css/pages.css" />
+  <script type="module" src="js/partials.js"></script>
+</head>
+<body data-legal>
+  <!-- partial:header -->
+<a class="skip-link" href="#main">Zum Inhalt springen</a>
+<header class="top">
+  <a class="brand" href="de/" aria-label="Tekno Never Dies, Startseite">
+    <span class="badge" role="img" aria-label="Logo Tekno Never Dies Sound System"></span>
+  </a>
+  <!-- Choix de la langue en haut, à côté du menu (js/partials.js + js/i18n/i18n.js) -->
+  <div class="tnd-lang" role="group" aria-label="Langue · Sprache · Language" translate="no">
+    <button type="button" data-lang="fr" lang="fr" aria-label="Français">FR</button>
+    <button type="button" data-lang="de" lang="de" aria-label="Deutsch">DE</button>
+    <button type="button" data-lang="en" lang="en" aria-label="English">EN</button>
+  </div>
+  <button class="tnd-toggle" type="button" aria-expanded="false" aria-controls="main-navigation">
+    <span class="tnd-eq" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+    <span class="tnd-toggle-label">Menü</span>
+  </button>
+</header>
+<nav id="main-navigation" class="tnd-menu" aria-label="Hauptnavigation">
+  <a class="badge tnd-menu-badge" href="de/" aria-label="Tekno Never Dies, Startseite"></a>
+  <ul class="tnd-links">
+    <li style="--i:0"><a href="de/index.html" data-nav="accueil">Startseite</a></li>
+    <li style="--i:1"><a href="de/evenements.html" data-nav="evenements">Events</a></li>
+    <li style="--i:2"><a href="de/association.html" data-nav="association">Der Verein</a></li>
+    <li style="--i:3"><a href="de/galerie.html" data-nav="galerie">Galerie</a></li>
+    <li style="--i:4"><a href="de/faq.html" data-nav="faq">FAQ</a></li>
+    <li style="--i:5"><a href="de/contact.html" data-nav="contact">Kontakt</a></li>
+  </ul>
+  <!-- Colonne de droite (ordinateur uniquement) : prochaine soirée remplie par js/partials.js -->
+  <aside class="tnd-menu-side" aria-label="Nächste Party">
+    <div class="tnd-next" hidden></div>
+    <a class="tnd-menu-insta" href="https://www.instagram.com/tnd6tem/" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" class="social-dot"/></svg>
+      Instagram <span aria-hidden="true">↗</span>
+    </a>
+  </aside>
+  <div class="tnd-menu-bottom">
+    <p class="tnd-menu-foot">Tekno Never Dies, Lauterburg<br><a href="mailto:tnd6tem@gmail.com">tnd6tem@gmail.com</a></p>
+  </div>
+</nav>
+<!-- /partial:header -->
+
+  <main id="main">
+    <section class="page-head container">
+      <h1><span class="l2">Datenschutz</span></h1>
+      <p>Informationen zu den über die Website übermittelten Daten.</p>
+    </section>
+    <section class="container legal-content">
+      <!-- À FAIRE (interne) : vérifier le contrat et les garanties de transfert de Formspree, et appliquer la règle de suppression ci-dessous. -->
+      <h2>Verantwortlicher</h2>
+      <p>TEKNO NEVER DIES, Verein nach französischem Recht mit Sitz in 5 avenue Georges Clemenceau, 67630 Lauterbourg, ist verantwortlich für die über das Formular erhaltenen Daten. Kontakt: <a href="mailto:tnd6tem@gmail.com">tnd6tem@gmail.com</a>.</p>
+      <h2>Daten und Zwecke</h2>
+      <p>Das Formular erfasst Name, E-Mail-Adresse, Art der Anfrage und Nachricht. Die Telefonnummer ist optional. Je nach Anfrage kann die Person auch ein Datum, ein Event, einen Ort oder eine Teilnehmerzahl angeben. Diese Daten dienen ausschließlich dazu, die Anfrage zu empfangen, zu verstehen, zu bearbeiten und zu beantworten.</p>
+      <h2>Rechtsgrundlage</h2>
+      <p>Die Verarbeitung ist erforderlich, um die an den Verein gerichtete Anfrage zu beantworten und, wenn es um ein Kooperationsprojekt geht, auf Wunsch Maßnahmen vor einer möglichen Vertragsbeziehung zu ergreifen. Die Nachrichten werden nicht für Werbung oder Newsletter verwendet.</p>
+      <h2>Empfänger und Dienstleister</h2>
+      <p>Die Antworten sind nur befugten Personen des Vereins zugänglich. Das Formular wird von Formspree bereitgestellt, das die Einsendungen verarbeitet, um die Nachrichten weiterzuleiten. Die Website wird über GitHub Pages veröffentlicht; laut GitHub werden die IP-Adressen der Besucher aus Sicherheitsgründen protokolliert. Laut Formspree können Daten in den USA oder anderen Ländern verarbeitet werden. Vor der Veröffentlichung muss der Verein die Vertragsbedingungen seines Kontos, seinen Auftragsverarbeitungsvertrag und die Garantien für Übermittlungen außerhalb des Europäischen Wirtschaftsraums prüfen.</p>
+      <p>Datenschutzerklärung von Formspree: <a href="https://formspree.io/legal/privacy-policy/" target="_blank" rel="noopener noreferrer">formspree.io/legal/privacy-policy</a>. Datenschutzerklärung von GitHub: <a href="https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener noreferrer">GitHub Privacy Statement</a>.</p>
+      <h2>Speicherdauer</h2>
+      <p>Kontaktanfragen werden höchstens drei Jahre nach dem letzten Austausch mit der Person aufbewahrt und dann aus dem Postfach und aus Formspree gelöscht. Sie werden früher gelöscht, sobald sie für die Nachverfolgung nicht mehr nötig sind. Diese Frist ist eine für diese Verarbeitung gewählte Obergrenze, keine allgemein gesetzlich festgelegte Höchstdauer: Die Dauer muss durch den Zweck gerechtfertigt bleiben. Nur Elemente, die für eine gesetzliche Pflicht oder die Verteidigung eines Rechts erforderlich sind, können bei Bedarf für die geltende Dauer in einem zugangsbeschränkten Archiv gesondert aufbewahrt werden.</p>
+      <p>Orientierung: <a href="https://www.cnil.fr/fr/passer-laction/les-durees-de-conservation-des-donnees" target="_blank" rel="noopener noreferrer">Grundsätze der CNIL zu Speicherfristen</a> (auf Französisch).</p>
+      <h2>Ihre Rechte</h2>
+      <p>Unter den gesetzlich vorgesehenen Bedingungen können Sie Auskunft, Berichtigung, Löschung oder Einschränkung Ihrer Daten verlangen, bestimmten Verarbeitungen widersprechen und, wo dieses Recht gilt, deren Übertragbarkeit verlangen. Um Ihre Rechte auszuüben, schreiben Sie an <a href="mailto:tnd6tem@gmail.com">tnd6tem@gmail.com</a> und geben Sie den Gegenstand Ihrer Anfrage an. Sie können auch eine Beschwerde bei der <a href="https://www.cnil.fr/fr/plaintes" target="_blank" rel="noopener noreferrer">CNIL</a> (französische Datenschutzbehörde) einreichen.</p>
+      <h2>Reichweitenmessung</h2>
+      <p>Die Website nutzt GoatCounter, ein cookiefreies Statistik-Tool, um zu sehen, welche Seiten und welche Partys aufgerufen werden. Bei jedem Seitenaufruf erhält GoatCounter die Adresse der Seite, ihren Titel, die Website, von der Sie kommen, die Bildschirmgröße und den Browsertyp. Die IP-Adresse dient nur dazu, das Land zu schätzen und einen Besuch nur einmal zu zählen; sie wird nicht gespeichert. Einige Klicks werden ebenfalls gezählt, ohne dass Sie identifiziert werden: Ticketing, Instagram, Routenplanung, Kalendereintrag, Teilen, Galeriefotos und Teamprofile. Die Statistiken sind anonym, ermöglichen keine Verfolgung eines Besuchers über verschiedene Websites hinweg und dienen ausschließlich der Verbesserung der Website. Ein Werbe- oder Tracking-Blocker kann diese Zählung deaktivieren, ohne die Nutzung der Website zu beeinträchtigen.</p>
+      <p>Datenschutzerklärung von GoatCounter: <a href="https://www.goatcounter.com/help/privacy" target="_blank" rel="noopener noreferrer">goatcounter.com/help/privacy</a>.</p>
+      <h2>Cookies und Tracker</h2>
+      <p>Die Website setzt keine Cookies. Sie enthält weder Werbung noch eingebettete Social-Media-Inhalte, die einen Tracker erfordern, und die oben beschriebene Reichweitenmessung funktioniert ohne Cookies. Schriftarten und Ressourcen der Website werden lokal gehostet. Links zu Instagram und anderen externen Websites laden deren Inhalte erst nach Ihrem Klick; dann gelten deren eigene Regeln. Die Nutzung des Formulars kann beim Absenden einen Austausch mit Formspree auslösen.</p>
+      <p>Wenn Sie im Menü eine Sprache (Französisch, Deutsch oder Englisch) wählen, wird diese Wahl für die folgenden Seiten in Ihrem Browser gespeichert (lokaler Speicher). Sie wird weder an den Verein noch an Dritte übermittelt, und Sie können sie löschen, indem Sie die Website-Daten in Ihrem Browser entfernen.</p>
+      <h2>Änderung dieser Erklärung</h2>
+      <p>Diese Seite muss aktualisiert werden, wenn sich Formular, Dienstleister, Verarbeitungen oder Tools der Website ändern. Letzte Aktualisierung: 9. Oktober 2026.</p>
+    </section>
+  </main>
+
+  <!-- partial:footer -->
+<footer>
+  <img class="decor decor-chain" src="assets/img/decor/chain.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" />
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <span class="badge" role="img" aria-label="Logo Tekno Never Dies"></span>
+      <div>
+        <div class="tnd">TND6TEM</div>
+        <p>Verein und Tekno-Soundsystem, Lauterburg.<br><a href="mailto:tnd6tem@gmail.com">tnd6tem@gmail.com</a></p>
+      </div>
+    </div>
+
+    <div class="footer-column">
+      <h2>Entdecken</h2>
+      <nav aria-label="Fußzeile">
+        <a href="de/association.html">Der Verein</a>
+        <a href="de/nos-actions.html">Unsere Aktionen</a>
+        <a href="de/evenements.html">Events</a>
+        <a href="de/artistes.html">Künstler</a>
+        <a href="de/galerie.html">Galerie</a>
+        <a href="de/faq.html">FAQ</a>
+        <a href="de/rejoindre.html">Mitmachen</a>
+        <a href="de/contact.html">Kontakt</a>
+      </nav>
+    </div>
+
+    <div class="footer-column footer-contact">
+      <h2>Folge uns</h2>
+      <nav class="socials" aria-label="Soziale Netzwerke des Vereins">
+        <a href="https://www.instagram.com/tnd6tem/" target="_blank" rel="noopener noreferrer" aria-label="Instagram Tekno Never Dies">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" class="social-dot"/></svg>
+          <span>Instagram</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="footer-bottom">
+      <small>© 2026 Tekno Never Dies, Verein · Website von <strong class="footer-credits">YANNIV &amp; YANNIS</strong></small>
+      <nav aria-label="Rechtliche Informationen">
+        <a href="de/mentions-legales.html">Impressum</a>
+        <a href="de/confidentialite.html">Datenschutz</a>
+        <a href="de/conditions-utilisation.html">Nutzungsbedingungen</a>
+        <a href="de/conditions-evenements.html">Veranstaltungsbedingungen</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+<!-- /partial:footer -->
+</body>
+</html>

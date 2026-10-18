@@ -1,22 +1,361 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://teknoneverdies.fr/</loc></url>
-  <url><loc>https://teknoneverdies.fr/evenements.html</loc></url>
-  <!-- fiches:debut (généré par npm run calendar) -->
-  <url><loc>https://teknoneverdies.fr/evenement-ice-boiler-v2-2026.html</loc></url>
-  <url><loc>https://teknoneverdies.fr/evenement-center-drop-2026.html</loc></url>
-  <url><loc>https://teknoneverdies.fr/evenement-fete-musique-wissembourg-2025.html</loc></url>
-  <url><loc>https://teknoneverdies.fr/evenement-ice-boiler-v1-2025.html</loc></url>
-  <!-- fiches:fin -->
-  <url><loc>https://teknoneverdies.fr/artistes.html</loc></url>
-  <url><loc>https://teknoneverdies.fr/association.html</loc></url>
-  <url><loc>https://teknoneverdies.fr/nos-actions.html</loc></url>
-  <url><loc>https://teknoneverdies.fr/rejoindre.html</loc></url>
-  <url><loc>https://teknoneverdies.fr/galerie.html</loc></url>
-  <url><loc>https://teknoneverdies.fr/faq.html</loc></url>
-  <url><loc>https://teknoneverdies.fr/contact.html</loc></url>
-  <url><loc>https://teknoneverdies.fr/mentions-legales.html</loc></url>
-  <url><loc>https://teknoneverdies.fr/confidentialite.html</loc></url>
-  <url><loc>https://teknoneverdies.fr/conditions-utilisation.html</loc></url>
-  <url><loc>https://teknoneverdies.fr/conditions-evenements.html</loc></url>
+<!-- Généré par tools/langues.mjs (npm run langues) : ne pas modifier à la main. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://teknoneverdies.fr/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/de/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/en/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/artistes.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/artistes.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/artistes.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/artistes.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/artistes.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/de/artistes.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/artistes.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/artistes.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/artistes.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/artistes.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/en/artistes.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/artistes.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/artistes.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/artistes.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/artistes.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/association.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/association.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/association.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/association.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/association.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/de/association.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/association.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/association.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/association.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/association.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/en/association.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/association.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/association.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/association.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/association.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/conditions-evenements.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/conditions-evenements.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/conditions-evenements.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/conditions-evenements.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/conditions-evenements.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/de/conditions-evenements.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/conditions-evenements.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/conditions-evenements.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/conditions-evenements.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/conditions-evenements.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/en/conditions-evenements.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/conditions-evenements.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/conditions-evenements.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/conditions-evenements.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/conditions-evenements.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/conditions-utilisation.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/conditions-utilisation.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/conditions-utilisation.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/conditions-utilisation.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/conditions-utilisation.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/de/conditions-utilisation.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/conditions-utilisation.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/conditions-utilisation.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/conditions-utilisation.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/conditions-utilisation.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/en/conditions-utilisation.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/conditions-utilisation.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/conditions-utilisation.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/conditions-utilisation.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/conditions-utilisation.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/confidentialite.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/confidentialite.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/confidentialite.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/confidentialite.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/confidentialite.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/de/confidentialite.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/confidentialite.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/confidentialite.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/confidentialite.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/confidentialite.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/en/confidentialite.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/confidentialite.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/confidentialite.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/confidentialite.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/confidentialite.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/contact.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/contact.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/contact.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/contact.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/contact.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/de/contact.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/contact.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/contact.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/contact.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/contact.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/en/contact.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/contact.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/contact.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/contact.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/contact.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/evenement-center-drop-2026.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/evenement-center-drop-2026.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/evenement-center-drop-2026.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/evenement-center-drop-2026.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/evenement-center-drop-2026.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/de/evenement-center-drop-2026.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/evenement-center-drop-2026.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/evenement-center-drop-2026.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/evenement-center-drop-2026.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/evenement-center-drop-2026.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/en/evenement-center-drop-2026.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/evenement-center-drop-2026.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/evenement-center-drop-2026.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/evenement-center-drop-2026.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/evenement-center-drop-2026.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/evenement-fete-musique-wissembourg-2025.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/evenement-fete-musique-wissembourg-2025.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/evenement-fete-musique-wissembourg-2025.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/evenement-fete-musique-wissembourg-2025.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/evenement-fete-musique-wissembourg-2025.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/de/evenement-fete-musique-wissembourg-2025.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/evenement-fete-musique-wissembourg-2025.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/evenement-fete-musique-wissembourg-2025.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/evenement-fete-musique-wissembourg-2025.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/evenement-fete-musique-wissembourg-2025.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/en/evenement-fete-musique-wissembourg-2025.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/evenement-fete-musique-wissembourg-2025.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/evenement-fete-musique-wissembourg-2025.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/evenement-fete-musique-wissembourg-2025.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/evenement-fete-musique-wissembourg-2025.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/evenement-ice-boiler-v1-2025.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/evenement-ice-boiler-v1-2025.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/evenement-ice-boiler-v1-2025.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/evenement-ice-boiler-v1-2025.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/evenement-ice-boiler-v1-2025.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/de/evenement-ice-boiler-v1-2025.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/evenement-ice-boiler-v1-2025.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/evenement-ice-boiler-v1-2025.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/evenement-ice-boiler-v1-2025.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/evenement-ice-boiler-v1-2025.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/en/evenement-ice-boiler-v1-2025.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/evenement-ice-boiler-v1-2025.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/evenement-ice-boiler-v1-2025.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/evenement-ice-boiler-v1-2025.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/evenement-ice-boiler-v1-2025.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/evenement-ice-boiler-v2-2026.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/evenement-ice-boiler-v2-2026.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/evenement-ice-boiler-v2-2026.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/evenement-ice-boiler-v2-2026.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/evenement-ice-boiler-v2-2026.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/de/evenement-ice-boiler-v2-2026.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/evenement-ice-boiler-v2-2026.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/evenement-ice-boiler-v2-2026.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/evenement-ice-boiler-v2-2026.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/evenement-ice-boiler-v2-2026.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/en/evenement-ice-boiler-v2-2026.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/evenement-ice-boiler-v2-2026.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/evenement-ice-boiler-v2-2026.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/evenement-ice-boiler-v2-2026.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/evenement-ice-boiler-v2-2026.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/evenements.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/evenements.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/evenements.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/evenements.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/evenements.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/de/evenements.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/evenements.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/evenements.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/evenements.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/evenements.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/en/evenements.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/evenements.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/evenements.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/evenements.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/evenements.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/faq.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/faq.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/de/faq.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/faq.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/en/faq.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/faq.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/galerie.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/galerie.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/galerie.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/galerie.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/galerie.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/de/galerie.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/galerie.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/galerie.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/galerie.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/galerie.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/en/galerie.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/galerie.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/galerie.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/galerie.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/galerie.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/mentions-legales.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/mentions-legales.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/mentions-legales.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/mentions-legales.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/mentions-legales.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/de/mentions-legales.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/mentions-legales.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/mentions-legales.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/mentions-legales.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/mentions-legales.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/en/mentions-legales.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/mentions-legales.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/mentions-legales.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/mentions-legales.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/mentions-legales.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/nos-actions.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/nos-actions.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/nos-actions.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/nos-actions.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/nos-actions.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/de/nos-actions.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/nos-actions.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/nos-actions.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/nos-actions.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/nos-actions.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/en/nos-actions.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/nos-actions.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/nos-actions.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/nos-actions.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/nos-actions.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/rejoindre.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/rejoindre.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/rejoindre.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/rejoindre.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/rejoindre.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/de/rejoindre.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/rejoindre.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/rejoindre.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/rejoindre.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/rejoindre.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/en/rejoindre.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/rejoindre.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/rejoindre.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/rejoindre.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/rejoindre.html"/>
+  </url>
 </urlset>
