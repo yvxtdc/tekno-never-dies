@@ -7,7 +7,7 @@
  * npm run traductions ceux des pages HTML.
  */
 export default {
-  "Tekno Never Dies : association et sound system tekno. Événements, équipe et univers TND6TEM.": "Tekno Never Dies: Verein und Tekno-Soundsystem. Events, Team und das Universum von TND6TEM.",
+  "Tekno Never Dies (TND6TEM), association et sound system tekno de Lauterbourg, en Alsace : soirées techno et trance, prochaines dates, billetterie et photos.": "Tekno Never Dies (TND6TEM), Verein und Tekno-Soundsystem aus Lauterburg im Elsass: Techno- und Trance-Partys, nächste Termine, Tickets und Fotos.",
   "Logo Tekno Never Dies Sound System sur une photo de soirée": "Logo Tekno Never Dies Sound System auf einem Partyfoto",
   "Aller au contenu": "Zum Inhalt springen",
   "Tekno Never Dies, accueil": "Tekno Never Dies, Startseite",
@@ -72,7 +72,7 @@ export default {
   "Prendre ma place ↗": "Ticket sichern ↗",
   "Voir la soirée": "Zur Party",
   "Événements — Tekno Never Dies": "Events — Tekno Never Dies",
-  "Prochains événements et soirées passées de l'association Tekno Never Dies.": "Kommende Events und vergangene Partys des Vereins Tekno Never Dies.",
+  "Prochaines soirées Tekno Never Dies en Alsace (dates, lieux, line-ups, billetterie) et retour sur les soirées passées. Agenda à ajouter sur ton téléphone.": "Die nächsten Partys von Tekno Never Dies im Elsass (Termine, Orte, Line-ups, Tickets) und ein Rückblick auf vergangene Events. Kalender fürs Handy.",
   "Nos prochaines soirées, et un aperçu de celles déjà organisées.": "Unsere nächsten Partys und ein Rückblick auf die bisherigen.",
   "À venir": "Demnächst",
   "S'abonner à l'agenda": "Kalender abonnieren",
@@ -113,7 +113,7 @@ export default {
   "{n} {nights} chez TND": "{n} {nights} bei TND",
   "soirée": "Party",
   "L'association — Tekno Never Dies": "Der Verein — Tekno Never Dies",
-  "Découvrez Tekno Never Dies, ses actions, ses valeurs et son équipe.": "Lerne Tekno Never Dies kennen: Aktionen, Werte und Team.",
+  "Tekno Never Dies, association de Lauterbourg (Alsace) qui organise des soirées tekno : son histoire, ses valeurs, son équipe et ses prochaines dates.": "Tekno Never Dies, ein Verein aus Lauterburg (Elsass), der Tekno-Partys veranstaltet: Geschichte, Werte, Team und nächste Termine.",
   "Une association de passionnés de musique électronique basée à Lauterbourg, dans le Bas-Rhin.": "Ein Verein von Fans elektronischer Musik aus Lauterburg im Unterelsass.",
   "Qui sommes-nous ?": "Wer sind wir?",
   "<span>Mission</span>Promouvoir, rassembler, faire vibrer": "<span>Mission</span>Fördern, zusammenbringen, zum Beben bringen",
@@ -246,7 +246,7 @@ export default {
   "Le bouton ci-dessous ouvre le formulaire de contact avec « Rejoindre l’association » déjà sélectionné : il ne te reste qu'à te présenter.": "Der Button unten öffnet das Kontaktformular mit bereits ausgewähltem „Dem Verein beitreten“: Du musst dich nur noch vorstellen.",
   "Nous contacter": "Kontakt aufnehmen",
   "Galerie — Tekno Never Dies": "Galerie — Tekno Never Dies",
-  "Photos des soirées et événements de Tekno Never Dies.": "Fotos von den Partys und Events von Tekno Never Dies.",
+  "Photos des soirées Tekno Never Dies, le sound system tekno de Lauterbourg : revis les nuits passées sur le dancefloor.": "Fotos von den Partys von Tekno Never Dies, dem Tekno-Soundsystem aus Lauterburg: erlebe die Nächte auf dem Dancefloor noch einmal.",
   "Les photos de nos soirées, classées par année et par événement. Clique sur une photo pour l'agrandir ou l'enregistrer.": "Die Fotos unserer Partys, nach Jahr und Event sortiert. Klick auf ein Foto, um es zu vergrößern oder zu speichern.",
   "Filtrer par année et par événement": "Nach Jahr und Event filtern",
   "les prochaines soirées": "die nächsten Partys",

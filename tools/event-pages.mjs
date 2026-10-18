@@ -25,6 +25,7 @@ const { EVENTS } = await load("js/data/events.js");
 const { SITE } = await load("js/data/site.js");
 const { eventPath, esc } = await load("js/pages/helpers.js");
 const { eventSchema } = await load("js/components/event-schema.js");
+const { eventPreview } = await load("js/components/event-preview.js");
 
 const OG_DIR = "assets/img/events/og";
 const OG_W = 1200, OG_H = 630;
@@ -72,7 +73,9 @@ function page(ev) {
   const url = new URL(eventPath(ev.slug), SITE.url).href;
   const title = `${ev.title} — Tekno Never Dies`;
   const when = [longDate(ev.date, ev.datePrecision), ev.time].filter(Boolean).join(" · ");
-  const description = `${longDate(ev.date, ev.datePrecision)}${ev.place ? ` · ${ev.place}` : ""}. ${ev.description || ""}`.trim();
+  // Aperçu au partage : titre avec la date, description courte et factuelle (js/components/event-preview.js)
+  const preview = eventPreview(ev);
+  const description = preview.description;
   const visual = ev.flyer || ev.cover;
   const ticketUrl = /^https:\/\//.test(ev.ticketUrl || "") ? ev.ticketUrl : "";
   // "<" échappé : le texte d'un événement ne peut pas fermer la balise <script>.
@@ -83,9 +86,9 @@ function page(ev) {
     .replace(/<title>[^<]*<\/title>/, `<title>${esc(title)}</title>`)
     .replace(/<body data-page="evenements">/, `<body data-page="evenements" data-slug="${esc(ev.slug)}">`);
   html = setMeta(html, 'name="description"', description);
-  html = setMeta(html, 'property="og:title"', title);
+  html = setMeta(html, 'property="og:title"', preview.title);
   html = setMeta(html, 'property="og:description"', description);
-  html = setMeta(html, 'name="twitter:title"', title);
+  html = setMeta(html, 'name="twitter:title"', preview.title);
   html = setMeta(html, 'name="twitter:description"', description);
   const og = fs.existsSync(path.join(ROOT, ogImage(ev))) ? ogImage(ev) : null;
   if (og || visual) {
@@ -97,8 +100,8 @@ function page(ev) {
       html = setMeta(html, 'property="og:image:width"', String(OG_W));
       html = setMeta(html, 'property="og:image:height"', String(OG_H));
     } else {
-      // Les dimensions du modèle sont celles de og-image.jpg, pas celles du flyer.
-      html = html.replace(/\n\s*<meta property="og:image:(?:width|height)" content="\d+" \/>/g, "");
+      // Les dimensions et le format du modèle sont ceux de og-image.jpg, pas ceux du flyer.
+      html = html.replace(/\n\s*<meta property="og:image:(?:width|height|type)" content="[^"]+" \/>/g, "");
     }
   }
   html = html.replace(

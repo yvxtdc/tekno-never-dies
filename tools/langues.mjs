@@ -28,6 +28,7 @@ const load = (file) => import(pathToFileURL(path.join(ROOT, file)).href);
 
 const { SITE } = await load("js/data/site.js");
 const { EVENTS } = await load("js/data/events.js");
+const { eventPreview } = await load("js/components/event-preview.js");
 const dicts = {};
 for (const lang of LANGS) dicts[lang] = (await load(`js/i18n/${lang}.js`)).default;
 
@@ -71,16 +72,14 @@ function localizeLink(href, lang) {
   return `${lang}/${file}${url.search}${url.hash}`;
 }
 
-/** Fiche événement : description refaite dans la langue (date, lieu, texte traduit de js/data). */
-function eventDescription(file, lang) {
+/** Fiche événement : titre et description de l'aperçu refaits dans la langue (js/components/event-preview.js). */
+function eventMeta(file, lang) {
   const ev = EVENTS.find((e) => `evenement-${e.slug}.html` === file);
   if (!ev) return null;
-  const [y, m, d] = ev.date.split("-").map(Number);
-  const options = ev.datePrecision === "month" ? { month: "long", year: "numeric" } : { day: "numeric", month: "long", year: "numeric" };
-  const date = new Intl.DateTimeFormat(LOCALES[lang], { ...options, timeZone: "UTC" }).format(new Date(Date.UTC(y, m - 1, d)));
-  const text = dicts[lang][norm(ev.description || "")] ?? ev.description ?? "";
+  const tr = (text) => dicts[lang][norm(text || "")] ?? text;
+  const preview = eventPreview(ev, { tr, locale: LOCALES[lang], time: (t) => t.replace(/(\d{1,2})h(\d{2})/g, "$1:$2") });
   const alt = (dicts[lang]["Flyer de {title}"] ?? "Flyer de {title}").replace("{title}", ev.title);
-  return { description: `${date}${ev.place ? ` · ${ev.place}` : ""}. ${text}`.trim(), alt };
+  return { ...preview, alt };
 }
 
 function translatePage(file, lang) {
@@ -96,7 +95,9 @@ function translatePage(file, lang) {
   const charset = head.children.findIndex((n) => n.type === 1 && n.name === "META" && attr(n, "charset"));
   head.children.splice(charset + 1, 0, { type: 3, value: "\n  " }, { type: 1, name: "BASE", tag: "base", attrs: [["href", "../"]], children: [], selfClosing: " /" });
 
-  const event = eventDescription(file, lang);
+  const event = eventMeta(file, lang);
+  // og:locale:alternate : les deux autres langues de la page
+  const otherLocales = Object.entries({ fr: "fr_FR", ...OG_LOCALES }).filter(([l]) => l !== lang).map(([, v]) => v);
   for (const el of descendants(head)) {
     if (el.name === "TITLE") el.children = [{ type: 3, value: dict[norm(el.children[0]?.value || "")] ?? el.children[0]?.value ?? "" }];
     else if (el.name === "META" && isHeadMeta(el) && attr(el, "content")) {
@@ -104,7 +105,9 @@ function translatePage(file, lang) {
       setAttr(el, "content", dict[norm(content)] ?? content);
       if (event && /description$/.test(attr(el, "name") || attr(el, "property"))) setAttr(el, "content", event.description);
       if (event && attr(el, "property") === "og:image:alt") setAttr(el, "content", event.alt);
+      if (event && /:title$/.test(attr(el, "name") || attr(el, "property"))) setAttr(el, "content", event.title);
     } else if (el.name === "META" && attr(el, "property") === "og:locale") setAttr(el, "content", OG_LOCALES[lang]);
+    else if (el.name === "META" && attr(el, "property") === "og:locale:alternate") setAttr(el, "content", otherLocales.shift());
     else if (el.name === "META" && attr(el, "property") === "og:url") setAttr(el, "content", pageUrl(file, lang));
     else if (el.name === "LINK" && attr(el, "rel") === "canonical") setAttr(el, "href", pageUrl(file, lang));
   }
