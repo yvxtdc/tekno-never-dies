@@ -1302,9 +1302,11 @@ body{overflow-x:clip}
 
 .home-contact{
   padding-block:clamp(74px,10vw,136px);
+  /* Part de la transparence (et non d'un violet opaque) : pas de limite nette sous les cartes ;
+     s'assombrit ensuite vers la couleur du pied de page. */
   background:
     radial-gradient(circle at 88% 42%, rgba(182,38,154,.15), transparent 25%),
-    linear-gradient(180deg, #120b38 0%, #0d0828 55%, #070419 100%);
+    linear-gradient(180deg, rgba(13,8,40,0) 0%, #0d0828 55%, #070419 100%);
 }
 
 .home-contact__inner{
@@ -1742,7 +1744,7 @@ footer .decor-chain{width:clamp(90px,10vw,150px);right:var(--pad);bottom:-6px;--
 
 /* Cartes sombres par défaut : la photo reste en léger fond, et s'allume au survol */
 .home-card__media{
-  opacity:.55;
+  opacity:.47;
   transform:scale(1.05);
   filter:saturate(.9) contrast(1.05) brightness(.85);
   transition:opacity .6s cubic-bezier(.22,1,.36,1), transform 1s cubic-bezier(.22,1,.36,1);
@@ -1750,7 +1752,7 @@ footer .decor-chain{width:clamp(90px,10vw,150px);right:var(--pad);bottom:-6px;--
 
 .home-card__shade{
   opacity:1;
-  background-image:linear-gradient(to bottom, rgba(11,7,34,.72) 0%, rgba(18,11,56,.78) 100%);
+  background-image:linear-gradient(to bottom, rgba(11,7,34,.76) 0%, rgba(18,11,56,.82) 100%);
   background-size:100% 220%;
   background-repeat:no-repeat;
   transition:opacity .5s ease, background-position .5s ease;
@@ -1759,6 +1761,73 @@ footer .decor-chain{width:clamp(90px,10vw,150px);right:var(--pad);bottom:-6px;--
 .home-grid > a.home-card:nth-of-type(-n+2) .home-card__shade{background-position:0 0%}
 
 .home-grid > a.home-card:nth-of-type(n+3) .home-card__shade{background-position:0 100%}
+
+/* Grille fondue dans le dégradé de la page : le haut des deux cartes du haut et le bas des deux
+   cartes du bas s'effacent (photo, voile et fond de carte, par un masque) et laissent voir le fond
+   réel de la page. Avant, la grille formait un bloc plus clair, avec un filet en haut et en bas,
+   qui marquait une limite nette. Les filets entre les cartes sont redessinés en croix et
+   s'effacent de la même façon. */
+.home-grid{background:transparent;border-top:0;border-bottom:0}
+.home-grid::before{
+  content:"";position:absolute;inset:0;z-index:3;pointer-events:none;
+  background:
+    linear-gradient(var(--line),var(--line)) 50% 0 / 1px 100% no-repeat,
+    linear-gradient(var(--line),var(--line)) 0 50% / 100% 1px no-repeat;
+  -webkit-mask-image:linear-gradient(180deg,transparent 0%,#000 24%,#000 76%,transparent 100%);
+  mask-image:linear-gradient(180deg,transparent 0%,#000 24%,#000 76%,transparent 100%);
+}
+.home-card{background:transparent}
+.home-card::before{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(155deg,#1a1050 0%,#0e0830 62%,#0b0722 100%);
+}
+/* La photo s'efface plus vite et sur une plus grande hauteur que le voile sombre et le fond de
+   carte : sinon, là où le voile disparaît, la photo n'est plus assombrie et ressort davantage. */
+.home-grid > a.home-card:nth-of-type(-n+2) .home-card__media{
+  -webkit-mask-image:linear-gradient(180deg,transparent 0%,transparent 5%,rgba(0,0,0,.25) 24%,#000 50%);
+  mask-image:linear-gradient(180deg,transparent 0%,transparent 5%,rgba(0,0,0,.25) 24%,#000 50%);
+}
+.home-grid > a.home-card:nth-of-type(-n+2) .home-card__shade,
+.home-grid > a.home-card:nth-of-type(-n+2)::before{
+  -webkit-mask-image:linear-gradient(180deg,transparent 0%,transparent 3%,#000 26%);
+  mask-image:linear-gradient(180deg,transparent 0%,transparent 3%,#000 26%);
+}
+.home-grid > a.home-card:nth-of-type(n+3) .home-card__media{
+  -webkit-mask-image:linear-gradient(0deg,transparent 0%,transparent 5%,rgba(0,0,0,.25) 24%,#000 50%);
+  mask-image:linear-gradient(0deg,transparent 0%,transparent 5%,rgba(0,0,0,.25) 24%,#000 50%);
+}
+.home-grid > a.home-card:nth-of-type(n+3) .home-card__shade,
+.home-grid > a.home-card:nth-of-type(n+3)::before{
+  -webkit-mask-image:linear-gradient(0deg,transparent 0%,transparent 3%,#000 26%);
+  mask-image:linear-gradient(0deg,transparent 0%,transparent 3%,#000 26%);
+}
+
+/* Téléphone (une colonne) : seuls le haut de la 1re carte et le bas de la dernière s'effacent ;
+   les filets entre les cartes sont de simples traits horizontaux. */
+@media (max-width:640px){
+  .home-grid::before{display:none}
+  .home-grid > a.home-card + a.home-card{box-shadow:0 -1px 0 var(--line)}
+  .home-grid > a.home-card:nth-of-type(n) :is(.home-card__media,.home-card__shade),
+  .home-grid > a.home-card:nth-of-type(n)::before{-webkit-mask-image:none;mask-image:none}
+  .home-grid > a.home-card:first-of-type .home-card__media{
+    -webkit-mask-image:linear-gradient(180deg,transparent 0%,transparent 5%,rgba(0,0,0,.25) 22%,#000 46%);
+    mask-image:linear-gradient(180deg,transparent 0%,transparent 5%,rgba(0,0,0,.25) 22%,#000 46%);
+  }
+  .home-grid > a.home-card:first-of-type .home-card__shade,
+  .home-grid > a.home-card:first-of-type::before{
+    -webkit-mask-image:linear-gradient(180deg,transparent 0%,transparent 3%,#000 24%);
+    mask-image:linear-gradient(180deg,transparent 0%,transparent 3%,#000 24%);
+  }
+  .home-grid > a.home-card:last-of-type .home-card__media{
+    -webkit-mask-image:linear-gradient(0deg,transparent 0%,transparent 5%,rgba(0,0,0,.25) 22%,#000 46%);
+    mask-image:linear-gradient(0deg,transparent 0%,transparent 5%,rgba(0,0,0,.25) 22%,#000 46%);
+  }
+  .home-grid > a.home-card:last-of-type .home-card__shade,
+  .home-grid > a.home-card:last-of-type::before{
+    -webkit-mask-image:linear-gradient(0deg,transparent 0%,transparent 3%,#000 24%);
+    mask-image:linear-gradient(0deg,transparent 0%,transparent 3%,#000 24%);
+  }
+}
 
 .home-card h2,
 .home-card h2 span{
