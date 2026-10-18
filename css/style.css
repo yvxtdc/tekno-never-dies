@@ -1486,74 +1486,145 @@ main{position:relative;overflow-x:clip}
 .home-contact{position:relative;overflow:hidden}
 
 /* Accueil — « Prochaine soirée » sous le hero (rempli par js/pages/accueil.js).
-   Pas de fond ni de bordure propres : la section se fond dans le dégradé continu de la page.
-   Ce sont ses éléments qui la rendent lisible : titre en dégradé, date et lieu, cases du
-   compte à rebours à filet lavande, chiffres pleins. */
-.home-next{position:relative}
-.home-next__inner{
-  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;
-  gap:28px 48px;
-  padding-block:clamp(40px,6vw,88px);
+   Pas de fond ni de bordure propres : la section repose sur le dégradé continu de la page.
+   Elle ressort par : le flyer incliné de la soirée (et un objet chromé accroché à son coin), un halo
+   lavande et rose qui s'éteint en transparence (aucun bord visible), et une entrée animée quand elle
+   arrive à l'écran. Compacte : peu d'espace vertical. */
+.home-next{position:relative;isolation:isolate}
+.home-next::before{
+  content:"";position:absolute;z-index:-1;pointer-events:none;
+  inset:-18% -6%;
+  background:
+    radial-gradient(34% 46% at 22% 52%, rgba(149,106,255,.26), transparent 72%),
+    radial-gradient(30% 42% at 80% 48%, rgba(182,38,154,.18), transparent 72%);
+  transition:opacity 1.2s ease;
 }
+.home-next__inner{
+  display:grid;align-items:center;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  gap:16px clamp(28px,3.4vw,52px);
+  padding-block:clamp(26px,3.4vw,48px);
+}
+
+/* Flyer : posé de travers sur la page, avec la rafale chromée qui tourne lentement au coin */
+.home-next__flyer{
+  position:relative;grid-column:1;grid-row:1 / span 2;display:block;
+  width:clamp(150px,13vw,200px);
+  transform:rotate(-6deg);
+  transition:transform .5s cubic-bezier(.2,.8,.2,1);
+}
+.home-next__flyer[hidden]{display:none}
+.home-next__flyer-img{
+  display:block;width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;
+  border:1px solid rgba(255,255,255,.22);
+  box-shadow:0 22px 50px rgba(0,0,0,.5),0 0 0 6px rgba(149,106,255,.14),0 0 46px rgba(149,106,255,.35);
+}
+.home-next__flyer:hover{transform:rotate(-2deg) scale(1.03)}
+.home-next__chrome{
+  position:absolute;top:-24%;right:-30%;width:62%;height:auto;pointer-events:none;
+  filter:drop-shadow(0 12px 22px rgba(0,0,0,.5));
+  animation:home-next-spin 26s linear infinite;
+}
+@keyframes home-next-spin{to{transform:rotate(360deg)}}
+
+.home-next__text{grid-column:2;grid-row:1;align-self:end}
+.home-next .eyebrow{margin:0 0 .4em}
 .home-next h2{
-  margin:.2em 0 .25em;
-  font-size:clamp(2.4rem,5.4vw,4.4rem);line-height:.95;
+  margin:0 0 .22em;
+  font-size:clamp(2.1rem,4.2vw,3.4rem);line-height:.95;
 }
 .home-next h2 a{
   background:var(--gradient-title);-webkit-background-clip:text;background-clip:text;color:transparent;
   text-decoration:none;
 }
 .home-next h2 a:hover{filter:brightness(1.15)}
-.home-next__when{margin:0;color:#fff;font-weight:600;font-size:clamp(.98rem,1.4vw,1.1rem)}
-.home-next__price{margin:.3em 0 0;color:var(--muted);font-size:.95rem}
-.home-next__actions{display:flex;flex-wrap:wrap;gap:12px}
+.home-next__when{margin:0;color:#fff;font-weight:600;font-size:clamp(.95rem,1.25vw,1.05rem)}
+.home-next__price{margin:.25em 0 0;color:var(--muted);font-size:.92rem}
+.home-next__actions{grid-column:2;grid-row:2;align-self:start;display:flex;flex-wrap:wrap;gap:12px}
 
 /* Compte à rebours : quatre cases translucides à fin filet lavande (même matière que le header) */
-.countdown{display:grid;gap:12px}
-@media (min-width:900px){
-  .home-next__inner:has(.countdown:not([hidden])){display:grid;grid-template-columns:1fr auto;align-items:center;row-gap:32px}
-  .home-next__inner .countdown{grid-column:2;grid-row:1 / span 2;justify-items:end}
-}
+.countdown{grid-column:3;grid-row:1 / span 2;display:grid;gap:10px;justify-items:end}
 .countdown[hidden]{display:none}
-.countdown__label{margin:0;color:var(--lav);font-size:.72rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase}
-.countdown__units{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(8px,1vw,14px)}
+.countdown__label{margin:0;color:var(--lav);font-size:.7rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase}
+.countdown__units{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(6px,.8vw,10px)}
 .countdown__units span{
-  display:grid;justify-items:center;align-content:center;gap:8px;
-  min-width:clamp(72px,7.4vw,108px);padding:clamp(14px,1.6vw,22px) 8px clamp(12px,1.3vw,18px);
-  border:1px solid rgba(149,106,255,.34);border-radius:18px;
-  background:linear-gradient(180deg,rgba(149,106,255,.13),rgba(66,38,182,.05));
+  display:grid;justify-items:center;align-content:center;gap:6px;
+  min-width:clamp(62px,5.6vw,84px);padding:clamp(11px,1.1vw,15px) 6px clamp(9px,.9vw,12px);
+  border:1px solid rgba(149,106,255,.34);border-radius:16px;
+  background:linear-gradient(180deg,rgba(149,106,255,.14),rgba(66,38,182,.05));
   box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
 }
 .countdown__units b{
   font-family:var(--display);font-weight:400;font-variant-numeric:tabular-nums;
-  font-size:clamp(2.2rem,4vw,3.4rem);line-height:1;
+  font-size:clamp(1.8rem,2.9vw,2.6rem);line-height:1;
   color:#fff;text-shadow:.05em .05em 0 var(--violet);
 }
 /* Les jours ressortent : dégradé des titres */
-.countdown__units span:first-child{border-color:rgba(149,106,255,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 0 28px rgba(149,106,255,.18)}
+.countdown__units span:first-child{border-color:rgba(149,106,255,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 0 28px rgba(149,106,255,.2)}
 .countdown__units span:first-child b{background:var(--gradient-title);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none}
-.countdown__units small{color:#c1b1ff;font-size:.66rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase}
+.countdown__units small{color:#c1b1ff;font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
 .countdown__live{display:none}
 .countdown.is-live .countdown__label,
 .countdown.is-live .countdown__units{display:none}
 .countdown.is-live .countdown__live{
   display:inline-flex;align-items:center;gap:12px;margin:0;
-  padding:14px 22px;border:1px solid rgba(182,38,154,.55);border-radius:999px;
-  font-family:var(--display);font-size:clamp(1.3rem,2.6vw,2rem);text-transform:uppercase;color:#fff;
+  padding:12px 20px;border:1px solid rgba(182,38,154,.55);border-radius:999px;
+  font-family:var(--display);font-size:clamp(1.2rem,2.2vw,1.8rem);text-transform:uppercase;color:#fff;
 }
 .countdown__live span{width:14px;height:14px;border-radius:50%;background:var(--pink);box-shadow:0 0 18px var(--pink);animation:live-pulse 1.4s ease-in-out infinite}
 @keyframes live-pulse{50%{opacity:.25;transform:scale(.7)}}
-@media (prefers-reduced-motion:reduce){.countdown__live span{animation:none}}
-@media (max-width:899px){
-  .countdown{width:100%}
-  .countdown__units span{min-width:0}
+
+/* ---------- Entrée à l'écran (classes posées par js/pages/accueil.js) ---------- */
+.home-next.is-ready::before{opacity:0}
+.home-next.is-ready .home-next__flyer{opacity:0;transform:rotate(-16deg) translateY(28px) scale(.9)}
+.home-next.is-ready :is(.home-next__text,.home-next__actions){opacity:0;transform:translateY(16px)}
+.home-next.is-ready .countdown__units span{opacity:0;transform:translateY(14px) scale(.94)}
+.home-next.is-ready :is(.home-next__flyer,.home-next__text,.home-next__actions,.countdown__units span){
+  transition:opacity .6s ease,transform .8s cubic-bezier(.2,.8,.2,1);
 }
+.home-next.is-in::before{opacity:1}
+.home-next.is-in .home-next__flyer{opacity:1;transform:rotate(-6deg)}
+.home-next.is-in .home-next__flyer:hover{transform:rotate(-2deg) scale(1.03)}
+.home-next.is-in :is(.home-next__text,.home-next__actions){opacity:1;transform:none}
+.home-next.is-in .home-next__text{transition-delay:.1s}
+.home-next.is-in .home-next__actions{transition-delay:.2s}
+.home-next.is-in .countdown__units span{opacity:1;transform:none}
+.home-next.is-in .countdown__units span:nth-child(1){transition-delay:.25s}
+.home-next.is-in .countdown__units span:nth-child(2){transition-delay:.33s}
+.home-next.is-in .countdown__units span:nth-child(3){transition-delay:.41s}
+.home-next.is-in .countdown__units span:nth-child(4){transition-delay:.49s}
+
+@media (prefers-reduced-motion:reduce){
+  .countdown__live span,
+  .home-next__chrome{animation:none}
+}
+
+/* Tablette : le compte à rebours passe sous le texte */
+@media (max-width:1023px){
+  .home-next__inner{grid-template-columns:auto minmax(0,1fr)}
+  .home-next__flyer{grid-row:1 / span 3}
+  .countdown{grid-column:2;grid-row:2;justify-items:start}
+  .home-next__actions{grid-row:3}
+  /* Rafale au coin gauche : elle ne touche pas le titre */
+  .home-next__chrome{right:auto;left:-16%}
+}
+
+/* Téléphone : petit flyer à côté du titre, compte à rebours et boutons sur toute la largeur */
 @media (max-width:640px){
-  .home-next__actions{width:100%}
+  .home-next__inner{grid-template-columns:96px minmax(0,1fr);gap:14px 18px;padding-block:28px 36px}
+  .home-next__flyer{grid-row:1;width:96px;align-self:start;margin-top:6px}
+  .home-next__flyer-img{border-radius:10px}
+  .home-next__chrome{top:-24%;left:-16%;width:56%}
+  .home-next__text{align-self:center}
+  .home-next h2{font-size:clamp(1.9rem,9vw,2.4rem)}
+  .home-next__when{font-size:.86rem;line-height:1.45}
+  .home-next__price{font-size:.8rem}
+  .countdown{grid-column:1 / -1;grid-row:2;width:100%;justify-items:stretch}
+  .countdown__units span{min-width:0;border-radius:14px;padding:12px 4px 10px}
+  .countdown__units b{font-size:clamp(1.7rem,8.4vw,2.2rem)}
+  .countdown__units small{font-size:.58rem;letter-spacing:.1em}
+  .home-next__actions{grid-column:1 / -1;grid-row:3}
   .home-next__actions .btn{flex:1 1 100%;text-align:center}
-  .countdown__units span{border-radius:14px;padding:14px 4px 12px}
-  .countdown__units b{font-size:clamp(1.9rem,9vw,2.4rem)}
-  .countdown__units small{font-size:.6rem;letter-spacing:.1em}
 }
 
 .home-contact .decor-hollow{width:clamp(70px,9vw,140px);right:16%;top:14%;--rot:14deg;opacity:.9}

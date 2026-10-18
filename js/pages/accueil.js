@@ -20,8 +20,32 @@ if (nextBlock && next) {
   nextBlock.querySelector(".home-next__actions").innerHTML = `
     ${ticketUrl ? `<a class="btn btn-solid" href="${esc(ticketUrl)}" target="_blank" rel="noopener">Prendre ma place ↗</a>` : ""}
     <a class="btn btn-hero-line" href="${ficheUrl}">Voir la soirée</a>`;
+  // Flyer de la soirée (ou sa photo) : le visuel de l'événement fait ressortir la section.
+  const visual = next.flyer || next.cover;
+  const flyer = nextBlock.querySelector(".home-next__flyer");
+  if (flyer && visual) {
+    flyer.href = ficheUrl;
+    flyer.setAttribute("aria-label", t("Flyer de {title}", { title: next.title }));
+    flyer.querySelector(".home-next__flyer-img").src = visual;
+    flyer.hidden = false;
+  }
   nextBlock.hidden = false;
   startCountdown(next);
+  revealOnScroll(nextBlock);
+}
+
+/* ---------- Entrée de la section quand elle arrive à l'écran ----------
+   Le halo s'allume, le flyer pivote en place, les cases du compte à rebours apparaissent une à une
+   (styles : .home-next.is-ready / .is-in). Sans animation si le système le demande. */
+function revealOnScroll(section) {
+  if (!("IntersectionObserver" in window) || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  section.classList.add("is-ready");
+  const observer = new IntersectionObserver((entries) => {
+    if (!entries[0].isIntersecting) return;
+    section.classList.add("is-in");
+    observer.disconnect();
+  }, { threshold: 0.3 });
+  observer.observe(section);
 }
 
 /* ---------- Compte à rebours jusqu'à la prochaine soirée ----------
