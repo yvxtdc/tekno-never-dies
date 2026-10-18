@@ -4,7 +4,7 @@
 import { SITE } from "./data/site.js";
 import { EVENTS } from "./data/events.js";
 import { eventStatus, formatDate, formatTime, esc, safeUrl, track, eventPath } from "./pages/helpers.js";
-import { lang, setLang } from "./i18n/i18n.js";
+import { lang, setLang, savedLang, pageInLang } from "./i18n/i18n.js";
 
 function markActiveLink() {
   const page = document.body.dataset.page;
@@ -139,6 +139,36 @@ function initLangSwitch() {
   });
 }
 
+// Première visite d'un navigateur réglé en allemand ou en anglais : proposition de changer de langue.
+// Pas de redirection automatique : les moteurs de recherche (réglés en anglais) doivent pouvoir lire
+// les pages françaises ; ils trouvent les versions de/ et en/ par le sitemap.
+const SUGGEST = {
+  de: { text: "Diese Seite gibt es auch auf Deutsch.", link: "Auf Deutsch lesen", close: "Schließen" },
+  en: { text: "This page is also available in English.", link: "Read in English", close: "Close" }
+};
+function initLangSuggestion() {
+  const wanted = (navigator.language || "").slice(0, 2);
+  const offer = SUGGEST[wanted];
+  if (lang !== "fr" || !offer || savedLang() || document.documentElement.hasAttribute("data-no-lang-redirect")) return;
+  const bar = document.createElement("aside");
+  bar.className = "lang-suggest";
+  bar.lang = wanted;
+  bar.setAttribute("translate", "no");
+  bar.innerHTML = `<p>${offer.text}</p>
+    <a href="${esc(pageInLang(wanted))}">${offer.link}</a>
+    <button type="button" aria-label="${offer.close}">×</button>`;
+  bar.querySelector("a").addEventListener("click", (event) => {
+    event.preventDefault();
+    setLang(wanted);
+  });
+  bar.querySelector("button").addEventListener("click", () => {
+    // Refus enregistré comme un choix du français : la proposition ne revient pas.
+    try { localStorage.setItem("tnd-lang", "fr"); } catch { /* stockage bloqué */ }
+    bar.remove();
+  });
+  document.body.append(bar);
+}
+
 // Header opaque dès qu'on a défilé
 function initScrolledHeader() {
   const header = document.querySelector(".top");
@@ -160,13 +190,14 @@ function fixAnchorsWithBase() {
 function initAnalytics() {
   if (!SITE.goatcounter) return;
   // Page comptée depuis la racine du site (« /evenements.html ») : les statistiques continuent
-  // sans coupure le jour où le site change d'adresse (domaine en .fr). Sans ?lang= : une page reste
-  // une seule ligne, quelle que soit la langue.
+  // sans coupure le jour où le site change d'adresse (domaine en .fr). Sans de/ ni en/ : une page
+  // reste une seule ligne, quelle que soit la langue.
   const root = new URL("../", import.meta.url).pathname;
   window.goatcounter = {
     path() {
       const { pathname } = location;
       let page = pathname.startsWith(root) ? pathname.slice(root.length) : pathname.replace(/^\//, "");
+      page = page.replace(/^(de|en)\//, "");
       if (page === "index.html") page = "";
       return `/${page}`;
     }
@@ -204,6 +235,7 @@ markActiveLink();
 initMenuNext();
 initMenu();
 initLangSwitch();
+initLangSuggestion();
 initScrolledHeader();
 initSeo();
 initAnalytics();

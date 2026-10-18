@@ -13,8 +13,12 @@
  * - Un élément (ou ses enfants) marqué translate="no" n'est jamais traduit.
  * - Dans les scripts : t("Voir plus de photos ({n})", { n: 12 }) pour un texte avec des valeurs.
  *
- * La langue est choisie par le petit script en tête de chaque page (adresse ?lang=, choix
- * enregistré, sinon langue du navigateur) et écrite dans <html lang="…">.
+ * Les pages allemandes et anglaises sont des copies déjà traduites, dans de/ et en/ (générées par
+ * tools/langues.mjs avec ces mêmes dictionnaires ; leur <base href="../"> garde styles et images).
+ * La langue d'une page est donc fixée par son <html lang="…">. Ce script traduit ce que les scripts
+ * de pages ajoutent ensuite (événements, galerie, FAQ…) et fait pointer leurs liens vers les pages
+ * de la même langue. Le petit script en tête de chaque page mène à la bonne version (?lang=, choix
+ * enregistré).
  */
 
 export const LANGS = ["fr", "de", "en"];
@@ -55,19 +59,27 @@ export function plural(n, one, many) {
 /** Dates dans la langue du visiteur. */
 export const locale = { fr: "fr-FR", de: "de-DE", en: "en-GB" }[lang];
 
-/** Change de langue : choix enregistré, puis rechargement de la page. */
+/** Adresse de la page courante dans une autre langue : "de/faq.html", "faq.html"… */
+export function pageInLang(next) {
+  const url = new URL((next === "fr" ? "" : `${next}/`) + location.pathname.split("/").pop(), document.baseURI);
+  const params = new URLSearchParams(location.search);
+  params.delete("lang");
+  url.search = params.toString();
+  url.hash = location.hash;
+  return url.href;
+}
+
+/** Change de langue : choix enregistré, puis ouverture de la même page dans cette langue. */
 export function setLang(next) {
   if (!LANGS.includes(next) || next === lang) return;
-  let saved = false;
-  try {
-    // Le français aussi est enregistré : sinon un navigateur réglé en allemand repasserait en allemand.
-    localStorage.setItem(KEY, next);
-    saved = true;
-  } catch { /* stockage bloqué : la langue passe par l'adresse */ }
-  const url = new URL(location.href);
-  if (saved) url.searchParams.delete("lang");
-  else url.searchParams.set("lang", next);
-  location.replace(url.href);
+  // Le français aussi est enregistré : sinon le choix précédent (allemand) ramènerait sur de/.
+  try { localStorage.setItem(KEY, next); } catch { /* stockage bloqué : l'adresse suffit */ }
+  location.href = pageInLang(next);
+}
+
+/** Choix de langue enregistré (boutons FR / DE / EN), ou null. */
+export function savedLang() {
+  try { return localStorage.getItem(KEY); } catch { return null; }
 }
 
 /* ---------- Traduction de la page ---------- */
@@ -76,6 +88,30 @@ const SKIP = new Set(["SCRIPT", "STYLE", "NOSCRIPT", "SVG", "CODE", "TEXTAREA", 
 const INLINE = new Set(["A", "STRONG", "B", "EM", "I", "BR", "SPAN", "SMALL", "ABBR", "TIME", "U", "SUP", "SUB", "MARK"]);
 const ATTRS = ["alt", "aria-label", "placeholder", "title"];
 const NOT_INLINE = `:not(${[...INLINE].join(",").toLowerCase()})`;
+
+/*
+ * Pages de/ et en/ (<base href="../">) : un lien ajouté par un script vers une page du site
+ * ("evenements.html", "contact.html?type=…") mène à la page de la même langue, et une ancre "#…"
+ * reste sur la page courante (sinon elle mènerait à la page française).
+ */
+const base = hasDom && lang !== "fr" ? new URL(document.baseURI) : null;
+function localizeLink(a) {
+  const href = a.getAttribute("href");
+  if (!base || !href) return;
+  if (href.startsWith("#")) {
+    a.setAttribute("href", location.href.split("#")[0] + href);
+    return;
+  }
+  const url = new URL(href, base);
+  if (url.origin !== base.origin || !url.pathname.startsWith(base.pathname)) return;
+  const file = url.pathname.slice(base.pathname.length);
+  if (!/^([\w-]+\.html)?$/.test(file) || file === "404.html") return;
+  a.setAttribute("href", `${lang}/${file}${url.search}${url.hash}`);
+}
+const localizeLinks = (el) => {
+  if (el.nodeName === "A") localizeLink(el);
+  el.querySelectorAll?.("a[href]").forEach(localizeLink);
+};
 
 const skipped = (el) => !el || SKIP.has(el.nodeName.toUpperCase()) || el.closest('[translate="no"]');
 
@@ -118,8 +154,10 @@ function translateElement(el) {
   for (const name of ATTRS) translateAttr(el, name);
   if (isMixed(el)) {
     const key = norm(el.innerHTML);
-    if (key in dict) el.innerHTML = dict[key];
-    else if (missing) missing.add(key);
+    if (key in dict) {
+      el.innerHTML = dict[key];
+      localizeLinks(el);
+    } else if (missing) missing.add(key);
     for (const child of el.querySelectorAll("[aria-label], [title]")) for (const name of ATTRS) translateAttr(child, name);
     return;
   }
@@ -148,13 +186,15 @@ function startTranslation() {
 
   translateHead();
   translateElement(document.body);
+  localizeLinks(document.body);
 
   // Tout ce que les scripts ajoutent ou modifient ensuite est traduit au passage.
   const observer = new MutationObserver((records) => {
     observer.disconnect();
     for (const r of records) {
       if (r.type === "attributes") {
-        if (!skipped(r.target)) translateAttr(r.target, r.attributeName);
+        if (r.attributeName === "href") localizeLink(r.target);
+        else if (!skipped(r.target)) translateAttr(r.target, r.attributeName);
       } else if (r.type === "characterData") {
         if (!skipped(r.target.parentElement)) translateText(r.target);
       } else {
@@ -164,7 +204,10 @@ function startTranslation() {
             // Texte remplacé dans un paragraphe mixte : on retraduit le paragraphe entier.
             if (isMixed(node.parentElement)) translateElement(node.parentElement);
             else translateText(node);
-          } else if (node.nodeType === 1 && !skipped(node.parentElement)) translateElement(node);
+          } else if (node.nodeType === 1) {
+            localizeLinks(node);
+            if (!skipped(node.parentElement)) translateElement(node);
+          }
         }
       }
     }
@@ -172,7 +215,7 @@ function startTranslation() {
     observe();
   });
   const observe = () => observer.observe(document.documentElement, {
-    subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS
+    subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: [...ATTRS, "href"]
   });
   observe();
 
@@ -185,6 +228,3 @@ if (hasDom && lang !== "fr") {
   if (document.body) startTranslation();
   else document.addEventListener("DOMContentLoaded", startTranslation, { once: true });
 }
-
-// Page affichée : le masque posé par le script de tête pendant la traduction est retiré.
-if (hasDom) document.documentElement.classList.remove("i18n-pending");

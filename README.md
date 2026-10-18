@@ -14,6 +14,7 @@ Aucun build : le dossier est publié tel quel. Node.js n'est nécessaire que pou
 ```
 index.html, evenements.html, …   Une page = un fichier HTML à la racine
 evenement-<slug>.html             Fiches des soirées, générées par npm run calendar (ne pas modifier à la main)
+de/, en/                          Pages en allemand et en anglais, générées par npm run langues (voir « Langues »)
 partials/header.html, footer.html  Header et footer communs (voir « Header et footer »)
 css/style.css                     Charte, composants, menu plein écran, accueil
 css/pages.css                     Pages intérieures (événements, galerie, formulaire, légal…)
@@ -40,7 +41,7 @@ vendor/three/                     Three.js
 | Photo de profil d'un artiste (cercle du line-up) | déposer `Nom de l'artiste.jpg` dans `import/artistes/`, puis `npm run artistes` |
 | Modifier la FAQ | `js/data/faq.js` |
 | Modifier l'équipe | `js/data/equipe.js` |
-| Traduire un texte (allemand, anglais) | `js/i18n/de.js` et `en.js` : `"texte français": "traduction"` (voir « Langues ») |
+| Traduire un texte (allemand, anglais) | `js/i18n/de.js` et `en.js` : `"texte français": "traduction"`, puis `npm run langues` (voir « Langues ») |
 | Modifier le header, le menu ou le footer | `partials/header.html` ou `footer.html`, puis `npm run partials` |
 | Changer couleurs, tailles, espacements | `css/style.css` (variables en haut, dans `:root`) |
 | Régler les étoiles (vitesse, couleurs, on/off) | `js/stars/config.js` |
@@ -52,15 +53,25 @@ vendor/three/                     Three.js
 Le header et le footer sont **écrits directement dans chaque page**, entre les balises
 `<!-- partial:header -->…<!-- /partial:header -->` (et `footer`). Ne modifie pas ce contenu dans les pages :
 modifie `partials/header.html` ou `partials/footer.html`, puis lance `npm run partials`.
-`npm run validate` échoue si une page n'est pas à jour.
+`npm run validate` échoue si une page n'est pas à jour. `npm run partials` met aussi à jour les pages `de/` et `en/`.
 
 ## Langues (FR / DE / EN)
 
-Le site est écrit en français ; le bouton FR / DE / EN en bas du menu traduit chaque page dans le navigateur.
-`js/i18n/i18n.js` remplace les textes français par leur traduction trouvée dans `js/i18n/de.js` et `en.js`
-(clé = texte français exact, paragraphe avec liens = son HTML). Un texte sans traduction reste en français.
-Le choix est mémorisé dans le navigateur ; à la première visite, la langue du navigateur est utilisée.
-`?lang=de` dans une adresse force une langue (lien à partager à un public germanophone, par exemple).
+Le site est écrit en français. Chaque page existe aussi en allemand et en anglais : `de/faq.html`, `en/faq.html`…
+Ces pages sont **générées** par `npm run langues` (aussi lancé par `npm run partials` et `npm run calendar`) à partir
+des pages françaises et des dictionnaires `js/i18n/de.js` et `en.js` (clé = texte français exact, paragraphe avec
+liens = son HTML). Un texte sans traduction reste en français. Ne modifie jamais `de/`, `en/` ni `sitemap.xml` à la
+main : modifie la page française ou le dictionnaire, puis lance `npm run langues` (`npm run validate` échoue sinon).
+
+- Les moteurs de recherche et les aperçus WhatsApp / Instagram lisent une vraie page dans la langue, avec sa propre
+  adresse ; `sitemap.xml` relie les trois versions de chaque page (`hreflang`).
+- Une page traduite contient `<base href="../">` : elle utilise les mêmes styles, images et scripts que la page
+  française. Ce que les scripts ajoutent (événements, galerie, FAQ…) est traduit dans le navigateur par
+  `js/i18n/i18n.js`, qui fait aussi pointer leurs liens vers les pages de la même langue.
+- Les boutons FR / DE / EN ouvrent la même page dans l'autre langue ; le choix est mémorisé dans le navigateur.
+  À la première visite d'un navigateur réglé en allemand ou en anglais, un bandeau propose la traduction (pas de
+  redirection automatique : Google doit pouvoir lire les pages françaises).
+- `?lang=de` dans une adresse (anciens liens partagés) mène à la page allemande.
 
 Après avoir ajouté un événement, une question de FAQ ou un membre : `npm run validate` liste les textes de
 `js/data` encore sans traduction. Après avoir modifié un texte d'une page HTML (même une faute corrigée), sa clé
@@ -71,10 +82,11 @@ langues (nom, adresse) s'ajoute aussi au dictionnaire, sous la forme `"FAQ": "FA
 
 | Commande | Rôle |
 |---|---|
-| `validate` | Liens et images locaux, HTML bien fermé, meta, `id` uniques, header/footer à jour, agenda `.ics` et fiches événement à jour, `og:image`, images citées dans `js/data`, sitemap, adresse cohérente. Liste aussi ce qui reste à compléter (dont les images que rien n'utilise) (`-- --strict` pour en faire une erreur). |
-| `partials` | Recopie header et footer dans toutes les pages. |
-| `calendar` | Régénère `calendar/events.ics`, les fiches `evenement-<slug>.html` (titre, flyer et données structurées en dur, pour les aperçus WhatsApp / Instagram et Google), leur image d'aperçu `assets/img/events/og/<slug>.jpg` (il faut `npm install`) et la liste des fiches dans `sitemap.xml`, depuis `js/data/events.js`. |
+| `validate` | Liens et images locaux, HTML bien fermé, meta, `id` uniques, header/footer à jour, agenda `.ics`, fiches événement et pages `de/` / `en/` à jour, `og:image`, images citées dans `js/data`, sitemap, adresse cohérente. Liste aussi ce qui reste à compléter (dont les images que rien n'utilise) (`-- --strict` pour en faire une erreur). |
+| `partials` | Recopie header et footer dans toutes les pages (puis `langues`). |
+| `calendar` | Régénère `calendar/events.ics`, les fiches `evenement-<slug>.html` (titre, flyer et données structurées en dur, pour les aperçus WhatsApp / Instagram et Google), leur image d'aperçu `assets/img/events/og/<slug>.jpg` (il faut `npm install`) depuis `js/data/events.js`, puis les pages `de/`, `en/` et `sitemap.xml` (`langues`). |
 | `photos` | Convertit un dossier de photos (WebP + JPEG) et met à jour la galerie. |
+| `langues` | Génère les pages `de/` et `en/` et `sitemap.xml` (avec les liens entre les langues). À relancer après toute modification d'une page française ou d'un dictionnaire. |
 | `traductions` | Liste les textes des pages HTML sans traduction allemande ou anglaise (le nombre apparaît aussi dans `validate`). |
 | `artistes` | Convertit les photos de `import/artistes/` (carrés WebP) et met à jour `js/data/artistes-photos.js`. |
 
@@ -92,7 +104,7 @@ Avant de publier :
 
 1. **Adresse du site** : `https://teknoneverdies.fr/` (domaine acheté chez Gandi, publié par GitHub Pages ; le fichier `CNAME` contient le domaine).
    L'ancienne adresse `https://yvxtdc.github.io/tekno-never-dies/` redirige automatiquement vers le domaine.
-   Si l'adresse change, mettre à jour `js/data/site.js`, `CNAME`, `sitemap.xml`, `robots.txt` et le `<head>` de chaque page (`og:url`, `og:image`, `canonical`).
+   Si l'adresse change, mettre à jour `js/data/site.js`, `CNAME`, `robots.txt` et le `<head>` de chaque page (puis `npm run langues` pour `de/`, `en/` et `sitemap.xml`) (`og:url`, `og:image`, `canonical`).
 2. **Agenda** : l'adresse `.ics` est dans `SITE.agenda` (`js/data/site.js`). Si elle change, régénérer le QR code
    `assets/img/agenda-qr.svg` (encodant l'adresse `webcal://…`).
 3. **Aperçu sur les réseaux** : `assets/img/og-image.jpg` (1200×630) est déclarée dans le `<head>` de chaque page, avec `og:url` et `canonical` en adresse absolue. Si l'adresse du site change, les remplacer dans toutes les pages. Les fiches événement utilisent leur flyer, recadré en 1200×630 (`assets/img/events/og/`). Les anciens liens `evenement.html?slug=…` redirigent vers la fiche.

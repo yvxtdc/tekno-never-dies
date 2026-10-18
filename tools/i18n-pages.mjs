@@ -13,86 +13,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { parse, attr, textContent, descendants, find, innerHTML } from "./lib/html.mjs";
+import { SKIP, ATTRS, norm, hasLetters, isHeadMeta, isMixed } from "./lib/i18n-rules.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-
-// Mêmes règles que js/i18n/i18n.js
-const SKIP = new Set(["SCRIPT", "STYLE", "NOSCRIPT", "SVG", "CODE", "TEXTAREA", "TEMPLATE"]);
-const INLINE = new Set(["A", "STRONG", "B", "EM", "I", "BR", "SPAN", "SMALL", "ABBR", "TIME", "U", "SUP", "SUB", "MARK"]);
-const ATTRS = ["alt", "aria-label", "placeholder", "title"];
-const HEAD_META = [["name", "description"], ["property", "og:title"], ["property", "og:description"],
-  ["property", "og:image:alt"], ["name", "twitter:title"], ["name", "twitter:description"]];
-const norm = (s) => s.replace(/\s+/g, " ").trim();
-const hasLetters = (s) => /\p{L}{2}/u.test(s);
-
-/* ---------- Petit lecteur HTML (pages bien formées : validate le vérifie) ---------- */
-const VOID = new Set(["AREA", "BASE", "BR", "COL", "EMBED", "HR", "IMG", "INPUT", "LINK", "META", "SOURCE", "TRACK", "WBR"]);
-const RAW = new Set(["SCRIPT", "STYLE", "TEXTAREA", "TITLE"]);
-const ENTITIES = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " " };
-const decode = (s) => s.replace(/&(#x[\da-f]+|#\d+|\w+);/gi, (m, e) =>
-  e[0] === "#" ? String.fromCodePoint(e[1].toLowerCase() === "x" ? parseInt(e.slice(2), 16) : Number(e.slice(1))) : ENTITIES[e] ?? m);
-
-function parse(html) {
-  const root = { type: 1, name: "#ROOT", attrs: [], children: [] };
-  const stack = [root];
-  const re = /<!--[\s\S]*?-->|<(\/?)([a-zA-Z][\w-]*)((?:"[^"]*"|'[^']*'|[^>])*)>|[^<]+|</g;
-  let m;
-  while ((m = re.exec(html))) {
-    const parent = stack.at(-1);
-    if (m[0].startsWith("<!--")) continue;
-    if (!m[2]) {
-      parent.children.push({ type: 3, value: decode(m[0]) });
-      continue;
-    }
-    const name = m[2].toUpperCase();
-    if (m[1]) {
-      const i = stack.findLastIndex((el) => el.name === name);
-      if (i > 0) stack.length = i;
-      continue;
-    }
-    const attrs = [...m[3].matchAll(/([^\s=/"']+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+)))?/g)]
-      .map(([, n, a, b, c]) => [n.toLowerCase(), decode(a ?? b ?? c ?? "")]);
-    const el = { type: 1, name, attrs, children: [] };
-    parent.children.push(el);
-    if (RAW.has(name)) {
-      const end = html.toLowerCase().indexOf(`</${name.toLowerCase()}`, re.lastIndex);
-      el.children.push({ type: 3, value: name === "TITLE" ? decode(html.slice(re.lastIndex, end)) : html.slice(re.lastIndex, end) });
-      re.lastIndex = html.indexOf(">", end) + 1;
-    } else if (!VOID.has(name) && !m[3].trimEnd().endsWith("/")) stack.push(el);
-  }
-  return root;
-}
-
-const attr = (el, name) => el.attrs.find(([n]) => n === name)?.[1];
-const elements = (el) => el.children.filter((c) => c.type === 1);
-const textContent = (n) => (n.type === 3 ? n.value : n.children.map(textContent).join(""));
-const descendants = (el) => elements(el).flatMap((c) => [c, ...descendants(c)]);
-const find = (el, test) => descendants(el).find(test);
-
-// Même sérialisation que innerHTML dans le navigateur
-const escText = (s) => s.replace(/&/g, "&amp;").replace(/ /g, "&nbsp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-const escAttr = (s) => s.replace(/&/g, "&amp;").replace(/ /g, "&nbsp;").replace(/"/g, "&quot;");
-const outerHTML = (n) => {
-  if (n.type === 3) return escText(n.value);
-  const tag = n.name.toLowerCase();
-  const open = `<${tag}${n.attrs.map(([k, v]) => ` ${k}="${escAttr(v)}"`).join("")}>`;
-  return VOID.has(n.name) ? open : `${open}${innerHTML(n)}</${tag}>`;
-};
-const innerHTML = (el) => el.children.map(outerHTML).join("");
-
-/* ---------- Clés à traduire (comme translateElement de js/i18n/i18n.js) ---------- */
-function isMixed(el) {
-  let ownText = false;
-  let inlineText = false;
-  for (const child of el.children) {
-    if (child.type === 3) ownText ||= Boolean(child.value.trim());
-    else {
-      if (!INLINE.has(child.name)) return false;
-      inlineText ||= child.name === "BR" || Boolean(textContent(child).trim());
-    }
-  }
-  return ownText && inlineText && !find(el, (d) => attr(d, "id") !== undefined || !INLINE.has(d.name));
-}
 
 function collect(el, keys) {
   const addAttrs = (node) => {
@@ -106,13 +30,13 @@ function collect(el, keys) {
   if (SKIP.has(el.name)) return;
   addAttrs(el);
   if (isMixed(el)) {
-    keys.add(norm(innerHTML(el)));
+    keys.add(norm(innerHTML(el, true)));
     for (const child of descendants(el)) if (attr(child, "aria-label") || attr(child, "title")) addAttrs(child);
     return;
   }
   for (const child of el.children) {
     if (child.type === 3) keys.add(norm(child.value));
-    else collect(child, keys);
+    else if (child.type === 1) collect(child, keys);
   }
 }
 
@@ -130,7 +54,7 @@ export async function missingTranslations() {
     const title = head && find(head, (el) => el.name === "TITLE");
     if (title) keys.add(norm(textContent(title)));
     for (const meta of head ? descendants(head).filter((el) => el.name === "META") : []) {
-      if (HEAD_META.some(([k, v]) => attr(meta, k) === v) && attr(meta, "content")) keys.add(norm(attr(meta, "content")));
+      if (isHeadMeta(meta) && attr(meta, "content")) keys.add(norm(attr(meta, "content")));
     }
     if (body) collect(body, keys);
     for (const lang of ["de", "en"]) {

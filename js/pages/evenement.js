@@ -11,7 +11,8 @@ const legacySlug = !document.body.dataset.slug && readParam("slug");
 if (legacySlug && EVENTS.some((event) => event.slug === legacySlug)) {
   const params = new URLSearchParams(location.search);
   params.delete("slug");
-  location.replace(eventPath(legacySlug) + (params.size ? `?${params}` : "") + location.hash);
+  // Adresse relative à la page (et non à <base>) : de/evenement.html?slug=… reste en allemand.
+  location.replace(new URL(eventPath(legacySlug), location.href) + (params.size ? `?${params}` : "") + location.hash);
 }
 
 const root = document.getElementById("event-detail");
@@ -124,7 +125,8 @@ if (!root) {
   // Fond du hero : la photo si elle existe, sinon le flyer (flouté par css/components/event-flyer.css).
   const coverImage = ev.heroImage || ev.cover || ev.flyer;
   // Adresse complète : une url() relative dans une variable CSS serait résolue depuis css/pages.css (404).
-  const cover = coverImage ? `style="--event-cover:url('${escapeHTML(new URL(coverImage, location.href).href.replace(/['()\\]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`))}')"` : "";
+  // Résolue depuis <base> : les pages de/ et en/ utilisent les mêmes images que les pages françaises.
+  const cover = coverImage ? `style="--event-cover:url('${escapeHTML(new URL(coverImage, document.baseURI).href.replace(/['()\\]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`))}')"` : "";
 
   const practical = (ev.practical || []).map((item) => `<li>${escapeHTML(item)}</li>`).join("");
   const galleryLink = ev.gallerySlug
