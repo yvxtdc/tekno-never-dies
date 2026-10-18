@@ -8,60 +8,136 @@ X-WR-CALDESC:Événements officiels Tekno Never Dies
 X-WR-TIMEZONE:Europe/Paris
 REFRESH-INTERVAL;VALUE=DURATION:PT1H
 X-PUBLISHED-TTL:PT1H
+BEGIN:VTIMEZONE
+TZID:Europe/Paris
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+0100
+TZOFFSETTO:+0200
+TZNAME:CEST
+DTSTART:19700329T020000
+RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+0200
+TZOFFSETTO:+0100
+TZNAME:CET
+DTSTART:19701025T030000
+RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU
+END:STANDARD
+END:VTIMEZONE
 BEGIN:VEVENT
 UID:ice-boiler-v2-2026@tekno-never-dies.fr
-DTSTAMP:20261018T133152Z
-LAST-MODIFIED:20261008T145619Z
-SEQUENCE:3
+DTSTAMP:20261018T165751Z
+LAST-MODIFIED:20261018T165703Z
+SEQUENCE:4
 DTSTART;TZID=Europe/Paris:20261128T210000
 DTEND;TZID=Europe/Paris:20261129T040000
-SUMMARY:ICE BOILER v2
+SUMMARY:🔊 ICE BOILER v2 · Tekno Never Dies
 LOCATION:Salle polyvalente\, 81 rue du Rhin\, Munchhausen
-DESCRIPTION:Rendez-vous le samedi 28 novembre 2026 à 21h00 à la salle pol
- yvalente de Munchhausen pour ICE BOILER v2\, une soirée trance\, groovy\,
-  bouncy et techno organisée par Tekno Never Dies.
-URL:https://www.helloasso.com/associations/tekno-never-dies/evenements/ice-
- boiler-1
+DESCRIPTION:🔊 ICE BOILER v2 — Trance · Groovy · Bouncy · Techno\nRe
+ ndez-vous le samedi 28 novembre 2026 à 21h00 à la salle polyvalente de M
+ unchhausen pour ICE BOILER v2\, une soirée trance\, groovy\, bouncy et te
+ chno organisée par Tekno Never Dies.\n\n📅 Samedi 28 novembre 2026\n
+ 🕘 21h00 – 4h00\n📍 Salle polyvalente\, 81 rue du Rhin\, Munchhausen
+ \n💶 10 à 16 € en prévente\, 18 € sur place\n🔞 Dès 16 ans\n\n
+ 🎧 Line-up\n21h00 – 22h00 · T.B.R (DJ Contest)\n22h00 – 23h30 · Mo
+ gli\n23h30 – 1h00 · Dann Octa\n1h00 – 2h30 · Leander\n2h30 – 4h00
+  · Rayy3k\n\nℹ️ Infos pratiques\n• Prévente en ligne sur HelloAsso
+  : 10 €\, 13 € ou 16 €\n• Sur place (caisse du soir) : 18 €\n\n
+ 🎟️ Billetterie : https://www.helloasso.com/associations/tekno-never-d
+ ies/evenements/ice-boiler-1\n🌐 Fiche de la soirée : https://teknonever
+ dies.fr/evenement-ice-boiler-v2-2026.html\n📸 Instagram : @tnd6tem
+URL:https://teknoneverdies.fr/evenement-ice-boiler-v2-2026.html
+CATEGORIES:Trance,Groovy,Bouncy,Techno
+ORGANIZER;CN=Tekno Never Dies:mailto:tnd6tem@gmail.com
 STATUS:CONFIRMED
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-P7D
+DESCRIPTION:Dans une semaine : ICE BOILER v2 🎟️
+END:VALARM
 END:VEVENT
 BEGIN:VEVENT
 UID:center-drop-2026@tekno-never-dies.fr
-DTSTAMP:20261018T133152Z
-LAST-MODIFIED:20261007T073026Z
-SEQUENCE:2
+DTSTAMP:20261018T165751Z
+LAST-MODIFIED:20261018T165703Z
+SEQUENCE:3
 DTSTART;TZID=Europe/Paris:20260404T210000
 DTEND;TZID=Europe/Paris:20260405T040000
-SUMMARY:Center Drop
+SUMMARY:🔊 Center Drop · Tekno Never Dies
 LOCATION:1 rue du Stade\, Niederroedern
-DESCRIPTION:Center Drop\, soirée techno organisée à Niederroedern le sam
- edi 4 avril 2026 par Tekno Never Dies.
+DESCRIPTION:🔊 Center Drop — Schranz · Techno · Trance · Bounce\nCen
+ ter Drop\, soirée techno organisée à Niederroedern le samedi 4 avril 20
+ 26 par Tekno Never Dies.\n\n📅 Samedi 4 avril 2026\n🕘 21h00 – 4h00\
+ n📍 1 rue du Stade\, Niederroedern\n\n🎧 Line-up\n21h00 – 22h00 · M
+ ogli\n22h00 – 23h30 · Leander B2B Sven Gerber\n23h30 – 1h00 · Dann O
+ cta\n1h00 – 2h30 · Meinos\n2h30 – 4h00 · KSCMD\n\nℹ️ Infos prati
+ ques\n• Dès 16 ans\n• 250 participant·es\n\n🌐 Fiche de la soirée
+  : https://teknoneverdies.fr/evenement-center-drop-2026.html\n📸 Instagr
+ am : @tnd6tem
+URL:https://teknoneverdies.fr/evenement-center-drop-2026.html
+CATEGORIES:Schranz,Techno,Trance,Bounce
+ORGANIZER;CN=Tekno Never Dies:mailto:tnd6tem@gmail.com
 STATUS:CONFIRMED
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-P7D
+DESCRIPTION:Dans une semaine : Center Drop 🎟️
+END:VALARM
 END:VEVENT
 BEGIN:VEVENT
 UID:fete-musique-wissembourg-2025@tekno-never-dies.fr
-DTSTAMP:20261018T133152Z
-LAST-MODIFIED:20261007T073026Z
-SEQUENCE:1
+DTSTAMP:20261018T165751Z
+LAST-MODIFIED:20261018T165703Z
+SEQUENCE:2
 DTSTART;TZID=Europe/Paris:20250621T160000
 DTEND;TZID=Europe/Paris:20250622T000000
-SUMMARY:Fête de la musique
+SUMMARY:🔊 Fête de la musique · Tekno Never Dies
 LOCATION:Wissembourg
-DESCRIPTION:Techno Party de la Fête de la musique à Wissembourg\, présen
- tée par RRC & TND le 21 juin 2025.
+DESCRIPTION:🔊 Fête de la musique — Techno · Groove · Hardtechno\nTe
+ chno Party de la Fête de la musique à Wissembourg\, présentée par RRC
+  & TND le 21 juin 2025.\n\n📅 Samedi 21 juin 2025\n🕘 16h00 – 00h00\
+ n📍 Wissembourg\n\n🎧 Line-up\n• MEINOS (DJ Contest)\n• D0MOLLY\n
+ • VALK B2B REDFOX\n• TNB\n• JAKOBEE\n• BLACKCHILLS\n• VS\n\nℹ
+ ️ Infos pratiques\n• 150 participant·es\n\n🌐 Fiche de la soirée :
+  https://teknoneverdies.fr/evenement-fete-musique-wissembourg-2025.html\n
+ 📸 Instagram : @tnd6tem
+URL:https://teknoneverdies.fr/evenement-fete-musique-wissembourg-2025.html
+CATEGORIES:Techno,Groove,Hardtechno
+ORGANIZER;CN=Tekno Never Dies:mailto:tnd6tem@gmail.com
 STATUS:CONFIRMED
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-P7D
+DESCRIPTION:Dans une semaine : Fête de la musique 🎟️
+END:VALARM
 END:VEVENT
 BEGIN:VEVENT
 UID:ice-boiler-v1-2025@tekno-never-dies.fr
-DTSTAMP:20261018T133152Z
-LAST-MODIFIED:20261008T130702Z
-SEQUENCE:3
+DTSTAMP:20261018T165751Z
+LAST-MODIFIED:20261018T165703Z
+SEQUENCE:4
 DTSTART;TZID=Europe/Paris:20251122T200000
 DTEND;TZID=Europe/Paris:20251123T040000
-SUMMARY:ICE BOILER v1
+SUMMARY:🔊 ICE BOILER v1 · Tekno Never Dies
 LOCATION:Salle des fêtes\, Munchhausen
-DESCRIPTION:Première édition d'ICE BOILER\, soirée techno organisée à
-  la salle des fêtes de Munchhausen le 22 novembre 2025 par Tekno Never Di
- es.
+DESCRIPTION:🔊 ICE BOILER v1 — Techno\nPremière édition d'ICE BOILER\
+ , soirée techno organisée à la salle des fêtes de Munchhausen le 22 no
+ vembre 2025 par Tekno Never Dies.\n\n📅 Samedi 22 novembre 2025\n🕘 20
+ h00 – 4h00\n📍 Salle des fêtes\, Munchhausen\n\n🎧 Line-up\n20h00
+  – 21h00 · DANN OCTA\n21h00 – 22h00 · VALK b2b REDFOX\n22h00 – 23h
+ 30 · SVEN GERBER\n23h30 – 1h00 · LEANDER\n1h00 – 2h30 · TNB\n2h30
+  – 4h00 · BLACKCHILLS\n\nℹ️ Infos pratiques\n• Dès 16 ans\n• 2
+ 00 participant·es\n\n🌐 Fiche de la soirée : https://teknoneverdies.fr
+ /evenement-ice-boiler-v1-2025.html\n📸 Instagram : @tnd6tem
+URL:https://teknoneverdies.fr/evenement-ice-boiler-v1-2025.html
+CATEGORIES:Techno
+ORGANIZER;CN=Tekno Never Dies:mailto:tnd6tem@gmail.com
 STATUS:CONFIRMED
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-P7D
+DESCRIPTION:Dans une semaine : ICE BOILER v1 🎟️
+END:VALARM
 END:VEVENT
 END:VCALENDAR
