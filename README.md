@@ -63,7 +63,9 @@ Le choix est mémorisé dans le navigateur ; à la première visite, la langue d
 `?lang=de` dans une adresse force une langue (lien à partager à un public germanophone, par exemple).
 
 Après avoir ajouté un événement, une question de FAQ ou un membre : `npm run validate` liste les textes de
-`js/data` encore sans traduction. Les pages légales traduites affichent que seule la version française fait foi.
+`js/data` encore sans traduction. Après avoir modifié un texte d'une page HTML (même une faute corrigée), sa clé
+change : `npm run traductions` liste, page par page, les textes à (re)traduire. Un texte identique dans toutes les
+langues (nom, adresse) s'ajoute aussi au dictionnaire, sous la forme `"FAQ": "FAQ"`. Les pages légales traduites affichent que seule la version française fait foi.
 
 ## Outils (`npm run …`)
 
@@ -73,6 +75,7 @@ Après avoir ajouté un événement, une question de FAQ ou un membre : `npm run
 | `partials` | Recopie header et footer dans toutes les pages. |
 | `calendar` | Régénère `calendar/events.ics`, les fiches `evenement-<slug>.html` (titre, flyer et données structurées en dur, pour les aperçus WhatsApp / Instagram et Google), leur image d'aperçu `assets/img/events/og/<slug>.jpg` (il faut `npm install`) et la liste des fiches dans `sitemap.xml`, depuis `js/data/events.js`. |
 | `photos` | Convertit un dossier de photos (WebP + JPEG) et met à jour la galerie. |
+| `traductions` | Liste les textes des pages HTML sans traduction allemande ou anglaise (le nombre apparaît aussi dans `validate`). |
 | `artistes` | Convertit les photos de `import/artistes/` (carrés WebP) et met à jour `js/data/artistes-photos.js`. |
 
 ## Contact (Formspree)

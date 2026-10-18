@@ -126,6 +126,13 @@ for (const lang of ["de", "en"]) {
   const untranslated = [...new Set(dataTexts)].filter((s) => !(s in dict));
   if (untranslated.length) todo.push(`js/i18n/${lang}.js : ${untranslated.length} texte(s) de js/data sans traduction, ex. « ${untranslated[0].slice(0, 60)} »`);
 }
+// Textes écrits dans les pages HTML (détail : npm run traductions). Un texte français corrigé
+// n'a plus de traduction tant que sa clé n'est pas corrigée aussi dans de.js et en.js.
+const { missingTranslations } = await import(pathToFileURL(path.join(root, "tools/i18n-pages.mjs")).href);
+for (const [lang, byPage] of Object.entries(await missingTranslations())) {
+  const texts = [...new Set([...byPage.values()].flat())];
+  if (texts.length) todo.push(`js/i18n/${lang}.js : ${texts.length} texte(s) des pages HTML sans traduction, ex. « ${texts[0].slice(0, 60)} » (détail : npm run traductions)`);
+}
 for (const e of events.filter((e) => e.date >= new Date().toISOString().slice(0, 10))) {
   if (!e.ticketUrl) todo.push(`événement « ${e.slug} » : lien de billetterie (ticketUrl) vide`);
   if (!e.lineup?.length) todo.push(`événement « ${e.slug} » : line-up pas encore renseigné`);
