@@ -1,12 +1,21 @@
 import { EVENTS } from "../data/events.js";
-import { splitB2B, artistsOf, artistUrl, artistPhoto, slotStyle } from "./artists.js";
+import { splitB2B, artistsOf, artistUrl, artistPhoto, slotStyle } from "../components/artists.js";
 import { SITE } from "../data/site.js";
-import { formatDate, formatTime, readParam, eventStatus, safeUrl, track } from "./helpers.js";
+import { formatDate, formatTime, readParam, eventStatus, safeUrl, track, eventPath } from "./helpers.js";
 import { t, tr } from "../i18n/i18n.js";
-import { downloadICS, eventTimes, eventRange, parisOffset } from "./ics.js";
+import { downloadICS, eventRange } from "./ics.js";
+
+// Fiche statique (evenement-….html) : le slug est écrit sur <body data-slug>.
+// Ancienne adresse evenement.html?slug=… (liens déjà partagés) : on passe sur la fiche statique.
+const legacySlug = !document.body.dataset.slug && readParam("slug");
+if (legacySlug && EVENTS.some((event) => event.slug === legacySlug)) {
+  const params = new URLSearchParams(location.search);
+  params.delete("slug");
+  location.replace(eventPath(legacySlug) + (params.size ? `?${params}` : "") + location.hash);
+}
 
 const root = document.getElementById("event-detail");
-const ev = EVENTS.find((event) => event.slug === readParam("slug"));
+const ev = EVENTS.find((event) => event.slug === (document.body.dataset.slug || legacySlug));
 const ticketUrl = safeUrl(ev?.ticketUrl);
 
 const escapeHTML = (value = "") =>
@@ -108,56 +117,7 @@ if (!root) {
     document.head.querySelectorAll('meta[property="og:image:width"], meta[property="og:image:height"]').forEach((m) => m.remove());
   }
 
-  // Données structurées (résultats enrichis Google) : date de début et de fin, lieu, tarif, visuel.
-  const iso = ({ y, mo, d, h, mi }) =>
-    `${y}-${String(mo).padStart(2, "0")}-${String(d).padStart(2, "0")}T${String(h).padStart(2, "0")}:${String(mi).padStart(2, "0")}:00`;
-  const times = ev.datePrecision !== "month" && ev.time ? eventTimes(ev) : null;
-  const dateOf = ({ y, mo, d }) => `${y}-${String(mo).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-  const [placeName, ...placeRest] = (ev.place || "").split(",").map((part) => part.trim());
-  const price = ev.price?.match(/\d+(?:[.,]\d+)?/)?.[0];
-  const eventSchema = {
-    "@context": "https://schema.org",
-    "@type": "Event",
-    name: ev.title,
-    description: ev.description,
-    url: new URL(`evenement.html?slug=${encodeURIComponent(ev.slug)}`, SITE.url).href,
-    startDate: times ? iso(times.start) + parisOffset(dateOf(times.start), times.start.h) : ev.date,
-    ...(times ? { endDate: iso(times.end) + parisOffset(dateOf(times.end), times.end.h) } : {}),
-    eventStatus: "https://schema.org/EventScheduled",
-    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
-    ...(visual ? { image: [new URL(visual, SITE.url).href] } : {}),
-    location: {
-      "@type": "Place",
-      name: placeName || ev.place,
-      address: {
-        "@type": "PostalAddress",
-        ...(placeRest.length > 1
-          ? { streetAddress: placeRest.slice(0, -1).join(", ") }
-          : placeRest.length === 1 && /^\d/.test(placeName) ? { streetAddress: placeName } : {}),
-        addressLocality: placeRest.at(-1) || placeName,
-        addressRegion: "Grand Est",
-        addressCountry: "FR"
-      }
-    },
-    ...(ev.genres?.length ? { keywords: ev.genres.join(", ") } : {}),
-    ...(ev.lineup?.length ? { performer: ev.lineup.map((artist) => ({ "@type": "PerformingGroup", name: artist.name })) } : {}),
-    ...(price
-      ? {
-          offers: {
-            "@type": "Offer",
-            price: price.replace(",", "."),
-            priceCurrency: "EUR",
-            availability: status === "a-venir" ? "https://schema.org/InStock" : "https://schema.org/SoldOut",
-            url: ticketUrl || new URL(`evenement.html?slug=${encodeURIComponent(ev.slug)}`, SITE.url).href
-          }
-        }
-      : {}),
-    organizer: { "@type": "Organization", name: SITE.official.legalName, url: SITE.url }
-  };
-  const schema = document.createElement("script");
-  schema.type = "application/ld+json";
-  schema.textContent = JSON.stringify(eventSchema);
-  document.head.append(schema);
+  // Données structurées (JSON-LD) : écrites dans la page par tools/event-pages.mjs.
 
   const eventDate = formatDate(ev.date, ev.datePrecision).split(" ");
   const [dateDay, dateMonth, dateYear] = eventDate;

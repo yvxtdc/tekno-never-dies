@@ -3,7 +3,8 @@
  * Clé : le texte français exact (espaces regroupés). Valeur : la traduction.
  * Un paragraphe avec des liens ou du gras s'écrit en HTML, liens compris.
  * Les textes {n}, {title}… sont remplacés par des valeurs dans les scripts.
- * Un texte absent reste en français : npm run validate liste ceux des données (js/data) à traduire.
+ * Un texte absent reste en français : npm run validate liste ceux des données (js/data) à traduire,
+ * npm run traductions ceux des pages HTML.
  */
 export default {
   "Tekno Never Dies : association et sound system tekno. Événements, équipe et univers TND6TEM.": "Tekno Never Dies: association and tekno sound system. Events, crew and the TND6TEM universe.",
@@ -428,7 +429,7 @@ export default {
   "Fiche événement": "Event page",
   "Envoi en cours…": "Sending…",
   "Merci ! Ton message a bien été envoyé. Nous te répondons dès que possible.": "Thanks! Your message has been sent. We'll get back to you as soon as possible.",
-  "L'envoi a échoué. Réessaie dans un instant ou écris-nous directement à tnd6tem@gmail.com.": "Sending failed. Try again in a moment or email us directly at tnd6tem@gmail.com.",
+  "L'envoi a échoué. Réessaie dans un instant ou écris-nous directement à {email}.": "Sending failed. Try again in a moment or email us directly at {email}.",
   "Lien copié": "Link copied",
   "Lien copié ✓": "Link copied ✓",
   "Copie indisponible": "Copy unavailable",
@@ -455,4 +456,31 @@ export default {
   "À compléter": "TBC",
   "La prochaine date sera annoncée ici et sur Instagram @tnd6tem dès qu'elle sera confirmée.": "The next date will be announced here and on Instagram @tnd6tem as soon as it's confirmed.",
   "événement": "event",
+
+  // Textes identiques dans les deux langues (noms, adresses, mots internationaux) : déclarés ici pour
+  // que npm run traductions ne les signale pas comme oubliés.
+  "Menu": "Menu",
+  "FAQ": "FAQ",
+  "Contact": "Contact",
+  "Instagram": "Instagram",
+  "Tekno Never Dies, Lauterbourg<br><a href=\"mailto:tnd6tem@gmail.com\">tnd6tem@gmail.com</a>": "Tekno Never Dies, Lauterbourg<br><a href=\"mailto:tnd6tem@gmail.com\">tnd6tem@gmail.com</a>",
+  "TND6TEM": "TND6TEM",
+  "Instagram Tekno Never Dies": "Instagram Tekno Never Dies",
+  "Fête de la musique": "Fête de la musique",
+  "ICE BOILER": "ICE BOILER",
+  "Center Drop": "Center Drop",
+  "✉️ <a href=\"mailto:tnd6tem@gmail.com\">tnd6tem@gmail.com</a>": "✉️ <a href=\"mailto:tnd6tem@gmail.com\">tnd6tem@gmail.com</a>",
+  "📞 <a href=\"tel:+33781878223\">+33 7 81 87 82 23</a>": "📞 <a href=\"tel:+33781878223\">+33 7 81 87 82 23</a>",
+  "🔗 <a href=\"https://www.instagram.com/tnd6tem/\" target=\"_blank\" rel=\"noopener noreferrer\">Instagram @tnd6tem</a>": "🔗 <a href=\"https://www.instagram.com/tnd6tem/\" target=\"_blank\" rel=\"noopener noreferrer\">Instagram @tnd6tem</a>",
+  "Line-ups": "Line-ups",
+  "FAQ — Tekno Never Dies": "FAQ — Tekno Never Dies",
+  "Tekno Never Dies — Sound System": "Tekno Never Dies — Sound System",
+  "Lauterbourg · Alsace": "Lauterbourg · Alsace",
+  "Tekno Never Dies": "Tekno Never Dies",
+  "Tekno": "Tekno",
+  "Never Dies": "Never Dies",
+  "scroll": "scroll",
+  "min": "min",
+  "sec": "sec",
+  "tnd6tem@gmail.com": "tnd6tem@gmail.com",
 };

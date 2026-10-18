@@ -2,6 +2,12 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://teknoneverdies.fr/</loc></url>
   <url><loc>https://teknoneverdies.fr/evenements.html</loc></url>
+  <!-- fiches:debut (généré par npm run calendar) -->
+  <url><loc>https://teknoneverdies.fr/evenement-ice-boiler-v2-2026.html</loc></url>
+  <url><loc>https://teknoneverdies.fr/evenement-center-drop-2026.html</loc></url>
+  <url><loc>https://teknoneverdies.fr/evenement-fete-musique-wissembourg-2025.html</loc></url>
+  <url><loc>https://teknoneverdies.fr/evenement-ice-boiler-v1-2025.html</loc></url>
+  <!-- fiches:fin -->
   <url><loc>https://teknoneverdies.fr/artistes.html</loc></url>
   <url><loc>https://teknoneverdies.fr/association.html</loc></url>
   <url><loc>https://teknoneverdies.fr/nos-actions.html</loc></url>

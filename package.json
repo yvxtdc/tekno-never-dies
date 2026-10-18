@@ -8,9 +8,10 @@
     "start": "npx --yes serve .",
     "partials": "node tools/sync-partials.mjs",
     "validate": "node tools/validate.mjs",
-    "calendar": "node tools/generate-calendar.mjs",
+    "calendar": "node tools/generate-calendar.mjs && node tools/event-pages.mjs",
     "photos": "node tools/photos.mjs",
-    "artistes": "node tools/artistes.mjs"
+    "artistes": "node tools/artistes.mjs",
+    "traductions": "node tools/i18n-pages.mjs"
   },
   "license": "UNLICENSED",
   "devDependencies": {

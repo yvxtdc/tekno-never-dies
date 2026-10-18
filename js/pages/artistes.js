@@ -1,7 +1,7 @@
 import { EVENTS } from "../data/events.js";
-import { eventStatus, esc } from "./helpers.js";
+import { eventStatus, esc, eventPath } from "./helpers.js";
 import { t, tr, plural } from "../i18n/i18n.js";
-import { collectArtists, artistUrl, artistPhoto, artistStyle, instagramHandle } from "./artists.js";
+import { collectArtists, artistUrl, artistPhoto, artistStyle, instagramHandle } from "../components/artists.js";
 
 /* ---------- Tous les artistes passés par une soirée TND ----------
    Rien à saisir : la liste est construite à partir des line-ups de js/data/events.js.
@@ -29,7 +29,7 @@ const card = (artist) => {
       <ul class="artist-card__sets" role="list">
         ${artist.sets.map(({ ev, with: partners }) => `
           <li>
-            <a href="evenement.html?slug=${encodeURIComponent(ev.slug)}"${eventStatus(ev) === "a-venir" ? ' class="is-next"' : ""} translate="no">
+            <a href="${eventPath(ev.slug)}"${eventStatus(ev) === "a-venir" ? ' class="is-next"' : ""} translate="no">
               ${eventStatus(ev) === "a-venir" ? `<span class="artist-card__tag">${esc(tr("À venir"))}</span>` : `<span class="artist-card__year">${year(ev)}</span>`}
               ${esc(ev.title)}${partners.length ? `<small> · b2b ${esc(partners.join(", "))}</small>` : ""}
             </a>

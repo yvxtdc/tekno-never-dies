@@ -3,7 +3,7 @@
 // page courante, l'en-tête au défilement et les données de référencement.
 import { SITE } from "./data/site.js";
 import { EVENTS } from "./data/events.js";
-import { eventStatus, formatDate, formatTime, esc, safeUrl, track } from "./pages/helpers.js";
+import { eventStatus, formatDate, formatTime, esc, safeUrl, track, eventPath } from "./pages/helpers.js";
 import { lang, setLang } from "./i18n/i18n.js";
 
 function markActiveLink() {
@@ -32,24 +32,15 @@ function addMeta(name, content, attribute = "name") {
 
 function initSeo() {
   // og:title, og:description, og:url, canonical… sont écrits en dur dans chaque page (les robots des
-  // réseaux sociaux n'exécutent pas de JavaScript). Ici : uniquement les pages qui n'en ont pas,
-  // comme evenement.html dont l'adresse dépend de ?slug=.
+  // réseaux sociaux n'exécutent pas de JavaScript), fiches événement comprises (tools/event-pages.mjs).
+  // Ici : uniquement une page qui n'en aurait pas.
   if (SITE.url && !document.head.querySelector('link[rel="canonical"]') && !document.querySelector('meta[name="robots"][content*="noindex"]')) {
-    const page = location.pathname.split("/").pop();
-    let slug = new URLSearchParams(location.search).get("slug");
-    // Fiche d'un slug inconnu (evenement.html?slug=n-importe-quoi) : pas d'adresse canonique et
-    // pas d'indexation, sinon n'importe qui pourrait créer des pages « valides » pour les moteurs.
-    if (page === "evenement.html" && !EVENTS.some((ev) => ev.slug === slug)) {
-      addMeta("robots", "noindex");
-    } else {
-      if (page !== "evenement.html") slug = null;
-      const url = new URL(page + (slug ? `?slug=${encodeURIComponent(slug)}` : ""), SITE.url).href;
-      addMeta("og:url", url, "property");
-      const canonical = document.createElement("link");
-      canonical.rel = "canonical";
-      canonical.href = url;
-      document.head.append(canonical);
-    }
+    const url = new URL(location.pathname.split("/").pop(), SITE.url).href;
+    addMeta("og:url", url, "property");
+    const canonical = document.createElement("link");
+    canonical.rel = "canonical";
+    canonical.href = url;
+    document.head.append(canonical);
   }
 
   const description = document.querySelector('meta[name="description"]')?.content || SITE.description;
@@ -62,7 +53,7 @@ function initSeo() {
     description,
     url: SITE.url,
     logo: new URL("assets/img/badge-white.webp", SITE.url).href,
-    email: "tnd6tem@gmail.com",
+    email: SITE.email,
     sameAs: ["https://www.instagram.com/tnd6tem/"],
     address: {
       "@type": "PostalAddress",
@@ -126,7 +117,7 @@ function initMenuNext() {
     .filter((ev) => eventStatus(ev) === "a-venir")
     .sort((a, b) => a.date.localeCompare(b.date))[0];
   if (!box || !next) return;
-  const ficheUrl = `evenement.html?slug=${encodeURIComponent(next.slug)}`;
+  const ficheUrl = eventPath(next.slug);
   const visual = next.flyer || next.cover;
   const ticketUrl = safeUrl(next.ticketUrl);
   box.innerHTML = `
@@ -169,16 +160,15 @@ function fixAnchorsWithBase() {
 function initAnalytics() {
   if (!SITE.goatcounter) return;
   // Page comptée depuis la racine du site (« /evenements.html ») : les statistiques continuent
-  // sans coupure le jour où le site change d'adresse (domaine en .fr). Une fiche soirée garde son
-  // ?slug=, mais pas ?lang= : une page reste une seule ligne, quelle que soit la langue.
+  // sans coupure le jour où le site change d'adresse (domaine en .fr). Sans ?lang= : une page reste
+  // une seule ligne, quelle que soit la langue.
   const root = new URL("../", import.meta.url).pathname;
   window.goatcounter = {
     path() {
-      const { pathname, search } = location;
+      const { pathname } = location;
       let page = pathname.startsWith(root) ? pathname.slice(root.length) : pathname.replace(/^\//, "");
       if (page === "index.html") page = "";
-      const slug = page === "evenement.html" && new URLSearchParams(search).get("slug");
-      return `/${page}${slug ? `?slug=${encodeURIComponent(slug)}` : ""}`;
+      return `/${page}`;
     }
   };
   const script = document.createElement("script");
@@ -200,7 +190,7 @@ function trackLinkClicks() {
     if (url.origin === location.origin) return; // page du site : déjà comptée à son ouverture
     const host = url.hostname.replace(/^www\./, "");
     const ticketFor = EVENTS.find((ev) => ev.ticketUrl && safeUrl(ev.ticketUrl) === url.href);
-    const current = EVENTS.find((ev) => ev.slug === new URLSearchParams(location.search).get("slug"));
+    const current = EVENTS.find((ev) => ev.slug === document.body.dataset.slug);
     if (ticketFor) track(`Billetterie · ${ticketFor.title}`);
     else if (host === "instagram.com") track(`Instagram · @${url.pathname.split("/")[1] || "tnd6tem"}`);
     else if (/google\.[a-z.]+$/.test(host) && url.pathname.startsWith("/maps") || host === "waze.com" || host === "maps.apple.com") {

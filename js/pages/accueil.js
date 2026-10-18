@@ -1,5 +1,5 @@
 import { EVENTS } from "../data/events.js";
-import { eventStatus, esc, safeUrl } from "./helpers.js";
+import { eventStatus, esc, safeUrl, eventPath } from "./helpers.js";
 import { t, tr } from "../i18n/i18n.js";
 import { eventRange } from "./ics.js";
 
@@ -11,7 +11,7 @@ const next = EVENTS
   .sort((a, b) => a.date.localeCompare(b.date))[0];
 
 if (nextBlock && next) {
-  const ficheUrl = `evenement.html?slug=${encodeURIComponent(next.slug)}`;
+  const ficheUrl = eventPath(next.slug);
   const ticketUrl = safeUrl(next.ticketUrl);
   nextBlock.querySelector("h2").innerHTML = `<a href="${ficheUrl}">${esc(next.title)}</a>`;
   nextBlock.querySelector(".home-next__price").textContent = [next.price, next.age].filter(Boolean).map(tr).join(" · ");

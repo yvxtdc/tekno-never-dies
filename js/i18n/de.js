@@ -3,7 +3,8 @@
  * Clé : le texte français exact (espaces regroupés). Valeur : la traduction.
  * Un paragraphe avec des liens ou du gras s'écrit en HTML, liens compris.
  * Les textes {n}, {title}… sont remplacés par des valeurs dans les scripts.
- * Un texte absent reste en français : npm run validate liste ceux des données (js/data) à traduire.
+ * Un texte absent reste en français : npm run validate liste ceux des données (js/data) à traduire,
+ * npm run traductions ceux des pages HTML.
  */
 export default {
   "Tekno Never Dies : association et sound system tekno. Événements, équipe et univers TND6TEM.": "Tekno Never Dies: Verein und Tekno-Soundsystem. Events, Team und das Universum von TND6TEM.",
@@ -434,7 +435,7 @@ export default {
   "Fiche événement": "Eventseite",
   "Envoi en cours…": "Wird gesendet…",
   "Merci ! Ton message a bien été envoyé. Nous te répondons dès que possible.": "Danke! Deine Nachricht wurde gesendet. Wir antworten dir so schnell wie möglich.",
-  "L'envoi a échoué. Réessaie dans un instant ou écris-nous directement à tnd6tem@gmail.com.": "Senden fehlgeschlagen. Versuch es gleich noch einmal oder schreib uns direkt an tnd6tem@gmail.com.",
+  "L'envoi a échoué. Réessaie dans un instant ou écris-nous directement à {email}.": "Senden fehlgeschlagen. Versuch es gleich noch einmal oder schreib uns direkt an {email}.",
   "Lien copié": "Link kopiert",
   "Lien copié ✓": "Link kopiert ✓",
   "Copie indisponible": "Kopieren nicht möglich",
@@ -461,4 +462,25 @@ export default {
   "À compléter": "Folgt",
   "La prochaine date sera annoncée ici et sur Instagram @tnd6tem dès qu'elle sera confirmée.": "Der nächste Termin wird hier und auf Instagram @tnd6tem angekündigt, sobald er feststeht.",
   "événement": "Event",
+
+  // Textes identiques dans les deux langues (noms, adresses, mots internationaux) : déclarés ici pour
+  // que npm run traductions ne les signale pas comme oubliés.
+  "FAQ": "FAQ",
+  "Instagram": "Instagram",
+  "TND6TEM": "TND6TEM",
+  "Instagram Tekno Never Dies": "Instagram Tekno Never Dies",
+  "Fête de la musique": "Fête de la musique",
+  "ICE BOILER": "ICE BOILER",
+  "Center Drop": "Center Drop",
+  "✉️ <a href=\"mailto:tnd6tem@gmail.com\">tnd6tem@gmail.com</a>": "✉️ <a href=\"mailto:tnd6tem@gmail.com\">tnd6tem@gmail.com</a>",
+  "📞 <a href=\"tel:+33781878223\">+33 7 81 87 82 23</a>": "📞 <a href=\"tel:+33781878223\">+33 7 81 87 82 23</a>",
+  "🔗 <a href=\"https://www.instagram.com/tnd6tem/\" target=\"_blank\" rel=\"noopener noreferrer\">Instagram @tnd6tem</a>": "🔗 <a href=\"https://www.instagram.com/tnd6tem/\" target=\"_blank\" rel=\"noopener noreferrer\">Instagram @tnd6tem</a>",
+  "Line-ups": "Line-ups",
+  "FAQ — Tekno Never Dies": "FAQ — Tekno Never Dies",
+  "Tekno Never Dies — Sound System": "Tekno Never Dies — Sound System",
+  "Tekno Never Dies": "Tekno Never Dies",
+  "Tekno": "Tekno",
+  "Never Dies": "Never Dies",
+  "scroll": "scroll",
+  "tnd6tem@gmail.com": "tnd6tem@gmail.com",
 };

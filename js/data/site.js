@@ -11,6 +11,9 @@ export const SITE = {
   shortName: "TND6TEM",
   description: "Association de musique électronique et sound system basée à Lauterbourg, dans le Bas-Rhin.",
   url: "https://teknoneverdies.fr/",
+  // Adresse de contact utilisée par les scripts (formulaire, agenda, données structurées).
+  // Elle est aussi écrite en clair dans les pages et dans partials/ (header, footer).
+  email: "tnd6tem@gmail.com",
   // Agenda .ics à jour (généré par tools/generate-calendar.mjs). Si l'adresse du site change,
   // mettre à jour AGENDA_PATH puis régénérer assets/img/agenda-qr.svg (voir README).
   agenda: {

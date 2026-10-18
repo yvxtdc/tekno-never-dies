@@ -52,6 +52,10 @@ if (sync.status !== 0) errors.push(...sync.stderr.trim().split("\n").filter(Bool
 const calendar = spawnSync(process.execPath, [path.join(root, "tools", "generate-calendar.mjs"), "--check"], { encoding: "utf8" });
 if (calendar.status !== 0) errors.push(calendar.stderr.trim().split("\n").filter(Boolean).at(-1) || "calendar/events.ics pas à jour");
 
+/* ---------- 2 ter. fiches événement (evenement-….html) à jour ---------- */
+const eventPages = spawnSync(process.execPath, [path.join(root, "tools", "event-pages.mjs"), "--check"], { encoding: "utf8" });
+if (eventPages.status !== 0) errors.push(...eventPages.stderr.trim().split("\n").filter(Boolean));
+
 /* ---------- 3. structure HTML de chaque page ---------- */
 const VOID = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"]);
 for (const file of pages) {
@@ -122,6 +126,13 @@ for (const lang of ["de", "en"]) {
   const untranslated = [...new Set(dataTexts)].filter((s) => !(s in dict));
   if (untranslated.length) todo.push(`js/i18n/${lang}.js : ${untranslated.length} texte(s) de js/data sans traduction, ex. « ${untranslated[0].slice(0, 60)} »`);
 }
+// Textes écrits dans les pages HTML (détail : npm run traductions). Un texte français corrigé
+// n'a plus de traduction tant que sa clé n'est pas corrigée aussi dans de.js et en.js.
+const { missingTranslations } = await import(pathToFileURL(path.join(root, "tools/i18n-pages.mjs")).href);
+for (const [lang, byPage] of Object.entries(await missingTranslations())) {
+  const texts = [...new Set([...byPage.values()].flat())];
+  if (texts.length) todo.push(`js/i18n/${lang}.js : ${texts.length} texte(s) des pages HTML sans traduction, ex. « ${texts[0].slice(0, 60)} » (détail : npm run traductions)`);
+}
 for (const e of events.filter((e) => e.date >= new Date().toISOString().slice(0, 10))) {
   if (!e.ticketUrl) todo.push(`événement « ${e.slug} » : lien de billetterie (ticketUrl) vide`);
   if (!e.lineup?.length) todo.push(`événement « ${e.slug} » : line-up pas encore renseigné`);
@@ -134,6 +145,19 @@ for (const name of fs.readdirSync(path.join(root, "js/data"))) {
     if (!fs.existsSync(path.join(root, ref))) err(file, `fichier absent : ${ref}`);
   }
 }
+
+// Images que rien n'utilise (doublons « photo-01 2.webp » créés par le Finder, anciennes versions…) :
+// elles alourdissent le dépôt et le site publié pour rien.
+const sources = files.map(read).join("\n") + read(path.join(root, "site.webmanifest"));
+const images = [];
+(function walkImages(dir) {
+  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, e.name);
+    if (e.isDirectory()) walkImages(full);
+    else if (/\.(webp|jpe?g|png|svg|gif|avif)$/i.test(e.name)) images.push(full);
+  }
+})(path.join(root, "assets/img"));
+for (const image of images) if (!sources.includes(rel(image))) todo.push(`${rel(image)} : image utilisée nulle part (à supprimer ?)`);
 
 const { SITE } = await import(pathToFileURL(path.join(root, "js/data/site.js")).href);
 const streets = new Set();

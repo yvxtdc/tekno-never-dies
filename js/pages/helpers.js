@@ -63,6 +63,14 @@ export function track(name) {
   window.goatcounter?.count?.({ path: name, title: document.title, event: true });
 }
 
+/**
+ * Adresse de la fiche d'une soirée : "evenement-ice-boiler-v2-2026.html". Les fiches sont des pages
+ * statiques générées par tools/event-pages.mjs (npm run calendar), lisibles par les réseaux sociaux.
+ */
+export function eventPath(slug) {
+  return `evenement-${slug}.html`;
+}
+
 /** Lit un paramètre de l'URL, ex : readParam("slug") pour ?slug=xyz */
 export function readParam(name) {
   return new URLSearchParams(location.search).get(name);
