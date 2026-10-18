@@ -201,34 +201,6 @@
 
     <!-- Prochaine soirée : remplie par js/pages/accueil.js depuis js/data/events.js (masquée s'il n'y en a pas) -->
     <section class="home-next" id="home-next" aria-labelledby="home-next-title" hidden>
-      <!-- Filtres du cadre chromé (css/style.css, « Cadre chromé ») : l'anneau (4 px) est découpé dans le
-           rectangle arrondi, ondule (bruit animé, intensité pilotée par js/pages/accueil.js), puis est
-           lissé (flou + seuil : bords nets, sans marches de pixels). -->
-      <svg class="home-next__defs" width="0" height="0" aria-hidden="true" focusable="false">
-        <filter id="tnd-liquid" x="-3%" y="-8%" width="106%" height="116%" color-interpolation-filters="sRGB">
-          <feMorphology in="SourceAlpha" operator="erode" radius="4" result="inner" />
-          <feComposite in="SourceAlpha" in2="inner" operator="out" result="ring" />
-          <feTurbulence type="fractalNoise" baseFrequency="0.0028 0.0065" numOctaves="1" seed="7" result="wave">
-            <animate attributeName="baseFrequency" dur="18s" values="0.0028 0.0065;0.0045 0.004;0.0028 0.0065" repeatCount="indefinite" />
-          </feTurbulence>
-          <feDisplacementMap in="ring" in2="wave" scale="7" xChannelSelector="R" yChannelSelector="G" result="moved" />
-          <feGaussianBlur in="moved" stdDeviation="1.6" result="soft" />
-          <feComponentTransfer in="soft" result="shape">
-            <feFuncA type="linear" slope="4" intercept="-1.4" />
-          </feComponentTransfer>
-          <feComposite in="SourceGraphic" in2="shape" operator="in" />
-        </filter>
-        <!-- Même anneau, immobile et d'épaisseur constante (mouvement réduit demandé par le système) -->
-        <filter id="tnd-ring" x="-2%" y="-4%" width="104%" height="108%" color-interpolation-filters="sRGB">
-          <feMorphology in="SourceAlpha" operator="erode" radius="4" result="inner" />
-          <feComposite in="SourceAlpha" in2="inner" operator="out" result="ring" />
-          <feGaussianBlur in="ring" stdDeviation="1.2" result="soft" />
-          <feComponentTransfer in="soft" result="shape">
-            <feFuncA type="linear" slope="4" intercept="-1.4" />
-          </feComponentTransfer>
-          <feComposite in="SourceGraphic" in2="shape" operator="in" />
-        </filter>
-      </svg>
       <div class="container home-next__inner">
         <!-- Cadre chromé arrondi autour des infos (css/style.css, section « Prochaine soirée ») -->
         <div class="home-next__frame" aria-hidden="true"></div>
