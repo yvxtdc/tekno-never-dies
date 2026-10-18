@@ -4,7 +4,8 @@
  *
  * Pour ajouter un événement : copie un objet ci-dessous, change les valeurs.
  * "slug" doit être unique (utilisé dans l'adresse de la fiche, ex :
- * evenement.html?slug=soiree-halloween-2026), sans espaces ni accents.
+ * evenement-soiree-halloween-2026.html), sans espaces ni accents.
+ * Après chaque modification : npm run calendar (agenda .ics + fiches evenement-….html).
  * "À venir" / "passé" est calculé automatiquement depuis "date" (rien à changer après la soirée).
  *
  * Visuels :

@@ -24,7 +24,7 @@ const DEST_DIR = path.join(ROOT, "assets/img/artistes");
 const DATA_FILE = path.join(ROOT, "js/data/artistes-photos.js");
 const web = (p) => path.relative(ROOT, p).split(path.sep).join("/");
 const exists = (p) => access(p).then(() => true, () => false);
-// Même règle que js/pages/evenement.js : "Dann Octa" -> "dannocta"
+// Même règle que js/components/artists.js : "Dann Octa" -> "dannocta"
 const artistKey = (name) => name.toLowerCase().replace(/[^a-z0-9]/g, "");
 const known = new Map(Object.keys(ARTISTS).map((name) => [artistKey(name), name]));
 

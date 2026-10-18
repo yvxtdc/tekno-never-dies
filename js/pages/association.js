@@ -1,6 +1,6 @@
 // « Le prochain rendez-vous » : rempli depuis js/data/events.js pour ne jamais afficher une date passée.
 import { EVENTS } from "../data/events.js";
-import { eventStatus, formatDate, formatTime, esc } from "./helpers.js";
+import { eventStatus, formatDate, formatTime, esc, eventPath } from "./helpers.js";
 import { t, tr } from "../i18n/i18n.js";
 
 const text = document.getElementById("next-event-text");
@@ -21,7 +21,7 @@ if (text && link) {
       time: start ? ` ${esc(t("à {time}", { time: formatTime(start) }))}` : "",
       place: next.place ? `, ${esc(next.place)}` : ""
     }) + (details ? ` ${esc(details)}.` : "");
-    link.href = `evenement.html?slug=${encodeURIComponent(next.slug)}`;
+    link.href = eventPath(next.slug);
     link.textContent = "Voir la soirée";
   } else {
     text.setAttribute("translate", "no");

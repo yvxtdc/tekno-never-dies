@@ -434,7 +434,7 @@ export default {
   "Fiche événement": "Eventseite",
   "Envoi en cours…": "Wird gesendet…",
   "Merci ! Ton message a bien été envoyé. Nous te répondons dès que possible.": "Danke! Deine Nachricht wurde gesendet. Wir antworten dir so schnell wie möglich.",
-  "L'envoi a échoué. Réessaie dans un instant ou écris-nous directement à tnd6tem@gmail.com.": "Senden fehlgeschlagen. Versuch es gleich noch einmal oder schreib uns direkt an tnd6tem@gmail.com.",
+  "L'envoi a échoué. Réessaie dans un instant ou écris-nous directement à {email}.": "Senden fehlgeschlagen. Versuch es gleich noch einmal oder schreib uns direkt an {email}.",
   "Lien copié": "Link kopiert",
   "Lien copié ✓": "Link kopiert ✓",
   "Copie indisponible": "Kopieren nicht möglich",

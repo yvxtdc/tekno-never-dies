@@ -428,7 +428,7 @@ export default {
   "Fiche événement": "Event page",
   "Envoi en cours…": "Sending…",
   "Merci ! Ton message a bien été envoyé. Nous te répondons dès que possible.": "Thanks! Your message has been sent. We'll get back to you as soon as possible.",
-  "L'envoi a échoué. Réessaie dans un instant ou écris-nous directement à tnd6tem@gmail.com.": "Sending failed. Try again in a moment or email us directly at tnd6tem@gmail.com.",
+  "L'envoi a échoué. Réessaie dans un instant ou écris-nous directement à {email}.": "Sending failed. Try again in a moment or email us directly at {email}.",
   "Lien copié": "Link copied",
   "Lien copié ✓": "Link copied ✓",
   "Copie indisponible": "Copy unavailable",

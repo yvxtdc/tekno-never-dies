@@ -1,4 +1,5 @@
-import { lang } from "../i18n/i18n.js";
+import { lang, t } from "../i18n/i18n.js";
+import { SITE } from "../data/site.js";
 
 const form = document.querySelector("#contact-form");
 const type = document.querySelector("#type");
@@ -62,7 +63,7 @@ form?.addEventListener("submit", async (event) => {
     updateFields();
     status.textContent = "Merci ! Ton message a bien été envoyé. Nous te répondons dès que possible.";
   } catch {
-    status.textContent = "L'envoi a échoué. Réessaie dans un instant ou écris-nous directement à tnd6tem@gmail.com.";
+    status.textContent = t("L'envoi a échoué. Réessaie dans un instant ou écris-nous directement à {email}.", { email: SITE.email });
   } finally {
     button.disabled = false;
   }

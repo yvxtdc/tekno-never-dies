@@ -1,7 +1,7 @@
 /** Artistes : noms, liens Instagram et photos, partagés par la fiche soirée et la page Artistes. */
 import { ARTISTS, ARTIST_STYLES } from "../data/artistes.js";
 import { ARTIST_PHOTOS } from "../data/artistes-photos.js";
-import { safeUrl } from "./helpers.js";
+import { safeUrl } from "../pages/helpers.js";
 
 /** "Dann Octa" -> "dannocta" : majuscules, espaces et ponctuation ne comptent pas. */
 export const artistKey = (name) => name.toLowerCase().replace(/[^a-z0-9]/g, "");

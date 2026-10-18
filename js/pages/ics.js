@@ -10,6 +10,9 @@
  *   (vide)          → événement sur la journée entière
  */
 
+import { SITE } from "../data/site.js";
+import { eventPath } from "./helpers.js";
+
 const DEFAULT_HOURS = 4;
 
 // Fuseau Europe/Paris (heure d'été / heure d'hiver), reconnu par Google Agenda,
@@ -136,7 +139,7 @@ export function eventRange(ev, time = ev.time) {
 
 function vevent(ev, baseUrl, stamp) {
   const { allDay, start, end } = eventTimes(ev);
-  const url = new URL(`evenement.html?slug=${ev.slug}`, baseUrl).href;
+  const url = new URL(eventPath(ev.slug), baseUrl).href;
   const description = [ev.description, ...(ev.practical || []).map((p) => `• ${p}`), "", url]
     .filter((x) => x !== undefined)
     .join("\n");
@@ -150,7 +153,7 @@ function vevent(ev, baseUrl, stamp) {
     `LOCATION:${esc(ev.place)}`,
     `DESCRIPTION:${esc(description)}`,
     `URL:${url}`,
-    "ORGANIZER;CN=Tekno Never Dies:mailto:tnd6tem@gmail.com",
+    `ORGANIZER;CN=Tekno Never Dies:mailto:${SITE.email}`,
     "END:VEVENT"
   ];
 }

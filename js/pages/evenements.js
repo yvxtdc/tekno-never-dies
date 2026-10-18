@@ -1,7 +1,7 @@
 import { EVENTS } from "../data/events.js";
 import { SITE } from "../data/site.js";
-import { formatDate, thumb, esc, eventStatus, safeUrl, track } from "./helpers.js";
-import { collectArtists, artistPhoto } from "./artists.js";
+import { formatDate, thumb, esc, eventStatus, safeUrl, track, eventPath } from "./helpers.js";
+import { collectArtists, artistPhoto } from "../components/artists.js";
 import { t, plural } from "../i18n/i18n.js";
 
 const upcomingRoot = document.getElementById("upcoming-events");
@@ -37,7 +37,7 @@ function card(ev) {
         <h3>${esc(ev.title)}</h3>
         <p>${esc(ev.place)}</p>
         <div class="event-card__actions">
-          <a class="btn btn-cyan btn-sm btn-discover" href="evenement.html?slug=${encodeURIComponent(ev.slug)}">Découvrir la soirée<span class="btn-discover__arrow" aria-hidden="true">→</span></a>
+          <a class="btn btn-cyan btn-sm btn-discover" href="${eventPath(ev.slug)}">Découvrir la soirée<span class="btn-discover__arrow" aria-hidden="true">→</span></a>
           ${ticket}
         </div>
       </div>

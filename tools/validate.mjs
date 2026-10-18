@@ -52,6 +52,10 @@ if (sync.status !== 0) errors.push(...sync.stderr.trim().split("\n").filter(Bool
 const calendar = spawnSync(process.execPath, [path.join(root, "tools", "generate-calendar.mjs"), "--check"], { encoding: "utf8" });
 if (calendar.status !== 0) errors.push(calendar.stderr.trim().split("\n").filter(Boolean).at(-1) || "calendar/events.ics pas à jour");
 
+/* ---------- 2 ter. fiches événement (evenement-….html) à jour ---------- */
+const eventPages = spawnSync(process.execPath, [path.join(root, "tools", "event-pages.mjs"), "--check"], { encoding: "utf8" });
+if (eventPages.status !== 0) errors.push(...eventPages.stderr.trim().split("\n").filter(Boolean));
+
 /* ---------- 3. structure HTML de chaque page ---------- */
 const VOID = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"]);
 for (const file of pages) {
@@ -134,6 +138,19 @@ for (const name of fs.readdirSync(path.join(root, "js/data"))) {
     if (!fs.existsSync(path.join(root, ref))) err(file, `fichier absent : ${ref}`);
   }
 }
+
+// Images que rien n'utilise (doublons « photo-01 2.webp » créés par le Finder, anciennes versions…) :
+// elles alourdissent le dépôt et le site publié pour rien.
+const sources = files.map(read).join("\n") + read(path.join(root, "site.webmanifest"));
+const images = [];
+(function walkImages(dir) {
+  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, e.name);
+    if (e.isDirectory()) walkImages(full);
+    else if (/\.(webp|jpe?g|png|svg|gif|avif)$/i.test(e.name)) images.push(full);
+  }
+})(path.join(root, "assets/img"));
+for (const image of images) if (!sources.includes(rel(image))) todo.push(`${rel(image)} : image utilisée nulle part (à supprimer ?)`);
 
 const { SITE } = await import(pathToFileURL(path.join(root, "js/data/site.js")).href);
 const streets = new Set();

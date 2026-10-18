@@ -13,12 +13,14 @@ Aucun build : le dossier est publié tel quel. Node.js n'est nécessaire que pou
 
 ```
 index.html, evenements.html, …   Une page = un fichier HTML à la racine
+evenement-<slug>.html             Fiches des soirées, générées par npm run calendar (ne pas modifier à la main)
 partials/header.html, footer.html  Header et footer communs (voir « Header et footer »)
 css/style.css                     Charte, composants, menu plein écran, accueil
 css/pages.css                     Pages intérieures (événements, galerie, formulaire, légal…)
 css/components/team.css            Page association (équipe)
 js/partials.js                    Menu, page active, en-tête au défilement, JSON-LD (toutes les pages)
 js/pages/*.js                     Un script par page (événements, galerie, FAQ, contact…)
+js/components/                    Modules partagés par plusieurs pages (artistes, équipe, données structurées des soirées)
 js/data/*.js                      Contenus : événements, galerie, FAQ, équipe, infos du site
 js/i18n/                          Traduction allemand / anglais (i18n.js + dictionnaires de.js, en.js)
 js/stars/                         Étoiles 3D de l'accueil (réglages dans config.js)
@@ -32,7 +34,7 @@ vendor/three/                     Three.js
 
 | Je veux… | Je vais dans… |
 |---|---|
-| Ajouter / modifier un événement | `js/data/events.js`, puis `npm run calendar` (« à venir » / « passé » est calculé depuis la date) |
+| Ajouter / modifier un événement | `js/data/events.js`, puis `npm run calendar` (agenda `.ics`, fiche `evenement-<slug>.html`, image d'aperçu et sitemap ; « à venir » / « passé » est calculé depuis la date) |
 | Ajouter des photos à la galerie | `npm run photos -- import/mon-dossier --titre "…" --date AAAA-MM-JJ` |
 | Lien Instagram d'un artiste du line-up | `js/data/artistes.js` |
 | Photo de profil d'un artiste (cercle du line-up) | déposer `Nom de l'artiste.jpg` dans `import/artistes/`, puis `npm run artistes` |
@@ -67,9 +69,9 @@ Après avoir ajouté un événement, une question de FAQ ou un membre : `npm run
 
 | Commande | Rôle |
 |---|---|
-| `validate` | Liens et images locaux, HTML bien fermé, meta, `id` uniques, header/footer à jour, agenda `.ics` à jour, `og:image`, images citées dans `js/data`, sitemap, adresse cohérente. Liste aussi ce qui reste à compléter (`-- --strict` pour en faire une erreur). |
+| `validate` | Liens et images locaux, HTML bien fermé, meta, `id` uniques, header/footer à jour, agenda `.ics` et fiches événement à jour, `og:image`, images citées dans `js/data`, sitemap, adresse cohérente. Liste aussi ce qui reste à compléter (dont les images que rien n'utilise) (`-- --strict` pour en faire une erreur). |
 | `partials` | Recopie header et footer dans toutes les pages. |
-| `calendar` | Régénère `calendar/events.ics` depuis `js/data/events.js`. |
+| `calendar` | Régénère `calendar/events.ics`, les fiches `evenement-<slug>.html` (titre, flyer et données structurées en dur, pour les aperçus WhatsApp / Instagram et Google), leur image d'aperçu `assets/img/events/og/<slug>.jpg` (il faut `npm install`) et la liste des fiches dans `sitemap.xml`, depuis `js/data/events.js`. |
 | `photos` | Convertit un dossier de photos (WebP + JPEG) et met à jour la galerie. |
 | `artistes` | Convertit les photos de `import/artistes/` (carrés WebP) et met à jour `js/data/artistes-photos.js`. |
 
@@ -90,7 +92,7 @@ Avant de publier :
    Si l'adresse change, mettre à jour `js/data/site.js`, `CNAME`, `sitemap.xml`, `robots.txt` et le `<head>` de chaque page (`og:url`, `og:image`, `canonical`).
 2. **Agenda** : l'adresse `.ics` est dans `SITE.agenda` (`js/data/site.js`). Si elle change, régénérer le QR code
    `assets/img/agenda-qr.svg` (encodant l'adresse `webcal://…`).
-3. **Aperçu sur les réseaux** : `assets/img/og-image.jpg` (1200×630) est déclarée dans le `<head>` de chaque page, avec `og:url` et `canonical` en adresse absolue. Si l'adresse du site change, les remplacer dans toutes les pages. Les fiches événement utilisent leur flyer.
+3. **Aperçu sur les réseaux** : `assets/img/og-image.jpg` (1200×630) est déclarée dans le `<head>` de chaque page, avec `og:url` et `canonical` en adresse absolue. Si l'adresse du site change, les remplacer dans toutes les pages. Les fiches événement utilisent leur flyer, recadré en 1200×630 (`assets/img/events/og/`). Les anciens liens `evenement.html?slug=…` redirigent vers la fiche.
 4. **À compléter** : `npm run validate` liste les champs `[… À REMPLACER]`, les réponses FAQ `needsValidation` et la billetterie ou le line-up manquants des prochaines soirées.
 5. **Page 404** : une balise `<base>` (ajoutée par un petit script) garde styles et liens corrects, même sur une adresse imbriquée. Elle fonctionne à la racine du domaine comme sous l'ancienne adresse `/tekno-never-dies/`.
 
