@@ -1,5 +1,5 @@
 import { EVENTS } from "../data/events.js";
-import { eventStatus, esc, safeUrl, eventPath } from "./helpers.js";
+import { eventStatus, esc, safeUrl, eventPath, formatDate, formatTime } from "./helpers.js";
 import { t, tr } from "../i18n/i18n.js";
 import { eventRange } from "./ics.js";
 
@@ -14,12 +14,53 @@ if (nextBlock && next) {
   const ficheUrl = eventPath(next.slug);
   const ticketUrl = safeUrl(next.ticketUrl);
   nextBlock.querySelector("h2").innerHTML = `<a href="${ficheUrl}">${esc(next.title)}</a>`;
+  // Date, heure et lieu sous le titre : on sait tout de suite quand et où, sans ouvrir la fiche.
+  nextBlock.querySelector(".home-next__when").textContent = [formatDate(next.date, next.datePrecision), formatTime(next.time), next.place].filter(Boolean).join(" · ");
   nextBlock.querySelector(".home-next__price").textContent = [next.price, next.age].filter(Boolean).map(tr).join(" · ");
   nextBlock.querySelector(".home-next__actions").innerHTML = `
     ${ticketUrl ? `<a class="btn btn-solid" href="${esc(ticketUrl)}" target="_blank" rel="noopener">Prendre ma place ↗</a>` : ""}
     <a class="btn btn-hero-line" href="${ficheUrl}">Voir la soirée</a>`;
+  // Flyer de la soirée (ou sa photo) : le visuel de l'événement fait ressortir la section.
+  const visual = next.flyer || next.cover;
+  const flyer = nextBlock.querySelector(".home-next__flyer");
+  if (flyer && visual) {
+    flyer.href = ficheUrl;
+    flyer.setAttribute("aria-label", t("Flyer de {title}", { title: next.title }));
+    flyer.querySelector(".home-next__flyer-img").src = visual;
+    flyer.hidden = false;
+  }
   nextBlock.hidden = false;
   startCountdown(next);
+  revealOnScroll(nextBlock);
+}
+
+/* ---------- Entrée de la section quand elle arrive à l'écran ----------
+   Le halo s'allume, le flyer pivote en place, les cases du compte à rebours apparaissent une à une
+   (styles : .home-next.is-ready / .is-in). Sans animation si le système le demande. */
+function revealOnScroll(section) {
+  if (!("IntersectionObserver" in window) || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  section.classList.add("is-ready");
+  const observer = new IntersectionObserver((entries) => {
+    if (!entries[0].isIntersecting) return;
+    section.classList.add("is-in");
+    observer.disconnect();
+  }, { threshold: 0.3 });
+  observer.observe(section);
+}
+
+/* ---------- Cadre chromé : reflet blanc qui suit la souris (ordinateur) ---------- */
+const frame = nextBlock?.querySelector(".home-next__frame");
+if (frame) {
+  nextBlock.addEventListener("pointermove", (e) => {
+    if (e.pointerType !== "mouse") return;
+    const r = frame.getBoundingClientRect();
+    frame.style.setProperty("--mx", `${e.clientX - r.left}px`);
+    frame.style.setProperty("--my", `${e.clientY - r.top}px`);
+  });
+  nextBlock.addEventListener("pointerleave", () => {
+    frame.style.setProperty("--mx", "-400px");
+    frame.style.setProperty("--my", "-400px");
+  });
 }
 
 /* ---------- Compte à rebours jusqu'à la prochaine soirée ----------

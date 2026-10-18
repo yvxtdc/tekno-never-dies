@@ -3,14 +3,20 @@
 <head>
   <meta charset="utf-8" />
   <!-- Sécurité : le navigateur ne charge que les fichiers du site (et Formspree pour le formulaire). Les empreintes sha256 autorisent les seuls scripts écrits dans les pages (langue, importmap d'index.html, <base> de 404.html) ; npm run validate signale si l'un d'eux change. -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://gc.zgo.at 'sha256-WH8NTvo+7SVajfiorzslKAyTdPR8zR29Ma4SesGKpSk=' 'sha256-ZcmVnkp/+QTaBlAE1mjV7ppCAHuIFcNg3mxcWK65VKM=' 'sha256-0bF9PY4Y9tkkwPNbHep+GABLK+IJZIYOYeUrAk1EjHs='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://teknoneverdies.goatcounter.com; font-src 'self'; connect-src 'self' https://formspree.io https://teknoneverdies.goatcounter.com; form-action https://formspree.io; base-uri 'self'; object-src 'none'; frame-src 'none'; upgrade-insecure-requests" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://gc.zgo.at 'sha256-tDuDEDAPvwNgLOiR/Npt20DVaoRN9Eh0Pc7HLQt5TfA=' 'sha256-ZcmVnkp/+QTaBlAE1mjV7ppCAHuIFcNg3mxcWK65VKM=' 'sha256-0bF9PY4Y9tkkwPNbHep+GABLK+IJZIYOYeUrAk1EjHs='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://teknoneverdies.goatcounter.com; font-src 'self'; connect-src 'self' https://formspree.io https://teknoneverdies.goatcounter.com; form-action https://formspree.io; base-uri 'self'; object-src 'none'; frame-src 'none'; upgrade-insecure-requests" />
   <script>
     // Langue (FR / DE / EN) : les pages allemandes et anglaises sont dans de/ et en/ (tools/langues.mjs).
     // Avant l'affichage, ?lang=de (lien partagé) ou la langue choisie avec les boutons FR / DE / EN
     // (enregistrée dans le navigateur) mène à la bonne version de la page. Voir js/i18n/i18n.js.
     (function () {
       var d = document.documentElement, l = null;
-      if (d.hasAttribute("data-no-lang-redirect")) return;
+      // Page 404 : GitHub Pages la sert pour toute adresse introuvable, y compris sous de/ ou en/.
+      // Pas de redirection : elle prend la langue de l'adresse (traduite par js/i18n/i18n.js).
+      if (d.hasAttribute("data-no-lang-redirect")) {
+        var m = location.pathname.match(/\/(de|en)\//);
+        if (m) d.lang = m[1];
+        return;
+      }
       try { l = new URLSearchParams(location.search).get("lang") || (d.lang === "fr" && localStorage.getItem("tnd-lang")); } catch (e) {}
       if (!l || l === d.lang || ["fr", "de", "en"].indexOf(l) < 0) return;
       // ?lang= est gardé : la page d'arrivée, déjà dans cette langue, ne redirige pas une seconde fois.
@@ -20,20 +26,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
   <title>Fête de la musique — Tekno Never Dies</title>
-  <meta name="description" content="21 juin 2025 · Wissembourg. Techno Party de la Fête de la musique à Wissembourg, présentée par RRC &amp; TND le 21 juin 2025." />
+  <meta name="description" content="Samedi 21 juin 2025, 16h00 – 00h00 · Wissembourg. Techno · Groove · Hardtechno." />
   <meta name="theme-color" content="#4226b6" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Tekno Never Dies" />
   <meta property="og:locale" content="fr_FR" />
-  <meta property="og:title" content="Fête de la musique — Tekno Never Dies" />
-  <meta property="og:description" content="21 juin 2025 · Wissembourg. Techno Party de la Fête de la musique à Wissembourg, présentée par RRC &amp; TND le 21 juin 2025." />
+  <meta property="og:locale:alternate" content="de_DE" />
+  <meta property="og:locale:alternate" content="en_GB" />
+  <meta property="og:title" content="Fête de la musique · 21 juin 2025" />
+  <meta property="og:description" content="Samedi 21 juin 2025, 16h00 – 00h00 · Wissembourg. Techno · Groove · Hardtechno." />
   <meta property="og:image" content="https://teknoneverdies.fr/assets/img/events/og/fete-musique-wissembourg-2025.jpg" />
+  <meta property="og:image:type" content="image/jpeg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="Flyer de Fête de la musique" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Fête de la musique — Tekno Never Dies" />
-  <meta name="twitter:description" content="21 juin 2025 · Wissembourg. Techno Party de la Fête de la musique à Wissembourg, présentée par RRC &amp; TND le 21 juin 2025." />
+  <meta name="twitter:title" content="Fête de la musique · 21 juin 2025" />
+  <meta name="twitter:description" content="Samedi 21 juin 2025, 16h00 – 00h00 · Wissembourg. Techno · Groove · Hardtechno." />
   <meta name="twitter:image" content="https://teknoneverdies.fr/assets/img/events/og/fete-musique-wissembourg-2025.jpg" />
   <meta property="og:url" content="https://teknoneverdies.fr/evenement-fete-musique-wissembourg-2025.html" />
   <link rel="canonical" href="https://teknoneverdies.fr/evenement-fete-musique-wissembourg-2025.html" />
@@ -118,12 +127,23 @@
   <a class="brand" href="./" aria-label="Tekno Never Dies, accueil">
     <span class="badge" role="img" aria-label="Logo Tekno Never Dies Sound System"></span>
   </a>
-  <!-- Choix de la langue en haut, à côté du menu (js/partials.js + js/i18n/i18n.js) -->
-  <div class="tnd-lang" role="group" aria-label="Langue · Sprache · Language" translate="no">
-    <button type="button" data-lang="fr" lang="fr" aria-label="Français">FR</button>
-    <button type="button" data-lang="de" lang="de" aria-label="Deutsch">DE</button>
-    <button type="button" data-lang="en" lang="en" aria-label="English">EN</button>
+  <!-- Choix de la langue : bouton planète + mini menu (drapeau et initiale). js/partials.js + js/i18n/i18n.js -->
+  <div class="tnd-lang" translate="no">
+    <button class="tnd-lang-toggle" type="button" aria-expanded="false" aria-controls="tnd-lang-menu" aria-label="Langue · Sprache · Language">
+      <svg class="tnd-lang-globe" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><ellipse cx="12" cy="12" rx="4.2" ry="9.5"/><path d="M2.5 12h19M4.2 7h15.6M4.2 17h15.6"/></svg>
+      <span class="tnd-lang-code" aria-hidden="true"></span>
+    </button>
+    <ul class="tnd-lang-menu" id="tnd-lang-menu" hidden>
+      <li><button type="button" data-lang="fr" lang="fr" aria-label="Français"><svg class="tnd-flag" viewBox="0 0 3 2" aria-hidden="true"><path fill="#002654" d="M0 0h1v2H0z"/><path fill="#fff" d="M1 0h1v2H1z"/><path fill="#ce1126" d="M2 0h1v2H2z"/></svg>FR</button></li>
+      <li><button type="button" data-lang="de" lang="de" aria-label="Deutsch"><svg class="tnd-flag" viewBox="0 0 5 3" aria-hidden="true"><path fill="#000" d="M0 0h5v1H0z"/><path fill="#dd0000" d="M0 1h5v1H0z"/><path fill="#ffce00" d="M0 2h5v1H0z"/></svg>DE</button></li>
+      <li><button type="button" data-lang="en" lang="en" aria-label="English"><svg class="tnd-flag" viewBox="0 0 60 30" aria-hidden="true"><path fill="#012169" d="M0 0h60v30H0z"/><path stroke="#fff" stroke-width="6" d="m0 0 60 30m0-30L0 30"/><path stroke="#c8102e" stroke-width="2" d="m0 0 60 30m0-30L0 30"/><path stroke="#fff" stroke-width="10" d="M30 0v30M0 15h60"/><path stroke="#c8102e" stroke-width="6" d="M30 0v30M0 15h60"/></svg>EN</button></li>
+    </ul>
   </div>
+  <!-- Billetterie de la prochaine soirée : affichée par js/partials.js seulement s'il y a une date à venir avec billetterie -->
+  <a class="top-ticket" href="evenements.html" target="_blank" rel="noopener" hidden>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8.5V6a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v2.5a2.5 2.5 0 0 0 0 5V18a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-4.5a2.5 2.5 0 0 0 0-5Z"/><path d="M14.5 5v14" stroke-dasharray="2 2.2"/></svg>
+    <span class="top-ticket__label">Billetterie</span>
+  </a>
   <button class="tnd-toggle" type="button" aria-expanded="false" aria-controls="main-navigation">
     <span class="tnd-eq" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
     <span class="tnd-toggle-label">Menu</span>
@@ -207,7 +227,7 @@
     </div>
 
     <div class="footer-bottom">
-      <small>© 2026 Tekno Never Dies, association · Site créé par <strong class="footer-credits">YANNIV &amp; YANNIS</strong></small>
+      <small class="footer-copy">© 2026 Tekno Never Dies · site créé et maintenu par Yannis et Yanniv</small>
       <nav aria-label="Informations légales">
         <a href="mentions-legales.html">Mentions légales</a>
         <a href="confidentialite.html">Confidentialité</a>

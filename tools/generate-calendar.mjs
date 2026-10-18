@@ -2,6 +2,9 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import crypto from "node:crypto";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { eventCalendarDetails } from "../js/components/event-ics.js";
+import { VTIMEZONE } from "../js/pages/ics.js";
+import { SITE } from "../js/data/site.js";
 
 
 /* ============================================================
@@ -375,10 +378,14 @@ function normalizeEvent(event, index) {
     calendarStatus = "CANCELLED";
   }
 
+  // Titre avec émoji, description complète (date, heure, lieu, prix, line-up, liens), lien vers la
+  // fiche et rappel une semaine avant : js/components/event-ics.js, comme le bouton « Ajouter à l'agenda ».
+  const details = eventCalendarDetails(event);
+
   return {
     id: String(id),
 
-    title: String(title),
+    title: details.summary,
 
     start,
 
@@ -387,13 +394,19 @@ function normalizeEvent(event, index) {
     timezone: "Europe/Paris",
 
     location:
-      event.place ?? "",
+      details.location,
 
     description:
-      event.description ?? "",
+      details.description,
 
     url:
-      event.ticketUrl ?? "",
+      details.url,
+
+    categories:
+      details.categories,
+
+    alarms:
+      details.alarms,
 
     status:
       calendarStatus,
@@ -449,6 +462,8 @@ function updateEventState(event, previousState) {
     location: event.location,
     description: event.description,
     url: event.url,
+    categories: event.categories,
+    alarms: event.alarms,
     status: event.status,
   };
 
@@ -525,7 +540,22 @@ function generateEvent(event, state) {
       ? `URL:${escapeICS(event.url)}`
       : null,
 
+    event.categories.length
+      ? `CATEGORIES:${event.categories.map(escapeICS).join(",")}`
+      : null,
+
+    `ORGANIZER;CN=Tekno Never Dies:mailto:${SITE.email}`,
+
     `STATUS:${event.status}`,
+
+    // Rappels (une semaine avant). Les soirées annulées n'en ont pas.
+    ...(event.status === "CANCELLED" ? [] : event.alarms.flatMap((alarm) => [
+      "BEGIN:VALARM",
+      "ACTION:DISPLAY",
+      `TRIGGER:${alarm.trigger}`,
+      `DESCRIPTION:${escapeICS(alarm.text)}`,
+      "END:VALARM",
+    ])),
 
     "END:VEVENT",
   ];
@@ -557,6 +587,10 @@ function generateCalendar(events, states) {
 
     "REFRESH-INTERVAL;VALUE=DURATION:PT1H",
     "X-PUBLISHED-TTL:PT1H",
+
+    // Définition du fuseau Europe/Paris (heure d'été / d'hiver) utilisé par DTSTART;TZID=… :
+    // sans elle, certains agendas (Outlook) peuvent décaler les horaires.
+    ...VTIMEZONE,
   ];
 
   const body = events.map((event) =>

@@ -11,13 +11,15 @@
  */
 
 import { SITE } from "../data/site.js";
-import { eventPath } from "./helpers.js";
+import { formatTime } from "./helpers.js";
+import { tr, locale } from "../i18n/i18n.js";
+import { eventCalendarDetails } from "../components/event-ics.js";
 
 const DEFAULT_HOURS = 4;
 
 // Fuseau Europe/Paris (heure d'été / heure d'hiver), reconnu par Google Agenda,
 // Apple Calendrier et Outlook.
-const VTIMEZONE = [
+export const VTIMEZONE = [
   "BEGIN:VTIMEZONE",
   "TZID:Europe/Paris",
   "BEGIN:DAYLIGHT",
@@ -137,29 +139,37 @@ export function eventRange(ev, time = ev.time) {
   return { start, end };
 }
 
-function vevent(ev, baseUrl, stamp) {
+function vevent(ev, stamp) {
   const { allDay, start, end } = eventTimes(ev);
-  const url = new URL(eventPath(ev.slug), baseUrl).href;
-  const description = [ev.description, ...(ev.practical || []).map((p) => `• ${p}`), "", url]
-    .filter((x) => x !== undefined)
-    .join("\n");
+  // Titre, description, lieu, lien et rappel : js/components/event-ics.js (comme l'agenda d'abonnement),
+  // dans la langue de la page.
+  const details = eventCalendarDetails(ev, { tr, locale, time: formatTime });
   return [
     "BEGIN:VEVENT",
-    `UID:${ev.slug}@tekno-never-dies`,
+    // Même identifiant que l'agenda d'abonnement : une soirée ajoutée des deux façons n'apparaît qu'une fois.
+    `UID:${ev.slug}@tekno-never-dies.fr`,
     `DTSTAMP:${stamp}`,
     allDay ? `DTSTART;VALUE=DATE:${fmtDay(start)}` : `DTSTART;TZID=Europe/Paris:${fmtLocal(start)}`,
     allDay ? `DTEND;VALUE=DATE:${fmtDay(end)}` : `DTEND;TZID=Europe/Paris:${fmtLocal(end)}`,
-    `SUMMARY:${esc(ev.title)} — Tekno Never Dies`,
-    `LOCATION:${esc(ev.place)}`,
-    `DESCRIPTION:${esc(description)}`,
-    `URL:${url}`,
+    `SUMMARY:${esc(details.summary)}`,
+    `LOCATION:${esc(details.location)}`,
+    `DESCRIPTION:${esc(details.description)}`,
+    `URL:${details.url}`,
+    ...(details.categories.length ? [`CATEGORIES:${details.categories.map(esc).join(",")}`] : []),
     `ORGANIZER;CN=Tekno Never Dies:mailto:${SITE.email}`,
+    ...details.alarms.flatMap((alarm) => [
+      "BEGIN:VALARM",
+      "ACTION:DISPLAY",
+      `TRIGGER:${alarm.trigger}`,
+      `DESCRIPTION:${esc(alarm.text)}`,
+      "END:VALARM"
+    ]),
     "END:VEVENT"
   ];
 }
 
 /** Construit le texte complet du fichier .ics pour une liste d'événements. */
-export function buildICS(events, baseUrl = location.href) {
+export function buildICS(events) {
   const now = new Date();
   const stamp = `${now.getUTCFullYear()}${pad(now.getUTCMonth() + 1)}${pad(now.getUTCDate())}T${pad(now.getUTCHours())}${pad(now.getUTCMinutes())}${pad(now.getUTCSeconds())}Z`;
   const lines = [
@@ -171,7 +181,7 @@ export function buildICS(events, baseUrl = location.href) {
     "X-WR-CALNAME:Tekno Never Dies",
     "X-WR-TIMEZONE:Europe/Paris",
     ...VTIMEZONE,
-    ...events.filter((ev) => ev.datePrecision !== "month").flatMap((ev) => vevent(ev, baseUrl, stamp)),
+    ...events.filter((ev) => ev.datePrecision !== "month").flatMap((ev) => vevent(ev, stamp)),
     "END:VCALENDAR"
   ];
   return lines.map(fold).join("\r\n") + "\r\n";
