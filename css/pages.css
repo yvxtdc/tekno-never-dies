@@ -1693,23 +1693,7 @@ button.event-gallery-link{background:none;border-width:0 0 1px;border-radius:0;f
 }
 .artists-back{margin-bottom:22px}
 
-/* Fiche soirée : bloc Itinéraire (Google Maps, Waze, Plans) */
-.event-access{margin:0 0 clamp(40px,6vw,72px)}
-.event-access .event-eyebrow{display:block;margin-bottom:14px}
-.event-access h2{margin:0 0 12px;font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3vw,2.4rem);text-transform:uppercase}
-.event-access h2 span{color:var(--lav)}
-.event-access__place{margin:0 0 18px;color:#fff;font-weight:700}
-.event-access__links{display:flex;flex-wrap:wrap;gap:10px}
-.event-access__links a{
-  display:inline-flex;align-items:center;gap:8px;padding:.75em 1.3em;border-radius:999px;
-  border:1px solid rgba(255,255,255,.35);color:#fff;text-decoration:none;
-  font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  transition:background .2s,border-color .2s,color .2s;
-}
-.event-access__links a:first-child{background:#fff;border-color:#fff;color:var(--navy)}
-.event-access__links a:hover,
-.event-access__links a:focus-visible{background:var(--pink);border-color:var(--pink);color:#fff}
-.event-access__links span{color:inherit}
+/* Fiche soirée : le lien « Y aller » du haut arrive sous le menu, pas derrière */
 .event-access h2{scroll-margin-top:110px}
 /* Bandeau artistes : hauteur réservée pour les photos, ajoutées par JavaScript */
 .artists-teaser__photos{min-height:clamp(48px,5vw,64px)}

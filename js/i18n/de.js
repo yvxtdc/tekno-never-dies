@@ -483,6 +483,8 @@ export default {
   "Le dancefloor d'ICE BOILER v1, avant la suite.": "Der Dancefloor von ICE BOILER v1, vor der Fortsetzung.",
   "Sous les projecteurs, au cœur de la nuit.": "Im Scheinwerferlicht, mitten in der Nacht.",
   "La salle des fêtes de Munchhausen, pleine jusqu'au bout.": "Der Festsaal von Munchhausen, voll bis zum Schluss.",
+  "Zoom sur la salle": "Zoom auf den Ort",
+  "La nuit": "Die Nacht",
   "Billetterie ↗": "Tickets ↗",
   "Ajouter à l'agenda": "Zum Kalender hinzufügen",
   "Itinéraire": "Anfahrt",

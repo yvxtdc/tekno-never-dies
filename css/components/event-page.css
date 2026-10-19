@@ -69,75 +69,104 @@ button.btn{font-family:var(--text);cursor:pointer;background-color:transparent}
 .event-photo img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;filter:saturate(.85) contrast(1.05)}
 .event-photo figcaption{margin-top:12px;color:rgba(255,255,255,.62);font-style:italic;font-size:.85rem;line-height:1.5}
 
-/* ---------- Line-up : grille compacte ----------
-   Avant : une ligne par set, alternée à gauche et à droite, avec un grand vide en face de chaque nom.
-   Maintenant : des cartes serrées sur deux colonnes, dans l'ordre de passage (colonne de gauche
-   puis de droite). Le numéro chromé, la photo et le passage en direct sont gardés. */
+/* ---------- Line-up : cartes compactes, graphiques ----------
+   Deux colonnes dans l'ordre de passage. Chaque carte : grand numéro chromé qui déborde, photo dans un
+   anneau en dégradé, horaire en pastille, et en bas une barre « timetable » qui situe le set dans la nuit
+   (--from / --to, js/pages/evenement.js). Un axe des heures surmonte la grille. */
 .event-lineup{margin:clamp(56px,8vw,100px) 0}
+.lineup-axis{display:flex;align-items:center;gap:12px;margin:0 0 16px;color:var(--lav);font-size:.68rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase}
+.lineup-axis i{flex:1;height:1px;background:linear-gradient(90deg,rgba(149,106,255,.15),rgba(149,106,255,.6),rgba(182,38,154,.4))}
+.lineup-axis span:nth-child(3){color:rgba(255,255,255,.55)}
 .event-lineup .lineup-rows{
   display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(var(--rows,3),auto);grid-auto-flow:column;
-  gap:12px clamp(12px,1.6vw,20px);padding:0;
+  gap:14px clamp(14px,1.8vw,22px);padding:0;
 }
 .event-lineup .lineup-rows::before{display:none}
 .event-lineup .lineup-row,
 .event-lineup .lineup-row:nth-child(even){
+  position:relative;overflow:hidden;isolation:isolate;
   flex-direction:row;text-align:left;
-  gap:clamp(14px,1.8vw,22px);padding:14px clamp(14px,1.8vw,22px);
-  border:1px solid rgba(255,255,255,.1);border-radius:20px;background:rgba(255,255,255,.025);
-  transition:border-color .3s,background-color .3s;
+  gap:clamp(14px,1.8vw,20px);padding:16px clamp(16px,2vw,24px) 24px;
+  border:1px solid rgba(149,106,255,.22);border-radius:22px;
+  background:
+    repeating-linear-gradient(135deg,rgba(149,106,255,.05) 0 2px,transparent 2px 14px),
+    linear-gradient(120deg,rgba(66,38,182,.22),rgba(11,7,34,.3) 65%);
+  transition:border-color .3s,transform .3s,box-shadow .3s;
 }
-.event-lineup .lineup-row:hover{border-color:rgba(149,106,255,.45);background:rgba(66,38,182,.12)}
+.event-lineup .lineup-row:hover{border-color:rgba(149,106,255,.6);transform:translateY(-2px);box-shadow:0 14px 34px rgba(0,0,0,.35),0 0 30px rgba(149,106,255,.16)}
 .event-lineup .lineup-row::before{display:none}
-.event-lineup .lineup-row__num{font-size:clamp(1.8rem,2.6vw,2.4rem);min-width:1.4em}
-.event-lineup .lineup-row__photo{--photo:clamp(52px,4.6vw,64px)}
+/* Numéro chromé en grand, en filigrane à droite de la carte */
+.event-lineup .lineup-row__num{
+  position:absolute;right:-4px;bottom:-14px;z-index:-1;
+  font-size:clamp(4rem,6.4vw,5.6rem);opacity:.5;
+}
+.event-lineup .lineup-row:hover .lineup-row__num{opacity:.85}
+/* Photo dans un anneau dégradé */
+.event-lineup .lineup-row__photo{--photo:clamp(56px,5vw,70px);border:0;padding:3px;background:var(--gradient-tnd)}
+.event-lineup .lineup-row__photo img{inset:3px;width:calc(100% - 6px);height:calc(100% - 6px);border-radius:50%}
+.event-lineup .lineup-row__photos .lineup-row__photo + .lineup-row__photo{box-shadow:0 0 0 3px #120b38}
+.event-lineup .lineup-row__time{
+  display:inline-block;margin-bottom:6px;padding:3px 10px;border-radius:999px;
+  background:rgba(149,106,255,.18);border:1px solid rgba(149,106,255,.35);color:#fff;font-size:.66rem;
+}
 .event-lineup .lineup-row h3{font-size:clamp(1.25rem,2vw,1.7rem)}
-.event-lineup .lineup-row.is-live{border-color:var(--pink);background:rgba(182,38,154,.14)}
+/* Barre timetable : piste de la nuit, segment du set */
+.lineup-row__bar{position:absolute;left:clamp(16px,2vw,24px);right:clamp(16px,2vw,24px);bottom:11px;height:4px;border-radius:4px;background:rgba(255,255,255,.08)}
+.lineup-row__bar i{position:absolute;top:0;bottom:0;left:calc(var(--from) * 100%);width:calc((var(--to) - var(--from)) * 100%);border-radius:4px;background:var(--gradient-tnd);box-shadow:0 0 10px rgba(182,38,154,.55)}
+.event-lineup .lineup-row.is-live{border-color:var(--pink);box-shadow:0 0 0 1px var(--pink),0 0 34px rgba(182,38,154,.35)}
 
-/* ---------- « Y aller » : plans ---------- */
-.event-access{margin:clamp(56px,8vw,110px) 0}
-.event-section-head__note{max-width:28ch;text-align:right}
-/* Deux plans de même taille : leurs légendes s'alignent */
-.event-maps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(14px,2vw,24px);align-items:start}
-.event-maps.is-single{grid-template-columns:minmax(0,1fr)}
-/* Plan seul (lieu exact inconnu) : format panoramique, recadré au centre */
-.event-maps.is-single .event-map__frame{aspect-ratio:1200 / 480}
-.event-map{margin:0}
-.event-map__frame{
-  position:relative;overflow:hidden;aspect-ratio:1200 / 760;
-  border:1px solid rgba(149,106,255,.32);border-radius:24px;
-  background:radial-gradient(120% 120% at 50% 40%,#160e40 0%,#0b0722 70%);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 24px 50px rgba(0,0,0,.35);
+/* ---------- « Y aller » : une carte, infos à gauche, plan avec médaillon de zoom à droite ---------- */
+.event-access{margin:clamp(56px,8vw,100px) 0}
+.event-access__card{
+  display:grid;grid-template-columns:minmax(220px,.75fr) minmax(0,1.25fr);gap:clamp(20px,3vw,40px);align-items:center;
+  padding:clamp(16px,2vw,22px);
+  border:1px solid rgba(149,106,255,.3);border-radius:28px;
+  background:linear-gradient(130deg,rgba(66,38,182,.2),rgba(11,7,34,.35) 70%);
 }
-.event-map__frame img{
-  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-  -webkit-mask-image:radial-gradient(ellipse 72% 78% at 50% 50%,#000 55%,transparent 100%);
-  mask-image:radial-gradient(ellipse 72% 78% at 50% 50%,#000 55%,transparent 100%);
-}
-/* Repère au centre exact du plan (le lieu, par construction) */
-.event-map__pin{position:absolute;left:50%;top:50%;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:var(--pink);box-shadow:0 0 0 3px #fff,0 0 22px var(--pink)}
-.event-map__pin::before,
-.event-map__pin::after{content:"";position:absolute;inset:-14px;border:2px solid rgba(182,38,154,.7);border-radius:50%;animation:map-ping 2.4s ease-out infinite}
-.event-map__pin::after{animation-delay:1.2s}
-@keyframes map-ping{from{transform:scale(.3);opacity:1}to{transform:scale(2.2);opacity:0}}
-/* Zone montrée par le plan du lieu */
-.event-map__zoom{
-  position:absolute;left:50%;top:50%;width:calc(var(--zoom) * 100%);aspect-ratio:1200 / 760;transform:translate(-50%,-50%);
-  border:1.5px dashed rgba(255,255,255,.55);border-radius:8px;pointer-events:none;
-}
-.event-map figcaption{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin-top:12px}
-.event-map figcaption b{font-family:var(--display);font-weight:400;font-size:1.15rem;text-transform:uppercase}
-.event-map figcaption span{color:var(--lav);font-size:.72rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase}
-.event-access__bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;margin-top:22px}
-.event-access__links{display:flex;flex-wrap:wrap;gap:10px}
+.event-access__info{display:grid;justify-items:start;gap:10px;padding:clamp(6px,1.4vw,16px)}
+.event-access__venue{margin:0;font-family:var(--display);font-size:clamp(1.6rem,2.8vw,2.3rem);line-height:.95;text-transform:uppercase}
+.event-access__address{margin:0;color:var(--muted);font-size:.95rem}
+.event-access__links{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .event-access__links a{
-  display:inline-flex;align-items:center;gap:8px;padding:.7em 1.2em;
+  display:inline-flex;align-items:center;gap:8px;padding:.7em 1.15em;
   border:1px solid rgba(255,255,255,.3);border-radius:999px;color:#fff;
-  font-size:.76rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;
-  transition:border-color .2s,color .2s;
+  font-size:.74rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;
+  transition:border-color .2s,color .2s,background-color .2s;
 }
+.event-access__links a:first-child{border-color:transparent;background:var(--gradient-tnd);color:#fff}
 .event-access__links a:hover{border-color:var(--lav);color:var(--lav)}
-.event-maps__credit{margin:0;color:rgba(255,255,255,.45);font-size:.72rem}
+.event-access__links a:first-child:hover{color:#fff;filter:brightness(1.1)}
+.event-maps__credit{margin:6px 0 0;color:rgba(255,255,255,.4);font-size:.68rem}
 .event-maps__credit a{color:inherit}
+
+/* Plan : cadre panoramique, village agrandi (positions : layoutMap) */
+.event-mapstage{
+  position:relative;overflow:hidden;aspect-ratio:2 / 1;border-radius:20px;
+  background:radial-gradient(120% 120% at 30% 50%,#170f44 0%,#0b0722 70%);
+  box-shadow:inset 0 0 0 1px rgba(149,106,255,.25);
+}
+.event-mapstage__village{position:absolute;max-width:none;opacity:.95}
+/* Bords du plan qui s'effacent dans le cadre */
+.event-mapstage::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;box-shadow:inset 0 0 40px 18px #0b0722}
+.event-mapstage__town{position:absolute;left:16px;top:14px;z-index:3;padding:4px 10px;border-radius:999px;background:rgba(11,7,34,.7);color:#fff;font-size:.66rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase}
+.event-mapstage__zoom{position:absolute;z-index:2;border:1.5px dashed rgba(255,255,255,.75);border-radius:6px;box-shadow:0 0 0 999px rgba(11,7,34,.18)}
+.event-mapstage__links{position:absolute;inset:0;z-index:2;width:100%;height:100%;overflow:visible;pointer-events:none}
+.event-mapstage__links line{stroke:rgba(255,255,255,.6);stroke-width:1.2;stroke-dasharray:4 4}
+.event-mapstage__inset{
+  position:absolute;z-index:3;overflow:hidden;border-radius:14px;
+  border:2px solid #fff;background:#0f0a30;
+  box-shadow:0 18px 40px rgba(0,0,0,.55),0 0 0 4px rgba(149,106,255,.25);
+}
+.event-mapstage__inset img{position:absolute;inset:0;width:100%;height:100%;max-width:none}
+.event-mapstage__label{position:absolute;left:6px;top:6px;white-space:nowrap;padding:3px 8px;border-radius:999px;background:var(--gradient-tnd);color:#fff;font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+/* Repère : au centre du médaillon ; sur le village, placé par layoutMap */
+.event-map__pin{position:absolute;left:50%;top:50%;z-index:2;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--pink);box-shadow:0 0 0 3px #fff,0 0 18px var(--pink)}
+.event-map__pin::before,
+.event-map__pin::after{content:"";position:absolute;inset:-12px;border:2px solid rgba(182,38,154,.7);border-radius:50%;animation:map-ping 2.4s ease-out infinite}
+.event-map__pin::after{animation-delay:1.2s}
+.event-mapstage__pin{width:9px;height:9px;margin:-4.5px 0 0 -4.5px;box-shadow:0 0 0 2px #fff}
+.event-mapstage__pin::before,.event-mapstage__pin::after{display:none}
+@keyframes map-ping{from{transform:scale(.3);opacity:1}to{transform:scale(2.2);opacity:0}}
 
 /* ---------- Infos pratiques : cartes ---------- */
 .event-practical{margin:0 0 clamp(56px,8vw,100px)}
@@ -161,7 +190,7 @@ button.btn{font-family:var(--text);cursor:pointer;background-color:transparent}
   .event-about,
   .event-about.has-photos{grid-template-columns:1fr}
   .event-about__side{display:none}
-  .event-maps{grid-template-columns:1fr}
+  .event-access__card{grid-template-columns:1fr}
 }
 
 /* ---------- Téléphone ---------- */
@@ -173,7 +202,14 @@ button.btn{font-family:var(--text);cursor:pointer;background-color:transparent}
   .event-actions .btn-solid{flex-basis:100%}
   .event-photo:nth-child(2){margin-top:22px}
   .event-section-head__note{text-align:left}
-  .event-map__frame{border-radius:18px}
+  .event-mapstage{aspect-ratio:1.45 / 1;border-radius:16px}
+  .event-mapstage__label{font-size:.5rem;letter-spacing:.1em;padding:2px 6px}
+  .event-mapstage__town{left:10px;top:10px;font-size:.58rem}
+  .lineup-axis{font-size:.6rem;gap:8px}
+  .event-access__links{width:100%}
+  .event-access__links a{flex:1 1 auto;justify-content:center}
+  .event-lineup .lineup-row__num{top:8px;bottom:auto;right:14px;font-size:2.6rem;opacity:.45}
+  .event-lineup .lineup-row__info{padding-right:46px}
 }
 @media (max-width:760px){
   .event-lineup .lineup-rows{grid-template-columns:1fr;grid-template-rows:none;grid-auto-flow:row}

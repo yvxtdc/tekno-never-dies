@@ -477,6 +477,8 @@ export default {
   "Le dancefloor d'ICE BOILER v1, avant la suite.": "The ICE BOILER v1 dancefloor, before the sequel.",
   "Sous les projecteurs, au cœur de la nuit.": "Under the spotlights, deep into the night.",
   "La salle des fêtes de Munchhausen, pleine jusqu'au bout.": "The Munchhausen village hall, packed until the end.",
+  "Zoom sur la salle": "Zoom on the venue",
+  "La nuit": "The night",
   "Billetterie ↗": "Tickets ↗",
   "Ajouter à l'agenda": "Add to calendar",
   "Itinéraire": "Directions",

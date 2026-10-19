@@ -239,6 +239,20 @@ if (!root) {
           </div>`}
     </section>`;
 
+  // Place de chaque set dans la nuit (0 = ouverture, 1 = fermeture) : barre « timetable » des cartes
+  const night = range && range.end > range.start ? range : null;
+  const slotBar = (time) => {
+    const slot = night && time ? eventRange(ev, time) : null;
+    if (!slot) return "";
+    const total = night.end - night.start;
+    const from = Math.max(0, (slot.start - night.start) / total), to = Math.min(1, (slot.end - night.start) / total);
+    return `<span class="lineup-row__bar" aria-hidden="true" style="--from:${from.toFixed(3)};--to:${to.toFixed(3)}"><i></i></span>`;
+  };
+  // Axe des heures au-dessus du line-up (ouverture, milieu, fermeture)
+  const hourLabel = (date) => new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Paris" }).format(date).replace(":", locale.startsWith("fr") ? "h" : ":");
+  const nightAxis = night && lineup.some((slot) => slot.time)
+    ? `<div class="lineup-axis" aria-hidden="true"><span>${hourLabel(night.start)}</span><i></i><span>${escapeHTML(tr("La nuit"))}</span><i></i><span>${hourLabel(night.end)}</span></div>`
+    : "";
   const lineupContent = lineup.length
     ? `<ul class="lineup-rows" style="--rows:${Math.ceil(lineup.length / 2)}">${lineup.map((artist, i) => `
         <li class="lineup-row" data-slot="${escapeHTML(artist.time || "")}">
@@ -253,6 +267,7 @@ if (!root) {
             ${(artist.style || slotStyle(artist.name)) ? `<p class="lineup-row__style" translate="no">${escapeHTML(artist.style || slotStyle(artist.name))}</p>` : ""}
           </div>
           ${artist.demo ? `<span class="lineup-row__draft">À compléter</span>` : artist.collective ? `<span class="lineup-row__collective">${escapeHTML(artist.collective)}</span>` : ""}
+          ${slotBar(artist.time)}
         </li>
       `).join("")}</ul>`
     : `<div class="lineup-empty">
@@ -270,28 +285,35 @@ if (!root) {
 
   /* ---------- « Y aller » : plan du village + plan du lieu (tools/maps.mjs), itinéraires ---------- */
   const precise = ev.venue && ev.venue.precise !== false;
-  const mapFigure = (kind, label, sub) => `
-    <figure class="event-map event-map--${kind}">
-      <div class="event-map__frame">
-        <img src="assets/img/maps/${escapeHTML(ev.slug)}-${kind}.svg" alt="${escapeHTML(t("Plan : {place}", { place: label }))}" loading="lazy" decoding="async" width="1200" height="760" />
-        ${precise ? `<span class="event-map__pin" aria-hidden="true"></span>` : ""}
-        ${kind === "village" && precise ? `<span class="event-map__zoom" aria-hidden="true" style="--zoom:${(0.6 / (ev.venue.span || 2.5)).toFixed(3)}"></span>` : ""}
-      </div>
-      <figcaption><b translate="no">${escapeHTML(label)}</b>${sub ? `<span>${escapeHTML(sub)}</span>` : ""}</figcaption>
-    </figure>`;
+  // Une seule carte : infos à gauche ; à droite le plan du village, et (lieu précis) un médaillon
+  // « zoom sur la salle » relié par deux traits au cadre pointillé de la zone agrandie.
+  // Positions calculées par layoutMap() (plus bas) d'après la taille réelle du plan.
   const accessContent = ev.venue
     ? `<section class="event-access" aria-labelledby="access-title">
         <div class="event-section-head">
           <h2 id="access-title">Y aller<span class="event-title__dot">.</span></h2>
-          <p class="event-section-head__note">${escapeHTML(ev.place || "")}</p>
         </div>
-        <div class="event-maps${precise ? "" : " is-single"}">
-          ${mapFigure("village", town, precise ? tr("Le village") : tr("Lieu exact non renseigné"))}
-          ${precise ? mapFigure("lieu", venueName || street || town, street || tr("Le lieu")) : ""}
-        </div>
-        <div class="event-access__bar">
-          ${routes.length ? `<div class="event-access__links">${routes.map(([label, url]) => `<a href="${escapeHTML(url)}" target="_blank" rel="noopener">${label} <span aria-hidden="true">↗</span></a>`).join("")}</div>` : "<span></span>"}
-          <p class="event-maps__credit">Plans : © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">les contributeurs d'OpenStreetMap</a></p>
+        <div class="event-access__card${precise ? "" : " is-single"}">
+          <div class="event-access__info">
+            <p class="event-eyebrow">${escapeHTML(tr(precise ? "Le lieu" : "Lieu exact non renseigné"))}</p>
+            <p class="event-access__venue" translate="no">${escapeHTML(venueName || town)}</p>
+            ${street || venueName ? `<p class="event-access__address" translate="no">${escapeHTML([street, town].filter(Boolean).join(", "))}</p>` : ""}
+            ${routes.length ? `<div class="event-access__links">${routes.map(([label, url]) => `<a href="${escapeHTML(url)}" target="_blank" rel="noopener">${label} <span aria-hidden="true">↗</span></a>`).join("")}</div>` : ""}
+            <p class="event-maps__credit">Plans : © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">les contributeurs d'OpenStreetMap</a></p>
+          </div>
+          <div class="event-mapstage" role="img" aria-label="${escapeHTML(t("Plan : {place}", { place: [venueName, town].filter(Boolean).join(", ") }))}" data-span="${ev.venue.span || 2.5}">
+            <img class="event-mapstage__village" src="assets/img/maps/${escapeHTML(ev.slug)}-village.svg" alt="" loading="lazy" decoding="async" />
+            <span class="event-mapstage__town" translate="no">${escapeHTML(town)}</span>
+            ${precise ? `
+            <span class="event-map__pin event-mapstage__pin" aria-hidden="true"></span>
+            <span class="event-mapstage__zoom" aria-hidden="true"></span>
+            <svg class="event-mapstage__links" aria-hidden="true"><line /><line /></svg>
+            <span class="event-mapstage__inset">
+              <img src="assets/img/maps/${escapeHTML(ev.slug)}-lieu.svg" alt="" loading="lazy" decoding="async" />
+              <span class="event-map__pin" aria-hidden="true"></span>
+              <span class="event-mapstage__label">${escapeHTML(tr("Zoom sur la salle"))}</span>
+            </span>` : ""}
+          </div>
         </div>
       </section>`
     : "";
@@ -339,6 +361,7 @@ if (!root) {
         <p class="event-section-head__note">LES NOMS<br />ET LES FRÉQUENCES.</p>
       </div>
       ${lineupIsPreview ? `<p class="lineup-preview-note">APERÇU — à remplacer avant publication.</p>` : ""}
+      ${nightAxis}
       ${lineupContent}
     </section>
 
@@ -366,6 +389,8 @@ if (!root) {
       </span>
     </a>
   `;
+
+  layoutMap(root.querySelector(".event-mapstage"));
 
   document.getElementById("add-to-calendar")?.addEventListener("click", () => {
     downloadICS([ev], `tnd-${ev.slug}.ics`);
@@ -411,4 +436,36 @@ if (!root) {
     const timer = setInterval(updateLive, 30_000);
     updateLive();
   }
+}
+
+/* ---------- Plan « Y aller » : place le village, la zone agrandie, le médaillon et les deux traits ----------
+   Les plans sont centrés sur le lieu (tools/maps.mjs). Le village est agrandi (×1,5) et décalé pour que
+   la salle tombe au tiers gauche ; le médaillon (plan du lieu, ≈ 600 m) se pose à droite. */
+function layoutMap(stage) {
+  if (!stage) return;
+  const IMG_AR = 1200 / 760;
+  const place = () => {
+    const W = stage.clientWidth, H = stage.clientHeight;
+    if (!W || !H) return;
+    const single = !stage.querySelector(".event-mapstage__inset");
+    const scale = 1.5;
+    const imgW = W * scale, imgH = imgW / IMG_AR;
+    const vx = single ? W * 0.5 : W * 0.3, vy = H * 0.5; // position de la salle dans le cadre
+    const village = stage.querySelector(".event-mapstage__village");
+    Object.assign(village.style, { width: `${imgW}px`, height: `${imgH}px`, left: `${vx - imgW / 2}px`, top: `${vy - imgH / 2}px` });
+    if (single) return;
+    const zoomW = imgW * (0.6 / Number(stage.dataset.span || 2.5)), zoomH = zoomW / IMG_AR;
+    const z = { l: vx - zoomW / 2, t: vy - zoomH / 2, r: vx + zoomW / 2, b: vy + zoomH / 2 };
+    const insetW = W * 0.42, insetH = insetW / IMG_AR;
+    const i = { l: W - insetW - W * 0.04, t: (H - insetH) / 2 };
+    Object.assign(stage.querySelector(".event-mapstage__zoom").style, { left: `${z.l}px`, top: `${z.t}px`, width: `${zoomW}px`, height: `${zoomH}px` });
+    Object.assign(stage.querySelector(".event-mapstage__pin").style, { left: `${vx}px`, top: `${vy}px` });
+    Object.assign(stage.querySelector(".event-mapstage__inset").style, { left: `${i.l}px`, top: `${i.t}px`, width: `${insetW}px`, height: `${insetH}px` });
+    const [l1, l2] = stage.querySelectorAll(".event-mapstage__links line");
+    const set = (line, x1, y1, x2, y2) => Object.entries({ x1, y1, x2, y2 }).forEach(([k, v]) => line.setAttribute(k, v.toFixed(1)));
+    set(l1, z.r, z.t, i.l, i.t);
+    set(l2, z.r, z.b, i.l, i.t + insetH);
+  };
+  place();
+  new ResizeObserver(place).observe(stage);
 }
