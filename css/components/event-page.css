@@ -5,6 +5,9 @@
    Chargé par evenement.html (et les fiches evenement-….html), après pages.css et event-flyer.css.
    ===================================================================== */
 
+/* Fin de page : le grand lien « Tous les événements » suffit, sans marge basse en plus */
+.event-page{padding-bottom:0}
+
 /* ---------- Haut de la fiche ---------- */
 .event-hero{min-height:auto;padding-bottom:clamp(48px,6vw,80px)}
 .event-hero__text{gap:clamp(18px,2.4vw,26px)}
