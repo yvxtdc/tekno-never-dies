@@ -1,5 +1,5 @@
 /**
- * Application HTTP du CMS : administration (/admin) et API (/api).
+ * Application HTTP du CMS : administration (/admin), API (/api), prévisualisation (/preview, /p).
  *
  * Contrôles appliqués à chaque requête de l'API :
  *  1. session valide (cookie) sauf routes publiques (connexion) ;
@@ -16,11 +16,14 @@ import { sendJson, securityHeaders, redirect } from "./http/respond.mjs";
 import { safeResolve, serveFile } from "./http/static.mjs";
 import { loadSession, parseCookies } from "./auth/sessions.mjs";
 import { can } from "./auth/permissions.mjs";
+import { Publisher } from "./publish/publisher.mjs";
 import { REPO_ROOT } from "./config.mjs";
+import { servePreview, resolvePreviewToken } from "./preview/preview.mjs";
 import { registerAuthRoutes } from "./api/auth.mjs";
 import { registerContentRoutes } from "./api/content.mjs";
 import { registerMediaRoutes } from "./api/media.mjs";
 import { registerUserRoutes } from "./api/users.mjs";
+import { registerSiteRoutes } from "./api/site.mjs";
 
 const ADMIN_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../admin");
 const SERVER_DIR = path.dirname(fileURLToPath(import.meta.url));
@@ -41,13 +44,14 @@ export function createLogger(level = "info") {
   return { info: (m) => write("info", m), warn: (m) => write("warn", m), error: (m, e) => write("error", m, e) };
 }
 
-export function createApp({ config, db, log = createLogger(config.logLevel) }) {
+export function createApp({ config, db, log = createLogger(config.logLevel), publisher = new Publisher({ config, db, log }) }) {
   const router = new Router();
-  const deps = { config, db, log };
+  const deps = { config, db, log, publisher };
   registerAuthRoutes(router, deps);
   registerContentRoutes(router, deps);
   registerMediaRoutes(router, deps);
   registerUserRoutes(router, deps);
+  registerSiteRoutes(router, deps);
 
   const clientIp = (req) => {
     if (config.trustProxy) {
@@ -109,7 +113,7 @@ export function createApp({ config, db, log = createLogger(config.logLevel) }) {
     const cookies = parseCookies(req.headers.cookie);
     const session = loadSession(db, config, cookies[config.cookieName]);
     const ctx = {
-      req, res, url, config, db, log,
+      req, res, url, config, db, log, publisher,
       query: url.searchParams,
       session,
       user: session?.user ?? null,
@@ -145,6 +149,25 @@ export function createApp({ config, db, log = createLogger(config.logLevel) }) {
         if (file && serveFile(req, res, file, { root: ADMIN_DIR, cache: "no-cache" })) return;
         throw notFound("Fichier introuvable.");
       }
+      if (p.startsWith("/preview/")) {
+        if (!SAFE_METHODS.has(req.method)) throw new HttpError(405, "Méthode non autorisée.");
+        if (!session) return redirect(res, `/admin/login?next=${encodeURIComponent(p)}`);
+        // /preview/site/…  : site tel qu'il serait après la prochaine mise en ligne (+ soirées programmées)
+        // /preview/event-12/… : idem + la soirée 12, même en brouillon
+        const m = p.match(/^\/preview\/(site|event-(\d{1,12}))(\/.*)?$/);
+        if (!m) throw notFound();
+        if (!m[3]) return redirect(res, `${p}/`);
+        return await servePreview(req, res, { config, db, subPath: m[3], includeEventIds: m[2] ? [Number(m[2])] : [], label: m[2] ? "brouillon" : "prochaine mise en ligne" });
+      }
+      if (p.startsWith("/p/")) {
+        // Lien d'aperçu partageable (sans compte) : une soirée, durée limitée.
+        if (!SAFE_METHODS.has(req.method)) throw new HttpError(405, "Méthode non autorisée.");
+        const m = p.match(/^\/p\/([A-Za-z0-9_-]{20,64})(\/.*)?$/);
+        const eventId = m && resolvePreviewToken(db, m[1]);
+        if (!eventId) throw notFound("Lien d'aperçu invalide ou expiré.");
+        if (!m[2]) return redirect(res, `${p}/`);
+        return await servePreview(req, res, { config, db, subPath: m[2], includeEventIds: [eventId], includeScheduled: false, label: "lien d'aperçu" });
+      }
       throw notFound();
     } catch (error) {
       if (res.headersSent) {
@@ -164,5 +187,5 @@ export function createApp({ config, db, log = createLogger(config.logLevel) }) {
     }
   }
 
-  return { handler, router };
+  return { handler, router, publisher };
 }

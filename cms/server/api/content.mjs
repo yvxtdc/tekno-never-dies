@@ -10,12 +10,13 @@ import * as faq from "../services/faq.mjs";
 import * as team from "../services/team.mjs";
 import * as gallery from "../services/gallery.mjs";
 import * as translations from "../services/translations.mjs";
+import { createPreviewToken } from "../preview/preview.mjs";
 
 const READ = { perm: "content.read" };
 const WRITE = { perm: "content.write" };
 const DELETE = { perm: "content.delete" };
 
-export function registerContentRoutes(router, { db }) {
+export function registerContentRoutes(router, { config, db }) {
   /* ---------- Soirées ---------- */
   router.get("/api/events", (ctx) => {
     const q = ctx.query;
@@ -48,6 +49,17 @@ export function registerContentRoutes(router, { db }) {
     audit(db, ctx.actor, `event.${body.action}`, "event", event.id, `${event.title} : ${transition.label}${event.publishAt ? ` (${event.publishAt})` : ""}`);
     return event;
   }, { perm: "content.publish" });
+  router.post("/api/events/:id/preview-link", (ctx) => {
+    const ev = events.getEventRow(db, ctx.params.id);
+    const { token, expiresAt } = createPreviewToken(db, ev.id, ctx.user.id);
+    audit(db, ctx.actor, "event.preview-link", "event", ev.id, `Lien d'aperçu jusqu'au ${expiresAt.slice(0, 10)}`);
+    return { url: `${config.publicOrigin}/p/${token}/evenement-${ev.slug}.html`, expiresAt };
+  }, WRITE);
+  router.delete("/api/events/:id/preview-links", (ctx) => {
+    db.run("DELETE FROM preview_tokens WHERE event_id = ?", ctx.params.id);
+    audit(db, ctx.actor, "event.preview-links.revoke", "event", ctx.params.id, "Liens d'aperçu révoqués");
+    return { ok: true };
+  }, WRITE);
   router.post("/api/events/:id/revisions/:revisionId/restore", (ctx) => {
     const rev = getRevision(db, "event", ctx.params.id, ctx.params.revisionId);
     if (!rev) throw notFound("Version introuvable.");

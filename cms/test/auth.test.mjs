@@ -71,7 +71,7 @@ describe("API d'authentification", () => {
 
   test("API protégée sans session : 401", async () => {
     const c = cms.client();
-    for (const url of ["/api/users", "/api/audit", "/api/auth/session"]) {
+    for (const url of ["/api/events", "/api/users", "/api/media", "/api/dashboard"]) {
       assert.equal((await c.get(url)).status, 401, url);
     }
   });
@@ -80,28 +80,29 @@ describe("API d'authentification", () => {
     const c = await cms.login("admin");
     const csrf = c.csrf;
     c.csrf = "";
-    assert.equal((await c.post("/api/auth/logout-others", {})).status, 403);
+    assert.equal((await c.post("/api/events", { title: "x" })).status, 403);
     c.csrf = "mauvais-jeton-de-la-bonne-longueur-xx";
-    assert.equal((await c.post("/api/auth/logout-others", {})).status, 403);
+    assert.equal((await c.post("/api/events", { title: "x" })).status, 403);
     c.csrf = csrf;
-    assert.equal((await c.post("/api/auth/logout-others", {})).status, 200);
+    assert.equal((await c.post("/api/events", { title: "Soirée CSRF", date: "2030-01-01" })).status, 201);
   });
 
   test("Origin : requête venant d'un autre site refusée, même avec la session", async () => {
     const c = await cms.login("admin");
     c.origin = "https://site-malveillant.example";
-    const res = await c.post("/api/auth/logout-others", {});
+    const res = await c.post("/api/events", { title: "x", date: "2030-01-01" });
     assert.equal(res.status, 403);
     c.origin = "";
-    assert.equal((await c.post("/api/auth/logout-others", {})).status, 403, "sans Origin ni Referer");
+    assert.equal((await c.post("/api/events", { title: "x", date: "2030-01-01" })).status, 403, "sans Origin ni Referer");
     c.origin = ORIGIN;
   });
 
-  test("rôle éditeur : pas d'accès aux comptes ni au journal", async () => {
+  test("rôle éditeur : accès aux contenus, pas aux comptes ni au journal ni aux sauvegardes", async () => {
     const c = await cms.login("editor");
-    assert.equal((await c.get("/api/auth/session")).status, 200);
+    assert.equal((await c.get("/api/events")).status, 200);
     assert.equal((await c.get("/api/users")).status, 403);
     assert.equal((await c.get("/api/audit")).status, 403);
+    assert.equal((await c.get("/api/backups")).status, 403);
     assert.equal((await c.post("/api/users", { email: "x@y.fr", name: "X", role: "admin" })).status, 403);
   });
 
@@ -128,12 +129,12 @@ describe("API d'authentification", () => {
     const c = cms.client();
     const login = await c.post("/api/auth/login", { email: "nouveau@test.fr", password: temporary });
     assert.equal(login.data.user.mustChangePassword, true);
-    assert.equal((await c.post("/api/auth/logout-others", {})).status, 403);
+    assert.equal((await c.get("/api/events")).status, 403);
     const weak = await c.post("/api/auth/password", { currentPassword: temporary, newPassword: "court" });
     assert.equal(weak.status, 422);
     const ok = await c.post("/api/auth/password", { currentPassword: temporary, newPassword: "une nouvelle phrase solide" });
     assert.equal(ok.status, 200);
-    assert.equal((await c.post("/api/auth/logout-others", {})).status, 200);
+    assert.equal((await c.get("/api/events")).status, 200);
   });
 
   test("changement de mot de passe : les autres sessions sont fermées", async () => {
@@ -183,14 +184,14 @@ describe("API d'authentification", () => {
     assert.equal(res.headers.get("x-frame-options"), "DENY");
     assert.equal(res.headers.get("cache-control"), "no-store");
     assert.equal(res.headers.get("access-control-allow-origin"), null, "pas de CORS");
-    const bad = await (await cms.login("admin")).request("POST", "/api/users", { raw: "{pas du json", headers: { "content-type": "application/json" } });
+    const bad = await (await cms.login("admin")).request("POST", "/api/events", { raw: "{pas du json", headers: { "content-type": "application/json" } });
     assert.equal(bad.status, 400);
     assert.doesNotMatch(JSON.stringify(bad.data), /at .*\.mjs|SyntaxError/);
   });
 
   test("corps de requête trop volumineux refusé", async () => {
     const c = await cms.login("admin");
-    const res = await c.request("POST", "/api/users", { raw: JSON.stringify({ name: "x".repeat(2 * 1024 * 1024) }), headers: { "content-type": "application/json" } });
+    const res = await c.request("POST", "/api/events", { raw: JSON.stringify({ title: "x".repeat(2 * 1024 * 1024) }), headers: { "content-type": "application/json" } });
     assert.equal(res.status, 413);
   });
 });

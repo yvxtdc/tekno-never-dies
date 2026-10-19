@@ -9,6 +9,7 @@ import { loadConfig, REPO_ROOT } from "../server/config.mjs";
 import { openDatabase } from "../server/db/index.mjs";
 import { createApp } from "../server/app.mjs";
 import { createUser } from "../server/services/users.mjs";
+import { importFromRepo } from "../server/export/import-repo.mjs";
 
 export const ORIGIN = "http://cms.test";
 export const PASSWORD = "mot-de-passe-de-test-solide";
@@ -53,13 +54,13 @@ export async function startCms({ importContent = false, siteDir = REPO_ROOT, env
   });
   const db = openDatabase(config.dbFile);
   db.migrate();
-  if (importContent) throw new Error("import des contenus : pas encore disponible");
-  const { handler } = createApp({ config, db, log: { info() {}, warn() {}, error() {} } });
+  if (importContent) await importFromRepo(db, config);
+  const { handler, publisher } = createApp({ config, db, log: { info() {}, warn() {}, error() {} } });
   const server = http.createServer(handler);
   await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
   const base = `http://127.0.0.1:${server.address().port}`;
   return {
-    config, db, base, dataDir,
+    config, db, publisher, base, dataDir,
     async createUser(role = "admin", email = `${role}@test.fr`, password = PASSWORD) {
       return (await createUser(db, { email, name: role === "admin" ? "Admin Test" : "Éditeur Test", role }, { password })).user;
     },
