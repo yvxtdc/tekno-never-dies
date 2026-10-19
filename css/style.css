@@ -464,57 +464,6 @@ h2{
   height:100%!important
 }
 
-/* ---------- Footer ---------- */
-footer{
-  margin-top:clamp(36px,7vw,96px);
-  padding:clamp(42px,7vw,80px) 0 28px;
-  color:#fff;
-  background:var(--navy);
-  border-top:6px solid var(--violet)
-}
-
-.footer-grid{
-  display:grid;
-  grid-template-columns:minmax(220px,1.15fr) minmax(240px,1fr) minmax(200px,.8fr);
-  gap:clamp(28px,6vw,88px)
-}
-
-.footer-brand{display:flex;align-items:flex-start;gap:16px}
-
-.footer-brand .badge{width:68px;flex:none;background-image:var(--badge-white)}
-
-.footer-brand .tnd{font-family:var(--display);font-size:1.5rem;line-height:1;text-shadow:.06em .06em 0 var(--sh-wm)}
-
-.footer-brand p,
-.footer-contact p{margin:.7em 0 0;color:rgba(255,255,255,.76);font-size:.9rem}
-
-.footer-column h2{margin:0 0 14px;font-family:var(--text);font-size:.85rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#a99aff}
-
-.footer-column nav{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.88rem}
-
-.footer-column nav a,
-.footer-bottom a{font-weight:700;text-decoration:none}
-
-.footer-column nav a:hover,
-.footer-bottom a:hover{color:#8fe4f1;text-decoration:underline;text-underline-offset:4px}
-
-.socials{display:flex!important;flex-wrap:wrap;gap:10px!important}
-
-.socials a{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid rgba(255,255,255,.22);border-radius:999px;font-size:.82rem}
-
-.socials svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2}
-
-.socials svg path{fill:currentColor;stroke:none}
-
-.socials .social-dot{fill:currentColor;stroke:none}
-
-.footer-bottom{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:18px;padding-top:22px;border-top:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.68);font-size:.82rem}
-
-/* Mention du bas : volontairement discrète (petite, sans gras, peu contrastée) */
-.footer-copy{color:rgba(255,255,255,.42);font-size:.72rem;letter-spacing:.02em}
-
-.footer-bottom nav{display:flex;flex-wrap:wrap;gap:18px}
-
 /* ---------- 7. Étoiles 3D (calque fixe, au-dessus de la page) ---------- */
 #stage{
   position:absolute;
@@ -570,9 +519,6 @@ footer{
       padding-bottom:clamp(58px,10vh,96px)
     }
 
-  .footer-grid{grid-template-columns:1fr;gap:34px}
-
-  .footer-bottom{align-items:flex-start;flex-direction:column}
 }
 
 /* =====================================================================
@@ -944,11 +890,6 @@ body{overflow-x:clip}
   box-shadow:0 12px 38px rgba(0,0,0,.28);
 }
 
-.home-page footer{
-  margin-top:0;
-  background:#050312;
-  border-top:1px solid rgba(149,106,255,.24);
-}
 
 .hero--home{
   min-height:100svh;
@@ -1439,13 +1380,6 @@ body{
   box-shadow:0 12px 38px rgba(0,0,0,.28);
 }
 
-footer,
-.home-page footer{
-  position:relative;
-  overflow:hidden;
-  background:#070419;
-  border-top:1px solid rgba(149,106,255,.26);
-}
 
 .home-grid{overflow:hidden}
 
@@ -1688,7 +1622,6 @@ main{position:relative;overflow-x:clip}
 
 .home-contact .decor-hollow{width:clamp(70px,9vw,140px);right:16%;top:14%;--rot:14deg;opacity:.9}
 
-footer .decor-chain{width:clamp(90px,10vw,150px);right:var(--pad);bottom:-6px;--rot:6deg;opacity:.5}
 
 /* 11.3 Accueil : grille de cartes-liens aux couleurs de la charte */
 .home-grid{
@@ -1865,7 +1798,6 @@ footer .decor-chain{width:clamp(90px,10vw,150px);right:var(--pad);bottom:-6px;--
 
   .home-contact .decor-hollow{right:6%;top:5%;opacity:.55}
 
-  footer .decor-chain{display:none}
 }
 
 @media (hover:none){
@@ -2069,3 +2001,56 @@ footer .decor-chain{width:clamp(90px,10vw,150px);right:var(--pad);bottom:-6px;--
    Une grande partie du contenu est ajoutée par JavaScript (fiches soirées, galerie, FAQ, artistes) :
    sans hauteur minimale, le pied de page s'affiche d'abord en haut puis « saute » vers le bas. */
 main{min-height:100svh}
+
+/* =====================================================================
+   Footer compact (partials/footer.html)
+   Une ligne : marque · liens utiles · e-mail, Instagram, haut de page ; puis une fine ligne légale.
+   Discret (peu de hauteur, textes atténués) mais complet : tout reste à un clic.
+   ===================================================================== */
+.site-footer{
+  position:relative;margin-top:clamp(36px,6vw,80px);padding:clamp(26px,3vw,36px) 0 clamp(18px,2vw,24px);
+  border-top:1px solid rgba(149,106,255,.22);background:#070419;color:#fff;
+}
+.site-footer__inner{display:grid;gap:clamp(18px,2.4vw,26px)}
+.site-footer__main{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px clamp(24px,4vw,56px)}
+
+.site-footer__brand{display:flex;align-items:center;gap:12px;color:#fff;text-decoration:none}
+.site-footer__brand .badge{width:44px;flex:none;background-image:var(--badge-white);transition:transform .3s}
+.site-footer__brand:hover .badge{transform:rotate(-8deg)}
+.site-footer__brand-text{display:grid;gap:2px}
+.site-footer__brand-text b{font-family:var(--display);font-weight:400;font-size:1.1rem;line-height:1;letter-spacing:.02em}
+.site-footer__brand-text span{color:rgba(255,255,255,.55);font-size:.78rem}
+
+.site-footer__nav{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:.84rem}
+.site-footer__nav a,
+.site-footer__legal a{color:rgba(255,255,255,.78);font-weight:600;text-decoration:none;transition:color .2s}
+.site-footer__nav a:hover,
+.site-footer__legal a:hover{color:var(--lav)}
+
+.site-footer__actions{display:flex;gap:8px}
+.site-footer__icon{
+  display:grid;place-items:center;width:40px;height:40px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.2);color:#fff;transition:border-color .2s,color .2s,background-color .2s;
+}
+.site-footer__icon:hover{border-color:var(--lav);color:var(--lav)}
+.site-footer__icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.site-footer__icon .social-dot{fill:currentColor;stroke:none}
+.site-footer__top{background:rgba(149,106,255,.14);border-color:rgba(149,106,255,.4)}
+.site-footer__top:hover{background:var(--gradient-tnd);border-color:transparent;color:#fff}
+
+.site-footer__legal{
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 24px;
+  padding-top:clamp(14px,1.6vw,18px);border-top:1px solid rgba(255,255,255,.08);
+}
+.site-footer__legal nav{display:flex;flex-wrap:wrap;gap:4px 18px}
+.site-footer__legal a{color:rgba(255,255,255,.5);font-size:.72rem}
+.footer-copy{color:rgba(255,255,255,.4);font-size:.72rem;letter-spacing:.02em}
+
+/* Téléphone : marque et icônes sur la même ligne, liens à la suite, mentions empilées */
+@media (max-width:760px){
+  .site-footer__main{display:grid;grid-template-columns:1fr auto;gap:18px}
+  .site-footer__nav{grid-column:1 / -1;grid-row:2;gap:8px 18px;font-size:.86rem}
+  .site-footer__brand-text span{display:none}
+  .site-footer__legal{flex-direction:column;align-items:flex-start;gap:6px}
+  .site-footer__legal nav{gap:4px 14px}
+}
