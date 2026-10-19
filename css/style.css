@@ -2008,9 +2008,15 @@ main{min-height:100svh}
    Discret (peu de hauteur, textes atténués) mais complet : tout reste à un clic.
    ===================================================================== */
 .site-footer{
-  position:relative;margin-top:clamp(36px,6vw,80px);padding:clamp(26px,3vw,36px) 0 clamp(18px,2vw,24px);
+  position:relative;margin-top:clamp(32px,5vw,64px);padding:clamp(26px,3vw,36px) 0 clamp(18px,2vw,24px);
   border-top:1px solid rgba(149,106,255,.22);background:#070419;color:#fff;
 }
+/* Accueil : la dernière section (« Une idée, un live… ») s'assombrit jusqu'à la couleur du footer,
+   qui la suit sans marge (sinon une bande plus claire apparaissait entre les deux) */
+.home-page .site-footer{margin-top:0;border-top-color:rgba(149,106,255,.14)}
+/* Pages qui finissent par le grand lien « Écris-nous » / « Tous les événements » (déjà aéré) : pas de marge en plus */
+main:has(> .cta-row:last-child) ~ .site-footer,
+main:has(.event-page__container > .cta-row:last-child) ~ .site-footer{margin-top:0}
 .site-footer__inner{display:grid;gap:clamp(18px,2.4vw,26px)}
 .site-footer__main{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px clamp(24px,4vw,56px)}
 
