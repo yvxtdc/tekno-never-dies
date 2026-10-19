@@ -1,0 +1,26 @@
+# Service systemd du CMS (exemple). À copier dans /etc/systemd/system/tnd-cms.service, puis :
+#   systemctl daemon-reload && systemctl enable --now tnd-cms
+[Unit]
+Description=CMS Tekno Never Dies
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=tnd-cms
+Group=tnd-cms
+WorkingDirectory=/srv/tnd-cms/site
+EnvironmentFile=/srv/tnd-cms/site/cms/.env
+ExecStart=/usr/bin/node --disable-warning=ExperimentalWarning cms/server/index.mjs
+Restart=on-failure
+RestartSec=5
+# Durcissement : le service n'écrit que dans la copie du site et le dossier de données.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/srv/tnd-cms
+UMask=0027
+
+[Install]
+WantedBy=multi-user.target
