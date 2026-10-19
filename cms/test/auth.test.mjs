@@ -158,6 +158,15 @@ describe("API d'authentification", () => {
     assert.ok(cms.db.get("SELECT COUNT(*) AS n FROM audit_log WHERE action = 'auth.blocked'").n >= 1);
   });
 
+  test("derrière un proxy : IP réelle = dernière adresse de X-Forwarded-For (non falsifiable)", async () => {
+    const proxied = await startCms({ env: { CMS_TRUST_PROXY: "1" } });
+    await proxied.createUser("editor", "proxy@test.fr");
+    const c = proxied.client();
+    await c.post("/api/auth/login", { email: "proxy@test.fr", password: "mauvais mot de passe" }, { headers: { "x-forwarded-for": "1.2.3.4, 203.0.113.9" } });
+    assert.equal(proxied.db.get("SELECT ip FROM login_attempts").ip, "203.0.113.9");
+    await proxied.close();
+  });
+
   test("compte désactivé : connexion impossible et sessions fermées", async () => {
     const admin = await cms.login("admin");
     await cms.createUser("editor", "parti@test.fr");

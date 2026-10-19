@@ -55,7 +55,9 @@ export function createApp({ config, db, log = createLogger(config.logLevel), pub
 
   const clientIp = (req) => {
     if (config.trustProxy) {
-      const forwarded = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim();
+      // Dernière adresse : celle ajoutée par notre proxy. Les précédentes viennent du client et
+      // pourraient être inventées pour contourner la limitation des connexions.
+      const forwarded = String(req.headers["x-forwarded-for"] || "").split(",").map((s) => s.trim()).filter(Boolean).at(-1);
       if (forwarded) return forwarded.slice(0, 64);
     }
     return req.socket.remoteAddress || "inconnue";
