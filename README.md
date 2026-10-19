@@ -123,14 +123,10 @@ Issues de l'API publique de recherche des entreprises, consultée le 23 septembr
 
 Ces informations sont une base de travail : elles ne remplacent pas la validation par l'association des mentions légales.
 
-## Informations à finaliser avant publication
+## Informations à compléter
 
-- Ajouter le numéro RNA dans `mentions-legales.html` (emplacement signalé par un commentaire).
-- Appliquer la suppression des demandes au plus tard trois ans après le dernier échange, y compris dans la boîte mail et Formspree ; vérifier les conditions de sous-traitance et les garanties de transfert international du compte.
-- ICE BOILER v2 : ajouter le lien de billetterie (`ticketUrl`) et le line-up dans `js/data/events.js`.
-- Désactiver GitHub Pages sur l’ancienne copie `yannismetzinger06-ship-it/tekno-never-dies` (contenu en double).
-- Vérifier les autorisations de publication des photos et informations de l’équipe et des personnes photographiées.
-- Confirmer l’exactitude du QR code d’agenda après changement de l’URL d’hébergement.
+La liste des informations manquantes (adresses, fréquentation, photos de soirées, légal…) est tenue dans
+`A-COMPLETER.md` : fichier interne, non publié sur le site.
 
 ## Licences
 
