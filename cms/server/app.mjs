@@ -18,6 +18,8 @@ import { loadSession, parseCookies } from "./auth/sessions.mjs";
 import { can } from "./auth/permissions.mjs";
 import { REPO_ROOT } from "./config.mjs";
 import { registerAuthRoutes } from "./api/auth.mjs";
+import { registerContentRoutes } from "./api/content.mjs";
+import { registerMediaRoutes } from "./api/media.mjs";
 import { registerUserRoutes } from "./api/users.mjs";
 
 const ADMIN_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../admin");
@@ -43,6 +45,8 @@ export function createApp({ config, db, log = createLogger(config.logLevel) }) {
   const router = new Router();
   const deps = { config, db, log };
   registerAuthRoutes(router, deps);
+  registerContentRoutes(router, deps);
+  registerMediaRoutes(router, deps);
   registerUserRoutes(router, deps);
 
   const clientIp = (req) => {
