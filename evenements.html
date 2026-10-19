@@ -54,6 +54,7 @@
   <link rel="stylesheet" href="css/style.css?v=2" />
   <link rel="stylesheet" href="css/pages.css" />
   <link rel="stylesheet" href="css/components/event-flyer.css" />
+  <link rel="stylesheet" href="css/components/events-list.css" />
   <script type="module" src="js/partials.js"></script>
 </head>
 <body data-page="evenements">
@@ -110,21 +111,34 @@
 <!-- /partial:header -->
 
   <main id="main">
-    <section class="page-head container">
+    <section class="page-head container events-head">
       <h1><span class="l2">Événements</span></h1>
       <img class="decor decor-r decor--float" src="assets/img/decor/star-pair.webp" alt="" aria-hidden="true" />
       <p>Nos prochaines soirées, et un aperçu de celles déjà organisées.</p>
-    </section>
-
-    <section class="container events-block">
-       <div class="section-heading">
-        <h2 class="section-title">À venir</h2>
-        <div class="section-heading__actions">
+      <!-- Agenda : abonnement (QR code sur ordinateur) et lien à partager, js/pages/evenements.js -->
+      <div class="events-agenda">
+        <p>Abonne-toi à l'agenda TND : tous les événements arrivent directement dans ton calendrier, sans jamais en rater un.</p>
+        <div class="events-agenda__actions">
           <a class="btn btn-line btn-sm" href="calendar/events.ics" id="download-agenda">S'abonner à l'agenda</a>
           <button class="btn btn-line btn-sm" type="button" id="copy-events-link">Partager l'agenda</button>
         </div>
       </div>
-      <p class="agenda-hint">Abonne-toi à l'agenda TND : tous les événements arrivent directement dans ton calendrier, sans jamais en rater un.</p>
+    </section>
+
+    <!-- Prochaine(s) soirée(s) en grand (js/pages/evenements.js) -->
+    <section class="container events-block" aria-labelledby="upcoming-title">
+      <h2 class="section-title" id="upcoming-title">À venir</h2>
+      <div class="events-upcoming" id="upcoming-events"></div>
+    </section>
+
+    <!-- Soirées passées : frise par année (js/pages/evenements.js) -->
+    <section class="container events-block has-decor" id="past-events-block" aria-labelledby="past-title">
+      <img class="decor decor-r2" style="top:-14px" src="assets/img/decor/sparkle-blue.webp" alt="" aria-hidden="true" />
+      <h2 class="section-title" id="past-title">Soirées passées</h2>
+      <div class="events-timeline" id="past-events"></div>
+    </section>
+
+    <section class="container events-block">
       <a class="artists-teaser" href="artistes.html">
         <span class="artists-teaser__photos" aria-hidden="true"></span>
         <span class="artists-teaser__text">
@@ -134,31 +148,6 @@
         </span>
         <span class="artists-teaser__arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 12h18M14 5l7 7-7 7"/></svg></span>
       </a>
-      <!-- Recherche et filtre masqués tant qu'il y a peu de soirées : retirer « hidden » ci-dessous pour les réafficher. -->
-      <div hidden>
-      <div class="listing-tools" aria-label="Filtres des événements">
-        <label class="search-field">
-          <span>Rechercher</span>
-          <input id="event-search" type="search" placeholder="Nom, lieu ou description" />
-        </label>
-        <label class="select-field">
-          <span>Afficher</span>
-          <select id="event-filter">
-            <option value="tous">Tous les événements</option>
-            <option value="a-venir">À venir</option>
-            <option value="passe">Passés</option>
-          </select>
-        </label>
-      </div>
-      <p class="form-status" id="events-status" role="status" aria-live="polite"></p>
-      </div>
-      <ul class="card-grid" id="upcoming-events"></ul>
-    </section>
-
-    <section class="container events-block has-decor" id="past-events-block">
-      <img class="decor decor-r2" style="top:-14px" src="assets/img/decor/sparkle-blue.webp" alt="" aria-hidden="true" />
-      <h2 class="section-title">Événements passés</h2>
-      <ul class="card-grid" id="past-events"></ul>
     </section>
 
     <a class="cta-row" href="contact.html">
