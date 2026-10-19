@@ -309,6 +309,12 @@
   opacity:.95;
 }
 
+/* Téléphone : le décor passait sur le titre des pages ; il se met derrière, plus petit et plus discret */
+@media (max-width:640px){
+  .page-head h1{position:relative;z-index:2}
+  .page-head .decor-r{z-index:1;width:84px;top:84px;right:12px;opacity:.5}
+}
+
 .decor-l{left:-34px;width:clamp(70px,9vw,132px);--rot:-12deg;opacity:.92}
 
 .decor-r2{right:-30px;width:clamp(76px,10vw,150px);--rot:12deg;opacity:.92}
@@ -1657,6 +1663,9 @@ button.event-gallery-link{background:none;border-width:0 0 1px;border-radius:0;f
   transition:filter .4s ease,transform .4s cubic-bezier(.22,1,.36,1);
 }
 .artists-teaser__photos > * + *{margin-left:calc(clamp(48px,5vw,64px) * -.32)}
+/* Toutes positionnées : l'ordre d'empilement reste celui de la page, même quand le survol en décale
+   une sur deux (sinon une photo décalée passait devant sa voisine) */
+.artists-teaser__photos > *{position:relative}
 .artists-teaser__photos span{
   display:grid;place-items:center;filter:none;
   color:var(--lav);font-size:.8rem;font-weight:700;
@@ -1684,23 +1693,7 @@ button.event-gallery-link{background:none;border-width:0 0 1px;border-radius:0;f
 }
 .artists-back{margin-bottom:22px}
 
-/* Fiche soirée : bloc Itinéraire (Google Maps, Waze, Plans) */
-.event-access{margin:0 0 clamp(40px,6vw,72px)}
-.event-access .event-eyebrow{display:block;margin-bottom:14px}
-.event-access h2{margin:0 0 12px;font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3vw,2.4rem);text-transform:uppercase}
-.event-access h2 span{color:var(--lav)}
-.event-access__place{margin:0 0 18px;color:#fff;font-weight:700}
-.event-access__links{display:flex;flex-wrap:wrap;gap:10px}
-.event-access__links a{
-  display:inline-flex;align-items:center;gap:8px;padding:.75em 1.3em;border-radius:999px;
-  border:1px solid rgba(255,255,255,.35);color:#fff;text-decoration:none;
-  font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  transition:background .2s,border-color .2s,color .2s;
-}
-.event-access__links a:first-child{background:#fff;border-color:#fff;color:var(--navy)}
-.event-access__links a:hover,
-.event-access__links a:focus-visible{background:var(--pink);border-color:var(--pink);color:#fff}
-.event-access__links span{color:inherit}
+/* Fiche soirée : le lien « Y aller » du haut arrive sous le menu, pas derrière */
 .event-access h2{scroll-margin-top:110px}
 /* Bandeau artistes : hauteur réservée pour les photos, ajoutées par JavaScript */
 .artists-teaser__photos{min-height:clamp(48px,5vw,64px)}
@@ -1708,3 +1701,21 @@ button.event-gallery-link{background:none;border-width:0 0 1px;border-radius:0;f
 #gallery-root:empty,
 #artists:empty{min-height:100svh}
 #upcoming-events:empty{min-height:min(100svh,760px)}
+
+/* =====================================================================
+   Statut d'une soirée (fiche et liste des événements) : prochaine soirée (J-41), passée, en direct
+   ===================================================================== */
+.event-status{
+  display:inline-flex;align-items:center;gap:10px;align-self:flex-start;margin:0;
+  padding:.55em 1em;border:1px solid rgba(149,106,255,.45);border-radius:999px;
+  background:rgba(11,7,34,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  color:#fff;font-size:.72rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+}
+.event-status__dot{width:8px;height:8px;border-radius:50%;background:var(--lav);box-shadow:0 0 10px var(--lav);animation:live-pulse 1.8s ease-in-out infinite}
+.event-status__count{padding-left:10px;border-left:1px solid rgba(255,255,255,.25);color:var(--lav)}
+.event-status.is-past{border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.8)}
+.event-hero.is-live .event-status{border-color:var(--pink)}
+.event-hero.is-live .event-status__dot{background:var(--pink);box-shadow:0 0 12px var(--pink)}
+.event-hero.is-live .event-status::after{content:var(--t-live,"EN DIRECT");color:var(--pink)}
+
+@media (prefers-reduced-motion:reduce){.event-status__dot{animation:none}}

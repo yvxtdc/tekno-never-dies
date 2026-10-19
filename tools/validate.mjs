@@ -124,7 +124,8 @@ if (toCheck) todo.push(`js/data/faq.js : ${toCheck} réponse(s) marquée(s) need
 // question de FAQ ou un nouveau membre s'affichent en français tant qu'ils ne sont pas traduits.
 const norm = (s) => String(s).replace(/\s+/g, " ").trim();
 const dataTexts = [
-  ...events.flatMap((e) => [e.description, e.price, e.age, ...(e.practical || [])]),
+  ...events.flatMap((e) => [e.description, e.price, e.age, ...(e.practical || []),
+    e.about?.kicker, e.about?.title, e.about?.text, ...(e.about?.photos || []).map((ph) => ph.caption)]),
   ...FAQ.flatMap((x) => [x.q, x.a]),
   ...TEAM.flatMap((m) => [m.role, m.bio, ...(m.tags || []), ...Object.entries(m.extra || {}).flat()])
 ].filter((s) => s && /\p{L}{2}/u.test(s)).map(norm);
@@ -164,7 +165,11 @@ const images = [];
     else if (/\.(webp|jpe?g|png|svg|gif|avif)$/i.test(e.name)) images.push(full);
   }
 })(path.join(root, "assets/img"));
-for (const image of images) if (!sources.includes(rel(image))) todo.push(`${rel(image)} : image utilisée nulle part (à supprimer ?)`);
+// Plans des lieux (assets/img/maps/<slug>-village.svg / -lieu.svg) : adresses construites par
+// js/pages/evenement.js. Utilisés si la soirée a un "venue" ; un plan attendu manquant est une erreur.
+const expectedMaps = new Set(events.filter((e) => e.venue).flatMap((e) => [`${e.slug}-village`, ...(e.venue.precise === false ? [] : [`${e.slug}-lieu`])]).map((n) => `assets/img/maps/${n}.svg`));
+for (const map of expectedMaps) if (!fs.existsSync(path.join(root, map))) err(path.join(root, "js/data/events.js"), `plan absent : ${map} (lance : npm run plans)`);
+for (const image of images) if (!sources.includes(rel(image)) && !expectedMaps.has(rel(image))) todo.push(`${rel(image)} : image utilisée nulle part (à supprimer ?)`);
 
 const { SITE } = await import(pathToFileURL(path.join(root, "js/data/site.js")).href);
 const streets = new Set();

@@ -1,0 +1,131 @@
+/* =====================================================================
+   Page Événements (evenements.html) — octobre 2026
+   En-tête avec l'agenda, prochaine(s) soirée(s) en grand, frise des soirées passées par année,
+   puis les artistes. Chargé après pages.css et event-flyer.css.
+   ===================================================================== */
+
+/* ---------- En-tête : l'agenda en un coup d'œil ----------
+   Une page de calendrier (date de la prochaine soirée), trois étapes illustrées, deux boutons. */
+.events-agenda{
+  display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(18px,3vw,36px);align-items:center;
+  max-width:980px;margin-top:clamp(20px,2.6vw,32px);padding:clamp(18px,2.4vw,26px) clamp(18px,2.6vw,30px);
+  border:1px solid rgba(149,106,255,.34);border-radius:24px;
+  background:linear-gradient(120deg,rgba(66,38,182,.24),rgba(182,38,154,.08) 70%);
+}
+.events-agenda__cal{
+  position:relative;display:grid;grid-template-rows:auto 1fr;width:clamp(84px,9vw,108px);aspect-ratio:1/1.05;
+  border-radius:18px;overflow:hidden;background:#fff;color:var(--page);
+  box-shadow:0 14px 34px rgba(0,0,0,.4),0 0 0 4px rgba(149,106,255,.18);transform:rotate(-5deg);
+}
+.events-agenda__cal-rings{position:absolute;top:-6px;left:0;right:0;display:flex;justify-content:space-around;z-index:2}
+.events-agenda__cal-rings i{width:8px;height:16px;border-radius:4px;background:#d9d2ff;box-shadow:0 0 0 2px var(--violet)}
+.events-agenda__cal-month{display:block;padding:12px 0 6px;background:var(--gradient-tnd);color:#fff;text-align:center;font:700 .74rem var(--text);letter-spacing:.2em}
+.events-agenda__cal-day{display:grid;place-items:center;font-family:var(--display);font-size:clamp(2rem,3.6vw,2.8rem);line-height:1}
+.events-agenda__cal-day svg{width:46%;fill:none;stroke:var(--violet);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.events-agenda__body{display:grid;gap:14px;min-width:0}
+.events-agenda__title{margin:0;font-family:var(--display);font-size:clamp(1.2rem,2.2vw,1.7rem);line-height:1;text-transform:uppercase}
+.events-agenda__steps{display:flex;flex-wrap:wrap;gap:10px 22px;margin:0;padding:0;list-style:none}
+.events-agenda__steps li{display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.8);font-size:.88rem}
+.events-agenda__steps b{color:#fff}
+.events-agenda__steps svg{flex:none;width:34px;height:34px;padding:7px;border-radius:50%;border:1px solid rgba(149,106,255,.5);background:rgba(149,106,255,.14);fill:none;stroke:var(--lav);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.events-agenda__actions{display:flex;flex-wrap:wrap;gap:10px}
+.page-head .events-agenda__actions .btn{margin:0}
+
+/* ---------- À venir : grande carte ---------- */
+.events-upcoming{display:grid;gap:clamp(22px,3vw,36px);margin-top:clamp(18px,2.4vw,28px)}
+.events-feature{
+  position:relative;isolation:isolate;
+  display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(24px,4vw,64px);align-items:center;
+  padding:clamp(24px,3.4vw,48px);
+  border:1px solid rgba(149,106,255,.36);border-radius:30px;
+  background:linear-gradient(135deg,rgba(66,38,182,.3),rgba(182,38,154,.1) 60%,rgba(11,7,34,.4));
+  box-shadow:0 0 0 1px rgba(255,255,255,.04) inset,0 30px 70px rgba(0,0,0,.35);
+  overflow:hidden;
+}
+/* Halo derrière le flyer */
+.events-feature::before{
+  content:"";position:absolute;z-index:-1;left:-10%;top:-30%;width:60%;height:160%;
+  background:radial-gradient(closest-side,rgba(149,106,255,.35),transparent);
+}
+.events-feature__flyer{display:block;width:clamp(170px,22vw,300px);transform:rotate(-4deg);transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.events-feature__flyer:hover{transform:rotate(-1deg) scale(1.03)}
+.events-feature__flyer img{
+  /* format naturel de l'affiche : rien n'est coupé */
+  display:block;width:100%;height:auto;border-radius:16px;
+  border:1px solid rgba(255,255,255,.2);
+  box-shadow:0 26px 60px rgba(0,0,0,.5),0 0 50px rgba(149,106,255,.35);
+}
+.events-feature__body{display:grid;justify-items:start;gap:12px}
+.events-feature h3{margin:4px 0 0;font-family:var(--display);font-weight:400;text-transform:uppercase;font-size:clamp(2.4rem,5.4vw,4.6rem);line-height:.9}
+.events-feature h3 a{background:var(--gradient-title);-webkit-background-clip:text;background-clip:text;color:transparent;text-decoration:none}
+.events-feature__tagline{margin:0;color:#fff;font-weight:700;font-size:clamp(1rem,1.5vw,1.2rem)}
+.events-feature__when{margin:4px 0 0;color:var(--lav);font-weight:700;font-size:.82rem;letter-spacing:.14em;text-transform:uppercase}
+.events-feature__place{margin:0;color:var(--muted);font-size:.92rem}
+.events-feature__actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+
+/* ---------- Soirées passées : frise par année ---------- */
+.events-timeline{display:grid;gap:clamp(28px,4vw,56px);margin-top:clamp(18px,2.4vw,28px)}
+.events-year{position:relative;display:grid;grid-template-columns:clamp(90px,12vw,170px) minmax(0,1fr);gap:clamp(16px,3vw,40px)}
+/* Grande année en contour, qui reste visible pendant le défilement */
+.events-year__label{
+  position:sticky;top:110px;align-self:start;margin:0;
+  font-family:var(--display);font-size:clamp(2.6rem,6vw,5rem);line-height:.9;
+  color:transparent;-webkit-text-stroke:1.5px rgba(193,177,255,.65);
+}
+.events-year__list{position:relative;display:grid;gap:clamp(20px,3vw,34px);margin:0;padding:0 0 0 clamp(18px,2.6vw,34px);list-style:none;border-left:1px dashed rgba(149,106,255,.4)}
+
+.events-past{
+  position:relative;display:grid;grid-template-columns:clamp(120px,14vw,190px) minmax(0,1fr);gap:clamp(18px,2.6vw,36px);align-items:center;
+  padding:clamp(16px,2vw,24px);border:1px solid rgba(255,255,255,.1);border-radius:24px;background:rgba(255,255,255,.025);
+  transition:border-color .3s,background-color .3s,transform .3s;
+}
+.events-past:hover{border-color:rgba(149,106,255,.45);background:rgba(66,38,182,.12);transform:translateX(4px)}
+/* Repère sur la frise */
+.events-past::before{
+  content:"";position:absolute;left:calc(-1 * clamp(18px,2.6vw,34px) - 6px);top:50%;width:11px;height:11px;margin-top:-5px;
+  border-radius:50%;background:var(--lav);box-shadow:0 0 0 4px rgba(149,106,255,.18),0 0 14px rgba(149,106,255,.6);
+}
+/* Affiches qui alternent à gauche et à droite */
+.events-past.is-right{grid-template-columns:minmax(0,1fr) clamp(120px,14vw,190px)}
+.events-past.is-right .events-past__flyer{order:2;transform:rotate(3deg)}
+.events-past__flyer{display:block;transform:rotate(-3deg);transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+.events-past:hover .events-past__flyer{transform:rotate(0) scale(1.03)}
+.events-past__flyer img{display:block;width:100%;height:auto;border-radius:12px;border:1px solid rgba(255,255,255,.16);box-shadow:0 18px 40px rgba(0,0,0,.45)}
+.events-past__date{margin:0;color:var(--lav);font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase}
+.events-past h3{margin:6px 0 0;font-family:var(--display);font-weight:400;text-transform:uppercase;font-size:clamp(1.6rem,3vw,2.5rem);line-height:.95}
+.events-past h3 a{color:#fff;text-decoration:none}
+.events-past h3 a:hover{color:var(--lav)}
+.events-past__tagline{margin:8px 0 0;color:#fff;font-weight:600}
+.events-past__place{margin:4px 0 0;color:var(--muted);font-size:.9rem}
+.events-past__chips{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0;padding:0;list-style:none}
+.events-past__chips li{padding:5px 11px;border:1px solid rgba(255,255,255,.18);border-radius:999px;color:rgba(255,255,255,.8);font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.events-past__link{display:inline-flex;gap:8px;margin-top:14px;color:#fff;font-weight:700;font-size:.85rem;text-decoration:none;border-bottom:1px solid var(--lav);padding-bottom:4px}
+.events-past__link span{color:var(--lav);transition:transform .2s}
+.events-past:hover .events-past__link span{transform:translateX(4px)}
+
+.events-block .artists-teaser{margin-top:0}
+
+@media (prefers-reduced-motion:reduce){
+  .events-feature__flyer,.events-past,.events-past__flyer{transition:none}
+}
+
+/* ---------- Tablette ---------- */
+@media (max-width:900px){
+  .events-year{grid-template-columns:1fr}
+  .events-year__label{position:static;font-size:clamp(2.4rem,10vw,3.6rem)}
+}
+
+/* ---------- Téléphone ---------- */
+@media (max-width:640px){
+  .events-agenda{grid-template-columns:1fr;justify-items:start;padding:20px}
+  .events-agenda__cal{width:80px}
+  .events-agenda__steps{flex-direction:column}
+  .events-agenda__actions,.events-agenda__actions .btn{width:100%;text-align:center}
+  .events-feature{grid-template-columns:1fr;justify-items:start;padding:22px;border-radius:24px}
+  .events-feature__flyer{width:min(62vw,240px)}
+  .events-feature__actions,.events-feature__actions .btn{width:100%;text-align:center}
+  .events-past,
+  .events-past.is-right{grid-template-columns:96px minmax(0,1fr);gap:16px;align-items:start}
+  .events-past.is-right .events-past__flyer{order:0;transform:rotate(-3deg)}
+  .events-past h3{font-size:1.5rem}
+}

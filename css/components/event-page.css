@@ -1,0 +1,219 @@
+/* =====================================================================
+   Fiche soirée — mise en page (octobre 2026)
+   Haut : statut, titre, fiche date / horaires / lieu / entrée, styles, boutons ; flyer à droite.
+   Puis « La soirée » (ce qui la distingue), line-up, « Y aller » (plans), infos pratiques.
+   Chargé par evenement.html (et les fiches evenement-….html), après pages.css et event-flyer.css.
+   ===================================================================== */
+
+/* ---------- Haut de la fiche ---------- */
+.event-hero{min-height:auto;padding-bottom:clamp(48px,6vw,80px)}
+.event-hero__text{gap:clamp(18px,2.4vw,26px)}
+.event-hero h1{font-size:clamp(3.2rem,8.4vw,7.4rem)}
+
+/* Fiche technique : quatre cases à fin filet, libellé lavande, valeur en blanc */
+.event-facts{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 clamp(18px,2.4vw,32px);
+  max-width:720px;margin:0;
+}
+.event-facts__item{padding:14px 0 12px;border-top:1px solid rgba(255,255,255,.16)}
+.event-facts dt{margin:0 0 6px;color:var(--lav);font-size:.66rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase}
+.event-facts dd{margin:0;color:#fff;font-weight:700;font-size:clamp(1rem,1.4vw,1.15rem);line-height:1.35}
+.event-facts dd small{display:block;margin-top:3px;color:var(--muted);font-weight:400;font-size:.82rem}
+
+.event-actions{display:flex;flex-wrap:wrap;gap:10px}
+.event-actions .btn{padding:.8em 1.35em;font-size:.92rem}
+button.btn{font-family:var(--text);cursor:pointer;background-color:transparent}
+.event-actions .btn-hero-line{color:#fff}
+
+/* ---------- « La soirée » : texte à gauche, deux photos encadrées et légendées à droite ---------- */
+.event-about{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,.55fr);gap:clamp(28px,5vw,72px);align-items:center;
+  margin:clamp(56px,8vw,110px) 0 0;
+}
+.event-about.has-photos{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)}
+.event-about__intro .event-eyebrow{margin-bottom:14px}
+.event-about h2{
+  margin:0;font-family:var(--display);font-weight:400;text-transform:uppercase;
+  font-size:clamp(2.1rem,4.4vw,3.8rem);line-height:.92;letter-spacing:-.02em;
+  background:var(--gradient-title);-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.event-about__text{max-width:58ch;margin:20px 0 0;color:rgba(255,255,255,.82);font-size:1rem;line-height:1.8}
+.event-about__side{display:grid;justify-items:center}
+.event-about .event-story__stamp{width:min(100%,200px)}
+
+/* Chiffres clés : une ligne sous le texte */
+.event-stats{display:flex;flex-wrap:wrap;gap:16px clamp(22px,3vw,40px);margin:26px 0 0;padding:20px 0 0;list-style:none;border-top:1px solid var(--line)}
+.event-stats li{display:grid;gap:4px}
+.event-stats b{
+  font-family:var(--display);font-weight:400;font-size:clamp(1.7rem,2.6vw,2.2rem);line-height:1;
+  background:var(--gradient-title);-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.event-stats span{color:var(--muted);font-size:.66rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+
+/* Photos : cadre fin à coins marqués, légèrement de travers, légende en italique dessous */
+.event-about__photos{display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,2.4vw,32px);align-items:start}
+.event-photo{margin:0}
+.event-photo:nth-child(2){margin-top:clamp(28px,5vw,64px)}
+.event-photo__frame{
+  position:relative;display:block;padding:8px;
+  border:1px solid rgba(149,106,255,.45);
+  transform:rotate(-1.2deg);transition:transform .5s cubic-bezier(.2,.8,.2,1);
+}
+.event-photo:nth-child(2) .event-photo__frame{transform:rotate(1.6deg)}
+.event-photo:hover .event-photo__frame{transform:rotate(0)}
+/* Coins du cadre */
+.event-photo__frame::before,
+.event-photo__frame::after{content:"";position:absolute;width:14px;height:14px;border:2px solid var(--lav)}
+.event-photo__frame::before{top:-3px;left:-3px;border-right:0;border-bottom:0}
+.event-photo__frame::after{right:-3px;bottom:-3px;border-left:0;border-top:0}
+.event-photo img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;filter:saturate(.85) contrast(1.05)}
+.event-photo figcaption{margin-top:12px;color:rgba(255,255,255,.62);font-style:italic;font-size:.85rem;line-height:1.5}
+
+/* ---------- Line-up : cartes compactes, graphiques ----------
+   Deux colonnes dans l'ordre de passage. Chaque carte : grand numéro chromé qui déborde, photo dans un
+   anneau en dégradé, horaire en pastille, et en bas une barre « timetable » qui situe le set dans la nuit
+   (--from / --to, js/pages/evenement.js). Un axe des heures surmonte la grille. */
+.event-lineup{margin:clamp(56px,8vw,100px) 0}
+.lineup-axis{display:flex;align-items:center;gap:12px;margin:0 0 16px;color:var(--lav);font-size:.68rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase}
+.lineup-axis i{flex:1;height:1px;background:linear-gradient(90deg,rgba(149,106,255,.15),rgba(149,106,255,.6),rgba(182,38,154,.4))}
+.lineup-axis span:nth-child(3){color:rgba(255,255,255,.55)}
+.event-lineup .lineup-rows{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(var(--rows,3),auto);grid-auto-flow:column;
+  gap:14px clamp(14px,1.8vw,22px);padding:0;
+}
+.event-lineup .lineup-rows::before{display:none}
+.event-lineup .lineup-row,
+.event-lineup .lineup-row:nth-child(even){
+  position:relative;overflow:hidden;isolation:isolate;
+  flex-direction:row;text-align:left;
+  gap:clamp(14px,1.8vw,20px);padding:16px clamp(16px,2vw,24px) 24px;
+  border:1px solid rgba(149,106,255,.22);border-radius:22px;
+  background:
+    repeating-linear-gradient(135deg,rgba(149,106,255,.05) 0 2px,transparent 2px 14px),
+    linear-gradient(120deg,rgba(66,38,182,.22),rgba(11,7,34,.3) 65%);
+  transition:border-color .3s,transform .3s,box-shadow .3s;
+}
+.event-lineup .lineup-row:hover{border-color:rgba(149,106,255,.6);transform:translateY(-2px);box-shadow:0 14px 34px rgba(0,0,0,.35),0 0 30px rgba(149,106,255,.16)}
+.event-lineup .lineup-row::before{display:none}
+/* Numéro chromé en grand, en filigrane à droite de la carte */
+.event-lineup .lineup-row__num{
+  position:absolute;right:-4px;bottom:-14px;z-index:-1;
+  font-size:clamp(4rem,6.4vw,5.6rem);opacity:.5;
+}
+.event-lineup .lineup-row:hover .lineup-row__num{opacity:.85}
+/* Photo dans un anneau dégradé */
+.event-lineup .lineup-row__photo{--photo:clamp(56px,5vw,70px);border:0;padding:3px;background:var(--gradient-tnd)}
+.event-lineup .lineup-row__photo img{inset:3px;width:calc(100% - 6px);height:calc(100% - 6px);border-radius:50%}
+.event-lineup .lineup-row__photos .lineup-row__photo + .lineup-row__photo{box-shadow:0 0 0 3px #120b38}
+.event-lineup .lineup-row__time{
+  display:inline-block;margin-bottom:6px;padding:3px 10px;border-radius:999px;
+  background:rgba(149,106,255,.18);border:1px solid rgba(149,106,255,.35);color:#fff;font-size:.66rem;
+}
+.event-lineup .lineup-row h3{font-size:clamp(1.25rem,2vw,1.7rem)}
+/* Barre timetable : piste de la nuit, segment du set */
+.lineup-row__bar{position:absolute;left:clamp(16px,2vw,24px);right:clamp(16px,2vw,24px);bottom:11px;height:4px;border-radius:4px;background:rgba(255,255,255,.08)}
+.lineup-row__bar i{position:absolute;top:0;bottom:0;left:calc(var(--from) * 100%);width:calc((var(--to) - var(--from)) * 100%);border-radius:4px;background:var(--gradient-tnd);box-shadow:0 0 10px rgba(182,38,154,.55)}
+.event-lineup .lineup-row.is-live{border-color:var(--pink);box-shadow:0 0 0 1px var(--pink),0 0 34px rgba(182,38,154,.35)}
+
+/* ---------- « Y aller » : une carte, infos à gauche, plan avec médaillon de zoom à droite ---------- */
+.event-access{margin:clamp(56px,8vw,100px) 0}
+.event-access__card{
+  display:grid;grid-template-columns:minmax(220px,.75fr) minmax(0,1.25fr);gap:clamp(20px,3vw,40px);align-items:center;
+  padding:clamp(16px,2vw,22px);
+  border:1px solid rgba(149,106,255,.3);border-radius:28px;
+  background:linear-gradient(130deg,rgba(66,38,182,.2),rgba(11,7,34,.35) 70%);
+}
+.event-access__info{display:grid;justify-items:start;gap:10px;padding:clamp(6px,1.4vw,16px)}
+.event-access__venue{margin:0;font-family:var(--display);font-size:clamp(1.6rem,2.8vw,2.3rem);line-height:.95;text-transform:uppercase}
+.event-access__address{margin:0;color:var(--muted);font-size:.95rem}
+.event-access__links{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.event-access__links a{
+  display:inline-flex;align-items:center;gap:8px;padding:.7em 1.15em;
+  border:1px solid rgba(255,255,255,.3);border-radius:999px;color:#fff;
+  font-size:.74rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;
+  transition:border-color .2s,color .2s,background-color .2s;
+}
+.event-access__links a:first-child{border-color:transparent;background:var(--gradient-tnd);color:#fff}
+.event-access__links a:hover{border-color:var(--lav);color:var(--lav)}
+.event-access__links a:first-child:hover{color:#fff;filter:brightness(1.1)}
+.event-maps__credit{margin:6px 0 0;color:rgba(255,255,255,.4);font-size:.68rem}
+.event-maps__credit a{color:inherit}
+
+/* Plan : cadre panoramique, village agrandi (positions : layoutMap) */
+.event-mapstage{
+  position:relative;overflow:hidden;aspect-ratio:2 / 1;border-radius:20px;
+  background:radial-gradient(120% 120% at 30% 50%,#170f44 0%,#0b0722 70%);
+  box-shadow:inset 0 0 0 1px rgba(149,106,255,.25);
+}
+.event-mapstage__village{position:absolute;max-width:none;opacity:.95}
+/* Bords du plan qui s'effacent dans le cadre */
+.event-mapstage::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;box-shadow:inset 0 0 40px 18px #0b0722}
+.event-mapstage__town{position:absolute;left:16px;top:14px;z-index:3;padding:4px 10px;border-radius:999px;background:rgba(11,7,34,.7);color:#fff;font-size:.66rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase}
+.event-mapstage__zoom{position:absolute;z-index:2;border:1.5px dashed rgba(255,255,255,.75);border-radius:6px;box-shadow:0 0 0 999px rgba(11,7,34,.18)}
+.event-mapstage__links{position:absolute;inset:0;z-index:2;width:100%;height:100%;overflow:visible;pointer-events:none}
+.event-mapstage__links line{stroke:rgba(255,255,255,.6);stroke-width:1.2;stroke-dasharray:4 4}
+.event-mapstage__inset{
+  position:absolute;z-index:3;overflow:hidden;border-radius:14px;
+  border:2px solid #fff;background:#0f0a30;
+  box-shadow:0 18px 40px rgba(0,0,0,.55),0 0 0 4px rgba(149,106,255,.25);
+}
+.event-mapstage__inset img{position:absolute;inset:0;width:100%;height:100%;max-width:none}
+.event-mapstage__label{position:absolute;left:6px;top:6px;white-space:nowrap;padding:3px 8px;border-radius:999px;background:var(--gradient-tnd);color:#fff;font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+/* Repère : au centre du médaillon ; sur le village, placé par layoutMap */
+.event-map__pin{position:absolute;left:50%;top:50%;z-index:2;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--pink);box-shadow:0 0 0 3px #fff,0 0 18px var(--pink)}
+.event-map__pin::before,
+.event-map__pin::after{content:"";position:absolute;inset:-12px;border:2px solid rgba(182,38,154,.7);border-radius:50%;animation:map-ping 2.4s ease-out infinite}
+.event-map__pin::after{animation-delay:1.2s}
+.event-mapstage__pin{width:9px;height:9px;margin:-4.5px 0 0 -4.5px;box-shadow:0 0 0 2px #fff}
+.event-mapstage__pin::before,.event-mapstage__pin::after{display:none}
+@keyframes map-ping{from{transform:scale(.3);opacity:1}to{transform:scale(2.2);opacity:0}}
+
+/* ---------- Infos pratiques : cartes ---------- */
+.event-practical{margin:0 0 clamp(56px,8vw,100px)}
+.event-practical ul{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.event-practical li,
+.event-practical li:first-child{
+  display:flex;align-items:flex-start;gap:12px;padding:18px 20px;
+  border:1px solid rgba(255,255,255,.12);border-radius:18px;background:rgba(255,255,255,.03);
+  color:rgba(255,255,255,.85);font-size:.9rem;
+}
+.event-practical li::before{content:"✦";color:var(--lav);line-height:1.5}
+
+@media (prefers-reduced-motion:reduce){
+  .event-status__dot,
+  .event-map__pin::before,
+  .event-map__pin::after{animation:none}
+}
+
+/* ---------- Tablette ---------- */
+@media (max-width:1023px){
+  .event-about,
+  .event-about.has-photos{grid-template-columns:1fr}
+  .event-about__side{display:none}
+  .event-access__card{grid-template-columns:1fr}
+}
+
+/* ---------- Téléphone ---------- */
+@media (max-width:760px){
+  .event-hero{padding-top:104px}
+  .event-hero h1{font-size:clamp(2.8rem,15vw,4.2rem)}
+  .event-facts{grid-template-columns:1fr 1fr}
+  .event-actions .btn{flex:1 1 auto;text-align:center}
+  .event-actions .btn-solid{flex-basis:100%}
+  .event-photo:nth-child(2){margin-top:22px}
+  .event-section-head__note{text-align:left}
+  .event-mapstage{aspect-ratio:1.45 / 1;border-radius:16px}
+  .event-mapstage__label{font-size:.5rem;letter-spacing:.1em;padding:2px 6px}
+  .event-mapstage__town{left:10px;top:10px;font-size:.58rem}
+  .lineup-axis{font-size:.6rem;gap:8px}
+  .event-access__links{width:100%}
+  .event-access__links a{flex:1 1 auto;justify-content:center}
+  .event-lineup .lineup-row__num{top:8px;bottom:auto;right:14px;font-size:2.6rem;opacity:.45}
+  .event-lineup .lineup-row__info{padding-right:46px}
+}
+@media (max-width:760px){
+  .event-lineup .lineup-rows{grid-template-columns:1fr;grid-template-rows:none;grid-auto-flow:row}
+}
+@media (max-width:420px){
+  .event-facts{grid-template-columns:1fr}
+}

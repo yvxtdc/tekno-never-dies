@@ -1,72 +1,95 @@
 import { EVENTS } from "../data/events.js";
 import { SITE } from "../data/site.js";
-import { formatDate, thumb, esc, eventStatus, safeUrl, track, eventPath } from "./helpers.js";
+import { formatDate, formatTime, esc, eventStatus, safeUrl, track, eventPath } from "./helpers.js";
 import { collectArtists, artistPhoto } from "../components/artists.js";
-import { t, plural } from "../i18n/i18n.js";
+import { eventStats } from "../components/event-stats.js";
+import { eventRange } from "./ics.js";
+import { t, tr, plural, locale } from "../i18n/i18n.js";
 
 const upcomingRoot = document.getElementById("upcoming-events");
 const pastRoot = document.getElementById("past-events");
-const pastBlock = document.getElementById("past-events-block");
-const search = document.getElementById("event-search");
-const filter = document.getElementById("event-filter");
-const status = document.getElementById("events-status");
 
-function matches(ev, query) {
-  return [ev.title, ev.place, ev.description, ...(ev.genres || []), ...(ev.practical || [])]
-    .join(" ")
-    .toLocaleLowerCase("fr")
-    .includes(query);
+const flyerOf = (ev) => ev.flyer || ev.cover;
+const genresList = (ev) => ev.genres?.length
+  ? `<ul class="event-genres" aria-label="Styles musicaux" translate="no">${ev.genres.map((g) => `<li>${esc(g)}</li>`).join("")}</ul>`
+  : "";
+
+/* ---------- À venir : chaque soirée en grand (flyer incliné, compte à rebours en jours, infos, boutons) ---------- */
+function featured(ev) {
+  const ticketUrl = safeUrl(ev.ticketUrl);
+  const range = eventRange(ev);
+  const days = range ? Math.ceil((range.start.getTime() - Date.now()) / 864e5) : null;
+  const visual = flyerOf(ev);
+  const when = [formatDate(ev.date, ev.datePrecision), formatTime(ev.time)].filter(Boolean).join(" · ");
+  return `
+    <article class="events-feature">
+      ${visual ? `<a class="events-feature__flyer" href="${eventPath(ev.slug)}" tabindex="-1" aria-hidden="true"><img src="${esc(visual)}" alt="" decoding="async" /></a>` : ""}
+      <div class="events-feature__body">
+        <p class="event-status is-upcoming"><span class="event-status__dot" aria-hidden="true"></span><span>Prochaine soirée</span>${days > 1 ? `<span class="event-status__count">${esc(t("J-{n}", { n: days }))}</span>` : ""}</p>
+        <h3><a href="${eventPath(ev.slug)}" translate="no">${esc(ev.title)}</a></h3>
+        ${ev.about?.title ? `<p class="events-feature__tagline">${esc(tr(ev.about.title))}</p>` : ""}
+        <p class="events-feature__when">${esc(when)}</p>
+        ${ev.place ? `<p class="events-feature__place">${esc(ev.place)}</p>` : ""}
+        ${genresList(ev)}
+        <div class="events-feature__actions">
+          ${ticketUrl ? `<a class="btn btn-solid" href="${esc(ticketUrl)}" target="_blank" rel="noopener">Prendre ma place ↗</a>` : ""}
+          <a class="btn btn-hero-line" href="${eventPath(ev.slug)}">Découvrir la soirée →</a>
+        </div>
+      </div>
+    </article>`;
 }
 
-function card(ev) {
-  const ticketUrl = safeUrl(ev.ticketUrl);
-  const ticket = ticketUrl
-    ? `<a class="btn btn-solid btn-sm" href="${esc(ticketUrl)}" target="_blank" rel="noopener">Billetterie</a>`
-    : "";
+/* ---------- Soirées passées : frise par année, affiches qui alternent à gauche et à droite ---------- */
+function pastItem(ev, i) {
+  const { djs, crowd } = eventStats(ev);
+  const visual = flyerOf(ev);
+  const chips = [
+    crowd ? t("≈ {n} personnes", { n: crowd }) : "",
+    djs ? `${djs} ${plural(djs, "DJ", "DJ")}` : "",
+    ev.gallerySlug ? tr("Photos en ligne") : ""
+  ].filter(Boolean);
   return `
-    <li class="event-card">
-      ${ev.flyer
-        ? `<div class="thumb thumb--poster">
-            <img class="thumb__blur" src="${esc(ev.flyer)}" alt="" aria-hidden="true" loading="lazy" decoding="async" />
-            <img class="thumb__poster" src="${esc(ev.flyer)}" alt="${esc(t("Flyer de {title}", { title: ev.title }))}" loading="lazy" decoding="async" />
-          </div>`
-        : thumb(ev.cover, ev.title, "Visuel à venir")}
-      <div class="event-card__body">
-        <span class="event-card__date">${formatDate(ev.date, ev.datePrecision)}</span>
-        ${ev.demo ? '<span class="demo-label">DEMO À REMPLACER</span>' : ""}
-        <h3>${esc(ev.title)}</h3>
-        <p>${esc(ev.place)}</p>
-        <div class="event-card__actions">
-          <a class="btn btn-cyan btn-sm btn-discover" href="${eventPath(ev.slug)}">Découvrir la soirée<span class="btn-discover__arrow" aria-hidden="true">→</span></a>
-          ${ticket}
-        </div>
+    <li class="events-past${i % 2 ? " is-right" : ""}">
+      <a class="events-past__flyer" href="${eventPath(ev.slug)}" tabindex="-1" aria-hidden="true">
+        ${visual ? `<img src="${esc(visual)}" alt="" loading="lazy" decoding="async" />` : ""}
+      </a>
+      <div class="events-past__body">
+        <p class="events-past__date">${esc(formatDate(ev.date, ev.datePrecision))}</p>
+        <h3><a href="${eventPath(ev.slug)}" translate="no">${esc(ev.title)}</a></h3>
+        ${ev.about?.title ? `<p class="events-past__tagline">${esc(tr(ev.about.title))}</p>` : ""}
+        ${ev.place ? `<p class="events-past__place">${esc(ev.place)}</p>` : ""}
+        ${chips.length ? `<ul class="events-past__chips">${chips.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>` : ""}
+        <a class="events-past__link" href="${eventPath(ev.slug)}">Revoir la soirée <span aria-hidden="true">→</span></a>
       </div>
     </li>`;
 }
 
-function render() {
-  const query = search.value.trim().toLocaleLowerCase("fr");
-  const selected = filter.value;
-  const filtered = EVENTS.filter((ev) =>
-    (selected === "tous" || eventStatus(ev) === selected) && matches(ev, query)
-  );
-  const upcoming = filtered.filter((ev) => eventStatus(ev) === "a-venir").sort((a, b) => a.date.localeCompare(b.date));
-  const past = filtered.filter((ev) => eventStatus(ev) === "passe").sort((a, b) => b.date.localeCompare(a.date));
+const upcoming = EVENTS.filter((ev) => eventStatus(ev) === "a-venir").sort((a, b) => a.date.localeCompare(b.date));
+const past = EVENTS.filter((ev) => eventStatus(ev) === "passe").sort((a, b) => b.date.localeCompare(a.date));
 
-  upcomingRoot.innerHTML = upcoming.length
-    ? upcoming.map(card).join("")
-    : `<li class="empty-state">${query ? "Aucun événement à venir ne correspond à cette recherche." : "Pas de soirée annoncée pour le moment : la prochaine date arrive bientôt."}</li>`;
-  pastRoot.innerHTML = past.length
-    ? past.map(card).join("")
-    : `<li class="empty-state">${query ? "Aucun événement passé ne correspond à cette recherche." : "Les soirées passées apparaîtront ici."}</li>`;
-  pastBlock.hidden = selected === "a-venir";
-  upcomingRoot.hidden = selected === "passe";
-  status.textContent = t("{n} {events} affiché(s).", { n: filtered.length, events: plural(filtered.length, "événement", "événements") });
+upcomingRoot.innerHTML = upcoming.length
+  ? upcoming.map(featured).join("")
+  : `<p class="empty-state">Pas de soirée annoncée pour le moment : la prochaine date arrive bientôt. Abonne-toi à l'agenda pour être prévenu·e.</p>`;
+
+// Icône calendrier de l'en-tête : la date de la prochaine soirée (« NOV » / « 28 »)
+const cal = document.querySelector(".events-agenda__cal");
+if (cal && upcoming[0] && upcoming[0].datePrecision !== "month") {
+  const [y, m, d] = upcoming[0].date.split("-").map(Number);
+  const month = new Intl.DateTimeFormat(locale, { month: "short", timeZone: "UTC" }).format(new Date(Date.UTC(y, m - 1, d))).replace(".", "");
+  cal.querySelector(".events-agenda__cal-month").textContent = month.toUpperCase();
+  cal.querySelector(".events-agenda__cal-day").textContent = String(d);
+  cal.classList.add("has-date");
 }
 
-search.addEventListener("input", render);
-filter.addEventListener("change", render);
-render();
+const years = [...new Set(past.map((ev) => ev.date.slice(0, 4)))];
+let index = 0;
+pastRoot.innerHTML = past.length
+  ? years.map((year) => `
+      <section class="events-year" aria-label="${esc(year)}">
+        <p class="events-year__label" aria-hidden="true">${esc(year)}</p>
+        <ol class="events-year__list">${past.filter((ev) => ev.date.startsWith(year)).map((ev) => pastItem(ev, index++)).join("")}</ol>
+      </section>`).join("")
+  : `<p class="empty-state">Les soirées passées apparaîtront ici.</p>`;
 
 /* ---------- Bandeau « Les artistes » : les photos rondes qui se chevauchent ---------- */
 const teaser = document.querySelector(".artists-teaser");
