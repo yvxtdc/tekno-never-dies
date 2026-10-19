@@ -4,7 +4,7 @@ import { formatDate, formatTime, esc, eventStatus, safeUrl, track, eventPath } f
 import { collectArtists, artistPhoto } from "../components/artists.js";
 import { eventStats } from "../components/event-stats.js";
 import { eventRange } from "./ics.js";
-import { t, tr, plural } from "../i18n/i18n.js";
+import { t, tr, plural, locale } from "../i18n/i18n.js";
 
 const upcomingRoot = document.getElementById("upcoming-events");
 const pastRoot = document.getElementById("past-events");
@@ -70,6 +70,16 @@ const past = EVENTS.filter((ev) => eventStatus(ev) === "passe").sort((a, b) => b
 upcomingRoot.innerHTML = upcoming.length
   ? upcoming.map(featured).join("")
   : `<p class="empty-state">Pas de soirée annoncée pour le moment : la prochaine date arrive bientôt. Abonne-toi à l'agenda pour être prévenu·e.</p>`;
+
+// Icône calendrier de l'en-tête : la date de la prochaine soirée (« NOV » / « 28 »)
+const cal = document.querySelector(".events-agenda__cal");
+if (cal && upcoming[0] && upcoming[0].datePrecision !== "month") {
+  const [y, m, d] = upcoming[0].date.split("-").map(Number);
+  const month = new Intl.DateTimeFormat(locale, { month: "short", timeZone: "UTC" }).format(new Date(Date.UTC(y, m - 1, d))).replace(".", "");
+  cal.querySelector(".events-agenda__cal-month").textContent = month.toUpperCase();
+  cal.querySelector(".events-agenda__cal-day").textContent = String(d);
+  cal.classList.add("has-date");
+}
 
 const years = [...new Set(past.map((ev) => ev.date.slice(0, 4)))];
 let index = 0;

@@ -1663,6 +1663,9 @@ button.event-gallery-link{background:none;border-width:0 0 1px;border-radius:0;f
   transition:filter .4s ease,transform .4s cubic-bezier(.22,1,.36,1);
 }
 .artists-teaser__photos > * + *{margin-left:calc(clamp(48px,5vw,64px) * -.32)}
+/* Toutes positionnées : l'ordre d'empilement reste celui de la page, même quand le survol en décale
+   une sur deux (sinon une photo décalée passait devant sa voisine) */
+.artists-teaser__photos > *{position:relative}
 .artists-teaser__photos span{
   display:grid;place-items:center;filter:none;
   color:var(--lav);font-size:.8rem;font-weight:700;

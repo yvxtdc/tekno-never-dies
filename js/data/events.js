@@ -16,7 +16,7 @@
  *
  * "about" : section « La soirée » de la fiche, ce qui distingue cette soirée des autres.
  *   kicker (petite ligne au-dessus), title (accroche), text (présentation),
- *   points : [["Titre", "Texte"], …] (trois repères : le concept, le son, ce qui la distingue).
+ *   photos : [{ src, caption }] (facultatif, 2 photos de la soirée ou de l'édition précédente, avec légende).
  *   Penser à traduire ces textes dans js/i18n/de.js et en.js (npm run validate liste les oublis).
  * "venue" : position du lieu pour les plans de la fiche (npm run plans, voir tools/maps.mjs).
  *   { lat, lon } (coordonnées GPS, par exemple depuis openstreetmap.org : clic droit → « Afficher
@@ -49,10 +49,9 @@ export const EVENTS = [
       kicker: "2ᵉ édition · L'hiver selon TND",
       title: "Froid dehors, brûlant dedans.",
       text: "ICE BOILER revient pour une deuxième édition, cette fois dans la salle polyvalente de Munchhausen. Le principe ne change pas : une nuit d'hiver qui démarre en douceur et monte en pression jusqu'à 4h. Nouveauté de cette édition, la techno s'ouvre aux sons trance, groovy et bouncy.",
-      points: [
-        ["Le concept", "Une nuit d'hiver au chaud : la salle se remplit et la température monte, set après set, jusqu'à 4h."],
-        ["Le son", "Plus large que la première édition : la trance, le groovy et le bouncy rejoignent la techno."],
-        ["La scène locale", "Le DJ Contest ouvre la nuit : une place dans le line-up pour un DJ qui monte."]
+      photos: [
+        { src: "assets/img/gallery/2025/ice-boiler/photo-100.webp", caption: "Le décor de la première édition, novembre 2025." },
+        { src: "assets/img/gallery/2025/ice-boiler/photo-103.webp", caption: "Le dancefloor d'ICE BOILER v1, avant la suite." }
       ]
     },
     venue: { lat: 48.9193643, lon: 8.1576719 },
@@ -79,12 +78,7 @@ export const EVENTS = [
     about: {
       kicker: "Printemps 2026 · Niederroedern",
       title: "Tout tourne autour du drop.",
-      text: "Center Drop a réuni environ 250 personnes à Niederroedern le 4 avril 2026, de 21h à 4h. Une soirée taillée pour les sons rapides : schranz, techno, trance et bounce, avec un B2B Leander × Sven Gerber au cœur de la nuit.",
-      points: [
-        ["Le concept", "Une soirée construite autour du drop, ce moment où toute la salle décolle en même temps."],
-        ["Le son", "Schranz, techno, trance et bounce, pour celles et ceux qui aiment les BPM élevés."],
-        ["Le moment fort", "Le B2B Leander × Sven Gerber, de 22h à 23h30."]
-      ]
+      text: "Center Drop a réuni environ 250 personnes à Niederroedern le 4 avril 2026, de 21h à 4h. Une soirée taillée pour les sons rapides : schranz, techno, trance et bounce, avec un B2B Leander × Sven Gerber au cœur de la nuit."
     },
     venue: { lat: 48.9025027, lon: 8.0496711 },
   },
@@ -113,12 +107,7 @@ export const EVENTS = [
     about: {
       kicker: "21 juin 2025 · Wissembourg",
       title: "La Fête de la musique, version techno.",
-      text: "Pour la Fête de la musique 2025, RRC et TND ont présenté une Techno Party à Wissembourg : de 16h à minuit, sept DJ et environ 150 personnes, de l'après-midi jusqu'au bout de la nuit la plus courte de l'année.",
-      points: [
-        ["Le concept", "Une collaboration RRC × TND pour faire découvrir la techno pendant la Fête de la musique."],
-        ["Le son", "Techno, groove et hardtechno, de l'après-midi à minuit."],
-        ["La scène locale", "Meinos, venu du DJ Contest, a ouvert la journée."]
-      ]
+      text: "Pour la Fête de la musique 2025, RRC et TND ont présenté une Techno Party à Wissembourg : de 16h à minuit, sept DJ et environ 150 personnes, de l'après-midi jusqu'au bout de la nuit la plus courte de l'année."
     },
     // Lieu exact non renseigné : plan de la ville, sans repère
     venue: { lat: 49.0365935, lon: 7.9445109, precise: false, span: 3.4 }
@@ -148,10 +137,9 @@ export const EVENTS = [
       kicker: "1ʳᵉ édition · Le début d'ICE BOILER",
       title: "La toute première ICE BOILER.",
       text: "Le 22 novembre 2025, la salle des fêtes de Munchhausen a accueilli la première ICE BOILER : une soirée 100 % techno, de 20h à 4h, six sets enchaînés devant environ 200 personnes. C'est elle qui a lancé la série.",
-      points: [
-        ["Le concept", "Une soirée d'hiver, froide dehors et brûlante sur le dancefloor : le nom dit tout."],
-        ["Le son", "De la techno du début à la fin, du warm-up de Dann Octa au closing de Blackchills."],
-        ["Le souvenir", "Les photos de la nuit sont à revoir dans la galerie."]
+      photos: [
+        { src: "assets/img/gallery/2025/ice-boiler/photo-58.webp", caption: "Sous les projecteurs, au cœur de la nuit." },
+        { src: "assets/img/gallery/2025/ice-boiler/photo-106.webp", caption: "La salle des fêtes de Munchhausen, pleine jusqu'au bout." }
       ]
     },
     // « Salle des fêtes » : adresse exacte non renseignée, plan du village sans repère

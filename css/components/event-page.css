@@ -25,46 +25,73 @@
 button.btn{font-family:var(--text);cursor:pointer;background-color:transparent}
 .event-actions .btn-hero-line{color:#fff}
 
-/* ---------- « La soirée » ---------- */
+/* ---------- « La soirée » : texte à gauche, deux photos encadrées et légendées à droite ---------- */
 .event-about{
-  display:grid;grid-template-columns:minmax(0,1.5fr) minmax(220px,.8fr);gap:clamp(28px,5vw,72px);align-items:center;
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,.55fr);gap:clamp(28px,5vw,72px);align-items:center;
   margin:clamp(56px,8vw,110px) 0 0;
 }
+.event-about.has-photos{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)}
 .event-about__intro .event-eyebrow{margin-bottom:14px}
 .event-about h2{
   margin:0;font-family:var(--display);font-weight:400;text-transform:uppercase;
-  font-size:clamp(2.2rem,5vw,4.2rem);line-height:.92;letter-spacing:-.02em;
+  font-size:clamp(2.1rem,4.4vw,3.8rem);line-height:.92;letter-spacing:-.02em;
   background:var(--gradient-title);-webkit-background-clip:text;background-clip:text;color:transparent;
 }
-.event-about__text{max-width:60ch;margin:22px 0 0;color:rgba(255,255,255,.82);font-size:1rem;line-height:1.8}
-.event-about__side{display:grid;justify-items:center;gap:24px}
-.event-about .event-story__stamp{width:min(100%,190px)}
+.event-about__text{max-width:58ch;margin:20px 0 0;color:rgba(255,255,255,.82);font-size:1rem;line-height:1.8}
+.event-about__side{display:grid;justify-items:center}
+.event-about .event-story__stamp{width:min(100%,200px)}
 
-/* Chiffres clés : grands chiffres en dégradé, libellé dessous */
-/* Autant de colonnes que de chiffres (2 à 4), centrés */
-.event-stats{display:flex;flex-wrap:wrap;justify-content:center;gap:18px 30px;width:100%;margin:0;padding:0;list-style:none}
-.event-stats li{flex:0 1 auto;min-width:84px}
-.event-stats li{display:grid;gap:4px;text-align:center}
+/* Chiffres clés : une ligne sous le texte */
+.event-stats{display:flex;flex-wrap:wrap;gap:16px clamp(22px,3vw,40px);margin:26px 0 0;padding:20px 0 0;list-style:none;border-top:1px solid var(--line)}
+.event-stats li{display:grid;gap:4px}
 .event-stats b{
-  font-family:var(--display);font-weight:400;font-size:clamp(1.8rem,3vw,2.4rem);line-height:1;
+  font-family:var(--display);font-weight:400;font-size:clamp(1.7rem,2.6vw,2.2rem);line-height:1;
   background:var(--gradient-title);-webkit-background-clip:text;background-clip:text;color:transparent;
 }
-.event-stats span{color:var(--muted);font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.event-stats span{color:var(--muted);font-size:.66rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
 
-/* Trois repères : cartes translucides numérotées */
-.event-points{
-  grid-column:1 / -1;
-  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,1.6vw,20px);
-  margin:clamp(8px,2vw,20px) 0 0;padding:0;list-style:none;
+/* Photos : cadre fin à coins marqués, légèrement de travers, légende en italique dessous */
+.event-about__photos{display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,2.4vw,32px);align-items:start}
+.event-photo{margin:0}
+.event-photo:nth-child(2){margin-top:clamp(28px,5vw,64px)}
+.event-photo__frame{
+  position:relative;display:block;padding:8px;
+  border:1px solid rgba(149,106,255,.45);
+  transform:rotate(-1.2deg);transition:transform .5s cubic-bezier(.2,.8,.2,1);
 }
-.event-points li{
-  position:relative;padding:clamp(20px,2.4vw,28px);
-  border:1px solid rgba(149,106,255,.28);border-radius:22px;
-  background:linear-gradient(160deg,rgba(149,106,255,.12),rgba(11,7,34,.25) 70%);
+.event-photo:nth-child(2) .event-photo__frame{transform:rotate(1.6deg)}
+.event-photo:hover .event-photo__frame{transform:rotate(0)}
+/* Coins du cadre */
+.event-photo__frame::before,
+.event-photo__frame::after{content:"";position:absolute;width:14px;height:14px;border:2px solid var(--lav)}
+.event-photo__frame::before{top:-3px;left:-3px;border-right:0;border-bottom:0}
+.event-photo__frame::after{right:-3px;bottom:-3px;border-left:0;border-top:0}
+.event-photo img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;filter:saturate(.85) contrast(1.05)}
+.event-photo figcaption{margin-top:12px;color:rgba(255,255,255,.62);font-style:italic;font-size:.85rem;line-height:1.5}
+
+/* ---------- Line-up : grille compacte ----------
+   Avant : une ligne par set, alternée à gauche et à droite, avec un grand vide en face de chaque nom.
+   Maintenant : des cartes serrées sur deux colonnes, dans l'ordre de passage (colonne de gauche
+   puis de droite). Le numéro chromé, la photo et le passage en direct sont gardés. */
+.event-lineup{margin:clamp(56px,8vw,100px) 0}
+.event-lineup .lineup-rows{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(var(--rows,3),auto);grid-auto-flow:column;
+  gap:12px clamp(12px,1.6vw,20px);padding:0;
 }
-.event-points__num{display:block;margin-bottom:16px;color:var(--lav);font-size:.72rem;font-weight:700;letter-spacing:.2em}
-.event-points h3{margin:0 0 10px;font-family:var(--display);font-weight:400;font-size:1.3rem;line-height:1;text-transform:uppercase}
-.event-points p{margin:0;color:var(--muted);font-size:.9rem;line-height:1.65}
+.event-lineup .lineup-rows::before{display:none}
+.event-lineup .lineup-row,
+.event-lineup .lineup-row:nth-child(even){
+  flex-direction:row;text-align:left;
+  gap:clamp(14px,1.8vw,22px);padding:14px clamp(14px,1.8vw,22px);
+  border:1px solid rgba(255,255,255,.1);border-radius:20px;background:rgba(255,255,255,.025);
+  transition:border-color .3s,background-color .3s;
+}
+.event-lineup .lineup-row:hover{border-color:rgba(149,106,255,.45);background:rgba(66,38,182,.12)}
+.event-lineup .lineup-row::before{display:none}
+.event-lineup .lineup-row__num{font-size:clamp(1.8rem,2.6vw,2.4rem);min-width:1.4em}
+.event-lineup .lineup-row__photo{--photo:clamp(52px,4.6vw,64px)}
+.event-lineup .lineup-row h3{font-size:clamp(1.25rem,2vw,1.7rem)}
+.event-lineup .lineup-row.is-live{border-color:var(--pink);background:rgba(182,38,154,.14)}
 
 /* ---------- « Y aller » : plans ---------- */
 .event-access{margin:clamp(56px,8vw,110px) 0}
@@ -131,10 +158,9 @@ button.btn{font-family:var(--text);cursor:pointer;background-color:transparent}
 
 /* ---------- Tablette ---------- */
 @media (max-width:1023px){
-  .event-about{grid-template-columns:1fr}
-  .event-about__side{grid-template-columns:auto 1fr;justify-items:start;align-items:center;gap:28px}
-  .event-about .event-story__stamp{display:grid;width:150px}
-  .event-stats{justify-content:flex-start}
+  .event-about,
+  .event-about.has-photos{grid-template-columns:1fr}
+  .event-about__side{display:none}
   .event-maps{grid-template-columns:1fr}
 }
 
@@ -145,12 +171,12 @@ button.btn{font-family:var(--text);cursor:pointer;background-color:transparent}
   .event-facts{grid-template-columns:1fr 1fr}
   .event-actions .btn{flex:1 1 auto;text-align:center}
   .event-actions .btn-solid{flex-basis:100%}
-  .event-about__side{grid-template-columns:1fr}
-  .event-about .event-story__stamp{display:none}
-  .event-stats{justify-content:space-around}
-  .event-points{grid-template-columns:1fr}
+  .event-photo:nth-child(2){margin-top:22px}
   .event-section-head__note{text-align:left}
   .event-map__frame{border-radius:18px}
+}
+@media (max-width:760px){
+  .event-lineup .lineup-rows{grid-template-columns:1fr;grid-template-rows:none;grid-auto-flow:row}
 }
 @media (max-width:420px){
   .event-facts{grid-template-columns:1fr}

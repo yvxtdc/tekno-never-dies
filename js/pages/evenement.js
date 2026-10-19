@@ -211,34 +211,36 @@ if (!root) {
 
   /* ---------- « La soirée » : ce qui distingue cette soirée ---------- */
   const about = ev.about || {};
+  const photos = (about.photos || []).slice(0, 2);
+  const statsContent = stats.length ? `<ul class="event-stats">${stats.map(([n, label]) => `<li><b>${escapeHTML(n)}</b><span>${escapeHTML(label)}</span></li>`).join("")}</ul>` : "";
   const aboutContent = `
-    <section class="event-about" aria-labelledby="about-title">
+    <section class="event-about${photos.length ? " has-photos" : ""}" aria-labelledby="about-title">
       <div class="event-about__intro">
         <p class="event-eyebrow">${escapeHTML(tr(about.kicker || "La soirée"))}</p>
         <h2 id="about-title">${escapeHTML(tr(about.title || "Une nuit signée Tekno Never Dies."))}</h2>
         <p class="event-about__text">${escapeHTML(tr(about.text || ev.description || ""))}</p>
+        ${statsContent}
         ${galleryLink}
       </div>
-      <div class="event-about__side">
-        <div class="event-story__stamp" aria-hidden="true" translate="no">
-          <svg class="event-story__ring" viewBox="0 0 200 200">
-            <defs><path id="stamp-circle" d="M100,100 m-82,0 a82,82 0 1,1 164,0 a82,82 0 1,1 -164,0" /></defs>
-            <text><textPath href="#stamp-circle" textLength="512" lengthAdjust="spacing">TEKNO NEVER DIES ✦ ${escapeHTML(ev.title)} ✦ ${escapeHTML(ev.date.slice(0, 4))} ✦</textPath></text>
-          </svg>
-          <span class="event-story__core">TND</span>
-        </div>
-        ${stats.length ? `<ul class="event-stats">${stats.map(([n, label]) => `<li><b>${escapeHTML(n)}</b><span>${escapeHTML(label)}</span></li>`).join("")}</ul>` : ""}
-      </div>
-      ${about.points?.length ? `<ol class="event-points">${about.points.map(([title, text], i) => `
-        <li>
-          <span class="event-points__num" aria-hidden="true">${String(i + 1).padStart(2, "0")}</span>
-          <h3>${escapeHTML(tr(title))}</h3>
-          <p>${escapeHTML(tr(text))}</p>
-        </li>`).join("")}</ol>` : ""}
+      ${photos.length
+        ? `<div class="event-about__photos">${photos.map((photo) => `
+            <figure class="event-photo">
+              <span class="event-photo__frame"><img src="${escapeHTML(photo.src)}" alt="" loading="lazy" decoding="async" /></span>
+              ${photo.caption ? `<figcaption>${escapeHTML(tr(photo.caption))}</figcaption>` : ""}
+            </figure>`).join("")}</div>`
+        : `<div class="event-about__side">
+            <div class="event-story__stamp" aria-hidden="true" translate="no">
+              <svg class="event-story__ring" viewBox="0 0 200 200">
+                <defs><path id="stamp-circle" d="M100,100 m-82,0 a82,82 0 1,1 164,0 a82,82 0 1,1 -164,0" /></defs>
+                <text><textPath href="#stamp-circle" textLength="512" lengthAdjust="spacing">TEKNO NEVER DIES ✦ ${escapeHTML(ev.title)} ✦ ${escapeHTML(ev.date.slice(0, 4))} ✦</textPath></text>
+              </svg>
+              <span class="event-story__core">TND</span>
+            </div>
+          </div>`}
     </section>`;
 
   const lineupContent = lineup.length
-    ? `<ul class="lineup-rows">${lineup.map((artist, i) => `
+    ? `<ul class="lineup-rows" style="--rows:${Math.ceil(lineup.length / 2)}">${lineup.map((artist, i) => `
         <li class="lineup-row" data-slot="${escapeHTML(artist.time || "")}">
           <span class="lineup-row__num">${String(i + 1).padStart(2, "0")}</span>
           <span class="lineup-row__photos">${(artistPhotos(artist).length ? artistPhotos(artist).slice(0, 2) : [null]).map((src) => `<span class="lineup-row__photo">${src ? `<img src="${escapeHTML(src)}" alt="" loading="lazy" />` : ""}</span>`).join("")}</span>

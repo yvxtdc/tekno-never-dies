@@ -125,7 +125,7 @@ if (toCheck) todo.push(`js/data/faq.js : ${toCheck} réponse(s) marquée(s) need
 const norm = (s) => String(s).replace(/\s+/g, " ").trim();
 const dataTexts = [
   ...events.flatMap((e) => [e.description, e.price, e.age, ...(e.practical || []),
-    e.about?.kicker, e.about?.title, e.about?.text, ...(e.about?.points || []).flat()]),
+    e.about?.kicker, e.about?.title, e.about?.text, ...(e.about?.photos || []).map((ph) => ph.caption)]),
   ...FAQ.flatMap((x) => [x.q, x.a]),
   ...TEAM.flatMap((m) => [m.role, m.bio, ...(m.tags || []), ...Object.entries(m.extra || {}).flat()])
 ].filter((s) => s && /\p{L}{2}/u.test(s)).map(norm);

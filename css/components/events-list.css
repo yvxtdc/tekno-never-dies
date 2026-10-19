@@ -4,13 +4,30 @@
    puis les artistes. Chargé après pages.css et event-flyer.css.
    ===================================================================== */
 
-/* ---------- En-tête : l'abonnement à l'agenda sous l'accroche ---------- */
+/* ---------- En-tête : l'agenda en un coup d'œil ----------
+   Une page de calendrier (date de la prochaine soirée), trois étapes illustrées, deux boutons. */
 .events-agenda{
-  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px 28px;
-  max-width:900px;margin-top:clamp(18px,2.4vw,28px);padding:16px 20px;
-  border:1px solid rgba(149,106,255,.3);border-radius:20px;background:rgba(66,38,182,.12);
+  display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(18px,3vw,36px);align-items:center;
+  max-width:980px;margin-top:clamp(20px,2.6vw,32px);padding:clamp(18px,2.4vw,26px) clamp(18px,2.6vw,30px);
+  border:1px solid rgba(149,106,255,.34);border-radius:24px;
+  background:linear-gradient(120deg,rgba(66,38,182,.24),rgba(182,38,154,.08) 70%);
 }
-.events-agenda p{max-width:46ch;margin:0;color:var(--muted);font-size:.9rem}
+.events-agenda__cal{
+  position:relative;display:grid;grid-template-rows:auto 1fr;width:clamp(84px,9vw,108px);aspect-ratio:1/1.05;
+  border-radius:18px;overflow:hidden;background:#fff;color:var(--page);
+  box-shadow:0 14px 34px rgba(0,0,0,.4),0 0 0 4px rgba(149,106,255,.18);transform:rotate(-5deg);
+}
+.events-agenda__cal-rings{position:absolute;top:-6px;left:0;right:0;display:flex;justify-content:space-around;z-index:2}
+.events-agenda__cal-rings i{width:8px;height:16px;border-radius:4px;background:#d9d2ff;box-shadow:0 0 0 2px var(--violet)}
+.events-agenda__cal-month{display:block;padding:12px 0 6px;background:var(--gradient-tnd);color:#fff;text-align:center;font:700 .74rem var(--text);letter-spacing:.2em}
+.events-agenda__cal-day{display:grid;place-items:center;font-family:var(--display);font-size:clamp(2rem,3.6vw,2.8rem);line-height:1}
+.events-agenda__cal-day svg{width:46%;fill:none;stroke:var(--violet);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.events-agenda__body{display:grid;gap:14px;min-width:0}
+.events-agenda__title{margin:0;font-family:var(--display);font-size:clamp(1.2rem,2.2vw,1.7rem);line-height:1;text-transform:uppercase}
+.events-agenda__steps{display:flex;flex-wrap:wrap;gap:10px 22px;margin:0;padding:0;list-style:none}
+.events-agenda__steps li{display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.8);font-size:.88rem}
+.events-agenda__steps b{color:#fff}
+.events-agenda__steps svg{flex:none;width:34px;height:34px;padding:7px;border-radius:50%;border:1px solid rgba(149,106,255,.5);background:rgba(149,106,255,.14);fill:none;stroke:var(--lav);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .events-agenda__actions{display:flex;flex-wrap:wrap;gap:10px}
 .page-head .events-agenda__actions .btn{margin:0}
 
@@ -100,8 +117,10 @@
 
 /* ---------- Téléphone ---------- */
 @media (max-width:640px){
-  .events-agenda{padding:14px 16px;gap:12px}
-  .events-agenda__actions{gap:8px}
+  .events-agenda{grid-template-columns:1fr;justify-items:start;padding:20px}
+  .events-agenda__cal{width:80px}
+  .events-agenda__steps{flex-direction:column}
+  .events-agenda__actions,.events-agenda__actions .btn{width:100%;text-align:center}
   .events-feature{grid-template-columns:1fr;justify-items:start;padding:22px;border-radius:24px}
   .events-feature__flyer{width:min(62vw,240px)}
   .events-feature__actions,.events-feature__actions .btn{width:100%;text-align:center}
