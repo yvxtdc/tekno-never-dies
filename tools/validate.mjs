@@ -20,7 +20,8 @@ const err = (file, msg) => errors.push(`${rel(file)} : ${msg}`);
 const files = [];
 (function walk(dir) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
-    if ([".git", "node_modules", "vendor", "import", "dist"].includes(e.name)) continue;
+    // cms/ (administration, servie par son propre serveur) et docs/ ne font pas partie du site publié.
+    if ([".git", "node_modules", "vendor", "import", "dist", "cms", "docs", ".cms-data"].includes(e.name)) continue;
     const full = path.join(dir, e.name);
     if (e.isDirectory()) walk(full);
     else if (/\.(html|css|js|mjs|xml|txt)$/.test(e.name) && !full.includes(`${path.sep}assets${path.sep}`)) files.push(full);

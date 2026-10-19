@@ -6,7 +6,9 @@
  * Un texte absent reste en français : npm run validate liste ceux des données (js/data) à traduire,
  * npm run traductions ceux des pages HTML.
  */
-export default {
+import CONTENUS from "./contenus-de.js";
+
+const PAGES = {
   "Tekno Never Dies (TND6TEM), association et sound system tekno de Lauterbourg, en Alsace : soirées techno et trance, prochaines dates, billetterie et photos.": "Tekno Never Dies (TND6TEM), Verein und Tekno-Soundsystem aus Lauterburg im Elsass: Techno- und Trance-Partys, nächste Termine, Tickets und Fotos.",
   "Logo Tekno Never Dies Sound System sur une photo de soirée": "Logo Tekno Never Dies Sound System auf einem Partyfoto",
   "Aller au contenu": "Zum Inhalt springen",
@@ -567,4 +569,11 @@ export default {
   "Never Dies": "Never Dies",
   "scroll": "scroll",
   "tnd6tem@gmail.com": "tnd6tem@gmail.com",
+  "Soirée annulée": "Party abgesagt",
+  "Annulée": "Abgesagt",
+  "Ouverture des portes : {time}": "Einlass: {time}",
 };
+
+// Traductions des contenus gérés dans le CMS (soirées, FAQ, équipe) : js/i18n/contenus-de.js,
+// généré à chaque mise en ligne. Elles complètent (et remplacent à texte égal) celles ci-dessus.
+export default { ...PAGES, ...CONTENUS };

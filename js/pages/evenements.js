@@ -16,7 +16,8 @@ const genresList = (ev) => ev.genres?.length
 
 /* ---------- À venir : chaque soirée en grand (flyer incliné, compte à rebours en jours, infos, boutons) ---------- */
 function featured(ev) {
-  const ticketUrl = safeUrl(ev.ticketUrl);
+  // Soirée annulée : reste annoncée (pour les personnes qui avaient la date), sans billetterie.
+  const ticketUrl = ev.cancelled ? "" : safeUrl(ev.ticketUrl);
   const range = eventRange(ev);
   const days = range ? Math.ceil((range.start.getTime() - Date.now()) / 864e5) : null;
   const visual = flyerOf(ev);
@@ -25,7 +26,9 @@ function featured(ev) {
     <article class="events-feature">
       ${visual ? `<a class="events-feature__flyer" href="${eventPath(ev.slug)}" tabindex="-1" aria-hidden="true"><img src="${esc(visual)}" alt="" decoding="async" /></a>` : ""}
       <div class="events-feature__body">
-        <p class="event-status is-upcoming"><span class="event-status__dot" aria-hidden="true"></span><span>Prochaine soirée</span>${days > 1 ? `<span class="event-status__count">${esc(t("J-{n}", { n: days }))}</span>` : ""}</p>
+        ${ev.cancelled
+          ? `<p class="event-status is-cancelled"><span>Soirée annulée</span></p>`
+          : `<p class="event-status is-upcoming"><span class="event-status__dot" aria-hidden="true"></span><span>Prochaine soirée</span>${days > 1 ? `<span class="event-status__count">${esc(t("J-{n}", { n: days }))}</span>` : ""}</p>`}
         <h3><a href="${eventPath(ev.slug)}" translate="no">${esc(ev.title)}</a></h3>
         ${ev.about?.title ? `<p class="events-feature__tagline">${esc(tr(ev.about.title))}</p>` : ""}
         <p class="events-feature__when">${esc(when)}</p>
@@ -44,6 +47,7 @@ function pastItem(ev, i) {
   const { djs, crowd } = eventStats(ev);
   const visual = flyerOf(ev);
   const chips = [
+    ev.cancelled ? tr("Annulée") : "",
     crowd ? t("≈ {n} personnes", { n: crowd }) : "",
     djs ? `${djs} ${plural(djs, "DJ", "DJ")}` : "",
     ev.gallerySlug ? tr("Photos en ligne") : ""

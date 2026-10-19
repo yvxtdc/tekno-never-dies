@@ -4,10 +4,10 @@ import { t, tr } from "../i18n/i18n.js";
 import { eventRange } from "./ics.js";
 
 /* ---------- Prochaine soirée (sous le hero) ----------
-   Prend la première date à venir de js/data/events.js ; le bloc reste masqué s'il n'y en a aucune. */
+   Prend la première date à venir de js/data/events.js (hors soirées annulées) ; le bloc reste masqué s'il n'y en a aucune. */
 const nextBlock = document.getElementById("home-next");
 const next = EVENTS
-  .filter((ev) => eventStatus(ev) === "a-venir")
+  .filter((ev) => eventStatus(ev) === "a-venir" && !ev.cancelled)
   .sort((a, b) => a.date.localeCompare(b.date))[0];
 
 if (nextBlock && next) {
