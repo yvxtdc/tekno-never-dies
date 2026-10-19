@@ -2,7 +2,7 @@
   "name": "tekno-never-dies-site",
   "version": "1.0.0",
   "private": true,
-  "description": "Site vitrine de l'association Tekno Never Dies (TND6TEM) : pages statiques, données en JavaScript et étoiles chrome en 3D (Three.js) sur l'accueil.",
+  "description": "Site vitrine de l'association Tekno Never Dies (TND6TEM) : pages statiques, données en JavaScript, étoiles chrome en 3D (Three.js) sur l'accueil, et CMS d'administration (cms/).",
   "type": "module",
   "scripts": {
     "start": "npx --yes serve .",
@@ -13,10 +13,16 @@
     "artistes": "node tools/artistes.mjs",
     "traductions": "node tools/i18n-pages.mjs",
     "langues": "node tools/langues.mjs",
-    "plans": "node tools/maps.mjs"
+    "plans": "node tools/maps.mjs",
+    "cms": "node --disable-warning=ExperimentalWarning cms/server/index.mjs",
+    "cms:admin": "node --disable-warning=ExperimentalWarning cms/bin/cms.mjs",
+    "test": "node --disable-warning=ExperimentalWarning --test --test-concurrency=1 \"cms/test/*.test.mjs\""
   },
   "license": "UNLICENSED",
-  "devDependencies": {
+  "engines": {
+    "node": ">=22.13"
+  },
+  "dependencies": {
     "sharp": "^0.35.5"
   }
 }

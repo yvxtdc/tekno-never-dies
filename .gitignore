@@ -3,3 +3,9 @@ Thumbs.db
 node_modules/
 dist/
 import/
+# CMS : données (base, médias, sauvegardes) et configuration locale, jamais versionnées
+.cms-data/
+cms/.env
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
