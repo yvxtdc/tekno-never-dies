@@ -1,6 +1,4 @@
 import { EVENTS, EVENT_REDIRECTS } from "../data/events.js";
-import { splitB2B, artistsOf, artistUrl, artistPhoto, slotStyle } from "../components/artists.js";
-import { EVENTS } from "../data/events.js";
 import { splitB2B, artistsOf, artistUrl, artistPhoto, slotStyle, visibleLineup } from "../components/artists.js";
 import { SITE } from "../data/site.js";
 import { formatDate, formatTime, readParam, eventStatus, safeUrl, track, eventPath } from "./helpers.js";
