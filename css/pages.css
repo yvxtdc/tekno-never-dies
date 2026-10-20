@@ -1174,6 +1174,10 @@ select option{background:#150d3b;color:#fff}
   transform:scale(1);
 }
 /* B2B : un deuxième cercle qui chevauche le premier */
+.lineup-row__photo--mystery{
+  display:grid;place-items:center;
+  font-size:calc(var(--photo) * .5);font-weight:800;line-height:1;color:var(--lav);
+}
 .lineup-row__photos{display:flex;flex:none}
 .lineup-row__photos .lineup-row__photo + .lineup-row__photo{
   margin-left:calc(var(--photo) * -.3);

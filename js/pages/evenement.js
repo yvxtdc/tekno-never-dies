@@ -1,5 +1,5 @@
 import { EVENTS } from "../data/events.js";
-import { splitB2B, artistsOf, artistUrl, artistPhoto, slotStyle } from "./artists.js";
+import { splitB2B, artistsOf, artistUrl, artistPhoto, slotStyle, visibleLineup } from "./artists.js";
 import { SITE } from "../data/site.js";
 import { formatDate, formatTime, readParam, eventStatus, safeUrl, track } from "./helpers.js";
 import { t, tr } from "../i18n/i18n.js";
@@ -140,7 +140,7 @@ if (!root) {
       }
     },
     ...(ev.genres?.length ? { keywords: ev.genres.join(", ") } : {}),
-    ...(ev.lineup?.length ? { performer: ev.lineup.map((artist) => ({ "@type": "PerformingGroup", name: artist.name })) } : {}),
+    ...(ev.lineup?.length ? { performer: visibleLineup(ev).filter((artist) => !artist.mystery).map((artist) => ({ "@type": "PerformingGroup", name: artist.name })) } : {}),
     ...(price
       ? {
           offers: {
@@ -173,7 +173,7 @@ if (!root) {
       </a>`
     : "";
 
-  const lineup = orderedLineup(ev.lineup || [], ev.time);
+  const lineup = orderedLineup(visibleLineup(ev), ev.time);
   const lineupIsPreview = Boolean(ev.lineupPreview);
 
   const genres = ev.genres?.length
@@ -191,7 +191,7 @@ if (!root) {
     ? `<ul class="lineup-rows">${lineup.map((artist, i) => `
         <li class="lineup-row" data-slot="${escapeHTML(artist.time || "")}">
           <span class="lineup-row__num">${String(i + 1).padStart(2, "0")}</span>
-          <span class="lineup-row__photos">${(artistPhotos(artist).length ? artistPhotos(artist).slice(0, 2) : [null]).map((src) => `<span class="lineup-row__photo">${src ? `<img src="${escapeHTML(src)}" alt="" loading="lazy" />` : ""}</span>`).join("")}</span>
+          <span class="lineup-row__photos">${artist.mystery ? `<span class="lineup-row__photo lineup-row__photo--mystery" aria-hidden="true">?</span>` : (artistPhotos(artist).length ? artistPhotos(artist).slice(0, 2) : [null]).map((src) => `<span class="lineup-row__photo">${src ? `<img src="${escapeHTML(src)}" alt="" loading="lazy" />` : ""}</span>`).join("")}</span>
           <div class="lineup-row__info">
             ${artist.time
               ? `<span class="lineup-row__time">${escapeHTML(formatTime(artist.time))}</span>`

@@ -12,6 +12,8 @@
  *                  et utilisée pour la vignette de la liste.
  *   "cover"      → photo utilisée quand il n'y a pas de flyer.
  * "genres" : styles musicaux affichés sur la fiche (et pris en compte par la recherche).
+ * "revealAt" (sur une ligne du line-up) : avant cette date, l'artiste est caché
+ *   (« DJ Contest » et un « ? » à la place de la photo), puis dévoilé tout seul.
  */
 export const EVENTS = [
   {
@@ -29,11 +31,11 @@ export const EVENTS = [
     description: "Rendez-vous le samedi 28 novembre 2026 à 21h00 à la salle polyvalente de Munchhausen pour ICE BOILER v2, une soirée trance, groovy, bouncy et techno organisée par Tekno Never Dies.",
     practical: ["Début : 21h00", "Prévente en ligne sur HelloAsso : 10 €, 13 € ou 16 €", "Sur place (caisse du soir) : 18 €", "Dès 16 ans"],
     lineup: [
-      { name: "T.B.R", style: "DJ Contest", time: "21h00 – 22h00" },
+      { name: "T.B.R", style: "DJ Contest", time: "21h00 – 22h00", revealAt: "2026-11-04T18:00:00+01:00" },
       { name: "Mogli", time: "22h00 – 23h30" },
       { name: "Dann Octa", time: "23h30 – 1h00" },
       { name: "Leander", time: "1h00 – 2h30" },
-      { name: "Rayy3k", time: "2h30 – 4h00" }
+      { name: "RAYY", time: "2h30 – 4h00" }
     ],
   },
   {
