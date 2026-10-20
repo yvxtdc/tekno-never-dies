@@ -1,5 +1,7 @@
 import { EVENTS, EVENT_REDIRECTS } from "../data/events.js";
 import { splitB2B, artistsOf, artistUrl, artistPhoto, slotStyle } from "../components/artists.js";
+import { EVENTS } from "../data/events.js";
+import { splitB2B, artistsOf, artistUrl, artistPhoto, slotStyle, visibleLineup } from "../components/artists.js";
 import { SITE } from "../data/site.js";
 import { formatDate, formatTime, readParam, eventStatus, safeUrl, track, eventPath } from "./helpers.js";
 import { t, tr, plural, locale } from "../i18n/i18n.js";
@@ -137,7 +139,7 @@ if (!root) {
       </a>`
     : "";
 
-  const lineup = orderedLineup(ev.lineup || [], ev.time);
+  const lineup = orderedLineup(visibleLineup(ev), ev.time);
   const lineupIsPreview = Boolean(ev.lineupPreview);
 
   const genres = ev.genres?.length
@@ -262,7 +264,7 @@ if (!root) {
     ? `<ul class="lineup-rows" style="--rows:${Math.ceil(lineup.length / 2)}">${lineup.map((artist, i) => `
         <li class="lineup-row" data-slot="${escapeHTML(artist.time || "")}">
           <span class="lineup-row__num">${String(i + 1).padStart(2, "0")}</span>
-          <span class="lineup-row__photos">${(artistPhotos(artist).length ? artistPhotos(artist).slice(0, 2) : [null]).map((src) => `<span class="lineup-row__photo">${src ? `<img src="${escapeHTML(src)}" alt="" loading="lazy" />` : ""}</span>`).join("")}</span>
+          <span class="lineup-row__photos">${artist.mystery ? `<span class="lineup-row__photo lineup-row__photo--mystery" aria-hidden="true">?</span>` : (artistPhotos(artist).length ? artistPhotos(artist).slice(0, 2) : [null]).map((src) => `<span class="lineup-row__photo">${src ? `<img src="${escapeHTML(src)}" alt="" loading="lazy" />` : ""}</span>`).join("")}</span>
           <div class="lineup-row__info">
             ${artist.time
               ? `<span class="lineup-row__time">${escapeHTML(formatTime(artist.time))}</span>`

@@ -8,6 +8,7 @@
 import { SITE } from "../data/site.js";
 import { eventPath, safeUrl } from "../pages/helpers.js";
 import { eventTimes, parisOffset } from "../pages/ics.js";
+import { visibleLineup } from "./artists.js";
 
 const pad = (n) => String(n).padStart(2, "0");
 const iso = ({ y, mo, d, h, mi }) => `${y}-${pad(mo)}-${pad(d)}T${pad(h)}:${pad(mi)}:00`;
@@ -45,7 +46,7 @@ export function eventSchema(ev) {
       }
     },
     ...(ev.genres?.length ? { keywords: ev.genres.join(", ") } : {}),
-    ...(ev.lineup?.length ? { performer: ev.lineup.map((artist) => ({ "@type": "PerformingGroup", name: artist.name })) } : {}),
+    ...(ev.lineup?.length ? { performer: visibleLineup(ev).filter((artist) => !artist.mystery).map((artist) => ({ "@type": "PerformingGroup", name: artist.name })) } : {}),
     ...(price
       ? {
           offers: {
