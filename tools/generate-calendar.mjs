@@ -652,9 +652,13 @@ async function main() {
     );
   }
 
+  // L'ordre des soirées dans le fichier d'état ne compte pas (seuls leur contenu et leur séquence).
+  const sorted = (state) => JSON.stringify(Object.keys(state).sort().map((id) => [id, state[id]]));
+
   if (CHECK) {
     const upToDate =
-      JSON.stringify(newState) === JSON.stringify(previousState);
+      sorted(newState) === sorted(previousState) &&
+      Object.keys(newState).length === Object.keys(previousState).length;
 
     if (!upToDate) {
       console.error(
@@ -671,6 +675,15 @@ async function main() {
     events,
     newState
   );
+
+  // Rien n'a changé à part l'horodatage DTSTAMP : le fichier est gardé tel quel (pas de commit
+  // inutile à chaque génération, notamment lors des mises en ligne depuis le CMS).
+  const withoutStamp = (text) => text.replace(/^DTSTAMP:.*$/gm, "");
+  const previous = await fs.readFile(ICS_FILE, "utf8").catch(() => null);
+  if (previous !== null && withoutStamp(previous) === withoutStamp(calendar) && sorted(newState) === sorted(previousState)) {
+    console.log(`✓ Agenda déjà à jour (${events.length} événement(s)).`);
+    return;
+  }
 
   await fs.writeFile(
     ICS_FILE,

@@ -148,3 +148,7 @@ export const EVENTS = [
     venue: { lat: 48.9196671, lon: 8.1484455, precise: false }
   }
 ];
+
+// Anciennes adresses des soirées renommées : evenement-<ancienne>.html mène à la fiche actuelle
+// ("ancien-slug": "nouveau-slug"). Rempli par le CMS ; ici, rien à rediriger.
+export const EVENT_REDIRECTS = {};

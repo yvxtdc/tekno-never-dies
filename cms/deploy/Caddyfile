@@ -1,0 +1,9 @@
+# Proxy HTTPS (exemple Caddy : certificat Let's Encrypt automatique).
+# Adapter le nom de domaine, puis CMS_PUBLIC_URL=https://admin.teknoneverdies.fr et CMS_TRUST_PROXY=1.
+admin.teknoneverdies.fr {
+	encode zstd gzip
+	request_body {
+		max_size 25MB
+	}
+	reverse_proxy 127.0.0.1:8787
+}

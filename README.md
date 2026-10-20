@@ -3,6 +3,24 @@
 Site de l'association **Tekno Never Dies** (TND6TEM) : pages statiques (HTML + CSS + JavaScript natif), contenus dans `js/data/`, étoiles chromées en 3D (Three.js, copie locale) sur l'accueil.
 Aucun build : le dossier est publié tel quel. Node.js n'est nécessaire que pour les petits outils dans `tools/`.
 
+## Administration (CMS)
+
+Les soirées, line-ups, artistes, lieux, images, galerie, FAQ, équipe et traductions se gèrent depuis
+une **interface d'administration privée** (`cms/`), qui régénère ensuite le site statique :
+voir [docs/cms/README.md](docs/cms/README.md) (installation, utilisation, commandes),
+[docs/cms/architecture.md](docs/cms/architecture.md) (choix techniques) et
+[docs/cms/exploitation.md](docs/cms/exploitation.md) (mise en production, sécurité, sauvegardes).
+
+```sh
+npm install && npm run cms:admin -- import
+npm run cms:admin -- create-user --email vous@exemple.fr --name "Votre nom" --role admin
+npm run cms        # http://localhost:8787/admin/
+```
+
+Une fois le CMS en service, les fichiers qu'il génère (`js/data/events.js`, `artistes.js`,
+`artistes-photos.js`, `faq.js`, `equipe.js`, `galerie.js`, `js/i18n/contenus-*.js`) ne se modifient plus
+à la main : le tableau ci-dessous indique, pour chaque contenu, l'écran du CMS correspondant.
+
 ## Lancer le site en local
 
 1. Ouvrir le dossier dans VS Code, installer l'extension **Live Server** (recommandée), clic droit sur `index.html` → **Open with Live Server**.
@@ -28,6 +46,8 @@ js/stars/                         Étoiles 3D de l'accueil (réglages dans confi
 assets/                           Images, polices (auto-hébergées), photos de galerie, QR code de l'agenda
 calendar/                         Agenda .ics généré (ne pas modifier à la main)
 tools/                            Scripts Node (validation, header/footer, photos, agenda)
+cms/                              CMS : serveur Node (API, SQLite, mise en ligne), interface d'administration, tests
+docs/cms/                         Documentation du CMS
 vendor/three/                     Three.js
 ```
 
@@ -35,12 +55,13 @@ vendor/three/                     Three.js
 
 | Je veux… | Je vais dans… |
 |---|---|
-| Ajouter / modifier un événement | `js/data/events.js`, puis `npm run calendar` (agenda `.ics`, fiche `evenement-<slug>.html`, image d'aperçu et sitemap ; « à venir » / « passé » est calculé depuis la date) |
-| Ajouter des photos à la galerie | `npm run photos -- import/mon-dossier --titre "…" --date AAAA-MM-JJ` |
-| Lien Instagram d'un artiste du line-up | `js/data/artistes.js` |
-| Photo de profil d'un artiste (cercle du line-up) | déposer `Nom de l'artiste.jpg` dans `import/artistes/`, puis `npm run artistes` |
-| Modifier la FAQ | `js/data/faq.js` |
-| Modifier l'équipe | `js/data/equipe.js` |
+| Ajouter / modifier un événement | CMS → **Soirées**, puis **Mise en ligne** (agenda `.ics`, fiche `evenement-<slug>.html`, image d'aperçu, pages traduites et sitemap régénérés ; « à venir » / « passé » est calculé depuis la date). Sans CMS : `js/data/events.js`, puis `npm run calendar`. |
+| Ajouter des photos à la galerie | CMS → **Galerie photo** (sans CMS : `npm run photos -- import/mon-dossier --titre "…" --date AAAA-MM-JJ`) |
+| Lien Instagram, style ou photo d'un artiste | CMS → **Artistes** (sans CMS : `js/data/artistes.js`, photos dans `import/artistes/` puis `npm run artistes`) |
+| Adresse, plan d'un lieu | CMS → **Lieux** |
+| Modifier la FAQ | CMS → **FAQ** (sans CMS : `js/data/faq.js`) |
+| Modifier l'équipe | CMS → **Équipe** (sans CMS : `js/data/equipe.js`) |
+| Traduire les textes des soirées, FAQ, équipe | CMS → **Traductions** (exportées dans `js/i18n/contenus-de.js` et `contenus-en.js`) |
 | Traduire un texte (allemand, anglais) | `js/i18n/de.js` et `en.js` : `"texte français": "traduction"`, puis `npm run langues` (voir « Langues ») |
 | Modifier le header, le menu ou le footer | `partials/header.html` ou `footer.html`, puis `npm run partials` |
 | Changer couleurs, tailles, espacements | `css/style.css` (variables en haut, dans `:root`) |

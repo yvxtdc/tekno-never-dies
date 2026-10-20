@@ -1,0 +1,343 @@
+/**
+ * Mise en ligne : base → fichiers du site → outils existants → (commit) → (push).
+ *
+ * CMS_PUBLISH_MODE :
+ *  - files  : écrit les fichiers dans la copie de travail (développement : on relit `git diff`) ;
+ *  - commit : idem + commit Git des seuls fichiers gérés par le CMS ;
+ *  - push   : idem + push vers CMS_GIT_REMOTE/CMS_GIT_BRANCH (GitHub Actions déploie le site).
+ *
+ * Garde-fous :
+ *  - une seule mise en ligne à la fois ;
+ *  - en mode commit/push, les fichiers gérés doivent être propres avant de commencer et la branche
+ *    est d'abord mise à jour (fast-forward uniquement) ;
+ *  - un fichier géré modifié hors du CMS depuis le dernier export (ex. events.js édité à la main)
+ *    bloque la mise en ligne au lieu d'être écrasé (option « forcer » réservée aux administrateurs) ;
+ *  - si la validation du site échoue, les fichiers sont restaurés (mode commit/push) et rien n'est
+ *    poussé : le site en ligne reste dans son dernier état valide.
+ */
+import fs from "node:fs";
+import path from "node:path";
+import crypto from "node:crypto";
+import { spawn } from "node:child_process";
+import { now, fromJson } from "../db/index.mjs";
+import { conflict } from "../http/errors.mjs";
+import { buildSiteData } from "../export/site-data.mjs";
+import { renderModules, MANAGED_MODULES } from "../export/modules.mjs";
+import { variantFile } from "../services/media.mjs";
+import { audit } from "../services/audit.mjs";
+
+/** Fichiers et dossiers écrits par la mise en ligne (seuls ceux-ci sont ajoutés au commit). */
+export const MANAGED_PATHS = [
+  ...MANAGED_MODULES,
+  "assets/img/cms",
+  "assets/img/events/og",
+  "assets/img/maps",
+  "evenement-*.html",
+  "de",
+  "en",
+  "calendar",
+  "sitemap.xml"
+];
+
+const CMS_MEDIA_DIR = "assets/img/cms";
+const sha = (buffer) => crypto.createHash("sha256").update(buffer).digest("hex");
+const fileSha = (file) => (fs.existsSync(file) ? sha(fs.readFileSync(file)) : null);
+
+function run(cmd, args, { cwd, env, timeout = 300e3, input } = {}) {
+  return new Promise((resolve) => {
+    const child = spawn(cmd, args, { cwd, env: { ...process.env, ...env }, stdio: ["pipe", "pipe", "pipe"] });
+    let out = "";
+    const timer = setTimeout(() => child.kill("SIGKILL"), timeout);
+    child.stdout.on("data", (d) => (out += d));
+    child.stderr.on("data", (d) => (out += d));
+    child.on("error", (error) => {
+      clearTimeout(timer);
+      resolve({ code: 127, out: `${out}${error.message}` });
+    });
+    child.on("close", (code) => {
+      clearTimeout(timer);
+      resolve({ code, out: out.trim() });
+    });
+    if (input) child.stdin.end(input);
+    else child.stdin.end();
+  });
+}
+
+export class Publisher {
+  constructor({ config, db, log = () => {} }) {
+    this.config = config;
+    this.db = db;
+    this.log = log;
+    this.running = null;
+    // Une mise en ligne interrompue (arrêt du serveur) ne doit pas rester « en cours ».
+    db.run("UPDATE publications SET status = 'failed', finished_at = ?, summary = 'Interrompue (redémarrage du serveur).' WHERE status = 'running'", now());
+  }
+
+  getSetting(key, fallback) {
+    return fromJson(this.db.get("SELECT value FROM settings WHERE key = ?", key)?.value, fallback);
+  }
+
+  setSetting(key, value) {
+    this.db.run("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES (?, ?, ?)", key, JSON.stringify(value), now());
+  }
+
+  /**
+   * Fichiers de données que la prochaine mise en ligne modifierait : comparaison du rendu actuel avec
+   * celui de la dernière mise en ligne (ou de l'import, s'il a été vérifié identique au site).
+   */
+  pending() {
+    const data = buildSiteData(this.db, { mode: "public" });
+    const modules = renderModules(data);
+    const published = this.getSetting("export.rendered", {});
+    const changed = Object.entries(modules)
+      .filter(([file, content]) => {
+        const current = sha(Buffer.from(content));
+        return published[file] ? published[file] !== current : fileSha(path.join(this.config.siteDir, file)) !== current;
+      })
+      .map(([file]) => file);
+    const missingMedia = [...data.files.keys()].filter((p) => !fs.existsSync(path.join(this.config.siteDir, p)));
+    const last = this.db.get("SELECT finished_at FROM publications WHERE status = 'success' ORDER BY id DESC LIMIT 1")?.finished_at;
+    const since = last || "";
+    const events = this.db.all("SELECT id, title, status, updated_at FROM events WHERE updated_at > ? ORDER BY updated_at DESC LIMIT 20", since);
+    return { changed, missingMedia, events, hasChanges: changed.length > 0 || missingMedia.length > 0, lastPublishedAt: last || null };
+  }
+
+  /**
+   * Plans des lieux absents (outil maps désactivé ou OpenStreetMap injoignable) : la soirée est
+   * publiée sans la section « Y aller » plutôt que de bloquer toute la mise en ligne.
+   */
+  dropMissingMaps(data, step) {
+    const dropped = [];
+    for (const ev of data.events) {
+      if (!ev.venue) continue;
+      const maps = [`${ev.slug}-village`, ...(ev.venue.precise === false ? [] : [`${ev.slug}-lieu`])];
+      if (maps.every((m) => fs.existsSync(path.join(this.config.siteDir, "assets/img/maps", `${m}.svg`)))) continue;
+      delete ev.venue;
+      dropped.push(ev.title);
+    }
+    if (dropped.length) step(`Attention : plan du lieu indisponible pour ${dropped.join(", ")} ; publiée(s) sans la section « Y aller » (nouvel essai à la prochaine mise en ligne).`);
+    return dropped;
+  }
+
+  rememberHashes() {
+    this.setSetting("export.hashes", Object.fromEntries(MANAGED_MODULES.map((f) => [f, fileSha(path.join(this.config.siteDir, f))])));
+  }
+
+  /** Empreinte du rendu publié (pour savoir s'il reste des modifications à mettre en ligne). */
+  rememberRendered(modules) {
+    this.setSetting("export.rendered", Object.fromEntries(Object.entries(modules).map(([f, c]) => [f, sha(Buffer.from(c))])));
+  }
+
+  /** Fichiers gérés modifiés hors du CMS depuis le dernier import ou export. */
+  drift() {
+    const known = this.getSetting("export.hashes", null);
+    if (!known) return [];
+    return MANAGED_MODULES.filter((file) => {
+      const current = fileSha(path.join(this.config.siteDir, file));
+      return file in known && known[file] !== current && current !== null;
+    });
+  }
+
+  async git(args, options = {}) {
+    const env = {
+      GIT_AUTHOR_NAME: this.config.gitAuthorName,
+      GIT_AUTHOR_EMAIL: this.config.gitAuthorEmail,
+      GIT_COMMITTER_NAME: this.config.gitAuthorName,
+      GIT_COMMITTER_EMAIL: this.config.gitAuthorEmail,
+      GIT_TERMINAL_PROMPT: "0"
+    };
+    return run("git", args, { cwd: this.config.siteDir, env, timeout: 120e3, ...options });
+  }
+
+  /**
+   * Lance une mise en ligne. Renvoie l'enregistrement de publication.
+   * @param {{ trigger?: "manual"|"schedule"|"cli", user?: object, force?: boolean, ip?: string }} options
+   */
+  async publish({ trigger = "manual", user = null, force = false, ip = null } = {}) {
+    if (this.running) throw conflict("Une mise en ligne est déjà en cours. Patientez quelques instants.");
+    const { db, config } = this;
+    const mode = config.publishMode;
+    const { lastInsertRowid } = db.run(
+      "INSERT INTO publications (status, trigger, mode, user_id, started_at) VALUES ('running', ?, ?, ?, ?)",
+      trigger, mode, user?.id ?? null, now()
+    );
+    const id = Number(lastInsertRowid);
+    const lines = [];
+    const step = (text) => {
+      lines.push(`[${new Date().toISOString().slice(11, 19)}] ${text}`);
+      db.run("UPDATE publications SET log = ? WHERE id = ?", lines.join("\n"), id);
+    };
+    const finish = (status, summary, commitSha = null) => {
+      db.run("UPDATE publications SET status = ?, finished_at = ?, summary = ?, commit_sha = ?, log = ? WHERE id = ?", status, now(), summary, commitSha, lines.join("\n"), id);
+      audit(db, { user, ip }, status === "success" ? "site.publish" : "site.publish.failed", "publication", id, summary);
+      return db.get("SELECT * FROM publications WHERE id = ?", id);
+    };
+
+    this.running = (async () => {
+      let wrote = false;
+      const gitMode = mode === "commit" || mode === "push";
+      try {
+        step(`Mise en ligne (${{ files: "fichiers uniquement", commit: "fichiers + commit", push: "fichiers + commit + push" }[mode]}).`);
+        const q = (p) => (p.includes("*") ? `:(glob)${p}` : p);
+        const pathspecs = MANAGED_PATHS.map(q);
+        if (gitMode) {
+          const inside = await this.git(["rev-parse", "--is-inside-work-tree"]);
+          if (inside.code !== 0) throw new Error(`Le dossier du site n'est pas un dépôt Git : ${config.siteDir}`);
+          const branch = (await this.git(["rev-parse", "--abbrev-ref", "HEAD"])).out;
+          if (branch !== config.gitBranch) throw new Error(`Le dépôt est sur la branche « ${branch} » au lieu de « ${config.gitBranch} ».`);
+          const dirty = await this.git(["status", "--porcelain", "--", ...pathspecs]);
+          if (dirty.out) throw new Error(`Des fichiers gérés par le CMS ont des modifications non enregistrées dans le dépôt :\n${dirty.out}`);
+          if (mode === "push") {
+            step(`Mise à jour depuis ${config.gitRemote}/${config.gitBranch}…`);
+            const fetch = await this.git(["fetch", config.gitRemote, config.gitBranch]);
+            if (fetch.code !== 0) throw new Error(`git fetch a échoué :\n${fetch.out}`);
+            const merge = await this.git(["merge", "--ff-only", `${config.gitRemote}/${config.gitBranch}`]);
+            if (merge.code !== 0) throw new Error(`Impossible de mettre à jour la branche sans fusion (historique divergent) :\n${merge.out}`);
+          }
+        }
+
+        const drift = this.drift();
+        if (drift.length && !force) {
+          throw Object.assign(new Error(`Fichiers modifiés hors du CMS depuis la dernière mise en ligne : ${drift.join(", ")}. Reportez ces changements dans le CMS (ou demandez à un administrateur de forcer la mise en ligne, ce qui les remplacera).`), { drift });
+        }
+        if (drift.length) step(`Fichiers modifiés hors du CMS remplacés (mise en ligne forcée) : ${drift.join(", ")}.`);
+
+        step("Export des contenus publiés…");
+        const data = buildSiteData(db, { mode: "public" });
+        wrote = true;
+        // Images : variantes optimisées copiées dans assets/img/cms (seulement celles utilisées).
+        const mediaDir = path.join(config.siteDir, CMS_MEDIA_DIR);
+        fs.mkdirSync(mediaDir, { recursive: true });
+        let copied = 0;
+        for (const [publicPath, { media, variant }] of data.files) {
+          const src = await variantFile(config, media, variant);
+          const dest = path.join(config.siteDir, publicPath);
+          if (fileSha(dest) !== fileSha(src)) {
+            fs.copyFileSync(src, dest);
+            copied++;
+          }
+        }
+        let removed = 0;
+        const wanted = new Set([...data.files.keys()].map((p) => path.basename(p)));
+        for (const name of fs.readdirSync(mediaDir)) {
+          if (!wanted.has(name) && /-[0-9a-f]{12}-v\d+(-[a-z]+)?\.(webp|jpg)$/.test(name)) {
+            fs.rmSync(path.join(mediaDir, name));
+            removed++;
+          }
+        }
+        step(`Images : ${data.files.size} utilisée(s), ${copied} copiée(s), ${removed} retirée(s).`);
+        let modules = renderModules(data);
+        // Rendu attendu (avec tous les plans) : sert de référence pour « modifications en attente ».
+        const expectedModules = modules;
+        const writeModules = () => {
+          let n = 0;
+          for (const [file, content] of Object.entries(modules)) {
+            const full = path.join(config.siteDir, file);
+            if (fs.existsSync(full) && fs.readFileSync(full, "utf8") === content) continue;
+            fs.mkdirSync(path.dirname(full), { recursive: true });
+            fs.writeFileSync(`${full}.tmp`, content);
+            fs.renameSync(`${full}.tmp`, full);
+            n++;
+          }
+          return n;
+        };
+        const changedModules = writeModules();
+        step(`Données : ${data.events.length} soirée(s), ${data.FAQ.length} question(s), ${data.TEAM.length} membre(s) ; ${changedModules} fichier(s) de données modifié(s).`);
+        // Empreintes des fichiers écrits : base de la détection des modifications hors CMS.
+        this.rememberHashes();
+
+        const tools = [
+          ["tools/event-pages.mjs", "Fiches des soirées et images d'aperçu"],
+          ["tools/generate-calendar.mjs", "Agenda .ics"],
+          ...(config.runMaps ? [["tools/maps.mjs", "Plans des lieux (OpenStreetMap)"]] : []),
+          ["tools/langues.mjs", "Pages allemandes et anglaises, sitemap"],
+          ["tools/validate.mjs", "Validation complète du site"]
+        ];
+        let degraded = [];
+        for (const [tool, label] of tools) {
+          if (tool === "tools/langues.mjs") degraded = this.dropMissingMaps(data, step);
+          if (degraded.length && tool === "tools/langues.mjs") {
+            modules = renderModules(data);
+            writeModules();
+            this.rememberHashes();
+          }
+          step(`${label}…`);
+          const result = await run(process.execPath, [tool], { cwd: config.siteDir, timeout: 600e3 });
+          if (result.out) step(result.out.split("\n").slice(-15).join("\n"));
+          // Plans : un échec (OpenStreetMap injoignable) n'empêche pas la mise en ligne (voir dropMissingMaps).
+          if (result.code !== 0 && tool !== "tools/maps.mjs") throw new Error(`${label} : échec (code ${result.code}).`);
+          if (result.code !== 0) step("Plans : génération impossible pour l'instant (réseau ?).");
+        }
+
+        let commitSha = null;
+        let summary = "Site mis à jour (fichiers écrits).";
+        if (gitMode) {
+          await this.git(["add", "-A", "--", ...pathspecs]);
+          const staged = await this.git(["diff", "--cached", "--name-only"]);
+          if (!staged.out) {
+            summary = "Aucun changement à mettre en ligne : le site est déjà à jour.";
+            step(summary);
+            this.rememberRendered(modules);
+            return finish("success", summary);
+          }
+          const files = staged.out.split("\n");
+          const changedEvents = db.all(
+            "SELECT title FROM events WHERE updated_at > COALESCE((SELECT MAX(finished_at) FROM publications WHERE status = 'success'), '') ORDER BY date DESC LIMIT 10"
+          ).map((e) => `- ${e.title}`);
+          const message = [
+            "contenu: mise en ligne depuis le CMS",
+            "",
+            `Mise en ligne ${trigger === "schedule" ? "programmée" : `par ${user?.name || "la ligne de commande"}`} (${files.length} fichier(s)).`,
+            ...(changedEvents.length ? ["", "Soirées modifiées :", ...changedEvents] : [])
+          ].join("\n");
+          const commit = await this.git(["commit", "-q", "-F", "-"], { input: message });
+          if (commit.code !== 0) throw new Error(`git commit a échoué :\n${commit.out}`);
+          commitSha = (await this.git(["rev-parse", "HEAD"])).out;
+          step(`Commit ${commitSha.slice(0, 7)} (${files.length} fichier(s)).`);
+          summary = `Commit ${commitSha.slice(0, 7)} : ${files.length} fichier(s).`;
+          if (mode === "push") {
+            const push = await this.git(["push", config.gitRemote, `HEAD:${config.gitBranch}`], { timeout: 180e3 });
+            if (push.code !== 0) {
+              // Le commit reste local : il partira avec la prochaine mise en ligne.
+              throw new Error(`git push a échoué (le commit ${commitSha.slice(0, 7)} est conservé localement) :\n${push.out}`);
+            }
+            step(`Envoyé sur ${config.gitRemote}/${config.gitBranch} : GitHub Actions publie le site (quelques minutes).`);
+            summary = `Envoyé sur GitHub (${commitSha.slice(0, 7)}) : le site sera à jour d'ici quelques minutes.`;
+          }
+        }
+        // Soirée publiée sans plan : la référence reste le rendu complet, donc la modification reste
+        // « en attente » et la prochaine mise en ligne réessaiera les plans.
+        this.rememberRendered(degraded.length ? { ...expectedModules, "js/data/events.js": "" } : modules);
+        if (degraded.length) summary += ` Sans plan « Y aller » pour l'instant : ${degraded.join(", ")}.`;
+        step("Terminé.");
+        return finish("success", summary, commitSha);
+      } catch (error) {
+        step(`ÉCHEC : ${error.message}`);
+        if (gitMode && wrote && !/git push/.test(error.message)) {
+          // Retour à l'état du dernier commit pour les seuls fichiers gérés (vérifiés propres au départ).
+          const pathspecs = MANAGED_PATHS.map((p) => (p.includes("*") ? `:(glob)${p}` : p));
+          // Fichiers suivis modifiés ou supprimés (git diff tolère les dossiers gérés pas encore commités),
+          // puis fichiers nouveaux (git clean) : seuls les chemins gérés par le CMS sont concernés.
+          const changed = (await this.git(["diff", "--name-only", "HEAD", "--", ...pathspecs])).out.split("\n").filter(Boolean);
+          const restore = changed.length ? await this.git(["checkout", "HEAD", "--", ...changed]) : { code: 0, out: "" };
+          const clean = await this.git(["clean", "-fdq", "--", ...pathspecs]);
+          this.rememberHashes();
+          if (restore.code === 0 && clean.code === 0) step("Fichiers du site restaurés dans leur dernier état publié.");
+          else step(`Restauration incomplète, vérifiez le dépôt :\n${restore.out}\n${clean.out}`);
+        }
+        return finish("failed", error.message.split("\n")[0].slice(0, 400));
+      } finally {
+        this.running = null;
+      }
+    })();
+    return this.running;
+  }
+}
+
+export function listPublications(db, { limit = 30 } = {}) {
+  return db.all(
+    `SELECT p.id, p.status, p.trigger, p.mode, p.started_at, p.finished_at, p.commit_sha, p.summary, u.name AS user_name
+       FROM publications p LEFT JOIN users u ON u.id = p.user_id ORDER BY p.id DESC LIMIT ?`,
+    limit
+  );
+}

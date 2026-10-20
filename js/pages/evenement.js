@@ -1,3 +1,5 @@
+import { EVENTS, EVENT_REDIRECTS } from "../data/events.js";
+import { splitB2B, artistsOf, artistUrl, artistPhoto, slotStyle } from "../components/artists.js";
 import { EVENTS } from "../data/events.js";
 import { splitB2B, artistsOf, artistUrl, artistPhoto, slotStyle, visibleLineup } from "../components/artists.js";
 import { SITE } from "../data/site.js";
@@ -8,17 +10,20 @@ import { eventStats } from "../components/event-stats.js";
 
 // Fiche statique (evenement-….html) : le slug est écrit sur <body data-slug>.
 // Ancienne adresse evenement.html?slug=… (liens déjà partagés) : on passe sur la fiche statique.
+// Ancienne adresse d'une soirée renommée dans le CMS (EVENT_REDIRECTS) : même redirection.
 const legacySlug = !document.body.dataset.slug && readParam("slug");
-if (legacySlug && EVENTS.some((event) => event.slug === legacySlug)) {
+const legacyTarget = legacySlug && (EVENTS.some((event) => event.slug === legacySlug) ? legacySlug : EVENT_REDIRECTS[legacySlug]);
+if (legacyTarget && EVENTS.some((event) => event.slug === legacyTarget)) {
   const params = new URLSearchParams(location.search);
   params.delete("slug");
   // Adresse relative à la page (et non à <base>) : de/evenement.html?slug=… reste en allemand.
-  location.replace(new URL(eventPath(legacySlug), location.href) + (params.size ? `?${params}` : "") + location.hash);
+  location.replace(new URL(eventPath(legacyTarget), location.href) + (params.size ? `?${params}` : "") + location.hash);
 }
 
 const root = document.getElementById("event-detail");
-const ev = EVENTS.find((event) => event.slug === (document.body.dataset.slug || legacySlug));
-const ticketUrl = safeUrl(ev?.ticketUrl);
+const ev = EVENTS.find((event) => event.slug === (document.body.dataset.slug || legacyTarget));
+// Soirée annulée : plus de billetterie.
+const ticketUrl = ev?.cancelled ? "" : safeUrl(ev?.ticketUrl);
 
 const escapeHTML = (value = "") =>
   String(value).replace(/[&<>"']/g, (char) => ({
@@ -169,7 +174,9 @@ if (!root) {
     return text.charAt(0).toUpperCase() + text.slice(1);
   })();
   const daysLeft = range ? Math.ceil((range.start.getTime() - Date.now()) / 864e5) : null;
-  const statusLine = status === "a-venir"
+  const statusLine = ev.cancelled
+    ? `<p class="event-status is-cancelled"><span>Soirée annulée</span><span class="event-status__count" translate="no">${escapeHTML(ev.date.slice(0, 4))}</span></p>`
+    : status === "a-venir"
     ? `<p class="event-status is-upcoming"><span class="event-status__dot" aria-hidden="true"></span><span>Prochaine soirée</span>${daysLeft > 1 ? `<span class="event-status__count">${escapeHTML(t("J-{n}", { n: daysLeft }))}</span>` : ""}</p>`
     : `<p class="event-status is-past"><span>Soirée passée</span><span class="event-status__count" translate="no">${escapeHTML(ev.date.slice(0, 4))}</span></p>`;
   // Âge : champ "age", sinon une info pratique « Dès 16 ans »
@@ -177,7 +184,7 @@ if (!root) {
   const entry = [ev.price ? tr(ev.price) : "", ageText ? tr(ageText) : ""].filter(Boolean).join(" · ");
   const facts = [
     ["Date", longDate],
-    ev.time ? ["Horaires", formatTime(ev.time)] : null,
+    ev.time ? ["Horaires", formatTime(ev.time), ev.doors ? t("Ouverture des portes : {time}", { time: formatTime(ev.doors) }) : ""] : null,
     ev.place ? ["Lieu", venueName || town, [street, venueName ? town : ""].filter(Boolean).join(", ")] : ["Lieu", tr("Lieu à confirmer")],
     entry ? [ev.price ? "Entrée" : "Âge", entry] : crowd ? ["Fréquentation", t("≈ {n} personnes", { n: crowd })] : null
   ].filter(Boolean);
@@ -189,7 +196,7 @@ if (!root) {
 
   // Itinéraire (soirées à venir) : ouvre l'appli GPS du téléphone sur l'adresse de la salle.
   const destination = encodeURIComponent(ev.place || "");
-  const routes = ev.place && status === "a-venir"
+  const routes = ev.place && status === "a-venir" && !ev.cancelled
     ? [
         ["Waze", `https://waze.com/ul?q=${destination}&navigate=yes`],
         ["Google Maps", `https://www.google.com/maps/dir/?api=1&destination=${destination}`],
@@ -204,7 +211,7 @@ if (!root) {
   const heroActions = `
     <div class="event-actions">
       ${mainAction}
-      ${status === "a-venir" ? `<button type="button" class="btn btn-hero-line" id="add-to-calendar">Ajouter à l'agenda</button>` : ""}
+      ${status === "a-venir" && !ev.cancelled ? `<button type="button" class="btn btn-hero-line" id="add-to-calendar">Ajouter à l'agenda</button>` : ""}
       ${ev.venue ? `<a class="btn btn-hero-line" href="#access-title">Y aller</a>` : ""}
       <button type="button" class="btn btn-hero-line js-share"><span>Partager</span></button>
     </div>`;
@@ -225,7 +232,7 @@ if (!root) {
       ${photos.length
         ? `<div class="event-about__photos">${photos.map((photo) => `
             <figure class="event-photo">
-              <span class="event-photo__frame"><img src="${escapeHTML(photo.src)}" alt="" loading="lazy" decoding="async" /></span>
+              <span class="event-photo__frame"><img src="${escapeHTML(photo.src)}" alt="${escapeHTML(photo.alt ? tr(photo.alt) : "")}" loading="lazy" decoding="async" /></span>
               ${photo.caption ? `<figcaption>${escapeHTML(tr(photo.caption))}</figcaption>` : ""}
             </figure>`).join("")}</div>`
         : `<div class="event-about__side">
@@ -321,13 +328,15 @@ if (!root) {
   // Infos pratiques : sans répéter ce qui est déjà en haut ou dans les chiffres clés
   // (heure de début, âge, nombre de participants)
   const practicalItems = (ev.practical || []).filter((item) => item !== ageText && !/^Début\s*:/i.test(item) && !/\d+\s*participant/i.test(item));
-  const practicalContent = practicalItems.length
+  // Liens complémentaires saisis dans le CMS (événement Facebook, page partenaire…) : à la suite.
+  const links = (ev.links || []).map((link) => ({ label: link.label, url: safeUrl(link.url) })).filter((link) => link.url);
+  const practicalContent = practicalItems.length || links.length
     ? `<section class="event-practical" aria-labelledby="practical-title">
         <div class="event-section-head">
           <h2 id="practical-title">Infos pratiques<span class="event-title__dot">.</span></h2>
           <p class="event-section-head__note">À SAVOIR<br />AVANT DE VENIR.</p>
         </div>
-        <ul>${practicalItems.map((item) => `<li>${escapeHTML(item)}</li>`).join("")}</ul>
+        <ul>${practicalItems.map((item) => `<li>${escapeHTML(item)}</li>`).join("")}${links.map((link) => `<li><a href="${escapeHTML(link.url)}" target="_blank" rel="noopener noreferrer">${escapeHTML(link.label)} <span aria-hidden="true">↗</span></a></li>`).join("")}</ul>
       </section>`
     : "";
 

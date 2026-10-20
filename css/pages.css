@@ -1718,6 +1718,8 @@ button.event-gallery-link{background:none;border-width:0 0 1px;border-radius:0;f
 .event-status__dot{width:8px;height:8px;border-radius:50%;background:var(--lav);box-shadow:0 0 10px var(--lav);animation:live-pulse 1.8s ease-in-out infinite}
 .event-status__count{padding-left:10px;border-left:1px solid rgba(255,255,255,.25);color:var(--lav)}
 .event-status.is-past{border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.8)}
+/* Soirée annulée (statut « Annulé » dans le CMS) */
+.event-status.is-cancelled{border-color:var(--pink);color:#fff;background:rgba(182,38,154,.22)}
 .event-hero.is-live .event-status{border-color:var(--pink)}
 .event-hero.is-live .event-status__dot{background:var(--pink);box-shadow:0 0 12px var(--pink)}
 .event-hero.is-live .event-status::after{content:var(--t-live,"EN DIRECT");color:var(--pink)}

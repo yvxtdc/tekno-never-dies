@@ -40,7 +40,7 @@ jobs:
           mkdir _site
           rsync -a \
             --exclude '.*' --exclude '_site' --exclude 'node_modules' --exclude 'import' --exclude 'dist' \
-            --exclude 'tools' --exclude 'partials' --exclude 'README.md' --exclude 'A-COMPLETER.md' \
+            --exclude 'tools' --exclude 'partials' --exclude 'cms' --exclude 'docs' --exclude 'README.md' --exclude 'A-COMPLETER.md' \
             --exclude 'package.json' --exclude 'package-lock.json' --exclude 'serve.json' \
             ./ _site/
 

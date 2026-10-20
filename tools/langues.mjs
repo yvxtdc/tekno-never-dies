@@ -110,6 +110,10 @@ function translatePage(file, lang) {
     else if (el.name === "META" && attr(el, "property") === "og:locale:alternate") setAttr(el, "content", otherLocales.shift());
     else if (el.name === "META" && attr(el, "property") === "og:url") setAttr(el, "content", pageUrl(file, lang));
     else if (el.name === "LINK" && attr(el, "rel") === "canonical") setAttr(el, "href", pageUrl(file, lang));
+    // Ancienne adresse d'une soirée (tools/event-pages.mjs) : redirige vers la fiche dans la même langue.
+    else if (el.name === "META" && attr(el, "http-equiv") === "refresh") {
+      setAttr(el, "content", attr(el, "content").replace(/url=(.+)$/, (_, target) => `url=${localizeLink(target, lang)}`));
+    }
   }
 
   translate(body, dict);

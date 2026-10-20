@@ -29,7 +29,7 @@ export function eventSchema(ev) {
     url: pageUrl,
     startDate: times ? iso(times.start) + parisOffset(dateOf(times.start), times.start.h) : ev.date,
     ...(times ? { endDate: iso(times.end) + parisOffset(dateOf(times.end), times.end.h) } : {}),
-    eventStatus: "https://schema.org/EventScheduled",
+    eventStatus: ev.cancelled ? "https://schema.org/EventCancelled" : "https://schema.org/EventScheduled",
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
     ...(visual ? { image: [new URL(visual, SITE.url).href] } : {}),
     location: {
