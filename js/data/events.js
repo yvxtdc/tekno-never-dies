@@ -241,6 +241,36 @@ export const EVENTS = [
       "precise": false,
       "span": 3.4
     }
+  },
+  {
+    "slug": "dede-2020",
+    "title": "dede",
+    "date": "2020-04-21",
+    "time": "21h00 – 4h00",
+    "place": "",
+    "age": "Dès 16 ans",
+    "ticketUrl": "",
+    "flyer": "assets/img/gallery/2025/ice-boiler/photo-101.webp",
+    "cover": "assets/img/gallery/2025/ice-boiler/photo-94.webp",
+    "genres": [],
+    "description": "de",
+    "practical": [],
+    "lineup": [
+      {
+        "name": "Leander",
+        "time": "21h00 – 23h40"
+      },
+      {
+        "name": "Mogli",
+        "time": "23h40 – 4h00"
+      }
+    ],
+    "about": {
+      "kicker": "dzddz",
+      "title": "dzd",
+      "text": "zlfkjzofz"
+    },
+    "gallerySlug": "ice-boiler"
   }
 ];
 

@@ -170,6 +170,27 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/evenement-center-drop-2026.html"/>
   </url>
   <url>
+    <loc>https://teknoneverdies.fr/evenement-dede-2020.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/evenement-dede-2020.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/evenement-dede-2020.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/evenement-dede-2020.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/evenement-dede-2020.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/de/evenement-dede-2020.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/evenement-dede-2020.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/evenement-dede-2020.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/evenement-dede-2020.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/evenement-dede-2020.html"/>
+  </url>
+  <url>
+    <loc>https://teknoneverdies.fr/en/evenement-dede-2020.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/evenement-dede-2020.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/evenement-dede-2020.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teknoneverdies.fr/en/evenement-dede-2020.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teknoneverdies.fr/evenement-dede-2020.html"/>
+  </url>
+  <url>
     <loc>https://teknoneverdies.fr/evenement-fete-musique-wissembourg-2025.html</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://teknoneverdies.fr/evenement-fete-musique-wissembourg-2025.html"/>
     <xhtml:link rel="alternate" hreflang="de" href="https://teknoneverdies.fr/de/evenement-fete-musique-wissembourg-2025.html"/>
