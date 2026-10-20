@@ -14,6 +14,7 @@
  */
 import { SITE } from "../data/site.js";
 import { eventPath, safeUrl } from "../pages/helpers.js";
+import { visibleLineup } from "./artists.js";
 
 const same = (text) => text;
 
@@ -32,7 +33,7 @@ export function eventCalendarDetails(ev, { tr = same, locale = "fr-FR", time = s
   const pageUrl = new URL(eventPath(ev.slug), SITE.url).href;
   const ticketUrl = safeUrl(ev.ticketUrl);
   const genres = (ev.genres || []).join(" · ");
-  const lineup = (ev.lineup || []).filter((slot) => slot.name);
+  const lineup = visibleLineup(ev).filter((slot) => slot.name);
   // L'âge et l'horaire de début ont déjà leur ligne : pas de doublon dans les infos pratiques.
   const practical = (ev.practical || []).filter((item) => item !== ev.age && !/^Début\s*:/i.test(item));
   // « Billetterie : … » en français, « Tickets: … » en allemand et en anglais

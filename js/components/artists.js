@@ -28,6 +28,13 @@ export const instagramHandle = (url = "") => {
   return handle ? `@${handle}` : "";
 };
 
+/** Ligne du line-up pas encore dévoilée (revealAt dans le futur) : « DJ Contest » + « ? » à la place de la photo. */
+export const revealSlot = (slot, now = Date.now()) =>
+  slot.revealAt && now < Date.parse(slot.revealAt)
+    ? { time: slot.time, order: slot.order, name: "DJ Contest", mystery: true }
+    : slot;
+export const visibleLineup = (ev) => (ev.lineup || []).map((slot) => revealSlot(slot));
+
 // Lignes du line-up qui ne sont pas un artiste.
 const NOT_AN_ARTIST = /^(dj contest|guest|tba|surprise)/i;
 
@@ -38,7 +45,7 @@ const NOT_AN_ARTIST = /^(dj contest|guest|tba|surprise)/i;
 export function collectArtists(events) {
   const artists = new Map();
   for (const ev of [...events].sort((a, b) => b.date.localeCompare(a.date))) {
-    for (const slot of ev.lineup || []) {
+    for (const slot of visibleLineup(ev)) {
       if (!slot.name || slot.demo || NOT_AN_ARTIST.test(slot.name.trim())) continue;
       const names = artistsOf(slot.name);
       for (const name of names) {

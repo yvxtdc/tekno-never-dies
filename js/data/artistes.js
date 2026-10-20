@@ -21,7 +21,7 @@ export const ARTISTS = {
   "D0molly": "https://www.instagram.com/d0.m0lly/",
   "Jakobee": "https://www.instagram.com/jakobee_music/",
   "VS": "https://www.instagram.com/vs__techno/",
-  "Rayy3k": "https://www.instagram.com/rayy_dj_/",
+  "RAYY": "https://www.instagram.com/rayy_dj_/",
   "T.B.R": "https://www.instagram.com/tom_brstn/"
 };
 
@@ -44,5 +44,5 @@ export const ARTIST_STYLES = {
   "D0molly": "Trance / Acid",
   "Jakobee": "Hard Techno",
   "VS": "Hard Techno",
-  "Rayy3k": "Trance"
+  "RAYY": "Trance"
 };
