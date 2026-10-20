@@ -8,7 +8,7 @@ export const ARTIST_PHOTOS = {
   "leander": "assets/img/artistes/leander.webp",
   "meinos": "assets/img/artistes/meinos.webp",
   "mogli": "assets/img/artistes/mogli.webp",
-  "rayy3k": "assets/img/artistes/rayy3k.webp",
+  "rayy": "assets/img/artistes/rayy.webp",
   "redfox": "assets/img/artistes/redfox.webp",
   "svengerber": "assets/img/artistes/svengerber.webp",
   "tbr": "assets/img/artistes/tbr.webp",
