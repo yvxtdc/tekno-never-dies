@@ -1,22 +1,22 @@
 {
   "ice-boiler-v2-2026": {
-    "sequence": 5,
-    "hash": "37e3fc377419672b5e219fe87ca34b09b92ff07298add51ab65d2ce269ca2601",
-    "lastModified": "20261020T154446Z"
+    "sequence": 6,
+    "hash": "6e751ca8d164fb7591af2cf534dc989c39f3fdead9e5efe771d36bb310bec6fa",
+    "lastModified": "20261020T181909Z"
   },
   "center-drop-2026": {
     "sequence": 3,
     "hash": "6536780cd9f400010da3033be5085b1c7ff7973543f20556d5511e7d377c6be4",
     "lastModified": "20261018T165703Z"
   },
-  "fete-musique-wissembourg-2025": {
-    "sequence": 2,
-    "hash": "a6964159e298835f9b0a5d1efaeb8ed896a9e4fdd1e88377e65f162d27b8c5a6",
-    "lastModified": "20261018T165703Z"
-  },
   "ice-boiler-v1-2025": {
     "sequence": 4,
     "hash": "009b369fff76327d0a4eab125f8ca10977b9f61f445f08f5fab44d330713483a",
+    "lastModified": "20261018T165703Z"
+  },
+  "fete-musique-wissembourg-2025": {
+    "sequence": 2,
+    "hash": "a6964159e298835f9b0a5d1efaeb8ed896a9e4fdd1e88377e65f162d27b8c5a6",
     "lastModified": "20261018T165703Z"
   }
 }

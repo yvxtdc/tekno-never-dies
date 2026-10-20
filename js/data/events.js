@@ -1,154 +1,248 @@
-/**
- * Données des événements. Un seul endroit à modifier pour que la liste ET
- * les fiches détaillées se mettent à jour automatiquement.
- *
- * Pour ajouter un événement : copie un objet ci-dessous, change les valeurs.
- * "slug" doit être unique (utilisé dans l'adresse de la fiche, ex :
- * evenement-soiree-halloween-2026.html), sans espaces ni accents.
- * Après chaque modification : npm run calendar (agenda .ics + fiches evenement-….html).
- * "À venir" / "passé" est calculé automatiquement depuis "date" (rien à changer après la soirée).
- *
- * Visuels :
- *   "flyer"      → affiche de la soirée (portrait), montrée en entier sur la fiche
- *                  et utilisée pour la vignette de la liste.
- *   "cover"      → photo utilisée quand il n'y a pas de flyer.
- * "genres" : styles musicaux affichés sur la fiche (et pris en compte par la recherche).
- *
- * "about" : section « La soirée » de la fiche, ce qui distingue cette soirée des autres.
- *   kicker (petite ligne au-dessus), title (accroche), text (présentation),
- *   photos : [{ src, caption }] (facultatif, 2 photos de la soirée ou de l'édition précédente, avec légende).
- *   Penser à traduire ces textes dans js/i18n/de.js et en.js (npm run validate liste les oublis).
- * "venue" : position du lieu pour les plans de la fiche (npm run plans, voir tools/maps.mjs).
- *   { lat, lon } (coordonnées GPS, par exemple depuis openstreetmap.org : clic droit → « Afficher
- *   l'adresse ») ; precise: false si seule la commune est connue (plan du village, sans repère).
- *   span : largeur du plan du village en km (2,5 par défaut ; plus grand pour une ville).
- * "revealAt" (sur une ligne du line-up) : avant cette date, l'artiste est caché
- *   (« DJ Contest » et un « ? » à la place de la photo), puis dévoilé tout seul.
+/*
+ * FICHIER GÉNÉRÉ par le CMS (cms/, « Mettre en ligne ») : soirées publiées (statut, line-up, lieux, visuels).
+ * Ne pas modifier à la main : les modifications seraient écrasées à la prochaine mise en ligne.
+ * Les contenus se gèrent dans l'administration ; voir docs/cms/README.md.
  */
 export const EVENTS = [
   {
-    slug: "ice-boiler-v2-2026",
-    title: "ICE BOILER v2",
-    date: "2026-11-28",
-    time: "21h00 – 4h00",
-    place: "Salle polyvalente, 81 rue du Rhin, Munchhausen",
-    price: "10 à 16 € en prévente, 18 € sur place",
-    age: "Dès 16 ans",
-    ticketUrl: "https://www.helloasso.com/associations/tekno-never-dies/evenements/ice-boiler-1",
-    flyer: "assets/img/events/flyer-ice-boiler-v2-2026.webp",
-    cover: "",
-    genres: ["Trance", "Groovy", "Bouncy", "Techno"],
-    description: "Rendez-vous le samedi 28 novembre 2026 à 21h00 à la salle polyvalente de Munchhausen pour ICE BOILER v2, une soirée trance, groovy, bouncy et techno organisée par Tekno Never Dies.",
-    practical: ["Début : 21h00", "Prévente en ligne sur HelloAsso : 10 €, 13 € ou 16 €", "Sur place (caisse du soir) : 18 €", "Dès 16 ans"],
-    lineup: [
-      { name: "T.B.R", style: "DJ Contest", time: "21h00 – 22h00", revealAt: "2026-11-04T18:00:00+01:00" },
-      { name: "Mogli", time: "22h00 – 23h30" },
-      { name: "Dann Octa", time: "23h30 – 1h00" },
-      { name: "Leander", time: "1h00 – 2h30" },
-      { name: "RAYY", time: "2h30 – 4h00" }
+    "slug": "ice-boiler-v2-2026",
+    "title": "ICE BOILER v2",
+    "date": "2026-11-28",
+    "time": "21h00 – 4h00",
+    "place": "Salle polyvalente, 81 rue du Rhin, Munchhausen",
+    "price": "10 à 16 € en prévente, 18 € sur place",
+    "age": "Dès 16 ans",
+    "ticketUrl": "https://www.helloasso.com/associations/tekno-never-dies/evenements/ice-boiler-1",
+    "flyer": "assets/img/events/flyer-ice-boiler-v2-2026.webp",
+    "cover": "",
+    "genres": [
+      "Trance",
+      "Groovy",
+      "Bouncy",
+      "Techno"
     ],
-    about: {
-      kicker: "2ᵉ édition · L'hiver selon TND",
-      title: "Froid dehors, brûlant dedans.",
-      text: "ICE BOILER revient pour une deuxième édition, cette fois dans la salle polyvalente de Munchhausen. Le principe ne change pas : une nuit d'hiver qui démarre en douceur et monte en pression jusqu'à 4h. Nouveauté de cette édition, la techno s'ouvre aux sons trance, groovy et bouncy.",
-      photos: [
-        { src: "assets/img/gallery/2025/ice-boiler/photo-100.webp", caption: "Le décor de la première édition, novembre 2025." },
-        { src: "assets/img/gallery/2025/ice-boiler/photo-103.webp", caption: "Le dancefloor d'ICE BOILER v1, avant la suite." }
+    "description": "Rendez-vous le samedi 28 novembre 2026 à 21h00 à la salle polyvalente de Munchhausen pour ICE BOILER v2, une soirée trance, groovy, bouncy et techno organisée par Tekno Never Dies.",
+    "practical": [
+      "Début : 21h00",
+      "Prévente en ligne sur HelloAsso : 10 €, 13 € ou 16 €",
+      "Sur place (caisse du soir) : 18 €",
+      "Dès 16 ans"
+    ],
+    "lineup": [
+      {
+        "name": "T.B.R",
+        "style": "DJ Contest",
+        "time": "21h00 – 22h00"
+      },
+      {
+        "name": "Mogli",
+        "time": "22h00 – 23h30"
+      },
+      {
+        "name": "Dann Octa",
+        "time": "23h30 – 1h00"
+      },
+      {
+        "name": "Leander",
+        "time": "1h00 – 2h30"
+      },
+      {
+        "name": "RAYY",
+        "time": "2h30 – 4h00"
+      }
+    ],
+    "about": {
+      "kicker": "2ᵉ édition · L'hiver selon TND",
+      "title": "Froid dehors, brûlant dedans.",
+      "text": "ICE BOILER revient pour une deuxième édition, cette fois dans la salle polyvalente de Munchhausen. Le principe ne change pas : une nuit d'hiver qui démarre en douceur et monte en pression jusqu'à 4h. Nouveauté de cette édition, la techno s'ouvre aux sons trance, groovy et bouncy.",
+      "photos": [
+        {
+          "src": "assets/img/gallery/2025/ice-boiler/photo-100.webp",
+          "caption": "Le décor de la première édition, novembre 2025."
+        },
+        {
+          "src": "assets/img/gallery/2025/ice-boiler/photo-103.webp",
+          "caption": "Le dancefloor d'ICE BOILER v1, avant la suite."
+        }
       ]
     },
-    venue: { lat: 48.9193643, lon: 8.1576719 },
+    "venue": {
+      "lat": 48.9193643,
+      "lon": 8.1576719
+    }
   },
   {
-    slug: "center-drop-2026",
-    title: "Center Drop",
-    date: "2026-04-04",
-    time: "21h00 – 4h00",
-    place: "1 rue du Stade, Niederroedern",
-    ticketUrl: "",
-    flyer: "assets/img/events/flyer-center-drop-2026.webp",
-    cover: "assets/img/events/soiree2.webp",
-    genres: ["Schranz", "Techno", "Trance", "Bounce"],
-    description: "Center Drop, soirée techno organisée à Niederroedern le samedi 4 avril 2026 par Tekno Never Dies.",
-    practical: ["Dès 16 ans", "250 participant·es"],
-    lineup: [
-      { name: "Mogli", time: "21h00 – 22h00" },
-      { name: "Leander B2B Sven Gerber", time: "22h00 – 23h30" },
-      { name: "Dann Octa", time: "23h30 – 1h00" },
-      { name: "Meinos", time: "1h00 – 2h30" },
-      { name: "KSCMD", time: "2h30 – 4h00" }
+    "slug": "center-drop-2026",
+    "title": "Center Drop",
+    "date": "2026-04-04",
+    "time": "21h00 – 4h00",
+    "place": "1 rue du Stade, Niederroedern",
+    "ticketUrl": "",
+    "flyer": "assets/img/events/flyer-center-drop-2026.webp",
+    "cover": "assets/img/events/soiree2.webp",
+    "genres": [
+      "Schranz",
+      "Techno",
+      "Trance",
+      "Bounce"
     ],
-    about: {
-      kicker: "Printemps 2026 · Niederroedern",
-      title: "Tout tourne autour du drop.",
-      text: "Center Drop a réuni environ 250 personnes à Niederroedern le 4 avril 2026, de 21h à 4h. Une soirée taillée pour les sons rapides : schranz, techno, trance et bounce, avec un B2B Leander × Sven Gerber au cœur de la nuit."
+    "description": "Center Drop, soirée techno organisée à Niederroedern le samedi 4 avril 2026 par Tekno Never Dies.",
+    "practical": [
+      "Dès 16 ans",
+      "250 participant·es"
+    ],
+    "lineup": [
+      {
+        "name": "Mogli",
+        "time": "21h00 – 22h00"
+      },
+      {
+        "name": "Leander B2B Sven Gerber",
+        "time": "22h00 – 23h30"
+      },
+      {
+        "name": "Dann Octa",
+        "time": "23h30 – 1h00"
+      },
+      {
+        "name": "Meinos",
+        "time": "1h00 – 2h30"
+      },
+      {
+        "name": "KSCMD",
+        "time": "2h30 – 4h00"
+      }
+    ],
+    "about": {
+      "kicker": "Printemps 2026 · Niederroedern",
+      "title": "Tout tourne autour du drop.",
+      "text": "Center Drop a réuni environ 250 personnes à Niederroedern le 4 avril 2026, de 21h à 4h. Une soirée taillée pour les sons rapides : schranz, techno, trance et bounce, avec un B2B Leander × Sven Gerber au cœur de la nuit."
     },
-    venue: { lat: 48.9025027, lon: 8.0496711 },
+    "venue": {
+      "lat": 48.9025027,
+      "lon": 8.0496711
+    }
   },
   {
-    slug: "fete-musique-wissembourg-2025",
-    title: "Fête de la musique",
-    date: "2025-06-21",
-    time: "16h00 – 00h00",
-    place: "Wissembourg",
-    ticketUrl: "",
-    flyer: "assets/img/events/flyer-fete-musique-2025.webp",
-    cover: "",
-    genres: ["Techno", "Groove", "Hardtechno"],
-    description: "Techno Party de la Fête de la musique à Wissembourg, présentée par RRC & TND le 21 juin 2025.",
-    practical: ["150 participant·es"],
-    // Pas d'horaires sur l'affiche : l'ordre ci-dessous est celui du line-up.
-    lineup: [
-      { name: "MEINOS", style: "DJ Contest" },
-      { name: "D0MOLLY" },
-      { name: "VALK B2B REDFOX" },
-      { name: "TNB" },
-      { name: "JAKOBEE" },
-      { name: "BLACKCHILLS" },
-      { name: "VS" }
+    "slug": "ice-boiler-v1-2025",
+    "title": "ICE BOILER v1",
+    "date": "2025-11-22",
+    "time": "20h00 – 4h00",
+    "place": "Salle des fêtes, Munchhausen",
+    "ticketUrl": "",
+    "flyer": "assets/img/events/flyer-ice-boiler-v1-2025.webp",
+    "cover": "assets/img/events/soiree1.webp",
+    "genres": [
+      "Techno"
     ],
-    about: {
-      kicker: "21 juin 2025 · Wissembourg",
-      title: "La Fête de la musique, version techno.",
-      text: "Pour la Fête de la musique 2025, RRC et TND ont présenté une Techno Party à Wissembourg : de 16h à minuit, sept DJ et environ 150 personnes, de l'après-midi jusqu'au bout de la nuit la plus courte de l'année."
-    },
-    // Lieu exact non renseigné : plan de la ville, sans repère
-    venue: { lat: 49.0365935, lon: 7.9445109, precise: false, span: 3.4 }
-  },
-  {
-    slug: "ice-boiler-v1-2025",
-    date: "2025-11-22",
-    title: "ICE BOILER v1",
-    time: "20h00 – 4h00",
-    place: "Salle des fêtes, Munchhausen",
-    ticketUrl: "",
-    flyer: "assets/img/events/flyer-ice-boiler-v1-2025.webp",
-    cover: "assets/img/events/soiree1.webp",
-    genres: ["Techno"],
-    description: "Première édition d'ICE BOILER, soirée techno organisée à la salle des fêtes de Munchhausen le 22 novembre 2025 par Tekno Never Dies.",
-    practical: ["Dès 16 ans", "200 participant·es"],
-    lineup: [
-      { name: "DANN OCTA", time: "20h00 – 21h00" },
-      { name: "VALK b2b REDFOX", time: "21h00 – 22h00" },
-      { name: "SVEN GERBER", time: "22h00 – 23h30" },
-      { name: "LEANDER", time: "23h30 – 1h00" },
-      { name: "TNB", time: "1h00 – 2h30" },
-      { name: "BLACKCHILLS", time: "2h30 – 4h00" }
+    "description": "Première édition d'ICE BOILER, soirée techno organisée à la salle des fêtes de Munchhausen le 22 novembre 2025 par Tekno Never Dies.",
+    "practical": [
+      "Dès 16 ans",
+      "200 participant·es"
     ],
-    gallerySlug: "ice-boiler",
-    about: {
-      kicker: "1ʳᵉ édition · Le début d'ICE BOILER",
-      title: "La toute première ICE BOILER.",
-      text: "Le 22 novembre 2025, la salle des fêtes de Munchhausen a accueilli la première ICE BOILER : une soirée 100 % techno, de 20h à 4h, six sets enchaînés devant environ 200 personnes. C'est elle qui a lancé la série.",
-      photos: [
-        { src: "assets/img/gallery/2025/ice-boiler/photo-58.webp", caption: "Sous les projecteurs, au cœur de la nuit." },
-        { src: "assets/img/gallery/2025/ice-boiler/photo-106.webp", caption: "La salle des fêtes de Munchhausen, pleine jusqu'au bout." }
+    "lineup": [
+      {
+        "name": "DANN OCTA",
+        "time": "20h00 – 21h00"
+      },
+      {
+        "name": "VALK b2b REDFOX",
+        "time": "21h00 – 22h00"
+      },
+      {
+        "name": "SVEN GERBER",
+        "time": "22h00 – 23h30"
+      },
+      {
+        "name": "LEANDER",
+        "time": "23h30 – 1h00"
+      },
+      {
+        "name": "TNB",
+        "time": "1h00 – 2h30"
+      },
+      {
+        "name": "BLACKCHILLS",
+        "time": "2h30 – 4h00"
+      }
+    ],
+    "about": {
+      "kicker": "1ʳᵉ édition · Le début d'ICE BOILER",
+      "title": "La toute première ICE BOILER.",
+      "text": "Le 22 novembre 2025, la salle des fêtes de Munchhausen a accueilli la première ICE BOILER : une soirée 100 % techno, de 20h à 4h, six sets enchaînés devant environ 200 personnes. C'est elle qui a lancé la série.",
+      "photos": [
+        {
+          "src": "assets/img/gallery/2025/ice-boiler/photo-58.webp",
+          "caption": "Sous les projecteurs, au cœur de la nuit."
+        },
+        {
+          "src": "assets/img/gallery/2025/ice-boiler/photo-106.webp",
+          "caption": "La salle des fêtes de Munchhausen, pleine jusqu'au bout."
+        }
       ]
     },
-    // « Salle des fêtes » : adresse exacte non renseignée, plan du village sans repère
-    venue: { lat: 48.9196671, lon: 8.1484455, precise: false }
+    "venue": {
+      "lat": 48.9196671,
+      "lon": 8.1484455,
+      "precise": false
+    },
+    "gallerySlug": "ice-boiler"
+  },
+  {
+    "slug": "fete-musique-wissembourg-2025",
+    "title": "Fête de la musique",
+    "date": "2025-06-21",
+    "time": "16h00 – 00h00",
+    "place": "Wissembourg",
+    "ticketUrl": "",
+    "flyer": "assets/img/events/flyer-fete-musique-2025.webp",
+    "cover": "",
+    "genres": [
+      "Techno",
+      "Groove",
+      "Hardtechno"
+    ],
+    "description": "Techno Party de la Fête de la musique à Wissembourg, présentée par RRC & TND le 21 juin 2025.",
+    "practical": [
+      "150 participant·es"
+    ],
+    "lineup": [
+      {
+        "name": "MEINOS",
+        "style": "DJ Contest"
+      },
+      {
+        "name": "D0MOLLY"
+      },
+      {
+        "name": "VALK B2B REDFOX"
+      },
+      {
+        "name": "TNB"
+      },
+      {
+        "name": "JAKOBEE"
+      },
+      {
+        "name": "BLACKCHILLS"
+      },
+      {
+        "name": "VS"
+      }
+    ],
+    "about": {
+      "kicker": "21 juin 2025 · Wissembourg",
+      "title": "La Fête de la musique, version techno.",
+      "text": "Pour la Fête de la musique 2025, RRC et TND ont présenté une Techno Party à Wissembourg : de 16h à minuit, sept DJ et environ 150 personnes, de l'après-midi jusqu'au bout de la nuit la plus courte de l'année."
+    },
+    "venue": {
+      "lat": 49.0365935,
+      "lon": 7.9445109,
+      "precise": false,
+      "span": 3.4
+    }
   }
 ];
 
-// Anciennes adresses des soirées renommées : evenement-<ancienne>.html mène à la fiche actuelle
-// ("ancien-slug": "nouveau-slug"). Rempli par le CMS ; ici, rien à rediriger.
+// Anciennes adresses des soirées renommées : evenement-<ancienne>.html mène à la fiche actuelle.
 export const EVENT_REDIRECTS = {};

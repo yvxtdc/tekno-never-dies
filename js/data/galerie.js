@@ -1,4 +1,8 @@
-/* FICHIER GÉNÉRÉ par tools/photos.mjs — ne pas modifier à la main (il serait écrasé). */
+/*
+ * FICHIER GÉNÉRÉ par le CMS (cms/, « Mettre en ligne ») : galerie photo.
+ * Ne pas modifier à la main : les modifications seraient écrasées à la prochaine mise en ligne.
+ * Les contenus se gèrent dans l'administration ; voir docs/cms/README.md.
+ */
 export const GALLERY = [
   {
     "year": 2025,

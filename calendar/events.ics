@@ -27,9 +27,9 @@ END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
 UID:ice-boiler-v2-2026@tekno-never-dies.fr
-DTSTAMP:20261020T154446Z
-LAST-MODIFIED:20261020T154446Z
-SEQUENCE:5
+DTSTAMP:20261020T181909Z
+LAST-MODIFIED:20261020T181909Z
+SEQUENCE:6
 DTSTART;TZID=Europe/Paris:20261128T210000
 DTEND;TZID=Europe/Paris:20261129T040000
 SUMMARY:🔊 ICE BOILER v2 · Tekno Never Dies
@@ -40,13 +40,13 @@ DESCRIPTION:🔊 ICE BOILER v2 — Trance · Groovy · Bouncy · Techno\nRe
  chno organisée par Tekno Never Dies.\n\n📅 Samedi 28 novembre 2026\n
  🕘 21h00 – 4h00\n📍 Salle polyvalente\, 81 rue du Rhin\, Munchhausen
  \n💶 10 à 16 € en prévente\, 18 € sur place\n🔞 Dès 16 ans\n\n
- 🎧 Line-up\n21h00 – 22h00 · DJ Contest\n22h00 – 23h30 · Mogli\n23h
- 30 – 1h00 · Dann Octa\n1h00 – 2h30 · Leander\n2h30 – 4h00 · RAYY\
- n\nℹ️ Infos pratiques\n• Prévente en ligne sur HelloAsso : 10 €\,
-  13 € ou 16 €\n• Sur place (caisse du soir) : 18 €\n\n🎟️ Bill
- etterie : https://www.helloasso.com/associations/tekno-never-dies/evenemen
- ts/ice-boiler-1\n🌐 Fiche de la soirée : https://teknoneverdies.fr/even
- ement-ice-boiler-v2-2026.html\n📸 Instagram : @tnd6tem
+ 🎧 Line-up\n21h00 – 22h00 · T.B.R (DJ Contest)\n22h00 – 23h30 · Mo
+ gli\n23h30 – 1h00 · Dann Octa\n1h00 – 2h30 · Leander\n2h30 – 4h00
+  · RAYY\n\nℹ️ Infos pratiques\n• Prévente en ligne sur HelloAsso :
+  10 €\, 13 € ou 16 €\n• Sur place (caisse du soir) : 18 €\n\n
+ 🎟️ Billetterie : https://www.helloasso.com/associations/tekno-never-d
+ ies/evenements/ice-boiler-1\n🌐 Fiche de la soirée : https://teknonever
+ dies.fr/evenement-ice-boiler-v2-2026.html\n📸 Instagram : @tnd6tem
 URL:https://teknoneverdies.fr/evenement-ice-boiler-v2-2026.html
 CATEGORIES:Trance,Groovy,Bouncy,Techno
 ORGANIZER;CN=Tekno Never Dies:mailto:tnd6tem@gmail.com
@@ -59,7 +59,7 @@ END:VALARM
 END:VEVENT
 BEGIN:VEVENT
 UID:center-drop-2026@tekno-never-dies.fr
-DTSTAMP:20261020T154446Z
+DTSTAMP:20261020T181909Z
 LAST-MODIFIED:20261018T165703Z
 SEQUENCE:3
 DTSTART;TZID=Europe/Paris:20260404T210000
@@ -86,35 +86,8 @@ DESCRIPTION:Dans une semaine : Center Drop 🎟️
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:fete-musique-wissembourg-2025@tekno-never-dies.fr
-DTSTAMP:20261020T154446Z
-LAST-MODIFIED:20261018T165703Z
-SEQUENCE:2
-DTSTART;TZID=Europe/Paris:20250621T160000
-DTEND;TZID=Europe/Paris:20250622T000000
-SUMMARY:🔊 Fête de la musique · Tekno Never Dies
-LOCATION:Wissembourg
-DESCRIPTION:🔊 Fête de la musique — Techno · Groove · Hardtechno\nTe
- chno Party de la Fête de la musique à Wissembourg\, présentée par RRC
-  & TND le 21 juin 2025.\n\n📅 Samedi 21 juin 2025\n🕘 16h00 – 00h00\
- n📍 Wissembourg\n\n🎧 Line-up\n• MEINOS (DJ Contest)\n• D0MOLLY\n
- • VALK B2B REDFOX\n• TNB\n• JAKOBEE\n• BLACKCHILLS\n• VS\n\nℹ
- ️ Infos pratiques\n• 150 participant·es\n\n🌐 Fiche de la soirée :
-  https://teknoneverdies.fr/evenement-fete-musique-wissembourg-2025.html\n
- 📸 Instagram : @tnd6tem
-URL:https://teknoneverdies.fr/evenement-fete-musique-wissembourg-2025.html
-CATEGORIES:Techno,Groove,Hardtechno
-ORGANIZER;CN=Tekno Never Dies:mailto:tnd6tem@gmail.com
-STATUS:CONFIRMED
-BEGIN:VALARM
-ACTION:DISPLAY
-TRIGGER:-P7D
-DESCRIPTION:Dans une semaine : Fête de la musique 🎟️
-END:VALARM
-END:VEVENT
-BEGIN:VEVENT
 UID:ice-boiler-v1-2025@tekno-never-dies.fr
-DTSTAMP:20261020T154446Z
+DTSTAMP:20261020T181909Z
 LAST-MODIFIED:20261018T165703Z
 SEQUENCE:4
 DTSTART;TZID=Europe/Paris:20251122T200000
@@ -138,6 +111,33 @@ BEGIN:VALARM
 ACTION:DISPLAY
 TRIGGER:-P7D
 DESCRIPTION:Dans une semaine : ICE BOILER v1 🎟️
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:fete-musique-wissembourg-2025@tekno-never-dies.fr
+DTSTAMP:20261020T181909Z
+LAST-MODIFIED:20261018T165703Z
+SEQUENCE:2
+DTSTART;TZID=Europe/Paris:20250621T160000
+DTEND;TZID=Europe/Paris:20250622T000000
+SUMMARY:🔊 Fête de la musique · Tekno Never Dies
+LOCATION:Wissembourg
+DESCRIPTION:🔊 Fête de la musique — Techno · Groove · Hardtechno\nTe
+ chno Party de la Fête de la musique à Wissembourg\, présentée par RRC
+  & TND le 21 juin 2025.\n\n📅 Samedi 21 juin 2025\n🕘 16h00 – 00h00\
+ n📍 Wissembourg\n\n🎧 Line-up\n• MEINOS (DJ Contest)\n• D0MOLLY\n
+ • VALK B2B REDFOX\n• TNB\n• JAKOBEE\n• BLACKCHILLS\n• VS\n\nℹ
+ ️ Infos pratiques\n• 150 participant·es\n\n🌐 Fiche de la soirée :
+  https://teknoneverdies.fr/evenement-fete-musique-wissembourg-2025.html\n
+ 📸 Instagram : @tnd6tem
+URL:https://teknoneverdies.fr/evenement-fete-musique-wissembourg-2025.html
+CATEGORIES:Techno,Groove,Hardtechno
+ORGANIZER;CN=Tekno Never Dies:mailto:tnd6tem@gmail.com
+STATUS:CONFIRMED
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-P7D
+DESCRIPTION:Dans une semaine : Fête de la musique 🎟️
 END:VALARM
 END:VEVENT
 END:VCALENDAR

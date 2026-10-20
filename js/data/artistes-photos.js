@@ -1,4 +1,8 @@
-/* FICHIER GÉNÉRÉ par tools/artistes.mjs — ne pas modifier à la main (il serait écrasé). */
+/*
+ * FICHIER GÉNÉRÉ par le CMS (cms/, « Mettre en ligne ») : photos des artistes (clé : nom sans espaces ni ponctuation).
+ * Ne pas modifier à la main : les modifications seraient écrasées à la prochaine mise en ligne.
+ * Les contenus se gèrent dans l'administration ; voir docs/cms/README.md.
+ */
 export const ARTIST_PHOTOS = {
   "blackchills": "assets/img/artistes/blackchills.webp",
   "d0molly": "assets/img/artistes/d0molly.webp",
