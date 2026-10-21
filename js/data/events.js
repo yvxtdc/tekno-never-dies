@@ -17,7 +17,8 @@ export const EVENTS = [
       {
         "label": "Early",
         "price": 10,
-        "note": "Les premières places, au meilleur prix"
+        "note": "Les premières places, au meilleur prix",
+        "status": "soldout"
       },
       {
         "label": "Regular",
