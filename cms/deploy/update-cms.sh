@@ -1,8 +1,8 @@
 #!/bin/sh
 # Mise à jour du CMS en une commande (à lancer en root dans le conteneur du CMS) :
 #   update-cms
-# Installation (une seule fois, en root) :
-#   ln -sf /srv/tnd-cms/site/cms/deploy/update-cms.sh /usr/local/bin/update-cms
+# Installation (une seule fois, en root, depuis le dossier du site) :
+#   ln -sf "$(pwd)/cms/deploy/update-cms.sh" /usr/local/bin/update-cms
 #
 # Étapes : sauvegarde de la base, récupération de main (fast-forward uniquement), dépendances si
 # package-lock.json a changé, redémarrage du service, vérification que le CMS répond.
@@ -10,8 +10,11 @@
 # Réglages (facultatifs) : TND_CMS_DIR, TND_CMS_USER, TND_CMS_SERVICE, TND_CMS_PORT.
 set -eu
 
-DIR="${TND_CMS_DIR:-/srv/tnd-cms/site}"
-USER_NAME="${TND_CMS_USER:-tnd-cms}"
+# Dossier du site : celui qui contient ce script (lien /usr/local/bin/update-cms suivi), sauf réglage.
+SCRIPT="$(readlink -f "$0")"
+DIR="${TND_CMS_DIR:-$(cd "$(dirname "$SCRIPT")/../.." && pwd)}"
+# Utilisateur du CMS : propriétaire de ce dossier, sauf réglage.
+USER_NAME="${TND_CMS_USER:-$(stat -c %U "$DIR")}"
 SERVICE="${TND_CMS_SERVICE:-tnd-cms}"
 PORT="${TND_CMS_PORT:-8787}"
 
@@ -23,6 +26,7 @@ fi
 # Commande lancée en tant qu'utilisateur du CMS, dans la copie du site.
 as_cms() { su -s /bin/sh "$USER_NAME" -c "cd '$DIR' && $1"; }
 
+echo "CMS : $DIR (utilisateur $USER_NAME, service $SERVICE)"
 echo "→ Sauvegarde de la base"
 as_cms "npm run -s cms:admin -- backup --label avant-mise-a-jour"
 
