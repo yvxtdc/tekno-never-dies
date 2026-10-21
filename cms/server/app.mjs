@@ -7,6 +7,7 @@
  *  3. permission du rôle (cms/server/auth/permissions.mjs) ;
  *  4. compte avec mot de passe temporaire : seules la session et le changement de mot de passe sont permis.
  */
+import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
@@ -32,6 +33,28 @@ const SHARED = { "richtext.mjs": "services/richtext.mjs", "timeutil.mjs": "servi
 // Polices et logo du site, réutilisés par l'interface (identité visuelle commune).
 const SITE_ASSETS = /^(fonts\/[\w.-]+\.woff2|img\/badge-white\.webp|img\/favicon\.png)$/;
 const SAFE_METHODS = new Set(["GET", "HEAD"]);
+
+/**
+ * Version de l'interface : empreinte de ses fichiers, calculée au démarrage. Les fichiers sont servis
+ * sous /admin/v/<version>/… : après une mise à jour du CMS (git pull + redémarrage), l'adresse change
+ * et le navigateur (ou un proxy) ne peut plus resservir l'ancienne interface depuis son cache.
+ */
+function adminVersion() {
+  const hash = crypto.createHash("sha256");
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else hash.update(entry.name).update(fs.readFileSync(full));
+    }
+  };
+  walk(ADMIN_DIR);
+  for (const file of Object.values(SHARED)) hash.update(fs.readFileSync(path.join(SERVER_DIR, file)));
+  return hash.digest("hex").slice(0, 12);
+}
+const ADMIN_VERSION = adminVersion();
+const ADMIN_INDEX = fs.readFileSync(path.join(ADMIN_DIR, "index.html"), "utf8")
+  .replace(/(["'])\/admin\/((?:css|js)\/)/g, `$1/admin/v/${ADMIN_VERSION}/$2`);
 
 export function createLogger(level = "info") {
   const quiet = level === "silent";
@@ -147,7 +170,19 @@ export function createApp({ config, db, log = createLogger(config.logLevel), pub
           if (serveFile(req, res, path.join(REPO_ROOT, "assets", rel.slice(5)), { cache: "public, max-age=604800" })) return;
           throw notFound("Fichier introuvable.");
         }
-        const file = rel && /\.[a-z0-9]+$/i.test(rel) ? safeResolve(ADMIN_DIR, rel) : path.join(ADMIN_DIR, "index.html");
+        // Fichiers de l'interface à l'adresse versionnée : jamais modifiés, donc gardés en cache sans risque.
+        const versioned = rel.match(/^v\/([0-9a-f]{12})\/(.+)$/);
+        if (versioned) {
+          const current = versioned[1] === ADMIN_VERSION;
+          if (serveFile(req, res, safeResolve(ADMIN_DIR, versioned[2]), { root: ADMIN_DIR, cache: current ? "public, max-age=31536000, immutable" : "no-cache" })) return;
+          throw notFound("Fichier introuvable.");
+        }
+        if (!rel || !/\.[a-z0-9]+$/i.test(rel) || rel === "index.html") {
+          // Page de l'interface : jamais en cache, elle désigne la version actuelle des fichiers.
+          res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" });
+          return res.end(req.method === "HEAD" ? undefined : ADMIN_INDEX);
+        }
+        const file = safeResolve(ADMIN_DIR, rel);
         if (file && serveFile(req, res, file, { root: ADMIN_DIR, cache: "no-cache" })) return;
         throw notFound("Fichier introuvable.");
       }
