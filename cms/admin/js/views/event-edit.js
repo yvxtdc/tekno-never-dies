@@ -480,7 +480,13 @@ function render(main, ev, isNew) {
         field({ label: "Lien de billetterie", control: bind("ticketUrl", input({ type: "url", value: m.ticketUrl, placeholder: "https://www.helloasso.com/…" })), name: "ticketUrl", hint: "Adresse en https://. Bouton « Prendre ma place », actif seulement pour une soirée à venir." }),
         field({ label: "Résumé du prix", control: bind("price", input({ value: m.price, placeholder: "10 à 16 € en prévente, 18 € sur place" })), name: "price", hint: "Affiché en haut de la fiche et sur l'accueil. Vide = « Dès … € », calculé depuis les tarifs." }),
         field({ label: "Âge minimum", control: bind("age", input({ value: m.age, placeholder: "Dès 16 ans" })), name: "age" })),
-      h("div", { class: "field", dataset: { field: "tickets" } }, h("span", { class: "label" }, "Tarifs"), ticketsPreview, ticketsBox, h("p", { class: "error-text", hidden: true }))),
+      h("div", { class: "field", dataset: { field: "tickets" } }, h("span", { class: "label" }, "Tarifs"),
+        h("ol", { class: "hint tickets-howto" },
+          h("li", {}, "« Ajouter un tarif en prévente » pour chaque catégorie (Early, Regular, Late…) : nom et prix ; flèches ↑ ↓ pour l'ordre."),
+          h("li", {}, "« Ajouter la caisse du soir » : elle s'affiche toujours en dernier."),
+          h("li", {}, "Tarif épuisé : choisir « Épuisé » dans « État » (grisé et prix barré sur le site). « Bientôt » / « Terminé » pour une vente pas encore ouverte ou finie."),
+          h("li", {}, "Enregistrer, vérifier avec « Aperçu », puis « Mise en ligne » pour mettre le site à jour.")),
+        ticketsPreview, ticketsBox, h("p", { class: "error-text", hidden: true }))),
     section("visuels", "Visuels", "L'affiche est affichée en entier sur la fiche, utilisée pour la liste et l'aperçu des partages (recadrée en 1200 × 630).", h("div", { class: "grid grid--2" },
       h("div", { dataset: { field: "flyerMediaId" }, class: "field" }, mediaSlot({ media: m.flyer, label: "Affiche (flyer)", hint: "Portrait, 1080 × 1350 px idéalement.", onChange: (media) => { m.flyer = media; m.flyerMediaId = media?.id ?? null; touch(); } }), h("p", { class: "error-text", hidden: true })),
       h("div", { dataset: { field: "coverMediaId" }, class: "field" }, mediaSlot({ media: m.cover, label: "Photo de fond", hint: "Facultatif : fond de l'en-tête (sinon l'affiche floutée).", onChange: (media) => { m.cover = media; m.coverMediaId = media?.id ?? null; touch(); } }), h("p", { class: "error-text", hidden: true })))),
@@ -562,6 +568,9 @@ function render(main, ev, isNew) {
   touch();
   loadTranslations();
   if (isNew) title.focus();
+  // Lien direct vers une section (ex. « Gérer les billets » depuis l'aperçu : #billetterie).
+  const target = location.hash && document.getElementById(location.hash.slice(1));
+  if (target?.classList.contains("form-section")) requestAnimationFrame(() => target.scrollIntoView({ block: "start" }));
 }
 
 function translationRow(t) {
