@@ -23,6 +23,7 @@ export function translatableSources(db) {
   for (const e of db.all("SELECT * FROM events WHERE status <> 'archived' ORDER BY date DESC")) {
     const ev = {
       description: e.description, price: e.price, age: e.age, practical: JSON.parse(e.practical || "[]"),
+      tickets: JSON.parse(e.tickets || "[]"), contest: JSON.parse(e.contest || "{}"),
       aboutKicker: e.about_kicker, aboutTitle: e.about_title, aboutText: e.about_text, seoDescription: e.seo_description,
       photos: db.all("SELECT caption FROM event_photos WHERE event_id = ?", e.id)
     };

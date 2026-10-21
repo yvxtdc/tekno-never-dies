@@ -1399,6 +1399,9 @@ main{position:relative;overflow-x:clip}
 
 .decor--float{animation:decor-float 7s ease-in-out infinite}
 
+/* Décor qui n'a la place nulle part sans toucher le texte (js/components/decor-guard.js) */
+.is-decor-hidden{visibility:hidden}
+
 @keyframes decor-float{
   0%,100%{transform:translateY(0) rotate(var(--rot,0deg))}
   50%{transform:translateY(-12px) rotate(var(--rot,0deg))}

@@ -309,10 +309,11 @@
   opacity:.95;
 }
 
-/* Téléphone : le décor passait sur le titre des pages ; il se met derrière, plus petit et plus discret */
+/* Téléphone : décor plus petit, en haut à droite. S'il touche quand même le titre (titre long),
+   js/components/decor-guard.js le décale vers le bord ou le réduit : il ne passe plus derrière le texte. */
 @media (max-width:640px){
   .page-head h1{position:relative;z-index:2}
-  .page-head .decor-r{z-index:1;width:84px;top:84px;right:12px;opacity:.5}
+  .page-head .decor-r{z-index:1;width:84px;top:84px;right:12px;opacity:.85}
 }
 
 .decor-l{left:-34px;width:clamp(70px,9vw,132px);--rot:-12deg;opacity:.92}

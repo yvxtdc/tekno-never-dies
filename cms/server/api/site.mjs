@@ -22,6 +22,7 @@ const { SITE } = await import(pathToFileURL(path.join(REPO_ROOT, "js/data/site.j
 export function registerSiteRoutes(router, { config, db, publisher }) {
   router.get("/api/meta", () => ({
     siteUrl: SITE.url,
+    contactEmail: SITE.email,
     statuses: STATUSES,
     roles: ROLES,
     faqCategories: FAQ_CATEGORIES,

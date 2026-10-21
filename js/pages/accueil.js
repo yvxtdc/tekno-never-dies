@@ -1,6 +1,7 @@
 import { EVENTS } from "../data/events.js";
 import { eventStatus, esc, safeUrl, eventPath, formatDate, formatTime } from "./helpers.js";
 import { t, tr } from "../i18n/i18n.js";
+import { priceSummary } from "../components/tickets.js";
 import { eventRange } from "./ics.js";
 
 /* ---------- Prochaine soirée (sous le hero) ----------
@@ -16,7 +17,7 @@ if (nextBlock && next) {
   nextBlock.querySelector("h2").innerHTML = `<a href="${ficheUrl}">${esc(next.title)}</a>`;
   // Date, heure et lieu sous le titre : on sait tout de suite quand et où, sans ouvrir la fiche.
   nextBlock.querySelector(".home-next__when").textContent = [formatDate(next.date, next.datePrecision), formatTime(next.time), next.place].filter(Boolean).join(" · ");
-  nextBlock.querySelector(".home-next__price").textContent = [next.price, next.age].filter(Boolean).map(tr).join(" · ");
+  nextBlock.querySelector(".home-next__price").textContent = [priceSummary(next), tr(next.age || "")].filter(Boolean).join(" · ");
   nextBlock.querySelector(".home-next__actions").innerHTML = `
     ${ticketUrl ? `<a class="btn btn-solid" href="${esc(ticketUrl)}" target="_blank" rel="noopener">Prendre ma place ↗</a>` : ""}
     <a class="btn btn-hero-line" href="${ficheUrl}">Voir la soirée</a>`;

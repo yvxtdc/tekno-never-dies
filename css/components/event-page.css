@@ -184,8 +184,154 @@ button.btn{font-family:var(--text);cursor:pointer;background-color:transparent}
 }
 .event-practical li::before{content:"✦";color:var(--lav);line-height:1.5}
 
+/* ---------- Billets : les tarifs sur une ligne, reliés par un fil (prévente → caisse du soir) ----------
+   Chaque tarif est un « ticket » à encoches. Le tarif en vente est mis en avant (anneau dégradé) ;
+   épuisé : grisé, prix barré ; bientôt / terminé : estompé. La caisse du soir ferme la ligne. */
+.event-tickets{margin:0 0 clamp(56px,8vw,100px)}
+.event-tickets__list{
+  position:relative;display:flex;justify-content:center;align-items:stretch;gap:clamp(12px,1.6vw,20px);
+  margin:0;padding:8px 0 0;list-style:none;counter-reset:none;
+}
+.event-tickets__list::before{
+  content:"";position:absolute;left:8%;right:8%;top:calc(8px + 18px + 22px);height:2px;z-index:-1;
+  background:linear-gradient(90deg,rgba(66,38,182,0),var(--lav) 15%,var(--pink) 85%,rgba(182,38,154,0));opacity:.55;
+}
+.ticket{
+  --notch:11px;
+  --cut:112px; /* hauteur de la découpe (encoches et pointillés), sous le nom du tarif */
+  position:relative;flex:1 1 0;min-width:0;max-width:240px;
+  display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;
+  padding:18px 16px 22px;
+  border:1px solid rgba(149,106,255,.35);border-radius:22px;
+  /* Fond opaque : le fil qui relie les tarifs passe derrière */
+  background:
+    radial-gradient(120% 90% at 50% 0%,rgba(149,106,255,.22),transparent 70%),
+    linear-gradient(160deg,rgba(66,38,182,.35),rgba(11,7,34,.6)),
+    #0e0830;
+  /* Encoches d'un billet, des deux côtés, à la hauteur de la découpe */
+  -webkit-mask:radial-gradient(circle at 0 var(--cut),transparent var(--notch),#000 calc(var(--notch) + .5px)) left/51% 100% no-repeat,
+               radial-gradient(circle at 100% var(--cut),transparent var(--notch),#000 calc(var(--notch) + .5px)) right/51% 100% no-repeat;
+          mask:radial-gradient(circle at 0 var(--cut),transparent var(--notch),#000 calc(var(--notch) + .5px)) left/51% 100% no-repeat,
+               radial-gradient(circle at 100% var(--cut),transparent var(--notch),#000 calc(var(--notch) + .5px)) right/51% 100% no-repeat;
+  transition:transform .3s cubic-bezier(.2,.8,.2,1),border-color .3s,box-shadow .3s;
+}
+/* Pointillés de découpe entre le haut (nom) et le bas (prix) */
+.ticket::after{content:"";position:absolute;left:calc(var(--notch) + 6px);right:calc(var(--notch) + 6px);top:var(--cut);border-top:2px dashed rgba(255,255,255,.16)}
+.ticket:hover{transform:translateY(-4px);border-color:rgba(149,106,255,.7)}
+.ticket__step{
+  display:grid;place-items:center;width:44px;height:44px;margin-bottom:4px;border-radius:50%;
+  background:#120b38;border:2px solid rgba(149,106,255,.5);
+  font-family:var(--display);font-size:.95rem;color:#fff;
+}
+.ticket__label{display:flex;align-items:center;min-height:2.6em;color:var(--lav);font-size:.72rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase}
+.ticket__price{
+  margin-top:22px;font-family:var(--display);font-size:clamp(2rem,3.2vw,2.8rem);line-height:1;
+  background:var(--gradient-title);-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.ticket__price s{text-decoration-thickness:3px;text-decoration-color:rgba(255,255,255,.75)}
+.ticket__note{color:var(--muted);font-size:.78rem;line-height:1.4}
+.ticket__until{color:rgba(255,255,255,.55);font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.ticket__badge{
+  position:absolute;top:12px;right:12px;padding:3px 9px;border-radius:999px;
+  background:var(--gradient-tnd);color:#fff;font-size:.58rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+}
+.ticket__badge--soldout{background:#2a2350;color:rgba(255,255,255,.85);transform:rotate(6deg)}
+.ticket__badge--soon,
+.ticket__badge--closed,
+.ticket__badge--door{background:rgba(255,255,255,.1);color:#fff}
+/* Tarif en vente : anneau dégradé et halo */
+.ticket.is-current{border-color:transparent;box-shadow:0 18px 40px rgba(0,0,0,.35)}
+.ticket.is-current::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;padding:2px;pointer-events:none;
+  background:var(--gradient-tnd);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+          mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);
+}
+.ticket.is-current .ticket__step{background:var(--gradient-tnd);border-color:transparent}
+/* Épuisé, terminé, bientôt */
+.ticket.is-soldout,
+.ticket.is-closed{filter:grayscale(1);opacity:.5}
+.ticket.is-soldout .ticket__price,
+.ticket.is-closed .ticket__price{background:none;color:rgba(255,255,255,.7)}
+.ticket.is-soon{opacity:.72}
+/* Caisse du soir : bordure pointillée, toujours la dernière */
+.ticket--door{border-style:dashed;background:linear-gradient(160deg,rgba(182,38,154,.18),rgba(11,7,34,.6))}
+.ticket--door .ticket__step{color:var(--pink);border-style:dashed}
+.event-tickets.is-past .ticket{filter:saturate(.6)}
+
+.event-tickets__foot{display:grid;justify-items:center;gap:10px;margin-top:clamp(22px,3vw,34px)}
+.event-tickets__cta{padding:.95em 2.2em;font-size:1rem}
+.btn.is-disabled{
+  background:rgba(255,255,255,.08) border-box;border-color:rgba(255,255,255,.18);color:rgba(255,255,255,.6);
+  cursor:not-allowed;box-shadow:none;transform:none;
+}
+.btn.is-disabled:hover{transform:none;box-shadow:none}
+.event-tickets__hint{margin:0;color:rgba(255,255,255,.5);font-size:.74rem}
+
+/* ---------- Line-up : la place du DJ Contest (artiste mystère) ---------- */
+.event-lineup .lineup-row--contest{border-style:dashed;border-color:rgba(213,79,192,.55)}
+.event-lineup .lineup-row__photo--contest img{object-fit:cover;object-position:50% 38%;transform:scale(1.6)}
+.lineup-row__contest{
+  display:inline-flex;align-items:center;gap:.35em;padding:0;border:0;background:none;cursor:pointer;
+  color:inherit;font:inherit;text-transform:inherit;letter-spacing:inherit;text-align:left;
+  border-bottom:2px solid transparent;transition:color .2s,border-color .2s;
+}
+.lineup-row__contest:hover,
+.lineup-row__contest:focus-visible{color:var(--lav);border-bottom-color:var(--lav)}
+.lineup-row__contest-hint{
+  display:inline-grid;place-items:center;width:1.1em;height:1.1em;border-radius:50%;
+  background:var(--gradient-tnd);color:#fff;font-size:.55em;animation:contest-pulse 2.2s ease-in-out infinite;
+}
+@keyframes contest-pulse{50%{box-shadow:0 0 0 6px rgba(213,79,192,0),0 0 16px rgba(213,79,192,.7)}}
+.lineup-row__style--contest{color:var(--pink)!important}
+
+/* Fenêtre du DJ Contest */
+.contest-dialog{
+  width:min(860px,calc(100% - 32px));max-height:calc(100dvh - 32px);padding:0;border:0;background:transparent;color:#fff;overflow:visible;
+}
+.contest-dialog::backdrop{background:rgba(5,3,20,.78);backdrop-filter:blur(6px)}
+.contest-dialog[open]{animation:contest-in .35s cubic-bezier(.2,.8,.2,1)}
+@keyframes contest-in{from{opacity:0;transform:translateY(18px) scale(.97)}}
+.contest-dialog__card{
+  position:relative;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);
+  max-height:calc(100dvh - 32px);overflow:auto;
+  border:1px solid rgba(149,106,255,.45);border-radius:28px;
+  background:linear-gradient(150deg,#1a0f4d,#0b0722 70%);box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 60px rgba(149,106,255,.18);
+}
+.contest-dialog__visual{position:relative;min-height:100%}
+.contest-dialog__visual img{display:block;width:100%;height:100%;object-fit:cover}
+.contest-dialog__tag{
+  position:absolute;left:18px;bottom:18px;padding:6px 12px;border-radius:999px;background:var(--gradient-tnd);
+  font-family:var(--display);font-size:.8rem;letter-spacing:.08em;
+}
+.contest-dialog__body{display:grid;align-content:center;gap:14px;padding:clamp(24px,4vw,44px)}
+.contest-dialog__body .event-eyebrow{margin:0}
+.contest-dialog h2{
+  margin:0;font-family:var(--display);font-weight:400;text-transform:uppercase;font-size:clamp(1.8rem,3.4vw,2.6rem);line-height:.95;
+  background:var(--gradient-title);-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.contest-dialog__intro{margin:0;color:rgba(255,255,255,.82);line-height:1.65}
+.contest-dialog__steps{display:grid;gap:10px;margin:4px 0 0;padding:0;list-style:none;counter-reset:step}
+.contest-dialog__steps li{
+  counter-increment:step;display:grid;grid-template-columns:30px 1fr;gap:12px;align-items:start;
+  color:rgba(255,255,255,.88);font-size:.92rem;line-height:1.5;
+}
+.contest-dialog__steps li::before{
+  content:counter(step);display:grid;place-items:center;width:30px;height:30px;border-radius:50%;
+  background:rgba(149,106,255,.2);border:1px solid rgba(149,106,255,.55);font-weight:700;font-size:.8rem;
+}
+.contest-dialog__actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;margin-top:6px}
+.contest-dialog__count{color:var(--pink);font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+.contest-dialog__close{
+  position:absolute;top:12px;right:12px;z-index:2;display:grid;place-items:center;width:40px;height:40px;
+  border:1px solid rgba(255,255,255,.3);border-radius:50%;background:rgba(11,7,34,.7);color:#fff;font-size:1.4rem;line-height:1;cursor:pointer;
+}
+.contest-dialog__close:hover{border-color:var(--lav);color:var(--lav)}
+
 @media (prefers-reduced-motion:reduce){
   .event-status__dot,
+  .lineup-row__contest-hint,
+  .contest-dialog[open],
   .event-map__pin::before,
   .event-map__pin::after{animation:none}
 }
@@ -218,6 +364,50 @@ button.btn{font-family:var(--text);cursor:pointer;background-color:transparent}
 }
 @media (max-width:760px){
   .event-lineup .lineup-rows{grid-template-columns:1fr;grid-template-rows:none;grid-auto-flow:row}
+}
+/* Billets : jusqu'à 4 tarifs sur une ligne ; au-delà (ou 6 et plus sur ordinateur), plusieurs rangées */
+.event-tickets__list.is-crowded{flex-wrap:wrap}
+.event-tickets__list.is-crowded::before{display:none}
+.event-tickets__list.is-crowded .ticket{flex:0 1 calc(25% - 20px);min-width:180px}
+@media (max-width:1023px){
+  .event-tickets__list.is-many{flex-wrap:wrap}
+  .event-tickets__list.is-many::before{display:none}
+  .event-tickets__list.is-many .ticket{flex:0 1 calc(33.333% - 20px);min-width:0}
+  .ticket{padding-left:12px;padding-right:12px}
+}
+/* Téléphone : billets en liste verticale (nom et précision à gauche, prix à droite), fil vertical */
+@media (max-width:640px){
+  .event-tickets__list,
+  .event-tickets__list.is-many,
+  .event-tickets__list.is-crowded{flex-direction:column;flex-wrap:nowrap;gap:10px;padding-left:22px}
+  .event-tickets__list::before,
+  .event-tickets__list.is-many::before,
+  .event-tickets__list.is-crowded::before{display:block;left:7px;right:auto;top:10px;bottom:10px;width:2px;height:auto;
+    background:linear-gradient(180deg,var(--lav),var(--pink))}
+  .ticket,
+  .event-tickets__list.is-many .ticket,
+  .event-tickets__list.is-crowded .ticket{
+    --notch:9px;flex:none;min-width:0;max-width:none;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"label price" "note price" "until price";
+    align-items:center;gap:2px 14px;text-align:left;padding:14px 18px;border-radius:16px;
+    -webkit-mask:radial-gradient(circle at 72% 0,transparent var(--notch),#000 calc(var(--notch) + .5px)) top/100% 51% no-repeat,
+                 radial-gradient(circle at 72% 100%,transparent var(--notch),#000 calc(var(--notch) + .5px)) bottom/100% 51% no-repeat;
+            mask:radial-gradient(circle at 72% 0,transparent var(--notch),#000 calc(var(--notch) + .5px)) top/100% 51% no-repeat,
+                 radial-gradient(circle at 72% 100%,transparent var(--notch),#000 calc(var(--notch) + .5px)) bottom/100% 51% no-repeat;
+  }
+  .ticket::after{left:72%;right:auto;top:calc(var(--notch) + 4px);bottom:calc(var(--notch) + 4px);border-top:0;border-left:2px dashed rgba(255,255,255,.16)}
+  .ticket__step{display:none}
+  .ticket__label{grid-area:label;min-height:0;font-size:.78rem;padding-right:4px}
+  .ticket__note{grid-area:note;font-size:.76rem}
+  .ticket__until{grid-area:until}
+  .ticket__price{grid-area:price;justify-self:end;margin:0;padding:0 0 0 6px;font-size:1.9rem;min-width:24%;text-align:right}
+  .ticket__badge{position:static;grid-area:until;justify-self:start;margin-top:6px}
+  .ticket__until + .ticket__badge{grid-area:auto;grid-column:1}
+  .event-tickets__foot{justify-items:stretch;text-align:center}
+  .event-tickets__cta{text-align:center}
+  .contest-dialog__card{grid-template-columns:1fr}
+  .contest-dialog__visual{max-height:34vh;overflow:hidden}
+  .contest-dialog__visual img{height:34vh;object-position:center 30%}
+  .contest-dialog__actions .btn{flex:1 1 100%;text-align:center}
 }
 @media (max-width:420px){
   .event-facts{grid-template-columns:1fr}

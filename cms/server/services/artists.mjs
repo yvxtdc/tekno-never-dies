@@ -28,6 +28,7 @@ export function serializeArtist(row, photo) {
     contact: row.contact,
     notes: row.notes,
     archived: Boolean(row.archived),
+    mystery: Boolean(row.mystery),
     version: row.version,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -88,7 +89,8 @@ function validate(db, input) {
     links: v.links("links"),
     contact: v.text("contact", { max: 300, multiline: true, label: "Le contact" }),
     notes: v.text("notes", { max: 2000, multiline: true, label: "Les notes" }),
-    archived: v.bool("archived") ? 1 : 0
+    archived: v.bool("archived") ? 1 : 0,
+    mystery: v.bool("mystery") ? 1 : 0
   };
   if (data.name && !artistKey(data.name)) v.error("name", "Le nom doit contenir au moins une lettre ou un chiffre (a-z, 0-9).");
   if (data.instagram_url && !/^https:\/\/(www\.)?instagram\.com\/[^/?#]+/.test(data.instagram_url)) v.error("instagramUrl", "Adresse attendue : https://www.instagram.com/compte/");
@@ -115,10 +117,10 @@ export function createArtist(db, input, user) {
   const t = now();
   const slug = uniqueSlug(db, "artists", data.slug || data.name);
   const { lastInsertRowid } = db.run(
-    `INSERT INTO artists (slug, name, match_key, photo_media_id, styles, bio, origin, instagram_url, soundcloud_url, links, contact, notes, archived, created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO artists (slug, name, match_key, photo_media_id, styles, bio, origin, instagram_url, soundcloud_url, links, contact, notes, archived, mystery, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     slug, data.name, key, data.photo_media_id, data.styles, data.bio, data.origin, data.instagram_url, data.soundcloud_url,
-    JSON.stringify(data.links), data.contact, data.notes, data.archived, t, t
+    JSON.stringify(data.links), data.contact, data.notes, data.archived, data.mystery, t, t
   );
   const id = Number(lastInsertRowid);
   const artist = getArtist(db, id);
@@ -139,9 +141,9 @@ export function updateArtist(db, id, input, user) {
   const slug = data.slug && data.slug !== current.slug ? uniqueSlug(db, "artists", data.slug, id) : current.slug;
   db.run(
     `UPDATE artists SET slug = ?, name = ?, match_key = ?, photo_media_id = ?, styles = ?, bio = ?, origin = ?, instagram_url = ?, soundcloud_url = ?,
-       links = ?, contact = ?, notes = ?, archived = ?, version = version + 1, updated_at = ? WHERE id = ?`,
+       links = ?, contact = ?, notes = ?, archived = ?, mystery = ?, version = version + 1, updated_at = ? WHERE id = ?`,
     slug, data.name, key, data.photo_media_id, data.styles, data.bio, data.origin, data.instagram_url, data.soundcloud_url,
-    JSON.stringify(data.links), data.contact, data.notes, data.archived, now(), id
+    JSON.stringify(data.links), data.contact, data.notes, data.archived, data.mystery, now(), id
   );
   // Les soirées où joue l'artiste changent aussi (nom, photo) : elles sont « à republier ».
   db.run(`UPDATE events SET updated_at = ? WHERE id IN (SELECT s.event_id FROM lineup_slots s JOIN lineup_slot_artists la ON la.slot_id = s.id WHERE la.artist_id = ?)`, now(), id);

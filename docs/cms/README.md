@@ -43,6 +43,8 @@ la copie de travail. Relisez avec `git diff`, puis committez vous-même. Pour vo
 | Annuler une soirée | **Annuler la soirée** : elle reste affichée « Soirée annulée », sans billetterie ; l'agenda des abonnés est mis à jour. |
 | Retirer une soirée du site | **Dépublier** (brouillon) ou **Archiver**. Une soirée en ligne ne peut pas être supprimée directement. |
 | Modifier le line-up | Section **Line-up** : un passage = un créneau, un ou plusieurs artistes (B2B). Glisser-déposer ou flèches ↑ ↓ pour l'ordre ; **Enchaîner les horaires**, **Trier par horaire**. La frise signale les chevauchements. |
+| Indiquer les prix | Section **Billetterie et entrée** → **Tarifs** : un tarif par ligne (Early, Regular, Late…), état « En vente », « Épuisé » (grisé et barré sur le site), « Bientôt » ou « Terminé », fin de vente facultative ; **Ajouter la caisse du soir** (toujours affichée en dernier). Le site les montre dans la section « Billets », avant les infos pratiques. |
+| Proposer une place au DJ Contest | Mettre au line-up la fiche artiste **DJ Contest** (case « Artiste mystère » cochée), puis renseigner la section **DJ Contest** de la soirée (date limite, adresse). Sur le site, le nom ouvre une fenêtre qui explique comment envoyer son set. |
 | Ajouter un artiste | Depuis le line-up (« Créer l'artiste … ») ou **Artistes**. Le CMS signale les noms proches (doublons). Une photo, un lien Instagram et un style sur la fiche s'affichent dans toutes ses soirées. |
 | Corriger une adresse | **Lieux** : la modification s'applique à toutes les soirées de ce lieu. Coordonnées GPS = plans « Y aller ». |
 | Importer des photos | **Médiathèque** (glisser-déposer) ou directement depuis un champ image. Renseignez le **texte alternatif**. |

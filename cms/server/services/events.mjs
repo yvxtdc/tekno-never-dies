@@ -17,6 +17,7 @@ import { like, saveRevision } from "./audit.mjs";
 import { serializeMedia } from "./media.mjs";
 import { serializeVenue, venuePlace } from "./venues.mjs";
 import { nightMinutes, duration, parisToday } from "./timeutil.mjs";
+import { validateTickets, normalizeTicket, normalizeContest, sortTickets } from "./tickets.mjs";
 
 export const STATUSES = {
   draft: "Brouillon",
@@ -35,7 +36,7 @@ const MAX_PHOTOS = 2;
 export function loadLineup(db, eventId) {
   const slots = db.all("SELECT * FROM lineup_slots WHERE event_id = ? ORDER BY position", eventId);
   const artists = db.all(
-    `SELECT la.slot_id, la.position, a.id, a.name, a.styles, a.instagram_url, a.photo_media_id, a.archived FROM lineup_slot_artists la
+    `SELECT la.slot_id, la.position, a.id, a.name, a.styles, a.instagram_url, a.photo_media_id, a.archived, a.mystery FROM lineup_slot_artists la
        JOIN artists a ON a.id = la.artist_id JOIN lineup_slots s ON s.id = la.slot_id WHERE s.event_id = ? ORDER BY la.slot_id, la.position`,
     eventId
   );
@@ -55,6 +56,7 @@ export function loadLineup(db, eventId) {
         styles: a.styles,
         instagramUrl: a.instagram_url,
         archived: Boolean(a.archived),
+        mystery: Boolean(a.mystery),
         photo: a.photo_media_id ? { id: a.photo_media_id, thumbUrl: `/api/media/${a.photo_media_id}/thumb` } : null
       }))
   }));
@@ -91,6 +93,8 @@ export function serializeEvent(db, row, { withChecks = true } = {}) {
     price: row.price,
     age: row.age,
     ticketUrl: row.ticket_url,
+    tickets: sortTickets(fromJson(row.tickets, []).map(normalizeTicket)),
+    contest: normalizeContest(fromJson(row.contest, {})),
     flyerMediaId: row.flyer_media_id,
     flyer: media(row.flyer_media_id),
     coverMediaId: row.cover_media_id,
@@ -201,6 +205,27 @@ export function eventChecks(db, ev) {
   else if (ev.venue.lat == null) warnings.push("Le lieu n'a pas de coordonnées GPS : pas de plan « Y aller » sur la fiche.");
   if (upcoming && !ev.ticketUrl && ev.status !== "cancelled") warnings.push("Soirée à venir sans lien de billetterie.");
   if (upcoming && !ev.lineup.length) warnings.push("Line-up vide.");
+
+  // Billets
+  const tickets = ev.tickets || [];
+  const presale = tickets.filter((t) => !t.door);
+  if (upcoming && ev.status !== "cancelled" && tickets.length) {
+    if (presale.length && presale.every((t) => t.status !== "available")) {
+      warnings.push(`Aucun tarif en prévente n'est « en vente » : le bouton de billetterie est désactivé sur la fiche${tickets.some((t) => t.door && t.status === "available") ? " (la caisse du soir reste affichée)" : ""}.`);
+    }
+    if (tickets.some((t) => t.until && ev.date && t.until > ev.date)) warnings.push("Un tarif a une fin de vente après la date de la soirée.");
+  }
+  if (presale.length && !ev.ticketUrl && upcoming && ev.status !== "cancelled") warnings.push("Des tarifs en prévente sont renseignés sans lien de billetterie : le bouton « Prendre ma place » sera désactivé.");
+  if (ev.price && tickets.length) warnings.push("« Résumé du prix » et tarifs détaillés sont tous deux renseignés : vérifiez qu'ils disent la même chose (le résumé s'affiche en haut de la fiche).");
+
+  // DJ Contest
+  const contestSlot = ev.lineup.some((s) => s.artists.some((a) => a.mystery));
+  const contest = ev.contest || {};
+  if (contestSlot && upcoming && ev.status !== "cancelled") {
+    if (!contest.deadline) warnings.push("DJ Contest : date limite d'envoi des sets non renseignée.");
+    else if (ev.date && contest.deadline > ev.date) warnings.push("DJ Contest : la date limite est après la soirée.");
+  }
+  if (!contestSlot && (contest.deadline || contest.text)) warnings.push("DJ Contest renseigné, mais aucun artiste mystère (DJ Contest) dans le line-up : la fenêtre de participation ne sera pas proposée.");
   if (ev.datePrecision === "month" && ev.startTime) warnings.push("Date au mois près : les horaires ne seront pas affichés.");
   if (ev.doorsTime && ev.startTime && nightMinutes(ev.doorsTime, ev.startTime) > nightMinutes(ev.startTime, ev.startTime)) {
     warnings.push("L'ouverture des portes est après le début de la soirée.");
@@ -262,7 +287,10 @@ export function eventChecks(db, ev) {
 
 /** Textes de la fiche traduits par le site (mêmes règles que tools/validate.mjs). */
 export function translatableTexts(ev) {
-  return [ev.description, ev.price, ev.age, ...(ev.practical || []), ev.aboutKicker, ev.aboutTitle, ev.aboutText, ev.seoDescription, ...(ev.photos || []).map((p) => p.caption)]
+  return [
+    ev.description, ev.price, ev.age, ...(ev.tickets || []).flatMap((t) => [t.label, t.note]), ...(ev.practical || []),
+    ev.contest?.text, ev.aboutKicker, ev.aboutTitle, ev.aboutText, ev.seoDescription, ...(ev.photos || []).map((p) => p.caption)
+  ]
     .filter((s) => s && /\p{L}{2}/u.test(s))
     .map((s) => String(s).replace(/\s+/g, " ").trim());
 }
@@ -280,7 +308,7 @@ function validateInput(db, input, { current } = {}) {
     end_time: v.time("endTime", { label: "L'heure de fin" }),
     doors_time: v.time("doorsTime", { label: "L'ouverture des portes" }),
     venue_id: v.id("venueId", { label: "Le lieu" }),
-    price: v.text("price", { max: 160, label: "Le prix" }),
+    price: v.text("price", { max: 160, label: "Le résumé du prix" }),
     age: v.text("age", { max: 60, label: "L'âge minimum" }),
     ticket_url: v.url("ticketUrl", { httpsOnly: true, label: "Le lien de billetterie" }),
     flyer_media_id: v.id("flyerMediaId", { label: "L'affiche" }),
@@ -298,6 +326,19 @@ function validateInput(db, input, { current } = {}) {
     notes: v.text("notes", { max: 4000, multiline: true, label: "Les notes internes" })
   };
   if (data.end_time && !data.start_time) v.error("endTime", "Indiquez d'abord l'heure de début.");
+
+  // Billets (tarifs) et DJ Contest
+  const tickets = validateTickets(input.tickets);
+  for (const [field, message] of Object.entries(tickets.errors)) v.error(field, message);
+  data.tickets = tickets.tickets;
+  const cv = new Validator(input.contest && typeof input.contest === "object" ? input.contest : {});
+  data.contest = {
+    email: cv.email("email", { label: "L'adresse e-mail du DJ Contest" }),
+    deadline: cv.date("deadline", { label: "La date limite du DJ Contest" }) || "",
+    text: cv.text("text", { max: 600, multiline: true, label: "Le texte du DJ Contest" })
+  };
+  for (const [field, message] of Object.entries(cv.errors)) v.error(`contest.${field}`, message);
+
   if (data.venue_id && !db.get("SELECT id FROM venues WHERE id = ?", data.venue_id)) v.error("venueId", "Lieu introuvable.");
   for (const field of ["flyer_media_id", "cover_media_id"]) {
     if (data[field] && !db.get("SELECT id FROM media WHERE id = ?", data[field])) v.error(field === "flyer_media_id" ? "flyerMediaId" : "coverMediaId", "Image introuvable dans la médiathèque.");
@@ -384,11 +425,12 @@ function writeChildren(db, eventId, photos, lineup) {
 }
 
 const COLUMNS = [
-  "slug", "title", "date", "date_precision", "start_time", "end_time", "doors_time", "venue_id", "price", "age", "ticket_url",
-  "flyer_media_id", "cover_media_id", "genres", "description", "practical", "links", "about_kicker", "about_title", "about_text",
+  "slug", "title", "date", "date_precision", "start_time", "end_time", "doors_time", "venue_id", "price", "age", "ticket_url", "tickets",
+  "flyer_media_id", "cover_media_id", "genres", "description", "practical", "links", "contest", "about_kicker", "about_title", "about_text",
   "gallery_album_id", "seo_title", "seo_description", "notes"
 ];
-const values = (data) => COLUMNS.map((c) => (["genres", "practical", "links"].includes(c) ? JSON.stringify(data[c] || []) : data[c]));
+const JSON_COLUMNS = { genres: [], practical: [], links: [], tickets: [], contest: {} };
+const values = (data) => COLUMNS.map((c) => (c in JSON_COLUMNS ? JSON.stringify(data[c] || JSON_COLUMNS[c]) : data[c]));
 
 const snapshot = (db, id) => {
   const ev = getEvent(db, id, { withChecks: false });

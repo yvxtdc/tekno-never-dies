@@ -2,6 +2,7 @@ import { test, describe, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { startCms, eventInput } from "./helpers.mjs";
 import { eventChecks } from "../server/services/events.mjs";
+import { buildSiteData } from "../server/export/site-data.mjs";
 import { frenchRange, parseFrenchRange, nightMinutes } from "../server/services/timeutil.mjs";
 
 describe("horaires de nuit", () => {
@@ -66,6 +67,51 @@ describe("API des soirées", () => {
     // L'artiste apparaît dans ses soirées
     const leander = await editor.get(`/api/artists/${artists.Leander.id}`);
     assert.ok(leander.data.events.some((e) => e.id === ev.id));
+  });
+
+  test("billets : tarifs validés, caisse du soir rangée en dernier, export au format du site", async () => {
+    const tickets = [
+      { label: "Caisse du soir", price: "18", door: true },
+      { label: "Early", price: "10", status: "soldout", note: "Les 50 premières places" },
+      { label: "Regular", price: "12,50", until: "2030-03-01" },
+      { label: "", price: "", note: "" }
+    ];
+    const res = await editor.post("/api/events", eventInput({ title: "Billets", ticketUrl: "https://www.helloasso.com/x", tickets }));
+    assert.equal(res.status, 201, JSON.stringify(res.data));
+    assert.deepEqual(res.data.tickets.map((t) => [t.label, t.price, t.status, Boolean(t.door)]), [["Early", 10, "soldout", false], ["Regular", 12.5, "available", false], ["Caisse du soir", 18, "available", true]]);
+    await editor.post(`/api/events/${res.data.id}/status`, { action: "publish" });
+    const exported = buildSiteData(cms.db).events.find((e) => e.slug === res.data.slug);
+    assert.deepEqual(exported.tickets, [
+      { label: "Early", price: 10, note: "Les 50 premières places", status: "soldout" },
+      { label: "Regular", price: 12.5, until: "2030-03-01" },
+      { label: "Caisse du soir", price: 18, door: true }
+    ]);
+    const bad = await editor.post("/api/events", eventInput({ tickets: [{ label: "Early", price: "dix" }, { label: "", price: "5" }, { label: "A", price: "5", door: true }, { label: "B", price: "6", door: true }] }));
+    assert.equal(bad.status, 422);
+    assert.ok(bad.data.fields["tickets.0.price"]);
+    assert.ok(bad.data.fields["tickets.1.label"]);
+    assert.ok(bad.data.fields.tickets, "une seule caisse du soir");
+  });
+
+  test("DJ Contest : artiste mystère sans Instagram, place signalée et informations exportées", async () => {
+    const mystery = (await editor.post("/api/artists", { name: "DJ Contest", styles: "Artiste mystère", mystery: true, instagramUrl: "https://www.instagram.com/tnd6tem/" })).data;
+    assert.equal(mystery.mystery, true);
+    const res = await editor.post("/api/events", eventInput({
+      title: "Contest", lineup: [{ artistIds: [mystery.id], startTime: "21:00", endTime: "22:00" }, { artistIds: [artists.Mogli.id] }],
+      contest: { email: "sets@example.org", deadline: "2030-03-01", text: "" }
+    }));
+    assert.equal(res.status, 201, JSON.stringify(res.data));
+    await editor.post(`/api/events/${res.data.id}/status`, { action: "publish" });
+    const data = buildSiteData(cms.db);
+    const ev = data.events.find((e) => e.slug === res.data.slug);
+    assert.equal(ev.lineup[0].contest, true);
+    assert.equal(ev.lineup[1].contest, undefined);
+    assert.deepEqual(ev.contest, { email: "sets@example.org", deadline: "2030-03-01" });
+    assert.equal(data.ARTISTS["DJ Contest"], undefined, "pas de lien Instagram pour l'artiste mystère");
+    const late = await editor.post("/api/events", eventInput({ contest: { email: "pas-une-adresse", deadline: "2030-02-31" } }));
+    assert.equal(late.status, 422);
+    assert.ok(late.data.fields["contest.email"]);
+    assert.ok(late.data.fields["contest.deadline"]);
   });
 
   test("line-up invalide : artiste inexistant, doublon, passage vide", async () => {

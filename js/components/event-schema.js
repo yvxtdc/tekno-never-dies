@@ -9,6 +9,7 @@ import { SITE } from "../data/site.js";
 import { eventPath, safeUrl } from "../pages/helpers.js";
 import { eventTimes, parisOffset } from "../pages/ics.js";
 import { visibleLineup } from "./artists.js";
+import { sortedTickets } from "./tickets.js";
 
 const pad = (n) => String(n).padStart(2, "0");
 const iso = ({ y, mo, d, h, mi }) => `${y}-${pad(mo)}-${pad(d)}T${pad(h)}:${pad(mi)}:00`;
@@ -21,6 +22,10 @@ export function eventSchema(ev) {
   const times = ev.datePrecision !== "month" && ev.time ? eventTimes(ev) : null;
   const [placeName, ...placeRest] = (ev.place || "").split(",").map((part) => part.trim());
   const price = ev.price?.match(/\d+(?:[.,]\d+)?/)?.[0];
+  // Tarifs détaillés (CMS) : une offre par tarif. Disponibilité d'après l'état saisi, pas d'après la date
+  // du jour, pour que la fiche générée reste identique d'un jour à l'autre.
+  const AVAILABILITY = { soldout: "SoldOut", soon: "PreOrder", closed: "Discontinued" };
+  const tickets = sortedTickets(ev).filter((ticket) => Number.isFinite(Number(ticket.price)));
   return {
     "@context": "https://schema.org",
     "@type": "Event",
@@ -46,8 +51,20 @@ export function eventSchema(ev) {
       }
     },
     ...(ev.genres?.length ? { keywords: ev.genres.join(", ") } : {}),
-    ...(ev.lineup?.length ? { performer: visibleLineup(ev).filter((artist) => !artist.mystery).map((artist) => ({ "@type": "PerformingGroup", name: artist.name })) } : {}),
-    ...(price
+    ...(ev.lineup?.length ? { performer: visibleLineup(ev).filter((artist) => !artist.mystery && !artist.contest).map((artist) => ({ "@type": "PerformingGroup", name: artist.name })) } : {}),
+    ...(tickets.length
+      ? {
+          offers: tickets.map((ticket) => ({
+            "@type": "Offer",
+            name: ticket.label,
+            price: String(Number(ticket.price)),
+            priceCurrency: "EUR",
+            availability: `https://schema.org/${AVAILABILITY[ticket.status] || "InStock"}`,
+            ...(ticket.until ? { validThrough: ticket.until } : {}),
+            url: (ticket.door ? "" : ticketUrl) || pageUrl
+          }))
+        }
+      : price
       ? {
           offers: {
             "@type": "Offer",
