@@ -172,6 +172,25 @@ const expectedMaps = new Set(events.filter((e) => e.venue).flatMap((e) => [`${e.
 for (const map of expectedMaps) if (!fs.existsSync(path.join(root, map))) err(path.join(root, "js/data/events.js"), `plan absent : ${map} (lance : npm run plans)`);
 for (const image of images) if (!sources.includes(rel(image)) && !expectedMaps.has(rel(image))) todo.push(`${rel(image)} : image utilisée nulle part (à supprimer ?)`);
 
+// Contenu conforme à l'extension (ex. un PNG de plusieurs Mo renommé en .webp : servi avec le mauvais
+// type et bien plus lourd que prévu) : signature des premiers octets.
+const SIGNATURES = {
+  webp: (b) => b.subarray(0, 4).toString("latin1") === "RIFF" && b.subarray(8, 12).toString("latin1") === "WEBP",
+  jpg: (b) => b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff,
+  png: (b) => b.subarray(0, 4).toString("latin1") === "\x89PNG",
+  gif: (b) => b.subarray(0, 4).toString("latin1") === "GIF8",
+  avif: (b) => b.subarray(4, 8).toString("latin1") === "ftyp",
+  svg: (b) => /<svg|<\?xml/.test(b.toString("utf8"))
+};
+for (const image of images) {
+  const ext = path.extname(image).slice(1).toLowerCase().replace("jpeg", "jpg");
+  const head = Buffer.alloc(256);
+  const fd = fs.openSync(image, "r");
+  const n = fs.readSync(fd, head, 0, head.length, 0);
+  fs.closeSync(fd);
+  if (!SIGNATURES[ext](head.subarray(0, n))) todo.push(`${rel(image)} : le contenu n'est pas une image .${ext} (fichier renommé ? à réencoder)`);
+}
+
 const { SITE } = await import(pathToFileURL(path.join(root, "js/data/site.js")).href);
 const streets = new Set();
 for (const file of files.filter((f) => /\.(html|js)$/.test(f))) {

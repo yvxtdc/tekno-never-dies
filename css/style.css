@@ -18,6 +18,8 @@
   --lav:#956aff;
   --cyan:#269ab6;
   --pink:#b6269a;
+  /* Rose des petits textes : même teinte, éclaircie pour rester lisible sur le fond nuit (contraste ≥ 4,5:1). */
+  --pink-text:#de5cc4;
 
   /* Thème violet foncé (permanent) — remplace le fond beige.
      Ancienne palette claire conservée juste en dessous, au cas où :

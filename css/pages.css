@@ -1042,7 +1042,7 @@ select option{background:#150d3b;color:#fff}
   display:flex;flex-direction:column;align-items:flex-start;gap:16px;
 }
 .event-eyebrow{margin:0;color:var(--lav);font-size:.7rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase}
-.event-eyebrow span{color:var(--pink);padding:0 .4em}
+.event-eyebrow span{color:var(--pink-text);padding:0 .4em}
 
 .event-quicklinks{
   display:flex;flex-wrap:wrap;gap:8px;
@@ -1083,13 +1083,13 @@ select option{background:#150d3b;color:#fff}
 
 .event-draft-note{
   display:inline-flex;align-items:center;gap:9px;
-  color:var(--pink);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--pink-text);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
 }
 
 .event-draft-note{
   position:relative;z-index:2;
   display:inline-flex;align-items:center;gap:9px;
-  color:var(--pink);
+  color:var(--pink-text);
   font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
 }
 
@@ -1109,7 +1109,7 @@ select option{background:#150d3b;color:#fff}
 .event-section-head__note{
   margin:0;color:var(--muted);font-size:.68rem;font-weight:700;letter-spacing:.14em;text-align:right;
 }
-.lineup-preview-note{margin:0 0 16px;color:var(--pink);font-size:.68rem;font-weight:700;letter-spacing:.1em}
+.lineup-preview-note{margin:0 0 16px;color:var(--pink-text);font-size:.68rem;font-weight:700;letter-spacing:.1em}
 
 /* ---------- LIGNE-UP : fil vertical, numéros en contour, photos en cercle ---------- */
 .lineup-rows{
@@ -1296,7 +1296,7 @@ button.event-gallery-link{background:none;border-width:0 0 1px;border-radius:0;f
 .lineup-row.is-live::before{background:var(--pink);box-shadow:0 0 14px var(--pink)}
 .event-hero.is-live .event-hero__top .event-eyebrow{display:inline-flex;align-items:center;gap:10px}
 .event-hero.is-live .event-hero__top .event-eyebrow::before{background:var(--pink)}
-.event-hero.is-live .event-hero__top .event-eyebrow::after{content:var(--t-live,"EN DIRECT");color:var(--pink);margin-left:.6em}
+.event-hero.is-live .event-hero__top .event-eyebrow::after{content:var(--t-live,"EN DIRECT");color:var(--pink-text);margin-left:.6em}
 @media (prefers-reduced-motion:reduce){
   .lineup-row.is-live .lineup-row__live::before,
   .event-hero.is-live .event-hero__top .event-eyebrow::before{animation:none}
@@ -1723,6 +1723,6 @@ button.event-gallery-link{background:none;border-width:0 0 1px;border-radius:0;f
 .event-status.is-cancelled{border-color:var(--pink);color:#fff;background:rgba(182,38,154,.22)}
 .event-hero.is-live .event-status{border-color:var(--pink)}
 .event-hero.is-live .event-status__dot{background:var(--pink);box-shadow:0 0 12px var(--pink)}
-.event-hero.is-live .event-status::after{content:var(--t-live,"EN DIRECT");color:var(--pink)}
+.event-hero.is-live .event-status::after{content:var(--t-live,"EN DIRECT");color:var(--pink-text)}
 
 @media (prefers-reduced-motion:reduce){.event-status__dot{animation:none}}

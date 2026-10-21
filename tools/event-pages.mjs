@@ -90,6 +90,15 @@ for (const name of fs.readdirSync(ROOT).filter((f) => /^evenement-.+\.html$/.tes
   }
 }
 
+// Images d'aperçu des événements retirés (validate les signale comme inutilisées ; pas d'échec en --check).
+if (!check && fs.existsSync(path.join(ROOT, OG_DIR))) {
+  const slugs = new Set(EVENTS.map((ev) => ev.slug));
+  for (const name of fs.readdirSync(path.join(ROOT, OG_DIR)).filter((f) => f.endsWith(".jpg") && !slugs.has(f.slice(0, -4)))) {
+    fs.rmSync(path.join(ROOT, OG_DIR, name));
+    console.log(`✗ ${OG_DIR}/${name} supprimée`);
+  }
+}
+
 if (problems.length) {
   console.error(problems.map((p) => `✗ ${p} (lance : npm run calendar)`).join("\n"));
   process.exit(1);
