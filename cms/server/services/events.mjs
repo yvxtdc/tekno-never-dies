@@ -216,7 +216,13 @@ export function eventChecks(db, ev) {
     if (tickets.some((t) => t.until && ev.date && t.until > ev.date)) warnings.push("Un tarif a une fin de vente après la date de la soirée.");
   }
   if (presale.length && !ev.ticketUrl && upcoming && ev.status !== "cancelled") warnings.push("Des tarifs en prévente sont renseignés sans lien de billetterie : le bouton « Prendre ma place » sera désactivé.");
-  if (ev.price && tickets.length) warnings.push("« Résumé du prix » et tarifs détaillés sont tous deux renseignés : vérifiez qu'ils disent la même chose (le résumé s'affiche en haut de la fiche).");
+  // Résumé du prix qui contredit les tarifs : un montant du résumé ne correspond à aucun tarif.
+  if (ev.price && tickets.length) {
+    const amounts = (ev.price.match(/\d+(?:[.,]\d+)?/g) || []).map((n) => Number(n.replace(",", ".")));
+    const prices = new Set(tickets.map((t) => Number(t.price)));
+    const unknown = amounts.filter((n) => !prices.has(n));
+    if (unknown.length) warnings.push(`« Résumé du prix » (${ev.price}) cite ${unknown.map((n) => `${String(n).replace(".", ",")} €`).join(", ")}, qui ne correspond à aucun tarif : corrigez-le, ou videz-le pour qu'il soit calculé depuis les tarifs (« Dès … € »).`);
+  }
 
   // DJ Contest
   const contestSlot = ev.lineup.some((s) => s.artists.some((a) => a.mystery));
