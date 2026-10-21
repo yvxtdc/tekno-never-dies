@@ -35,6 +35,18 @@ const banner = (label) =>
   `padding:8px 16px;border-radius:999px;background:#b6269a;color:#fff;font:700 13px/1.3 Montserrat,system-ui,sans-serif;` +
   `letter-spacing:.04em;box-shadow:0 6px 24px rgba(0,0,0,.45);pointer-events:none;text-align:center">APERÇU · ${label}</div>`;
 
+/** Raccourcis vers la fiche de la soirée dans l'administration (aperçu des personnes connectées). */
+const editBar = (id) => {
+  const link = (href, text, main) =>
+    `<a href="${href}" target="_top" style="display:inline-block;padding:9px 16px;border-radius:999px;text-decoration:none;color:#fff;` +
+    `font:700 13px/1.2 Montserrat,system-ui,sans-serif;${main ? "background:linear-gradient(120deg,#4226b6,#956aff,#b6269a) border-box;" : "border:1px solid rgba(255,255,255,.45);background:rgba(11,7,34,.85);"}">${text}</a>`;
+  return `<nav aria-label="Modifier dans le CMS" style="position:fixed;z-index:2147483647;right:14px;top:50%;transform:translateY(-50%);display:grid;gap:8px;justify-items:end">` +
+    link(`/admin/events/${id}#billetterie`, "Gérer les billets", true) +
+    link(`/admin/events/${id}#contest`, "DJ Contest", false) +
+    link(`/admin/events/${id}`, "✎ Modifier la soirée", false) +
+    `</nav>`;
+};
+
 const escapeHtml = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 export function createPreviewToken(db, eventId, userId, days = 7) {
@@ -63,7 +75,7 @@ export function purgePreviewTokens(db) {
  * @param {number[]} opts.includeEventIds soirées à montrer même si elles ne sont pas publiées
  * @param {boolean} opts.includeScheduled montrer aussi les soirées programmées
  */
-export async function servePreview(req, res, { config, db, subPath, includeEventIds = [], includeScheduled = true, label = "non publié" }) {
+export async function servePreview(req, res, { config, db, subPath, includeEventIds = [], includeScheduled = true, label = "non publié", editLinks = false }) {
   const rel = subPath.replace(/^\/+/, "") || "index.html";
   const data = buildSiteData(db, { mode: "preview", includeEventIds, includeScheduled });
   const modules = renderModules(data);
@@ -95,7 +107,8 @@ export async function servePreview(req, res, { config, db, subPath, includeEvent
     const og = fs.existsSync(path.join(config.siteDir, `assets/img/events/og/${ev.slug}.jpg`)) ? `assets/img/events/og/${ev.slug}.jpg` : null;
     let html = renderEventPage(template, ev, { og, alias: target ? slug : null });
     const status = { draft: "brouillon", scheduled: "programmé", archived: "archivé" }[ev.previewStatus];
-    html = html.replace(/(<body[^>]*>)/, `$1${banner(escapeHtml(status ? `${ev.title} — ${status}` : label))}`);
+    const eventId = editLinks ? db.get("SELECT id FROM events WHERE slug = ?", ev.slug)?.id : null;
+    html = html.replace(/(<body[^>]*>)/, `$1${banner(escapeHtml(status ? `${ev.title} — ${status}` : label))}${eventId ? editBar(eventId) : ""}`);
     return sendText(res, 200, html, MIME[".html"], HEADERS);
   }
 

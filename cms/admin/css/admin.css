@@ -472,3 +472,4 @@ dialog.dialog::backdrop { background: rgba(5, 3, 20, .72); backdrop-filter: blur
 .tickets-preview__item.is-door { border-style: dashed; }
 .artist-chip .pill { font-size: 10px; padding: 1px 6px; background: rgba(213, 79, 192, .25); color: #fff; }
 .contest-details > summary { cursor: pointer; font-weight: 700; margin-bottom: 12px; }
+.tickets-howto { margin: 0 0 8px; padding-left: 18px; display: grid; gap: 2px; }

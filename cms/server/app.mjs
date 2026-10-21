@@ -159,7 +159,7 @@ export function createApp({ config, db, log = createLogger(config.logLevel), pub
         const m = p.match(/^\/preview\/(site|event-(\d{1,12}))(\/.*)?$/);
         if (!m) throw notFound();
         if (!m[3]) return redirect(res, `${p}/`);
-        return await servePreview(req, res, { config, db, subPath: m[3], includeEventIds: m[2] ? [Number(m[2])] : [], label: m[2] ? "brouillon" : "prochaine mise en ligne" });
+        return await servePreview(req, res, { config, db, subPath: m[3], includeEventIds: m[2] ? [Number(m[2])] : [], label: m[2] ? "brouillon" : "prochaine mise en ligne", editLinks: true });
       }
       if (p.startsWith("/p/")) {
         // Lien d'aperçu partageable (sans compte) : une soirée, durée limitée.
