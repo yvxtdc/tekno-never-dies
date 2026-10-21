@@ -25,7 +25,7 @@ export async function artistsListView(ctx, main) {
           h("tbody", {}, data.items.map((a) => h("tr", {},
             h("td", { class: "title-col" }, h("div", { class: "title-cell" },
               a.photo ? h("img", { class: "thumb thumb--round", src: a.photo.thumbUrl, alt: "", loading: "lazy" }) : h("span", { class: "thumb thumb--round", "aria-hidden": "true" }),
-              h("div", {}, h("a", { href: `/admin/artists/${a.id}` }, a.name), a.archived ? h("div", {}, statusBadge("archived", "Archivé")) : null))),
+              h("div", {}, h("a", { href: `/admin/artists/${a.id}` }, a.name), a.mystery ? h("span", { class: "pill", style: { marginLeft: "6px" } }, "Artiste mystère") : null, a.archived ? h("div", {}, statusBadge("archived", "Archivé")) : null))),
             h("td", { "data-label": "Styles" }, a.styles || h("span", { class: "muted" }, "—")),
             h("td", { "data-label": "Soirées" }, a.eventCount ? `${a.eventCount}${a.lastDate ? ` (dernière : ${formatDate(a.lastDate, { month: "short" })})` : ""}` : h("span", { class: "muted" }, "aucune")),
             h("td", { "data-label": "Liens" }, a.instagramUrl ? h("a", { href: a.instagramUrl, target: "_blank", rel: "noopener noreferrer" }, "Instagram") : h("span", { class: "muted" }, "—")),
@@ -52,13 +52,13 @@ export async function artistEditView(ctx, main) {
   replace(main, loadingState());
   let artist;
   try {
-    artist = isNew ? { name: "", slug: "", styles: "", bio: "", origin: "", instagramUrl: "", soundcloudUrl: "", links: [], contact: "", notes: "", archived: false, photo: null, photoMediaId: null, events: [] } : await get(`/api/artists/${Number(ctx.params.id)}`);
+    artist = isNew ? { name: "", slug: "", styles: "", bio: "", origin: "", instagramUrl: "", soundcloudUrl: "", links: [], contact: "", notes: "", archived: false, mystery: false, photo: null, photoMediaId: null, events: [] } : await get(`/api/artists/${Number(ctx.params.id)}`);
   } catch (error) {
     return replace(main, errorState(error, () => artistEditView(ctx, main)));
   }
   const m = structuredClone(artist);
   document.title = `${isNew ? "Nouvel artiste" : m.name} — Administration TND`;
-  const toPayload = (x) => ({ version: x.version, name: x.name, slug: x.slug, photoMediaId: x.photoMediaId, styles: x.styles, bio: x.bio, origin: x.origin, instagramUrl: x.instagramUrl, soundcloudUrl: x.soundcloudUrl, links: x.links.filter((l) => l.label || l.url), contact: x.contact, notes: x.notes, archived: x.archived });
+  const toPayload = (x) => ({ version: x.version, name: x.name, slug: x.slug, photoMediaId: x.photoMediaId, styles: x.styles, bio: x.bio, origin: x.origin, instagramUrl: x.instagramUrl, soundcloudUrl: x.soundcloudUrl, links: x.links.filter((l) => l.label || l.url), contact: x.contact, notes: x.notes, archived: x.archived, mystery: x.mystery });
   const ed = createEditor({
     model: m, toPayload, isNew, newLabel: "Nouvel artiste",
     onSave: async (data) => {
@@ -84,7 +84,9 @@ export async function artistEditView(ctx, main) {
           field({ label: "Nom d'artiste", control: name, required: true, name: "name", hint: "Tel qu'il doit apparaître sur le site (ex. « Dann Octa »)." }),
           similarBox,
           field({ label: "Styles", control: ed.bind("styles", input({ value: m.styles, maxlength: 120, placeholder: "Trance / Groovy" })), name: "styles", hint: "Affiché sous le nom dans le line-up et sur la page Artistes." }),
-          field({ label: "Origine", control: ed.bind("origin", input({ value: m.origin, maxlength: 100, placeholder: "Strasbourg" })), name: "origin" })),
+          field({ label: "Origine", control: ed.bind("origin", input({ value: m.origin, maxlength: 100, placeholder: "Strasbourg" })), name: "origin" }),
+          (() => { const c = checkbox("Artiste mystère (DJ Contest) : place à gagner au line-up", { checked: m.mystery }); ed.bind("mystery", c.input); return c; })(),
+          h("p", { class: "hint" }, "Pas de lien Instagram sur le site : le nom ouvre une fenêtre qui explique comment envoyer son set (adresse et date limite : section « DJ Contest » de la soirée).")),
         h("div", { class: "field", dataset: { field: "photoMediaId" } }, mediaSlot({ media: m.photo, label: "Photo de profil", hint: "Recadrée en carré (cercle du line-up).", onChange: (media) => { m.photo = media; m.photoMediaId = media?.id ?? null; ed.touch(); } }), h("p", { class: "error-text", hidden: true })))),
     h("section", { class: "card" }, h("div", { class: "card__head" }, h("h2", {}, "Liens")),
       h("div", { class: "fields fields--2" },

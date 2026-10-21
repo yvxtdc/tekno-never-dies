@@ -5,7 +5,7 @@ Fichier de travail pour l'équipe du site : **il n'est pas publié** (exclu dans
 Cocher `[x]` quand c'est fait, ou supprimer la ligne. `npm run validate` signale aussi
 automatiquement une partie de ces manques (traductions, images inutilisées, plans absents).
 
-Dernière mise à jour : 19 octobre 2026.
+Dernière mise à jour : 21 octobre 2026.
 
 ## Soirées (`js/data/events.js`)
 
@@ -37,8 +37,13 @@ traduire dans `js/i18n/de.js` et `en.js`.
 - [ ] Relire les textes « La soirée » (`about`) des 4 soirées : rédigés à partir des données du
       site, à ajuster selon l'esprit réel de chaque soirée.
 
-## Artistes (`js/data/artistes.js`)
-- [ ] **T.B.R** — style musical (`ARTIST_STYLES`) : affiché pour l'instant « DJ Contest ».
+## Billets et DJ Contest (CMS → Soirées)
+- [ ] **ICE BOILER v2** — vérifier les quatre tarifs repris des anciennes infos pratiques (Early 10 €,
+      Regular 13 €, Late 16 €, caisse du soir 18 €) et passer en « Épuisé » ceux qui le sont.
+- [ ] **ICE BOILER v2** — DJ Contest : date limite d'envoi des sets mise au **15 novembre 2026**
+      (à confirmer) ; adresse = tnd6tem@gmail.com par défaut.
+- [ ] Relire les conseils ajoutés aux infos pratiques (bouchons, hydratation, parking…) ; le
+      parking n'a été indiqué que pour la salle de Munchhausen.
 
 ## Images
 - [ ] `assets/img/equipe/presentation.webp` — photo d'équipe utilisée nulle part : l'intégrer

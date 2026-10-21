@@ -5,6 +5,7 @@ import { formatDate, formatTime, readParam, eventStatus, safeUrl, track, eventPa
 import { t, tr, plural, locale } from "../i18n/i18n.js";
 import { downloadICS, eventRange } from "./ics.js";
 import { eventStats } from "../components/event-stats.js";
+import { sortedTickets, ticketState, formatPrice, priceSummary } from "../components/tickets.js";
 
 // Fiche statique (evenement-….html) : le slug est écrit sur <body data-slug>.
 // Ancienne adresse evenement.html?slug=… (liens déjà partagés) : on passe sur la fiche statique.
@@ -42,8 +43,10 @@ const IG_HINT = `<span class="lineup-row__ig" aria-hidden="true">`
 const artistPhotos = (artist) =>
   artist.image ? [artist.image] : artistsOf(artist.name).map(artistPhoto).filter(Boolean);
 /* Nom d'artiste -> lien Instagram (js/data/artistes.js). Un B2B donne un lien par artiste. */
-const artistName = (name) =>
-  splitB2B(name)
+const artistName = (name, contest = false) =>
+  contest
+    ? `<button type="button" class="lineup-row__contest js-contest" aria-haspopup="dialog">${escapeHTML(name)}<span class="lineup-row__contest-hint" aria-hidden="true">?</span></button>`
+    : splitB2B(name)
     .map((part, i) => {
       const url = i % 2 ? null : artistUrl(part);
       return url
@@ -179,12 +182,13 @@ if (!root) {
     : `<p class="event-status is-past"><span>Soirée passée</span><span class="event-status__count" translate="no">${escapeHTML(ev.date.slice(0, 4))}</span></p>`;
   // Âge : champ "age", sinon une info pratique « Dès 16 ans »
   const ageText = ev.age || (ev.practical || []).find((item) => /^Dès \d+ ans$/i.test(item)) || "";
-  const entry = [ev.price ? tr(ev.price) : "", ageText ? tr(ageText) : ""].filter(Boolean).join(" · ");
+  const priceText = priceSummary(ev);
+  const entry = [priceText, ageText ? tr(ageText) : ""].filter(Boolean).join(" · ");
   const facts = [
     ["Date", longDate],
     ev.time ? ["Horaires", formatTime(ev.time), ev.doors ? t("Ouverture des portes : {time}", { time: formatTime(ev.doors) }) : ""] : null,
     ev.place ? ["Lieu", venueName || town, [street, venueName ? town : ""].filter(Boolean).join(", ")] : ["Lieu", tr("Lieu à confirmer")],
-    entry ? [ev.price ? "Entrée" : "Âge", entry] : crowd ? ["Fréquentation", t("≈ {n} personnes", { n: crowd })] : null
+    entry ? [priceText ? "Entrée" : "Âge", entry] : crowd ? ["Fréquentation", t("≈ {n} personnes", { n: crowd })] : null
   ].filter(Boolean);
   const factsContent = `<dl class="event-facts">${facts.map(([label, value, detail]) => `
       <div class="event-facts__item">
@@ -260,16 +264,16 @@ if (!root) {
     : "";
   const lineupContent = lineup.length
     ? `<ul class="lineup-rows" style="--rows:${Math.ceil(lineup.length / 2)}">${lineup.map((artist, i) => `
-        <li class="lineup-row" data-slot="${escapeHTML(artist.time || "")}">
+        <li class="lineup-row${artist.contest ? " lineup-row--contest" : ""}" data-slot="${escapeHTML(artist.time || "")}">
           <span class="lineup-row__num">${String(i + 1).padStart(2, "0")}</span>
-          <span class="lineup-row__photos">${artist.mystery ? `<span class="lineup-row__photo lineup-row__photo--mystery" aria-hidden="true">?</span>` : (artistPhotos(artist).length ? artistPhotos(artist).slice(0, 2) : [null]).map((src) => `<span class="lineup-row__photo">${src ? `<img src="${escapeHTML(src)}" alt="" loading="lazy" />` : ""}</span>`).join("")}</span>
+          <span class="lineup-row__photos">${artist.contest ? `<span class="lineup-row__photo lineup-row__photo--contest"><img src="assets/img/artistes/dj-contest.webp" alt="" loading="lazy" /></span>` : artist.mystery ? `<span class="lineup-row__photo lineup-row__photo--mystery" aria-hidden="true">?</span>` : (artistPhotos(artist).length ? artistPhotos(artist).slice(0, 2) : [null]).map((src) => `<span class="lineup-row__photo">${src ? `<img src="${escapeHTML(src)}" alt="" loading="lazy" />` : ""}</span>`).join("")}</span>
           <div class="lineup-row__info">
             ${artist.time
               ? `<span class="lineup-row__time">${escapeHTML(formatTime(artist.time))}</span>`
               : status === "a-venir" ? `<span class="lineup-row__time">Horaire à confirmer</span>` : ""}
             <span class="lineup-row__live">En ce moment</span>
-            <h3 translate="no">${artist.name ? artistName(artist.name) : escapeHTML(tr("Artiste à renseigner"))}</h3>
-            ${(artist.style || slotStyle(artist.name)) ? `<p class="lineup-row__style" translate="no">${escapeHTML(artist.style || slotStyle(artist.name))}</p>` : ""}
+            <h3 translate="no">${artist.name ? artistName(artist.name, artist.contest) : escapeHTML(tr("Artiste à renseigner"))}</h3>
+            ${artist.contest ? `<p class="lineup-row__style lineup-row__style--contest">${escapeHTML(tr(status === "a-venir" ? "Ta place est à gagner" : "Place gagnée au DJ Contest"))}</p>` : (artist.style || slotStyle(artist.name)) ? `<p class="lineup-row__style" translate="no">${escapeHTML(artist.style || slotStyle(artist.name))}</p>` : ""}
           </div>
           ${artist.demo ? `<span class="lineup-row__draft">À compléter</span>` : artist.collective ? `<span class="lineup-row__collective">${escapeHTML(artist.collective)}</span>` : ""}
           ${slotBar(artist.time)}
@@ -319,6 +323,57 @@ if (!root) {
               <span class="event-mapstage__label">${escapeHTML(tr("Zoom sur la salle"))}</span>
             </span>` : ""}
           </div>
+        </div>
+      </section>`
+    : "";
+
+  /* ---------- « Billets » : les tarifs sur une ligne (caisse du soir en dernier), puis la billetterie ---------- */
+  const tickets = sortedTickets(ev);
+  const ticketStates = tickets.map((ticket) => ticketState(ticket));
+  // Tarif mis en avant : le premier en vente en prévente (sinon la caisse du soir).
+  const currentIndex = (() => {
+    const i = tickets.findIndex((ticket, j) => !ticket.door && ticketStates[j] === "available");
+    return i >= 0 ? i : tickets.findIndex((ticket, j) => ticket.door && ticketStates[j] === "available");
+  })();
+  const STATE_LABELS = { available: "En vente", soldout: "Épuisé", soon: "Bientôt", closed: "Terminé" };
+  const upcoming = status === "a-venir" && !ev.cancelled;
+  const presaleOpen = tickets.some((ticket, i) => !ticket.door && ticketStates[i] === "available");
+  const shortDate = (iso) => new Intl.DateTimeFormat(locale, { day: "numeric", month: "long", timeZone: "UTC" }).format(new Date(`${iso}T12:00:00Z`));
+  const ticketButton = (() => {
+    if (upcoming && ticketUrl && (presaleOpen || !tickets.some((ticket) => !ticket.door))) {
+      return `<a class="btn btn-solid event-tickets__cta" href="${escapeHTML(ticketUrl)}" target="_blank" rel="noopener">Prendre ma place ↗</a>`;
+    }
+    const reason = ev.cancelled ? "Soirée annulée"
+      : !upcoming ? "Billetterie fermée"
+      : !ticketUrl ? "Billetterie bientôt en ligne"
+      : tickets.some((ticket, i) => ticket.door && ticketStates[i] === "available") ? "Prévente terminée : rendez-vous à la caisse du soir"
+      : "Prévente terminée";
+    return `<span class="btn btn-solid event-tickets__cta is-disabled" role="link" aria-disabled="true">${escapeHTML(tr(reason))}</span>`;
+  })();
+  const ticketsContent = tickets.length
+    ? `<section class="event-tickets${upcoming ? "" : " is-past"}" aria-labelledby="tickets-title">
+        <div class="event-section-head">
+          <h2 id="tickets-title">Billets<span class="event-title__dot">.</span></h2>
+          <p class="event-section-head__note">LES TARIFS<br />DE LA SOIRÉE.</p>
+        </div>
+        <ol class="event-tickets__list${tickets.length > 5 ? " is-crowded is-many" : tickets.length > 4 ? " is-many" : ""}">${tickets.map((ticket, i) => {
+          const state = ticketStates[i];
+          const current = upcoming && i === currentIndex;
+          return `
+          <li class="ticket is-${state}${ticket.door ? " ticket--door" : ""}${current ? " is-current" : ""}">
+            <span class="ticket__step" aria-hidden="true">${ticket.door ? "✦" : String(i + 1).padStart(2, "0")}</span>
+            <span class="ticket__label">${escapeHTML(tr(ticket.label))}</span>
+            <span class="ticket__price">${state === "soldout" ? `<s>${escapeHTML(formatPrice(ticket.price))}</s>` : escapeHTML(formatPrice(ticket.price))}</span>
+            ${ticket.note ? `<span class="ticket__note">${escapeHTML(tr(ticket.note))}</span>` : ""}
+            ${ticket.until && state !== "soldout" && state !== "closed" ? `<span class="ticket__until">${escapeHTML(t("Jusqu'au {date}", { date: shortDate(ticket.until) }))}</span>` : ""}
+            ${current ? `<span class="ticket__badge">${escapeHTML(tr("En vente"))}</span>`
+              : state !== "available" ? `<span class="ticket__badge ticket__badge--${state}">${escapeHTML(tr(STATE_LABELS[state]))}</span>`
+              : ticket.door && upcoming ? `<span class="ticket__badge ticket__badge--door">${escapeHTML(tr("Sur place"))}</span>` : ""}
+          </li>`;
+        }).join("")}</ol>
+        <div class="event-tickets__foot">
+          ${ticketButton}
+          ${upcoming && ticketUrl && /helloasso\./i.test(ticketUrl) ? `<p class="event-tickets__hint">Paiement sécurisé sur HelloAsso.</p>` : ""}
         </div>
       </section>`
     : "";
@@ -373,6 +428,7 @@ if (!root) {
     </section>
 
     ${accessContent}
+    ${ticketsContent}
     ${practicalContent}
 
     <section class="event-bottom-actions">
@@ -398,6 +454,7 @@ if (!root) {
   `;
 
   layoutMap(root.querySelector(".event-mapstage"));
+  setupContest(root, ev, status);
 
   document.getElementById("add-to-calendar")?.addEventListener("click", () => {
     downloadICS([ev], `tnd-${ev.slug}.ics`);
@@ -475,4 +532,64 @@ function layoutMap(stage) {
   };
   place();
   new ResizeObserver(place).observe(stage);
+}
+
+/* ---------- DJ Contest : la place à gagner du line-up ouvre une fenêtre qui explique comment participer ----------
+   Adresse, date limite et texte : ev.contest (section « DJ Contest » de la soirée dans le CMS). */
+function setupContest(root, ev, status) {
+  const buttons = root.querySelectorAll(".js-contest");
+  if (!buttons.length) return;
+  const contest = ev.contest || {};
+  const email = contest.email || SITE.email;
+  const slot = (ev.lineup || []).find((s) => s.contest);
+  const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Paris" }).format(new Date());
+  const closed = status !== "a-venir" || ev.cancelled || (contest.deadline && today > contest.deadline);
+  const deadline = contest.deadline
+    ? new Intl.DateTimeFormat(locale, { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" }).format(new Date(`${contest.deadline}T12:00:00Z`))
+    : "";
+  const daysLeft = contest.deadline && !closed ? Math.round((Date.parse(`${contest.deadline}T00:00:00Z`) - Date.parse(`${today}T00:00:00Z`)) / 864e5) : null;
+  const subject = encodeURIComponent(`DJ Contest — ${ev.title}`);
+  const body = encodeURIComponent(tr("Nom de DJ :\nInstagram :\nLien du set (SoundCloud, Mixcloud, Drive…) :\n"));
+  const intro = contest.text
+    ? tr(contest.text)
+    : t("Le set d'ouverture de {title} est à gagner. Envoie-nous ton mix : l'équipe écoute tout et choisit le DJ qui jouera derrière nos platines.", { title: ev.title });
+  const steps = [
+    t("Enregistre un mix dans l'esprit de la soirée{genres}.", { genres: ev.genres?.length ? ` (${ev.genres.join(", ")})` : "" }),
+    t("Envoie le lien (SoundCloud, Mixcloud, Google Drive…) à {email}, avec ton nom de DJ et ton Instagram.", { email }),
+    deadline ? t("Date limite : {date}.", { date: deadline }) : tr("Date limite annoncée sur notre Instagram."),
+    slot?.time ? t("Le ou la gagnant·e est annoncé·e sur Instagram et joue le set de {time}.", { time: formatTime(slot.time) }) : tr("Le ou la gagnant·e est annoncé·e sur Instagram et ouvre la soirée.")
+  ];
+
+  const dialog = document.createElement("dialog");
+  dialog.className = "contest-dialog";
+  dialog.setAttribute("aria-labelledby", "contest-title");
+  dialog.innerHTML = `
+    <div class="contest-dialog__card">
+      <button type="button" class="contest-dialog__close" aria-label="Fermer"><span aria-hidden="true">×</span></button>
+      <div class="contest-dialog__visual">
+        <img src="assets/img/artistes/dj-contest.webp" alt="" width="600" height="600" />
+        <span class="contest-dialog__tag" translate="no">DJ CONTEST</span>
+      </div>
+      <div class="contest-dialog__body">
+        <p class="event-eyebrow">${escapeHTML(t("Artiste mystère · {title}", { title: ev.title }))}</p>
+        <h2 id="contest-title">${escapeHTML(tr(closed ? "Le DJ Contest est terminé." : "Ta place derrière les platines."))}</h2>
+        <p class="contest-dialog__intro">${escapeHTML(closed ? tr("Les inscriptions sont closes : rendez-vous sur la piste pour découvrir le ou la gagnant·e.") : intro)}</p>
+        ${closed ? "" : `<ol class="contest-dialog__steps">${steps.map((step) => `<li>${escapeHTML(step)}</li>`).join("")}</ol>`}
+        <div class="contest-dialog__actions">
+          ${closed
+            ? `<span class="btn btn-solid is-disabled" aria-disabled="true">${escapeHTML(tr("Inscriptions closes"))}</span>`
+            : `<a class="btn btn-solid" href="mailto:${escapeHTML(email)}?subject=${subject}&amp;body=${body}">${escapeHTML(tr("Envoyer mon set"))} ↗</a>`}
+          ${daysLeft !== null ? `<span class="contest-dialog__count">${escapeHTML(daysLeft > 1 ? t("Plus que {n} jours", { n: daysLeft }) : tr(daysLeft === 1 ? "Dernier jour demain" : "Dernier jour"))}</span>` : ""}
+        </div>
+      </div>
+    </div>`;
+  document.body.append(dialog);
+  const close = () => dialog.close();
+  dialog.querySelector(".contest-dialog__close").addEventListener("click", close);
+  // Clic sur le fond (en dehors de la carte) : fermeture.
+  dialog.addEventListener("click", (event) => { if (event.target === dialog) close(); });
+  buttons.forEach((button) => button.addEventListener("click", () => {
+    dialog.showModal();
+    track(`DJ Contest · ${ev.title}`);
+  }));
 }

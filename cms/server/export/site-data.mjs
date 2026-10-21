@@ -14,6 +14,7 @@ import { exportPath, mediaVariants, VARIANTS } from "../services/media.mjs";
 import { richTextToHtml } from "../services/richtext.mjs";
 import { translatableTexts } from "../services/events.mjs";
 import { translatableSources } from "../services/translations.mjs";
+import { exportTicket, exportContest, normalizeTicket, sortTickets } from "../services/tickets.mjs";
 
 const norm = (s) => String(s ?? "").replace(/\s+/g, " ").trim();
 
@@ -50,11 +51,13 @@ export function buildSiteData(db, { mode = "public", includeEventIds = [], inclu
     const venue = e.venue_id ? db.get("SELECT * FROM venues WHERE id = ?", e.venue_id) : null;
     const slots = db.all("SELECT * FROM lineup_slots WHERE event_id = ? ORDER BY position", e.id);
     const lineup = slots.map((s) => {
-      const artists = db.all("SELECT a.id, a.name FROM lineup_slot_artists la JOIN artists a ON a.id = la.artist_id WHERE la.slot_id = ? ORDER BY la.position", s.id);
+      const artists = db.all("SELECT a.id, a.name, a.mystery FROM lineup_slot_artists la JOIN artists a ON a.id = la.artist_id WHERE la.slot_id = ? ORDER BY la.position", s.id);
       artists.forEach((a) => usedArtistIds.add(a.id));
       const slot = { name: s.label || artists.map((a) => a.name).join(" B2B ") };
       if (s.style) slot.style = s.style;
       if (s.start_time) slot.time = frenchRange(s.start_time, s.end_time);
+      // Artiste mystère : place à gagner (DJ Contest), le nom ouvre la fenêtre de participation.
+      if (artists.some((a) => a.mystery)) slot.contest = true;
       return slot;
     });
     const photos = db.all("SELECT * FROM event_photos WHERE event_id = ? ORDER BY position", e.id).map((p) => {
@@ -74,6 +77,10 @@ export function buildSiteData(db, { mode = "public", includeEventIds = [], inclu
       ...(e.price ? { price: e.price } : {}),
       ...(e.age ? { age: e.age } : {}),
       ticketUrl: e.ticket_url,
+      ...(() => {
+        const tickets = sortTickets(fromJson(e.tickets, []).map(normalizeTicket));
+        return tickets.length ? { tickets: tickets.map(exportTicket) } : {};
+      })(),
       flyer: ref(e.flyer_media_id, "flyer"),
       cover: ref(e.cover_media_id, "web"),
       genres: fromJson(e.genres, []),
@@ -81,6 +88,10 @@ export function buildSiteData(db, { mode = "public", includeEventIds = [], inclu
       practical: fromJson(e.practical, []),
       lineup
     };
+    if (lineup.some((s) => s.contest)) {
+      const contest = exportContest(fromJson(e.contest, {}));
+      if (Object.keys(contest).length) ev.contest = contest;
+    }
     if (e.about_kicker || e.about_title || e.about_text || photos.length) {
       ev.about = {};
       if (e.about_kicker) ev.about.kicker = e.about_kicker;
@@ -119,7 +130,8 @@ export function buildSiteData(db, { mode = "public", includeEventIds = [], inclu
   const ARTIST_PHOTOS = {};
   const artistRows = db.all("SELECT * FROM artists ORDER BY name COLLATE NOCASE").filter((a) => !a.archived || usedArtistIds.has(a.id));
   for (const a of artistRows) {
-    if (a.instagram_url) ARTISTS[a.name] = a.instagram_url;
+    // Artiste mystère (DJ Contest) : pas de lien Instagram, le site ouvre la fenêtre de participation.
+    if (a.instagram_url && !a.mystery) ARTISTS[a.name] = a.instagram_url;
     if (a.styles) ARTIST_STYLES[a.name] = a.styles;
     if (a.photo_media_id) ARTIST_PHOTOS[artistKey(a.name)] = ref(a.photo_media_id, "square");
   }
@@ -169,6 +181,7 @@ export function buildSiteData(db, { mode = "public", includeEventIds = [], inclu
     ...rows.flatMap((e) =>
       translatableTexts({
         description: e.description, price: e.price, age: e.age, practical: fromJson(e.practical, []),
+        tickets: fromJson(e.tickets, []), contest: fromJson(e.contest, {}),
         aboutKicker: e.about_kicker, aboutTitle: e.about_title, aboutText: e.about_text, seoDescription: e.seo_description,
         photos: db.all("SELECT caption FROM event_photos WHERE event_id = ?", e.id)
       })

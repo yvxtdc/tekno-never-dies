@@ -39,6 +39,11 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
+/* Fonds calculés sur la boîte entière, bordure comprise (comme sur le site, css/style.css).
+   Par défaut un dégradé est calculé sur l'intérieur puis répété sous une bordure transparente :
+   un filet rose (fin du dégradé) apparaissait sur le bord gauche des boutons violets et un filet
+   violet (début) sur le bord droit, d'où l'impression de couleurs inversées. */
+*, *::before, *::after { background-origin: border-box !important; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
@@ -210,6 +215,8 @@ a.stat:hover { border-color: var(--lav); }
 .input-group { display: flex; align-items: stretch; }
 .input-group .prefix { display: flex; align-items: center; padding: 0 10px; border: 1px solid var(--line-strong); border-right: 0; border-radius: var(--radius-sm) 0 0 var(--radius-sm); color: var(--muted); font-size: 13px; background: rgba(255, 255, 255, .04); white-space: nowrap; max-width: 50%; overflow: hidden; text-overflow: ellipsis; }
 .input-group .input { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+.input-group .suffix { display: flex; align-items: center; padding: 0 12px; border: 1px solid var(--line-strong); border-left: 0; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; color: var(--muted); font-size: 13px; background: rgba(255, 255, 255, .04); }
+.input-group .input:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
 .form-errors { border: 1px solid rgba(255, 107, 129, .6); background: rgba(255, 107, 129, .1); border-radius: var(--radius); padding: 12px 16px; margin-bottom: 16px; }
 .form-errors ul { margin: 6px 0 0; padding-left: 18px; }
 .list-editor { display: grid; gap: 8px; }
@@ -438,3 +445,29 @@ dialog.dialog::backdrop { background: rgba(5, 3, 20, .72); backdrop-filter: blur
 .auth .btn { width: 100%; margin-top: 6px; }
 .log { background: #07041a; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 12px; max-height: 420px; overflow: auto; font: 12.5px/1.55 ui-monospace, monospace; white-space: pre-wrap; color: #d9d3f5; }
 .diff-list { margin: 0; padding-left: 18px; }
+
+/* ---------- Billets (tarifs) ---------- */
+.tickets-editor { display: grid; gap: 10px; }
+.ticket-row { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 12px; align-items: start; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--card-2); }
+.ticket-row--door { border-style: dashed; border-color: rgba(149, 106, 255, .55); }
+.ticket-row.is-off { background: rgba(255, 255, 255, .02); }
+.ticket-row__num { display: grid; place-items: center; width: 32px; height: 32px; margin-top: 22px; border-radius: 50%; background: var(--gradient); font-weight: 700; font-size: 13px; }
+.ticket-row__fields { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr) minmax(0, .9fr); gap: 10px 12px; }
+.ticket-row__fields > .field:nth-child(4) { grid-column: span 2; }
+.ticket-row__tools { display: flex; gap: 2px; margin-top: 22px; }
+@media (max-width: 760px) {
+  .ticket-row { grid-template-columns: 1fr auto; }
+  .ticket-row__num { display: none; }
+  .ticket-row__fields { grid-template-columns: 1fr 1fr; }
+  .ticket-row__fields > .field:first-child, .ticket-row__fields > .field:nth-child(4) { grid-column: 1 / -1; }
+  .ticket-row__tools { flex-direction: column; margin-top: 0; }
+}
+.tickets-preview { display: flex; flex-wrap: wrap; gap: 8px; margin: 2px 0 6px; }
+.tickets-preview__item { display: grid; gap: 2px; min-width: 92px; padding: 8px 12px; border-radius: 10px; border: 1px solid rgba(149, 106, 255, .45); background: rgba(149, 106, 255, .12); text-align: center; }
+.tickets-preview__item small { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--lav-soft); }
+.tickets-preview__item b { font-family: var(--display); font-weight: 400; font-size: 18px; }
+.tickets-preview__item em { font-style: normal; font-size: 11px; color: var(--amber); }
+.tickets-preview__item.is-soldout, .tickets-preview__item.is-closed { opacity: .5; border-color: var(--line); background: transparent; }
+.tickets-preview__item.is-soldout b { text-decoration: line-through; }
+.tickets-preview__item.is-door { border-style: dashed; }
+.artist-chip .pill { font-size: 10px; padding: 1px 6px; background: rgba(213, 79, 192, .25); color: #fff; }

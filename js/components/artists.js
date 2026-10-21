@@ -46,7 +46,7 @@ export function collectArtists(events) {
   const artists = new Map();
   for (const ev of [...events].sort((a, b) => b.date.localeCompare(a.date))) {
     for (const slot of visibleLineup(ev)) {
-      if (!slot.name || slot.demo || NOT_AN_ARTIST.test(slot.name.trim())) continue;
+      if (!slot.name || slot.demo || slot.contest || NOT_AN_ARTIST.test(slot.name.trim())) continue;
       const names = artistsOf(slot.name);
       for (const name of names) {
         const key = artistKey(name);

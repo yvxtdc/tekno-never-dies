@@ -5,6 +5,7 @@ import { SITE } from "./data/site.js";
 import { EVENTS } from "./data/events.js";
 import { eventStatus, formatDate, formatTime, esc, safeUrl, track, eventPath } from "./pages/helpers.js";
 import { lang, setLang, savedLang, pageInLang, t } from "./i18n/i18n.js";
+import { guardDecor } from "./components/decor-guard.js";
 
 function markActiveLink() {
   const page = document.body.dataset.page;
@@ -283,3 +284,4 @@ initScrolledHeader();
 initSeo();
 initAnalytics();
 trackLinkClicks();
+guardDecor();

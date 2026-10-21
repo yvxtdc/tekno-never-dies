@@ -21,7 +21,7 @@ import { buildSiteData } from "./site-data.mjs";
 import { MANAGED_MODULES, renderModules } from "./modules.mjs";
 
 const NOT_AN_ARTIST = /^(dj contest|guest|tba|surprise)/i;
-const KNOWN_EVENT_FIELDS = new Set(["slug", "title", "date", "datePrecision", "time", "place", "price", "age", "ticketUrl", "flyer", "cover", "genres", "description", "practical", "lineup", "about", "venue", "gallerySlug", "status", "cancelled"]);
+const KNOWN_EVENT_FIELDS = new Set(["slug", "title", "date", "datePrecision", "time", "place", "price", "age", "ticketUrl", "tickets", "contest", "flyer", "cover", "genres", "description", "practical", "lineup", "about", "venue", "gallerySlug", "status", "cancelled"]);
 const norm = (s) => String(s ?? "").replace(/\s+/g, " ").trim();
 
 async function load(siteDir, file) {
@@ -121,17 +121,19 @@ export async function importFromRepo(db, config, { log = () => {} } = {}) {
       a.styles = style;
       if (!ARTISTS[a.name] && !Object.keys(ARTISTS).some((n) => artistKey(n) === artistKey(name))) a.name = name;
     }
-    const lineupNames = EVENTS.flatMap((ev) => (ev.lineup || []).map((s) => s.name || ""));
-    for (const full of lineupNames) {
-      if (NOT_AN_ARTIST.test(full.trim())) continue;
+    for (const slot of EVENTS.flatMap((ev) => ev.lineup || [])) {
+      const full = slot.name || "";
+      // Place du DJ Contest : fiche « artiste mystère » (fenêtre de participation sur le site).
+      if (slot.contest && touch(full)) touch(full).mystery = true;
+      if (slot.contest || NOT_AN_ARTIST.test(full.trim())) continue;
       for (const part of full.split(/\s+b2b\s+/i)) if (part.trim()) touch(part);
     }
     const artistIds = new Map();
     for (const [key, a] of [...artists.entries()].sort((x, y) => x[1].name.localeCompare(y[1].name, "fr"))) {
       const photo = ARTIST_PHOTOS[key] ? mediaIds.get(ARTIST_PHOTOS[key]) : null;
       const { lastInsertRowid } = db.run(
-        "INSERT INTO artists (slug, name, match_key, photo_media_id, styles, instagram_url, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-        uniqueSlug(db, "artists", a.name), a.name, key, photo ?? null, a.styles || "", a.instagram || "", t, t
+        "INSERT INTO artists (slug, name, match_key, photo_media_id, styles, instagram_url, mystery, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        uniqueSlug(db, "artists", a.name), a.name, key, photo ?? null, a.styles || "", a.instagram || "", a.mystery ? 1 : 0, t, t
       );
       artistIds.set(key, Number(lastInsertRowid));
     }
@@ -167,12 +169,13 @@ export async function importFromRepo(db, config, { log = () => {} } = {}) {
       }
       const status = ev.cancelled === true || /^(annul|cancel)/i.test(ev.status || "") ? "cancelled" : "published";
       const { lastInsertRowid } = db.run(
-        `INSERT INTO events (slug, title, status, date, date_precision, start_time, end_time, venue_id, price, age, ticket_url, flyer_media_id,
+        `INSERT INTO events (slug, title, status, date, date_precision, start_time, end_time, venue_id, price, age, ticket_url, tickets, contest, flyer_media_id,
            cover_media_id, genres, description, practical, about_kicker, about_title, about_text, gallery_album_id, notes, first_published_at,
            created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         ev.slug, ev.title, status, ev.date, ev.datePrecision === "month" ? "month" : "day", range?.start ?? null, range?.end ?? null,
-        venueFor(ev), ev.price || "", ev.age || "", ev.ticketUrl || "", mediaIds.get(ev.flyer) ?? null, mediaIds.get(ev.cover) ?? null,
+        venueFor(ev), ev.price || "", ev.age || "", ev.ticketUrl || "", JSON.stringify(ev.tickets || []), JSON.stringify(ev.contest || {}),
+        mediaIds.get(ev.flyer) ?? null, mediaIds.get(ev.cover) ?? null,
         JSON.stringify(ev.genres || []), ev.description || "", JSON.stringify(ev.practical || []), ev.about?.kicker || "",
         ev.about?.title || "", ev.about?.text || "", ev.gallerySlug ? albumIds.get(ev.gallerySlug) ?? null : null, notes.join("\n"), t, t, t
       );
@@ -184,7 +187,7 @@ export async function importFromRepo(db, config, { log = () => {} } = {}) {
       });
       (ev.lineup || []).forEach((slot, i) => {
         const name = (slot.name || "").trim();
-        const isArtist = name && !NOT_AN_ARTIST.test(name);
+        const isArtist = name && (slot.contest || !NOT_AN_ARTIST.test(name));
         const parts = isArtist ? name.split(/\s+b2b\s+/i).map((s) => s.trim()).filter(Boolean) : [];
         const ids = [...new Set(parts.map((p) => artistIds.get(artistKey(p))).filter(Boolean))];
         const canonical = ids.map((id) => db.get("SELECT name FROM artists WHERE id = ?", id).name).join(" B2B ");
@@ -224,7 +227,7 @@ export async function importFromRepo(db, config, { log = () => {} } = {}) {
 
     /* ---------- Traductions des contenus ---------- */
     const sources = [
-      ...EVENTS.flatMap((e) => [e.description, e.price, e.age, ...(e.practical || []), e.about?.kicker, e.about?.title, e.about?.text, ...(e.about?.photos || []).map((p) => p.caption)].map((s) => [s, false])),
+      ...EVENTS.flatMap((e) => [e.description, e.price, e.age, ...(e.tickets || []).flatMap((x) => [x.label, x.note]), ...(e.practical || []), e.contest?.text, e.about?.kicker, e.about?.title, e.about?.text, ...(e.about?.photos || []).map((p) => p.caption)].map((s) => [s, false])),
       ...FAQ.flatMap((f) => [[f.q, false], [f.a, true]]),
       ...TEAM.flatMap((m) => [m.role, m.bio, ...(m.tags || []), ...Object.entries(m.extra || {}).flat()].map((s) => [s, false]))
     ];

@@ -20,7 +20,7 @@ let meta = null;
 
 const blank = () => ({
   id: null, version: 0, status: "draft", title: "", slug: "", date: "", datePrecision: "day", startTime: "21:00", endTime: "04:00", doorsTime: "",
-  venueId: null, venue: null, price: "", age: "Dès 16 ans", ticketUrl: "", flyerMediaId: null, flyer: null, coverMediaId: null, cover: null,
+  venueId: null, venue: null, price: "", age: "Dès 16 ans", ticketUrl: "", tickets: [], contest: { email: "", deadline: "", text: "" }, flyerMediaId: null, flyer: null, coverMediaId: null, cover: null,
   genres: [], description: "", practical: [], links: [], aboutKicker: "", aboutTitle: "", aboutText: "", photos: [], galleryAlbumId: null,
   seoTitle: "", seoDescription: "", notes: "", lineup: [], redirects: [], checks: { errors: [], warnings: [] }
 });
@@ -29,7 +29,9 @@ const blank = () => ({
 const payload = (m) => ({
   version: m.version,
   title: m.title, slug: m.slug, date: m.date, datePrecision: m.datePrecision, startTime: m.startTime || "", endTime: m.endTime || "", doorsTime: m.doorsTime || "",
-  venueId: m.venueId, price: m.price, age: m.age, ticketUrl: m.ticketUrl, flyerMediaId: m.flyerMediaId, coverMediaId: m.coverMediaId,
+  venueId: m.venueId, price: m.price, age: m.age, ticketUrl: m.ticketUrl,
+  tickets: m.tickets.map((t) => ({ label: t.label, price: t.price === null || t.price === undefined ? "" : String(t.price), note: t.note, status: t.status, until: t.until, door: Boolean(t.door) })),
+  contest: { email: m.contest.email, deadline: m.contest.deadline, text: m.contest.text }, flyerMediaId: m.flyerMediaId, coverMediaId: m.coverMediaId,
   genres: m.genres, description: m.description, practical: m.practical.filter((p) => p.trim()), links: m.links.filter((l) => l.label || l.url),
   aboutKicker: m.aboutKicker, aboutTitle: m.aboutTitle, aboutText: m.aboutText,
   photos: m.photos.map((p) => ({ mediaId: p.mediaId, caption: p.caption })), galleryAlbumId: m.galleryAlbumId,
@@ -213,6 +215,7 @@ function render(main, ev, isNew) {
         chips.append(h("span", { class: "artist-chip" },
           a.photo ? h("img", { src: a.photo.thumbUrl, alt: "" }) : h("span", { class: "ph", "aria-hidden": "true" }),
           a.name,
+          a.mystery ? h("span", { class: "pill", title: "Artiste mystère : place à gagner (voir la section DJ Contest)" }, "DJ Contest") : null,
           h("button", { type: "button", "aria-label": `Retirer ${a.name} du passage ${i + 1}`, onclick: () => { s.artists.splice(j, 1); renderLineup(); touch(); } }, "×")));
       });
       const picker = combobox({
@@ -221,7 +224,7 @@ function render(main, ev, isNew) {
         search: async (q) => (await get(`/api/artists${qs({ q, pageSize: 20, sort: q ? "name" : "events" })}`)).items
           .filter((a) => !s.artists.some((x) => x.id === a.id))
           .map((a) => ({ id: a.id, label: a.name, sub: a.styles, thumbUrl: a.photo?.thumbUrl, artist: a })),
-        onSelect: (opt) => { s.artists.push({ id: opt.id, name: opt.label, photo: opt.artist.photo, styles: opt.artist.styles }); renderLineup(); touch(); },
+        onSelect: (opt) => { s.artists.push({ id: opt.id, name: opt.label, photo: opt.artist.photo, styles: opt.artist.styles, mystery: opt.artist.mystery }); renderLineup(); touch(); },
         onCreate: async (text) => {
           try {
             const similar = await get(`/api/artists/similar${qs({ name: text })}`);
@@ -333,6 +336,69 @@ function render(main, ev, isNew) {
   };
   renderLineup();
 
+  /* ---------- Billets : tarifs successifs, puis la caisse du soir ---------- */
+  const ticketsBox = h("div", { class: "tickets-editor" });
+  const ticketsPreview = h("div", { class: "tickets-preview", "aria-hidden": "true" });
+  const euro = (p) => (p === "" || p === null || p === undefined ? "?" : Number(p) === 0 ? "Gratuit" : `${String(p).replace(".", ",")} €`);
+  const refreshTicketsPreview = () => {
+    clear(ticketsPreview);
+    if (!m.tickets.length) return ticketsPreview.append(h("p", { class: "muted small" }, "Aperçu : ajoutez un tarif."));
+    m.tickets.forEach((t) => ticketsPreview.append(h("span", { class: ["tickets-preview__item", `is-${t.status}`, t.door && "is-door"] },
+      h("small", {}, t.label || "Tarif"), h("b", {}, euro(t.price)), t.status !== "available" ? h("em", {}, TICKET_STATES[t.status]) : null)));
+  };
+  const TICKET_STATES = { available: "En vente", soldout: "Épuisé", soon: "Bientôt", closed: "Terminé" };
+  const sortDoor = () => { m.tickets = [...m.tickets.filter((t) => !t.door), ...m.tickets.filter((t) => t.door)]; };
+  const renderTickets = (focus) => {
+    clear(ticketsBox);
+    m.tickets.forEach((t, i) => {
+      const set = (key) => (e) => { t[key] = e.target.type === "checkbox" ? e.target.checked : e.target.value; touch(); refreshTicketsPreview(); };
+      const label = input({ value: t.label, maxlength: 40, placeholder: t.door ? "Caisse du soir" : "Early, Regular, Late…", "aria-label": `Nom du tarif ${i + 1}`, oninput: set("label") });
+      const price = input({ value: t.price === null || t.price === undefined ? "" : String(t.price).replace(".", ","), inputmode: "decimal", placeholder: "10", "aria-label": `Prix du tarif ${i + 1} en euros`, oninput: (e) => { t.price = e.target.value.replace(",", ".").trim(); touch(); refreshTicketsPreview(); } });
+      const status = select(Object.entries(TICKET_STATES), { value: t.status || "available", "aria-label": `État du tarif ${i + 1}`, onchange: set("status") });
+      const note = input({ value: t.note, maxlength: 120, placeholder: t.door ? "Sur place, dans la limite des places" : "Ex. Les 50 premières places", "aria-label": `Précision du tarif ${i + 1}`, oninput: set("note") });
+      const until = input({ type: "date", value: t.until || "", "aria-label": `Fin de vente du tarif ${i + 1}`, oninput: set("until") });
+      const sameKind = (j) => m.tickets[j] && Boolean(m.tickets[j].door) === Boolean(t.door);
+      const move = (to) => { [m.tickets[i], m.tickets[to]] = [m.tickets[to], m.tickets[i]]; renderTickets(to); touch(); refreshTicketsPreview(); };
+      const row = h("div", { class: ["ticket-row", t.door && "ticket-row--door", t.status !== "available" && "is-off"] },
+        h("span", { class: "ticket-row__num", "aria-hidden": "true" }, t.door ? "€" : String(i + 1)),
+        h("div", { class: "ticket-row__fields" },
+          field({ label: t.door ? "Caisse du soir" : "Nom du tarif", control: label, name: `tickets.${i}.label` }),
+          field({ label: "Prix (€)", control: h("div", { class: "input-group" }, price, h("span", { class: "suffix", "aria-hidden": "true" }, "€")), name: `tickets.${i}.price`, hint: "0 = gratuit." }),
+          field({ label: "État", control: status, name: `tickets.${i}.status`, hint: "« Épuisé » : grisé et barré sur le site." }),
+          field({ label: "Précision (facultatif)", control: note, name: `tickets.${i}.note` }),
+          t.door ? null : field({ label: "Fin de vente (facultatif)", control: until, name: `tickets.${i}.until`, hint: "Passé ce jour : « Terminé »." })),
+        h("div", { class: "ticket-row__tools" },
+          t.door ? null : h("button", { type: "button", class: "btn btn--icon btn--sm btn--ghost", "aria-label": `Monter le tarif ${i + 1}`, disabled: !sameKind(i - 1), onclick: () => move(i - 1) }, icon("up")),
+          t.door ? null : h("button", { type: "button", class: "btn btn--icon btn--sm btn--ghost", "aria-label": `Descendre le tarif ${i + 1}`, disabled: !sameKind(i + 1), onclick: () => move(i + 1) }, icon("down")),
+          h("button", { type: "button", class: "btn btn--icon btn--sm btn--ghost", "aria-label": `Supprimer le tarif ${i + 1}`, onclick: () => { m.tickets.splice(i, 1); renderTickets(); touch(); refreshTicketsPreview(); } }, icon("trash"))));
+      ticketsBox.append(row);
+      if (focus === i) queueMicrotask(() => label.focus());
+    });
+    if (!m.tickets.length) ticketsBox.append(h("p", { class: "muted" }, "Aucun tarif : la section « Billets » n'apparaît pas sur la fiche."));
+    const hasDoor = m.tickets.some((t) => t.door);
+    const presets = [["Early", "Les premières places, au meilleur prix"], ["Regular", ""], ["Late", "Dernières places en prévente"]];
+    ticketsBox.append(h("div", { class: "actions" },
+      h("button", { type: "button", class: "btn btn--sm btn--primary", disabled: m.tickets.length >= 8, onclick: () => {
+        const presale = m.tickets.filter((t) => !t.door);
+        const [label, note] = presets[presale.length] || ["", ""];
+        m.tickets.splice(presale.length, 0, { label, price: "", note, status: "available", until: "", door: false });
+        renderTickets(presale.length); touch(); refreshTicketsPreview();
+      } }, icon("plus"), "Ajouter un tarif en prévente"),
+      h("button", { type: "button", class: "btn btn--sm", disabled: hasDoor || m.tickets.length >= 8, title: hasDoor ? "Déjà ajoutée" : "", onclick: () => {
+        m.tickets.push({ label: "Caisse du soir", price: "", note: "Sur place, dans la limite des places disponibles", status: "available", until: "", door: true });
+        sortDoor(); renderTickets(m.tickets.length - 1); touch(); refreshTicketsPreview();
+      } }, icon("plus"), "Ajouter la caisse du soir")));
+  };
+  sortDoor();
+  renderTickets();
+  refreshTicketsPreview();
+
+  /* ---------- DJ Contest ---------- */
+  const contestEmail = input({ type: "email", value: m.contest.email, placeholder: meta?.contactEmail || "tnd6tem@gmail.com", oninput: (e) => { m.contest.email = e.target.value; touch(); } });
+  const contestDeadline = input({ type: "date", value: m.contest.deadline, oninput: (e) => { m.contest.deadline = e.target.value; touch(); } });
+  const contestText = textarea({ value: m.contest.text, rows: 3, maxlength: 600, placeholder: "Facultatif : remplace le texte d'introduction de la fenêtre (règles particulières, durée du set…)", oninput: (e) => { m.contest.text = e.target.value; touch(); } });
+  const hasContestSlot = () => m.lineup.some((s) => s.artists.some((a) => a.mystery));
+
   /* ---------- La soirée : photos ---------- */
   const photosBox = h("div", { class: "grid grid--2" });
   const renderPhotos = () => {
@@ -390,7 +456,7 @@ function render(main, ev, isNew) {
   /* ---------- Formulaire ---------- */
   const sections = [
     ["essentiel", "L'essentiel"], ["horaires", "Date et horaires"], ["lieu", "Lieu"], ["billetterie", "Billetterie"], ["visuels", "Visuels"],
-    ["lineup", "Line-up"], ["soiree", "La soirée"], ["pratique", "Infos pratiques"], ["seo", "Référencement"], ["traductions", "Traductions"], ["notes", "Notes internes"]
+    ["lineup", "Line-up"], ["contest", "DJ Contest"], ["soiree", "La soirée"], ["pratique", "Infos pratiques"], ["seo", "Référencement"], ["traductions", "Traductions"], ["notes", "Notes internes"]
   ];
   append(form, [
     errorsBox,
@@ -409,10 +475,12 @@ function render(main, ev, isNew) {
       field({ label: "Ouverture des portes", control: doors, name: "doorsTime", hint: "Facultatif." }),
       h("div", { class: "field field--wide" }, durationText))),
     section("lieu", "Lieu", "Les lieux sont partagés entre les soirées : une modification du lieu s'applique partout.", h("div", { class: "field", dataset: { field: "venueId" } }, venueBox, h("p", { class: "error-text", hidden: true }))),
-    section("billetterie", "Billetterie et entrée", null, h("div", { class: "fields fields--3" },
-      field({ label: "Lien de billetterie", control: bind("ticketUrl", input({ type: "url", value: m.ticketUrl, placeholder: "https://www.helloasso.com/…" })), name: "ticketUrl", hint: "Adresse en https://. Bouton « Prendre ma place »." }),
-      field({ label: "Prix", control: bind("price", input({ value: m.price, placeholder: "10 € en prévente, 15 € sur place" })), name: "price" }),
-      field({ label: "Âge minimum", control: bind("age", input({ value: m.age, placeholder: "Dès 16 ans" })), name: "age" }))),
+    section("billetterie", "Billetterie et entrée", "Les tarifs s'affichent dans la section « Billets » de la fiche, sur une ligne, juste avant les infos pratiques. La caisse du soir est toujours la dernière.",
+      h("div", { class: "fields fields--3" },
+        field({ label: "Lien de billetterie", control: bind("ticketUrl", input({ type: "url", value: m.ticketUrl, placeholder: "https://www.helloasso.com/…" })), name: "ticketUrl", hint: "Adresse en https://. Bouton « Prendre ma place », actif seulement pour une soirée à venir." }),
+        field({ label: "Résumé du prix", control: bind("price", input({ value: m.price, placeholder: "10 à 16 € en prévente, 18 € sur place" })), name: "price", hint: "Affiché en haut de la fiche et sur l'accueil. Vide = « Dès … € », calculé depuis les tarifs." }),
+        field({ label: "Âge minimum", control: bind("age", input({ value: m.age, placeholder: "Dès 16 ans" })), name: "age" })),
+      h("div", { class: "field", dataset: { field: "tickets" } }, h("span", { class: "label" }, "Tarifs"), ticketsPreview, ticketsBox, h("p", { class: "error-text", hidden: true }))),
     section("visuels", "Visuels", "L'affiche est affichée en entier sur la fiche, utilisée pour la liste et l'aperçu des partages (recadrée en 1200 × 630).", h("div", { class: "grid grid--2" },
       h("div", { dataset: { field: "flyerMediaId" }, class: "field" }, mediaSlot({ media: m.flyer, label: "Affiche (flyer)", hint: "Portrait, 1080 × 1350 px idéalement.", onChange: (media) => { m.flyer = media; m.flyerMediaId = media?.id ?? null; touch(); } }), h("p", { class: "error-text", hidden: true })),
       h("div", { dataset: { field: "coverMediaId" }, class: "field" }, mediaSlot({ media: m.cover, label: "Photo de fond", hint: "Facultatif : fond de l'en-tête (sinon l'affiche floutée).", onChange: (media) => { m.cover = media; m.coverMediaId = media?.id ?? null; touch(); } }), h("p", { class: "error-text", hidden: true })))),
@@ -424,6 +492,12 @@ function render(main, ev, isNew) {
         h("button", { type: "button", class: "btn btn--sm btn--primary", onclick: addSlot }, icon("plus"), "Ajouter un passage"),
         h("button", { type: "button", class: "btn btn--sm", onclick: chainTimes, title: "Chaque passage commence à la fin du précédent" }, icon("chain"), "Enchaîner les horaires"),
         h("button", { type: "button", class: "btn btn--sm", onclick: sortByTime }, icon("sort"), "Trier par horaire"))),
+    section("contest", "DJ Contest", "Place à gagner au line-up : ajoutez au line-up la fiche artiste « DJ Contest » (cochée « artiste mystère »). Sur le site, son nom ouvre une fenêtre qui explique comment envoyer son set.",
+      h("div", { class: "fields fields--2" },
+        field({ label: "Adresse où envoyer les sets", control: contestEmail, name: "contest.email", hint: `Vide = ${meta?.contactEmail || "adresse de contact du site"}.` }),
+        field({ label: "Date limite d'envoi", control: contestDeadline, name: "contest.deadline", hint: "Passée cette date, la fenêtre indique que les inscriptions sont closes." }),
+        field({ label: "Texte d'introduction (facultatif)", control: contestText, name: "contest.text", wide: true, counter: charCounter(contestText, 600) }),
+        hasContestSlot() ? null : h("p", { class: "hint field--wide" }, "Aucun artiste mystère dans le line-up pour l'instant : ces informations ne s'affichent pas."))),
     section("soiree", "La soirée", "Ce qui distingue cette soirée : affiché dans la section « La soirée » de la fiche.", h("div", { class: "fields fields--2" },
       field({ label: "Petite ligne", control: bind("aboutKicker", input({ value: m.aboutKicker, maxlength: 80, placeholder: "2ᵉ édition · L'hiver selon TND" })), name: "aboutKicker" }),
       field({ label: "Accroche", control: bind("aboutTitle", input({ value: m.aboutTitle, maxlength: 120, placeholder: "Froid dehors, brûlant dedans." })), name: "aboutTitle" }),
@@ -431,7 +505,7 @@ function render(main, ev, isNew) {
       h("div", { class: "field field--wide", dataset: { field: "photos" } }, h("span", { class: "label" }, "Photos (2 maximum)"), photosBox, h("p", { class: "error-text", hidden: true })),
       field({ label: "Album de la galerie", control: album, name: "galleryAlbumId", hint: "Ajoute « Voir les photos » sur la fiche." }))),
     section("pratique", "Infos pratiques", null, h("div", { class: "fields" },
-      field({ label: "Lignes d'informations", control: listEditor({ values: m.practical, label: "Info pratique", placeholder: "Prévente en ligne sur HelloAsso : 10 €", addLabel: "Ajouter une info", onChange: (v) => { m.practical = [...v]; touch(); } }), name: "practical", hint: "« Dès 16 ans » et le nombre de participants (« 250 participant·es ») alimentent aussi les repères de la fiche." }),
+      field({ label: "Lignes d'informations", control: listEditor({ values: m.practical, label: "Info pratique", placeholder: "Le son est fort : des bouchons d'oreilles sont offerts à l'entrée", addLabel: "Ajouter une info", onChange: (v) => { m.practical = [...v]; touch(); } }), name: "practical", hint: "Conseils et règles du soir (bouchons, hydratation, parking…). Les prix vont dans « Billetterie et entrée ». « Dès 16 ans » et le nombre de participants (« 250 participant·es ») alimentent aussi les repères de la fiche." }),
       field({ label: "Liens complémentaires", control: linksEditor({ values: m.links, onChange: (v) => { m.links = v.map((l) => ({ ...l })); touch(); } }), name: "links", hint: "Événement Facebook, page d'un partenaire… (affichés à la fin des infos pratiques)." }))),
     section("seo", "Référencement et partage", "Facultatif : par défaut, le nom, la date et le résumé sont utilisés.", h("div", { class: "fields fields--2" },
       h("div", { class: "fields" },
