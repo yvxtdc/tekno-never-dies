@@ -198,6 +198,16 @@ describe("API d'authentification", () => {
     assert.doesNotMatch(JSON.stringify(bad.data), /at .*\.mjs|SyntaxError/);
   });
 
+  test("cookie mal encodé : ignoré, le serveur continue de répondre", async () => {
+    const anonymous = cms.client();
+    assert.equal((await anonymous.get("/healthz", { headers: { cookie: "x=%" } })).status, 200);
+    assert.equal((await anonymous.get("/api/auth/session", { headers: { cookie: "tnd_cms=%E0%A4%A" } })).status, 401);
+    // Une session valide reste reconnue à côté d'un autre cookie mal encodé.
+    const admin = await cms.login("admin");
+    assert.equal((await admin.get("/api/auth/session", { headers: { cookie: `x=%; ${admin.cookie}` } })).status, 200);
+    assert.equal((await anonymous.get("/healthz")).status, 200);
+  });
+
   test("corps de requête trop volumineux refusé", async () => {
     const c = await cms.login("admin");
     const res = await c.request("POST", "/api/events", { raw: JSON.stringify({ title: "x".repeat(2 * 1024 * 1024) }), headers: { "content-type": "application/json" } });

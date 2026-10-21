@@ -66,7 +66,13 @@ export function parseCookies(header = "") {
     const i = part.indexOf("=");
     if (i < 0) continue;
     const key = part.slice(0, i).trim();
-    if (key && !(key in out)) out[key] = decodeURIComponent(part.slice(i + 1).trim());
+    if (!key || key in out) continue;
+    // Valeur mal encodée (« % » seul…) : ignorée. Une exception ici arrêterait tout le serveur.
+    try {
+      out[key] = decodeURIComponent(part.slice(i + 1).trim());
+    } catch {
+      continue;
+    }
   }
   return out;
 }
