@@ -128,7 +128,7 @@ export const EVENTS = [
     "title": "ICE BOILER v1",
     "date": "2025-11-22",
     "time": "20h00 – 4h00",
-    "place": "Salle des fêtes, Munchhausen",
+    "place": "Salle des fêtes, 81 rue du Rhin, Munchhausen",
     "ticketUrl": "",
     "flyer": "assets/img/events/flyer-ice-boiler-v1-2025.webp",
     "cover": "assets/img/events/soiree1.webp",
@@ -182,9 +182,8 @@ export const EVENTS = [
       ]
     },
     "venue": {
-      "lat": 48.9196671,
-      "lon": 8.1484455,
-      "precise": false
+      "lat": 48.9193643,
+      "lon": 8.1576719
     },
     "gallerySlug": "ice-boiler"
   },

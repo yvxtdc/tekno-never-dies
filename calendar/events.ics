@@ -27,7 +27,7 @@ END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
 UID:ice-boiler-v2-2026@tekno-never-dies.fr
-DTSTAMP:20261020T184026Z
+DTSTAMP:20261021T052154Z
 LAST-MODIFIED:20261020T181909Z
 SEQUENCE:6
 DTSTART;TZID=Europe/Paris:20261128T210000
@@ -59,7 +59,7 @@ END:VALARM
 END:VEVENT
 BEGIN:VEVENT
 UID:center-drop-2026@tekno-never-dies.fr
-DTSTAMP:20261020T184026Z
+DTSTAMP:20261021T052154Z
 LAST-MODIFIED:20261018T165703Z
 SEQUENCE:3
 DTSTART;TZID=Europe/Paris:20260404T210000
@@ -87,22 +87,23 @@ END:VALARM
 END:VEVENT
 BEGIN:VEVENT
 UID:ice-boiler-v1-2025@tekno-never-dies.fr
-DTSTAMP:20261020T184026Z
-LAST-MODIFIED:20261018T165703Z
-SEQUENCE:4
+DTSTAMP:20261021T052154Z
+LAST-MODIFIED:20261021T052154Z
+SEQUENCE:5
 DTSTART;TZID=Europe/Paris:20251122T200000
 DTEND;TZID=Europe/Paris:20251123T040000
 SUMMARY:🔊 ICE BOILER v1 · Tekno Never Dies
-LOCATION:Salle des fêtes\, Munchhausen
+LOCATION:Salle des fêtes\, 81 rue du Rhin\, Munchhausen
 DESCRIPTION:🔊 ICE BOILER v1 — Techno\nPremière édition d'ICE BOILER\
  , soirée techno organisée à la salle des fêtes de Munchhausen le 22 no
  vembre 2025 par Tekno Never Dies.\n\n📅 Samedi 22 novembre 2025\n🕘 20
- h00 – 4h00\n📍 Salle des fêtes\, Munchhausen\n\n🎧 Line-up\n20h00
-  – 21h00 · DANN OCTA\n21h00 – 22h00 · VALK b2b REDFOX\n22h00 – 23h
- 30 · SVEN GERBER\n23h30 – 1h00 · LEANDER\n1h00 – 2h30 · TNB\n2h30
-  – 4h00 · BLACKCHILLS\n\nℹ️ Infos pratiques\n• Dès 16 ans\n• 2
- 00 participant·es\n\n🌐 Fiche de la soirée : https://teknoneverdies.fr
- /evenement-ice-boiler-v1-2025.html\n📸 Instagram : @tnd6tem
+ h00 – 4h00\n📍 Salle des fêtes\, 81 rue du Rhin\, Munchhausen\n\n🎧
+  Line-up\n20h00 – 21h00 · DANN OCTA\n21h00 – 22h00 · VALK b2b REDFOX
+ \n22h00 – 23h30 · SVEN GERBER\n23h30 – 1h00 · LEANDER\n1h00 – 2h30
+  · TNB\n2h30 – 4h00 · BLACKCHILLS\n\nℹ️ Infos pratiques\n• Dès
+  16 ans\n• 200 participant·es\n\n🌐 Fiche de la soirée : https://tek
+ noneverdies.fr/evenement-ice-boiler-v1-2025.html\n📸 Instagram : @tnd6te
+ m
 URL:https://teknoneverdies.fr/evenement-ice-boiler-v1-2025.html
 CATEGORIES:Techno
 ORGANIZER;CN=Tekno Never Dies:mailto:tnd6tem@gmail.com
@@ -115,7 +116,7 @@ END:VALARM
 END:VEVENT
 BEGIN:VEVENT
 UID:fete-musique-wissembourg-2025@tekno-never-dies.fr
-DTSTAMP:20261020T184026Z
+DTSTAMP:20261021T052154Z
 LAST-MODIFIED:20261018T165703Z
 SEQUENCE:2
 DTSTART;TZID=Europe/Paris:20250621T160000
