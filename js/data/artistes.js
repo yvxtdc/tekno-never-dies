@@ -25,6 +25,7 @@ export const ARTIST_STYLES = {
   "Blackchills": "Hard Techno",
   "D0molly": "Trance / Acid",
   "Dann Octa": "Trancy / Bouncy / Groovy",
+  "DJ Contest": "Artiste mystère",
   "Jakobee": "Hard Techno",
   "KSCMD": "Schranz",
   "Leander": "Hard Trance",

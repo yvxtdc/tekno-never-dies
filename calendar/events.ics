@@ -27,9 +27,9 @@ END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
 UID:ice-boiler-v2-2026@tekno-never-dies.fr
-DTSTAMP:20261021T052154Z
-LAST-MODIFIED:20261020T181909Z
-SEQUENCE:6
+DTSTAMP:20261021T082024Z
+LAST-MODIFIED:20261021T082024Z
+SEQUENCE:7
 DTSTART;TZID=Europe/Paris:20261128T210000
 DTEND;TZID=Europe/Paris:20261129T040000
 SUMMARY:🔊 ICE BOILER v2 · Tekno Never Dies
@@ -40,10 +40,18 @@ DESCRIPTION:🔊 ICE BOILER v2 — Trance · Groovy · Bouncy · Techno\nRe
  chno organisée par Tekno Never Dies.\n\n📅 Samedi 28 novembre 2026\n
  🕘 21h00 – 4h00\n📍 Salle polyvalente\, 81 rue du Rhin\, Munchhausen
  \n💶 10 à 16 € en prévente\, 18 € sur place\n🔞 Dès 16 ans\n\n
- 🎧 Line-up\n21h00 – 22h00 · T.B.R (DJ Contest)\n22h00 – 23h30 · Mo
- gli\n23h30 – 1h00 · Dann Octa\n1h00 – 2h30 · Leander\n2h30 – 4h00
-  · RAYY\n\nℹ️ Infos pratiques\n• Prévente en ligne sur HelloAsso :
-  10 €\, 13 € ou 16 €\n• Sur place (caisse du soir) : 18 €\n\n
+ 🎧 Line-up\n21h00 – 22h00 · DJ Contest\n22h00 – 23h30 · Mogli\n23h
+ 30 – 1h00 · Dann Octa\n1h00 – 2h30 · Leander\n2h30 – 4h00 · RAYY\
+ n\nℹ️ Infos pratiques\n• Le son est fort : des bouchons d'oreilles t
+ e sont offerts gratuitement à l'entrée\, n'hésite pas à en demander.\n
+ • Entrée interdite aux moins de 16 ans : prévois une pièce d'identit
+ é\, elle peut t'être demandée.\n• Caisse du soir disponible sur place
+ \, dans la limite des places restantes.\n• Reste hydraté·e : bois de l
+ 'eau régulièrement\, toute la nuit.\n• Un souci\, un malaise\, quelqu'
+ un qui te met mal à l'aise ? Viens voir un membre de l'équipe : on est l
+ à pour t'aider.\n• Parking possible à côté de la salle : pense au co
+ voiturage et désigne un·e Sam qui ne boit pas.\n• Respect et consentem
+ ent sur le dancefloor : aucun comportement déplacé n'est toléré.\n\n
  🎟️ Billetterie : https://www.helloasso.com/associations/tekno-never-d
  ies/evenements/ice-boiler-1\n🌐 Fiche de la soirée : https://teknonever
  dies.fr/evenement-ice-boiler-v2-2026.html\n📸 Instagram : @tnd6tem
@@ -59,9 +67,9 @@ END:VALARM
 END:VEVENT
 BEGIN:VEVENT
 UID:center-drop-2026@tekno-never-dies.fr
-DTSTAMP:20261021T052154Z
-LAST-MODIFIED:20261018T165703Z
-SEQUENCE:3
+DTSTAMP:20261021T082024Z
+LAST-MODIFIED:20261021T082024Z
+SEQUENCE:4
 DTSTART;TZID=Europe/Paris:20260404T210000
 DTEND;TZID=Europe/Paris:20260405T040000
 SUMMARY:🔊 Center Drop · Tekno Never Dies
@@ -72,9 +80,16 @@ DESCRIPTION:🔊 Center Drop — Schranz · Techno · Trance · Bounce\nCen
  n📍 1 rue du Stade\, Niederroedern\n\n🎧 Line-up\n21h00 – 22h00 · M
  ogli\n22h00 – 23h30 · Leander B2B Sven Gerber\n23h30 – 1h00 · Dann O
  cta\n1h00 – 2h30 · Meinos\n2h30 – 4h00 · KSCMD\n\nℹ️ Infos prati
- ques\n• Dès 16 ans\n• 250 participant·es\n\n🌐 Fiche de la soirée
-  : https://teknoneverdies.fr/evenement-center-drop-2026.html\n📸 Instagr
- am : @tnd6tem
+ ques\n• Dès 16 ans\n• 250 participant·es\n• Le son est fort : des
+  bouchons d'oreilles te sont offerts gratuitement à l'entrée\, n'hésite
+  pas à en demander.\n• Entrée interdite aux moins de 16 ans : prévois
+  une pièce d'identité\, elle peut t'être demandée.\n• Reste hydraté
+ ·e : bois de l'eau régulièrement\, toute la nuit.\n• Un souci\, un ma
+ laise\, quelqu'un qui te met mal à l'aise ? Viens voir un membre de l'éq
+ uipe : on est là pour t'aider.\n• Respect et consentement sur le dancef
+ loor : aucun comportement déplacé n'est toléré.\n\n🌐 Fiche de la so
+ irée : https://teknoneverdies.fr/evenement-center-drop-2026.html\n📸 In
+ stagram : @tnd6tem
 URL:https://teknoneverdies.fr/evenement-center-drop-2026.html
 CATEGORIES:Schranz,Techno,Trance,Bounce
 ORGANIZER;CN=Tekno Never Dies:mailto:tnd6tem@gmail.com
@@ -87,9 +102,9 @@ END:VALARM
 END:VEVENT
 BEGIN:VEVENT
 UID:ice-boiler-v1-2025@tekno-never-dies.fr
-DTSTAMP:20261021T052154Z
-LAST-MODIFIED:20261021T052154Z
-SEQUENCE:5
+DTSTAMP:20261021T082024Z
+LAST-MODIFIED:20261021T082024Z
+SEQUENCE:6
 DTSTART;TZID=Europe/Paris:20251122T200000
 DTEND;TZID=Europe/Paris:20251123T040000
 SUMMARY:🔊 ICE BOILER v1 · Tekno Never Dies
@@ -101,9 +116,17 @@ DESCRIPTION:🔊 ICE BOILER v1 — Techno\nPremière édition d'ICE BOILER\
   Line-up\n20h00 – 21h00 · DANN OCTA\n21h00 – 22h00 · VALK b2b REDFOX
  \n22h00 – 23h30 · SVEN GERBER\n23h30 – 1h00 · LEANDER\n1h00 – 2h30
   · TNB\n2h30 – 4h00 · BLACKCHILLS\n\nℹ️ Infos pratiques\n• Dès
-  16 ans\n• 200 participant·es\n\n🌐 Fiche de la soirée : https://tek
- noneverdies.fr/evenement-ice-boiler-v1-2025.html\n📸 Instagram : @tnd6te
- m
+  16 ans\n• 200 participant·es\n• Le son est fort : des bouchons d'ore
+ illes te sont offerts gratuitement à l'entrée\, n'hésite pas à en dema
+ nder.\n• Entrée interdite aux moins de 16 ans : prévois une pièce d'i
+ dentité\, elle peut t'être demandée.\n• Reste hydraté·e : bois de l
+ 'eau régulièrement\, toute la nuit.\n• Un souci\, un malaise\, quelqu'
+ un qui te met mal à l'aise ? Viens voir un membre de l'équipe : on est l
+ à pour t'aider.\n• Parking possible à côté de la salle : pense au co
+ voiturage et désigne un·e Sam qui ne boit pas.\n• Respect et consentem
+ ent sur le dancefloor : aucun comportement déplacé n'est toléré.\n\n
+ 🌐 Fiche de la soirée : https://teknoneverdies.fr/evenement-ice-boiler-
+ v1-2025.html\n📸 Instagram : @tnd6tem
 URL:https://teknoneverdies.fr/evenement-ice-boiler-v1-2025.html
 CATEGORIES:Techno
 ORGANIZER;CN=Tekno Never Dies:mailto:tnd6tem@gmail.com
@@ -116,9 +139,9 @@ END:VALARM
 END:VEVENT
 BEGIN:VEVENT
 UID:fete-musique-wissembourg-2025@tekno-never-dies.fr
-DTSTAMP:20261021T052154Z
-LAST-MODIFIED:20261018T165703Z
-SEQUENCE:2
+DTSTAMP:20261021T082024Z
+LAST-MODIFIED:20261021T082024Z
+SEQUENCE:3
 DTSTART;TZID=Europe/Paris:20250621T160000
 DTEND;TZID=Europe/Paris:20250622T000000
 SUMMARY:🔊 Fête de la musique · Tekno Never Dies
@@ -128,9 +151,14 @@ DESCRIPTION:🔊 Fête de la musique — Techno · Groove · Hardtechno\nTe
   & TND le 21 juin 2025.\n\n📅 Samedi 21 juin 2025\n🕘 16h00 – 00h00\
  n📍 Wissembourg\n\n🎧 Line-up\n• MEINOS (DJ Contest)\n• D0MOLLY\n
  • VALK B2B REDFOX\n• TNB\n• JAKOBEE\n• BLACKCHILLS\n• VS\n\nℹ
- ️ Infos pratiques\n• 150 participant·es\n\n🌐 Fiche de la soirée :
-  https://teknoneverdies.fr/evenement-fete-musique-wissembourg-2025.html\n
- 📸 Instagram : @tnd6tem
+ ️ Infos pratiques\n• 150 participant·es\n• Le son est fort : des bo
+ uchons d'oreilles te sont offerts gratuitement à l'entrée\, n'hésite pa
+ s à en demander.\n• Reste hydraté·e : bois de l'eau régulièrement\,
+  toute la nuit.\n• Un souci\, un malaise\, quelqu'un qui te met mal à l
+ 'aise ? Viens voir un membre de l'équipe : on est là pour t'aider.\n•
+  Respect et consentement sur le dancefloor : aucun comportement déplacé
+  n'est toléré.\n\n🌐 Fiche de la soirée : https://teknoneverdies.fr/e
+ venement-fete-musique-wissembourg-2025.html\n📸 Instagram : @tnd6tem
 URL:https://teknoneverdies.fr/evenement-fete-musique-wissembourg-2025.html
 CATEGORIES:Techno,Groove,Hardtechno
 ORGANIZER;CN=Tekno Never Dies:mailto:tnd6tem@gmail.com

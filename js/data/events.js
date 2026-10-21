@@ -13,6 +13,28 @@ export const EVENTS = [
     "price": "10 à 16 € en prévente, 18 € sur place",
     "age": "Dès 16 ans",
     "ticketUrl": "https://www.helloasso.com/associations/tekno-never-dies/evenements/ice-boiler-1",
+    "tickets": [
+      {
+        "label": "Early",
+        "price": 10,
+        "note": "Les premières places, au meilleur prix"
+      },
+      {
+        "label": "Regular",
+        "price": 13
+      },
+      {
+        "label": "Late",
+        "price": 16,
+        "note": "Dernières places en prévente"
+      },
+      {
+        "label": "Caisse du soir",
+        "price": 18,
+        "note": "Sur place, dans la limite des places disponibles",
+        "door": true
+      }
+    ],
     "flyer": "assets/img/events/flyer-ice-boiler-v2-2026.webp",
     "cover": "",
     "genres": [
@@ -24,15 +46,20 @@ export const EVENTS = [
     "description": "Rendez-vous le samedi 28 novembre 2026 à 21h00 à la salle polyvalente de Munchhausen pour ICE BOILER v2, une soirée trance, groovy, bouncy et techno organisée par Tekno Never Dies.",
     "practical": [
       "Début : 21h00",
-      "Prévente en ligne sur HelloAsso : 10 €, 13 € ou 16 €",
-      "Sur place (caisse du soir) : 18 €",
-      "Dès 16 ans"
+      "Dès 16 ans",
+      "Le son est fort : des bouchons d'oreilles te sont offerts gratuitement à l'entrée, n'hésite pas à en demander.",
+      "Entrée interdite aux moins de 16 ans : prévois une pièce d'identité, elle peut t'être demandée.",
+      "Caisse du soir disponible sur place, dans la limite des places restantes.",
+      "Reste hydraté·e : bois de l'eau régulièrement, toute la nuit.",
+      "Un souci, un malaise, quelqu'un qui te met mal à l'aise ? Viens voir un membre de l'équipe : on est là pour t'aider.",
+      "Parking possible à côté de la salle : pense au covoiturage et désigne un·e Sam qui ne boit pas.",
+      "Respect et consentement sur le dancefloor : aucun comportement déplacé n'est toléré."
     ],
     "lineup": [
       {
-        "name": "T.B.R",
-        "style": "DJ Contest",
-        "time": "21h00 – 22h00"
+        "name": "DJ Contest",
+        "time": "21h00 – 22h00",
+        "contest": true
       },
       {
         "name": "Mogli",
@@ -51,6 +78,9 @@ export const EVENTS = [
         "time": "2h30 – 4h00"
       }
     ],
+    "contest": {
+      "deadline": "2026-11-04"
+    },
     "about": {
       "kicker": "2ᵉ édition · L'hiver selon TND",
       "title": "Froid dehors, brûlant dedans.",
@@ -89,7 +119,12 @@ export const EVENTS = [
     "description": "Center Drop, soirée techno organisée à Niederroedern le samedi 4 avril 2026 par Tekno Never Dies.",
     "practical": [
       "Dès 16 ans",
-      "250 participant·es"
+      "250 participant·es",
+      "Le son est fort : des bouchons d'oreilles te sont offerts gratuitement à l'entrée, n'hésite pas à en demander.",
+      "Entrée interdite aux moins de 16 ans : prévois une pièce d'identité, elle peut t'être demandée.",
+      "Reste hydraté·e : bois de l'eau régulièrement, toute la nuit.",
+      "Un souci, un malaise, quelqu'un qui te met mal à l'aise ? Viens voir un membre de l'équipe : on est là pour t'aider.",
+      "Respect et consentement sur le dancefloor : aucun comportement déplacé n'est toléré."
     ],
     "lineup": [
       {
@@ -138,7 +173,13 @@ export const EVENTS = [
     "description": "Première édition d'ICE BOILER, soirée techno organisée à la salle des fêtes de Munchhausen le 22 novembre 2025 par Tekno Never Dies.",
     "practical": [
       "Dès 16 ans",
-      "200 participant·es"
+      "200 participant·es",
+      "Le son est fort : des bouchons d'oreilles te sont offerts gratuitement à l'entrée, n'hésite pas à en demander.",
+      "Entrée interdite aux moins de 16 ans : prévois une pièce d'identité, elle peut t'être demandée.",
+      "Reste hydraté·e : bois de l'eau régulièrement, toute la nuit.",
+      "Un souci, un malaise, quelqu'un qui te met mal à l'aise ? Viens voir un membre de l'équipe : on est là pour t'aider.",
+      "Parking possible à côté de la salle : pense au covoiturage et désigne un·e Sam qui ne boit pas.",
+      "Respect et consentement sur le dancefloor : aucun comportement déplacé n'est toléré."
     ],
     "lineup": [
       {
@@ -203,7 +244,11 @@ export const EVENTS = [
     ],
     "description": "Techno Party de la Fête de la musique à Wissembourg, présentée par RRC & TND le 21 juin 2025.",
     "practical": [
-      "150 participant·es"
+      "150 participant·es",
+      "Le son est fort : des bouchons d'oreilles te sont offerts gratuitement à l'entrée, n'hésite pas à en demander.",
+      "Reste hydraté·e : bois de l'eau régulièrement, toute la nuit.",
+      "Un souci, un malaise, quelqu'un qui te met mal à l'aise ? Viens voir un membre de l'équipe : on est là pour t'aider.",
+      "Respect et consentement sur le dancefloor : aucun comportement déplacé n'est toléré."
     ],
     "lineup": [
       {
