@@ -40,6 +40,8 @@ export const MANAGED_PATHS = [
 ];
 
 const CMS_MEDIA_DIR = "assets/img/cms";
+/** Chemin géré -> pathspec Git (motif « evenement-*.html » interprété comme un glob). */
+const pathspec = (p) => (p.includes("*") ? `:(glob)${p}` : p);
 const sha = (buffer) => crypto.createHash("sha256").update(buffer).digest("hex");
 const fileSha = (file) => (fs.existsSync(file) ? sha(fs.readFileSync(file)) : null);
 
@@ -69,8 +71,11 @@ export class Publisher {
     this.db = db;
     this.log = log;
     this.running = null;
-    // Une mise en ligne interrompue (arrêt du serveur) ne doit pas rester « en cours ».
-    db.run("UPDATE publications SET status = 'failed', finished_at = ?, summary = 'Interrompue (redémarrage du serveur).' WHERE status = 'running'", now());
+    // Une mise en ligne interrompue (arrêt du serveur) ne doit pas rester « en cours ». Ses fichiers
+    // à moitié écrits sont remis en état au début de la prochaine mise en ligne (sinon elle refuserait
+    // de démarrer : « fichiers gérés modifiés »).
+    const { changes } = db.run("UPDATE publications SET status = 'failed', finished_at = ?, summary = 'Interrompue (redémarrage du serveur).' WHERE status = 'running'", now());
+    this.interrupted = changes > 0;
   }
 
   getSetting(key, fallback) {
@@ -138,6 +143,38 @@ export class Publisher {
     });
   }
 
+  /**
+   * Remet les seuls fichiers gérés par le CMS dans l'état du dernier commit : fichiers suivis modifiés ou
+   * supprimés (git diff tolère les dossiers gérés pas encore commités), puis fichiers nouveaux (git clean).
+   * Renvoie null, ou la sortie de Git si la restauration a échoué.
+   */
+  async restoreManaged() {
+    const pathspecs = MANAGED_PATHS.map(pathspec);
+    const changed = (await this.git(["diff", "--name-only", "HEAD", "--", ...pathspecs])).out.split("\n").filter(Boolean);
+    const restore = changed.length ? await this.git(["checkout", "HEAD", "--", ...changed]) : { code: 0, out: "" };
+    const clean = await this.git(["clean", "-fdq", "--", ...pathspecs]);
+    this.rememberHashes();
+    return restore.code === 0 && clean.code === 0 ? null : `${restore.out}\n${clean.out}`;
+  }
+
+  /**
+   * Commits locaux absents de la branche distante, laissés par une mise en ligne dont l'envoi a été refusé
+   * (quelqu'un avait poussé entre-temps). S'ils viennent tous du CMS et ne touchent que des fichiers gérés,
+   * ils sont abandonnés : la mise en ligne régénère ces fichiers depuis la base. Un commit fait à la main
+   * n'est jamais abandonné. Renvoie true si la branche a été réalignée sur `upstream`.
+   */
+  async dropUnpushedCmsCommits(upstream) {
+    const range = `${upstream}..HEAD`;
+    const authors = (await this.git(["log", "--format=%ae", range])).out.split("\n").filter(Boolean);
+    if (!authors.length || authors.some((email) => email !== this.config.gitAuthorEmail)) return false;
+    const base = (await this.git(["merge-base", upstream, "HEAD"])).out;
+    const all = (await this.git(["diff", "--name-only", base, "HEAD"])).out.split("\n").filter(Boolean);
+    const managed = (await this.git(["diff", "--name-only", base, "HEAD", "--", ...MANAGED_PATHS.map(pathspec)])).out.split("\n").filter(Boolean);
+    if (all.length !== managed.length) return false;
+    // --keep : comme --hard, mais refuse plutôt que d'écraser une modification locale non enregistrée.
+    return (await this.git(["reset", "-q", "--keep", upstream])).code === 0;
+  }
+
   async git(args, options = {}) {
     const env = {
       GIT_AUTHOR_NAME: this.config.gitAuthorName,
@@ -178,20 +215,30 @@ export class Publisher {
       const gitMode = mode === "commit" || mode === "push";
       try {
         step(`Mise en ligne (${{ files: "fichiers uniquement", commit: "fichiers + commit", push: "fichiers + commit + push" }[mode]}).`);
-        const q = (p) => (p.includes("*") ? `:(glob)${p}` : p);
-        const pathspecs = MANAGED_PATHS.map(q);
+        const pathspecs = MANAGED_PATHS.map(pathspec);
         if (gitMode) {
           const inside = await this.git(["rev-parse", "--is-inside-work-tree"]);
           if (inside.code !== 0) throw new Error(`Le dossier du site n'est pas un dépôt Git : ${config.siteDir}`);
           const branch = (await this.git(["rev-parse", "--abbrev-ref", "HEAD"])).out;
           if (branch !== config.gitBranch) throw new Error(`Le dépôt est sur la branche « ${branch} » au lieu de « ${config.gitBranch} ».`);
+          if (this.interrupted) {
+            const problem = await this.restoreManaged();
+            if (problem) throw new Error(`Mise en ligne précédente interrompue : restauration des fichiers du site impossible :\n${problem}`);
+            this.interrupted = false;
+            step("Mise en ligne précédente interrompue (redémarrage du serveur) : fichiers du site remis dans leur dernier état publié.");
+          }
           const dirty = await this.git(["status", "--porcelain", "--", ...pathspecs]);
           if (dirty.out) throw new Error(`Des fichiers gérés par le CMS ont des modifications non enregistrées dans le dépôt :\n${dirty.out}`);
           if (mode === "push") {
-            step(`Mise à jour depuis ${config.gitRemote}/${config.gitBranch}…`);
+            const upstream = `${config.gitRemote}/${config.gitBranch}`;
+            step(`Mise à jour depuis ${upstream}…`);
             const fetch = await this.git(["fetch", config.gitRemote, config.gitBranch]);
             if (fetch.code !== 0) throw new Error(`git fetch a échoué :\n${fetch.out}`);
-            const merge = await this.git(["merge", "--ff-only", `${config.gitRemote}/${config.gitBranch}`]);
+            let merge = await this.git(["merge", "--ff-only", upstream]);
+            if (merge.code !== 0 && (await this.dropUnpushedCmsCommits(upstream))) {
+              step("Commit d'une mise en ligne précédente jamais envoyé (envoi refusé) : abandonné, les fichiers vont être régénérés depuis la base.");
+              merge = await this.git(["merge", "--ff-only", upstream]);
+            }
             if (merge.code !== 0) throw new Error(`Impossible de mettre à jour la branche sans fusion (historique divergent) :\n${merge.out}`);
           }
         }
@@ -298,7 +345,8 @@ export class Publisher {
           if (mode === "push") {
             const push = await this.git(["push", config.gitRemote, `HEAD:${config.gitBranch}`], { timeout: 180e3 });
             if (push.code !== 0) {
-              // Le commit reste local : il partira avec la prochaine mise en ligne.
+              // Le commit reste local : il partira avec la prochaine mise en ligne (ou sera abandonné et
+              // refait si la branche distante a avancé entre-temps, voir dropUnpushedCmsCommits).
               throw new Error(`git push a échoué (le commit ${commitSha.slice(0, 7)} est conservé localement) :\n${push.out}`);
             }
             step(`Envoyé sur ${config.gitRemote}/${config.gitBranch} : GitHub Actions publie le site (quelques minutes).`);
@@ -315,15 +363,9 @@ export class Publisher {
         step(`ÉCHEC : ${error.message}`);
         if (gitMode && wrote && !/git push/.test(error.message)) {
           // Retour à l'état du dernier commit pour les seuls fichiers gérés (vérifiés propres au départ).
-          const pathspecs = MANAGED_PATHS.map((p) => (p.includes("*") ? `:(glob)${p}` : p));
-          // Fichiers suivis modifiés ou supprimés (git diff tolère les dossiers gérés pas encore commités),
-          // puis fichiers nouveaux (git clean) : seuls les chemins gérés par le CMS sont concernés.
-          const changed = (await this.git(["diff", "--name-only", "HEAD", "--", ...pathspecs])).out.split("\n").filter(Boolean);
-          const restore = changed.length ? await this.git(["checkout", "HEAD", "--", ...changed]) : { code: 0, out: "" };
-          const clean = await this.git(["clean", "-fdq", "--", ...pathspecs]);
-          this.rememberHashes();
-          if (restore.code === 0 && clean.code === 0) step("Fichiers du site restaurés dans leur dernier état publié.");
-          else step(`Restauration incomplète, vérifiez le dépôt :\n${restore.out}\n${clean.out}`);
+          const problem = await this.restoreManaged();
+          if (!problem) step("Fichiers du site restaurés dans leur dernier état publié.");
+          else step(`Restauration incomplète, vérifiez le dépôt :\n${problem}`);
         }
         return finish("failed", error.message.split("\n")[0].slice(0, 400));
       } finally {

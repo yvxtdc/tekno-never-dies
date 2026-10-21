@@ -14,14 +14,30 @@ export function formatTime(text = "") {
   return lang === "fr" ? text : String(text).replace(/(\d{1,2})h(\d{2})/g, "$1:$2");
 }
 
+/** Date et heure actuelles à Paris : "2026-11-29T00:30" (se compare comme du texte). */
+function parisNow() {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Paris", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23"
+  }).formatToParts(new Date());
+  const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+  return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}`;
+}
+
 /**
- * "a-venir" ou "passe", calculé depuis la date : plus besoin de changer le statut à la main.
- * Une soirée reste « à venir » toute la journée de sa date (elle peut finir après minuit).
+ * "a-venir" ou "passe", calculé depuis la date à l'heure de Paris (quel que soit le fuseau du
+ * visiteur) : plus besoin de changer le statut à la main. Une soirée reste « à venir » toute la
+ * journée de sa date, et jusqu'à son heure de fin si elle finit après minuit ("21h00 – 4h00" : jusqu'à
+ * 4 h le lendemain), pour garder itinéraire et agenda pendant la soirée.
  */
 export function eventStatus(ev) {
-  const now = new Date();
-  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-  return ev.date >= today ? "a-venir" : "passe";
+  const now = parisNow();
+  const [start, end] = [...String(ev.time || "").matchAll(/(\d{1,2})h(\d{2})/g)].map((m) => `${m[1].padStart(2, "0")}:${m[2]}`);
+  if (ev.datePrecision !== "month" && start && end && end < start) {
+    const [y, m, d] = ev.date.split("-").map(Number);
+    const nextDay = new Date(Date.UTC(y, m - 1, d + 1)).toISOString().slice(0, 10);
+    return now < `${nextDay}T${end}` ? "a-venir" : "passe";
+  }
+  return ev.date >= now.slice(0, 10) ? "a-venir" : "passe";
 }
 
 /** Échappe le texte avant de l'insérer dans du HTML (innerHTML). */

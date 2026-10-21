@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { startCms, copySite, eventInput, testImage, tempDir } from "./helpers.mjs";
+import { Publisher } from "../server/publish/publisher.mjs";
 
 const git = (cwd, ...args) => execFileSync("git", args, { cwd, encoding: "utf8" }).trim();
 
@@ -20,19 +21,17 @@ describe("mise en ligne (mode commit, dépôt Git temporaire)", { timeout: 300e3
     fs.rmSync(siteDir, { recursive: true, force: true });
   });
 
-  test("première mise en ligne : seuls les fichiers de données changent de format (et l'ordre de l'agenda), pages inchangées", async () => {
+  test("première mise en ligne après l'import : le site est reproduit à l'identique, aucun commit", async () => {
+    // Les fichiers du dépôt sont déjà au format du CMS (il est en service) : importer puis mettre en
+    // ligne ne doit rien changer, ni données ni pages.
     const before = git(siteDir, "rev-parse", "HEAD");
     const res = await editor.post("/api/publications", {});
     assert.equal(res.status, 200);
     assert.equal(res.data.status, "success", res.data.log);
     assert.match(res.data.log, /Validation OK/);
-    const files = git(siteDir, "show", "--name-only", "--format=", "HEAD").split("\n").filter(Boolean);
-    assert.notEqual(git(siteDir, "rev-parse", "HEAD"), before);
-    // L'agenda est réordonné par date (ordre des soirées dans le fichier, sans effet dans les applications d'agenda).
-    assert.ok(files.every((f) => f.startsWith("js/data/") || f.startsWith("js/i18n/contenus-") || f.startsWith("calendar/")), files.join(", "));
-    assert.ok(!files.some((f) => f.endsWith(".html") || f === "sitemap.xml"), "aucune page modifiée");
-    assert.equal(git(siteDir, "status", "--porcelain"), "", "rien d'autre n'est modifié");
-    assert.match(git(siteDir, "log", "-1", "--format=%an %s"), /^CMS Tekno Never Dies contenu: mise en ligne depuis le CMS/);
+    assert.match(res.data.summary, /Aucun changement/);
+    assert.equal(git(siteDir, "rev-parse", "HEAD"), before);
+    assert.equal(git(siteDir, "status", "--porcelain"), "", "rien n'est modifié");
   });
 
   test("mise en ligne sans modification : aucun commit", async () => {
@@ -166,5 +165,50 @@ describe("mise en ligne : modes fichiers et push", { timeout: 300e3 }, () => {
     assert.match(blocked.data.log, /historique divergent/);
     await cms.close();
     for (const d of [remote, siteDir, other]) fs.rmSync(d, { recursive: true, force: true });
+  });
+
+  test("mode push : un commit du CMS jamais envoyé (envoi refusé) n'empêche pas la mise en ligne suivante", async () => {
+    const remote = tempDir("tnd-remote-");
+    execFileSync("git", ["init", "-q", "--bare", "-b", "main", remote]);
+    const siteDir = copySite({ git: true });
+    git(siteDir, "remote", "add", "origin", remote);
+    git(siteDir, "push", "-q", "origin", "main");
+    const cms = await startCms({ importContent: true, siteDir, env: { CMS_PUBLISH_MODE: "push" } });
+    const editor = await cms.login("editor");
+    // État laissé par un envoi refusé : commit local du CMS sur un fichier géré, pendant que quelqu'un
+    // d'autre a poussé un commit sur la branche distante.
+    const other = tempDir("tnd-clone-");
+    execFileSync("git", ["clone", "-q", remote, other]);
+    git(other, "-c", "user.email=a@b.c", "-c", "user.name=Dev", "commit", "-q", "--allow-empty", "-m", "dev");
+    git(other, "push", "-q", "origin", "main");
+    fs.appendFileSync(path.join(siteDir, "sitemap.xml"), "\n");
+    git(siteDir, "-c", `user.email=${cms.config.gitAuthorEmail}`, "-c", "user.name=CMS", "commit", "-q", "-am", "contenu: mise en ligne depuis le CMS");
+    const ev = (await editor.post("/api/events", eventInput({ title: "Après refus" }))).data;
+    await editor.post(`/api/events/${ev.id}/status`, { action: "publish" });
+    const res = await editor.post("/api/publications", {});
+    assert.equal(res.data.status, "success", res.data.log);
+    assert.match(res.data.log, /jamais envoyé/);
+    assert.equal(git(remote, "rev-parse", "main"), git(siteDir, "rev-parse", "HEAD"));
+    assert.match(git(remote, "log", "--format=%s", "main"), /^contenu: mise en ligne depuis le CMS\ndev\n/, "commit de l'autre personne conservé");
+    assert.doesNotMatch(fs.readFileSync(path.join(siteDir, "sitemap.xml"), "utf8"), /<\/urlset>\n\n$/, "commit abandonné");
+    await cms.close();
+    for (const d of [remote, siteDir, other]) fs.rmSync(d, { recursive: true, force: true });
+  });
+
+  test("mise en ligne interrompue (redémarrage) : les fichiers à moitié écrits sont remis en état", async () => {
+    const siteDir = copySite({ git: true });
+    const cms = await startCms({ importContent: true, siteDir, env: { CMS_PUBLISH_MODE: "commit" } });
+    // Arrêt brutal pendant une mise en ligne : publication « en cours » et fichiers gérés modifiés.
+    cms.db.run("INSERT INTO publications (status, trigger, mode, started_at) VALUES ('running', 'manual', 'commit', ?)", new Date().toISOString());
+    fs.writeFileSync(path.join(siteDir, "de/index.html"), "à moitié écrit");
+    fs.writeFileSync(path.join(siteDir, "evenement-fichier-orphelin.html"), "nouveau fichier à moitié écrit");
+    const publisher = new Publisher({ config: cms.config, db: cms.db });
+    const result = await publisher.publish({ trigger: "cli" });
+    assert.equal(result.status, "success", result.log);
+    assert.match(result.log, /interrompue/);
+    assert.equal(git(siteDir, "status", "--porcelain"), "");
+    assert.ok(!fs.existsSync(path.join(siteDir, "evenement-fichier-orphelin.html")));
+    await cms.close();
+    fs.rmSync(siteDir, { recursive: true, force: true });
   });
 });

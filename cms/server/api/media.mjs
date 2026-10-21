@@ -9,13 +9,15 @@ import { serveFile } from "../http/static.mjs";
 import { audit } from "../services/audit.mjs";
 import * as media from "../services/media.mjs";
 
-const fileName = (req) => {
+/** En-tête encodé en URI ; valeur mal encodée : valeur par défaut (pas d'erreur 500). */
+const header = (req, name, fallback) => {
   try {
-    return decodeURIComponent(String(req.headers["x-file-name"] || "image"));
+    return decodeURIComponent(String(req.headers[name] || fallback));
   } catch {
-    return "image";
+    return fallback;
   }
 };
+const fileName = (req) => header(req, "x-file-name", "image");
 
 export function registerMediaRoutes(router, { config, db }) {
   router.get("/api/media", (ctx) => {
@@ -26,7 +28,7 @@ export function registerMediaRoutes(router, { config, db }) {
   router.post("/api/media", async (ctx) => {
     const buffer = await readBuffer(ctx.req, config.maxUploadBytes);
     const { media: row, duplicate } = await media.createUpload(config, db, buffer, fileName(ctx.req), ctx.user, {
-      alt: decodeURIComponent(String(ctx.req.headers["x-alt"] || ""))
+      alt: header(ctx.req, "x-alt", "")
     });
     if (!duplicate) audit(db, ctx.actor, "media.upload", "media", row.id, row.original_name);
     return { media: media.serializeMedia(row), duplicate };

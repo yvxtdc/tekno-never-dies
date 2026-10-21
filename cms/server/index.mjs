@@ -37,5 +37,8 @@ const shutdown = (signal) => {
   });
   setTimeout(() => process.exit(1), 10e3).unref();
 };
+// Filet de sécurité : une promesse rejetée oubliée est journalisée au lieu d'arrêter tout le CMS
+// (Node s'arrête par défaut sur un rejet non géré).
+process.on("unhandledRejection", (error) => log.error("Erreur non gérée (le serveur continue)", error));
 process.on("SIGINT", () => shutdown("SIGINT"));
 process.on("SIGTERM", () => shutdown("SIGTERM"));

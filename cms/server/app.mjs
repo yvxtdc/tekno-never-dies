@@ -135,21 +135,23 @@ export function createApp({ config, db, log = createLogger(config.logLevel), pub
       res.writeHead(400).end();
       return;
     }
-    const cookies = parseCookies(req.headers.cookie);
-    const session = loadSession(db, config, cookies[config.cookieName]);
-    const ctx = {
-      req, res, url, config, db, log, publisher,
-      query: url.searchParams,
-      session,
-      user: session?.user ?? null,
-      ip: clientIp(req),
-      requestId,
-      get actor() {
-        return { user: this.user, ip: this.ip };
-      }
-    };
     const p = url.pathname;
+    // Tout ce qui lit la requête reste dans le try : une erreur inattendue donne une réponse 500,
+    // jamais une exception non gérée qui arrêterait le serveur.
     try {
+      const cookies = parseCookies(req.headers.cookie);
+      const session = loadSession(db, config, cookies[config.cookieName]);
+      const ctx = {
+        req, res, url, config, db, log, publisher,
+        query: url.searchParams,
+        session,
+        user: session?.user ?? null,
+        ip: clientIp(req),
+        requestId,
+        get actor() {
+          return { user: this.user, ip: this.ip };
+        }
+      };
       if (p === "/healthz") {
         securityHeaders(res, { secure: config.cookieSecure });
         return sendJson(res, 200, { ok: true });

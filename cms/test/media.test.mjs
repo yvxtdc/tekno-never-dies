@@ -43,6 +43,14 @@ describe("médiathèque", () => {
     assert.equal(again.data.media.id, m.id);
   });
 
+  test("en-têtes mal encodés (nom, texte alternatif) : valeurs par défaut, pas d'erreur 500", async () => {
+    const png = await testImage({ width: 400, height: 400, color: { r: 7, g: 70, b: 170 } });
+    const res = await editor.request("POST", "/api/media", { raw: png, headers: { "content-type": "application/octet-stream", "x-file-name": "%E0%A4%A", "x-alt": "%" } });
+    assert.equal(res.status, 201);
+    assert.equal(res.data.media.originalName, "image");
+    assert.equal(res.data.media.alt, "");
+  });
+
   test("imports refusés : faux fichier, SVG, extension trompeuse, trop petit, trop gros, sans session", async () => {
     const text = Buffer.from("Ceci n'est pas une image mais prétend l'être.".repeat(10));
     assert.equal((await editor.upload("/api/media", text, "photo.jpg")).status, 415);
