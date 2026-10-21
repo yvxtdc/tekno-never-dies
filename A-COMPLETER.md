@@ -40,8 +40,8 @@ traduire dans `js/i18n/de.js` et `en.js`.
 ## Billets et DJ Contest (CMS → Soirées)
 - [ ] **ICE BOILER v2** — vérifier les quatre tarifs repris des anciennes infos pratiques (Early 10 €,
       Regular 13 €, Late 16 €, caisse du soir 18 €) et passer en « Épuisé » ceux qui le sont.
-- [ ] **ICE BOILER v2** — DJ Contest : date limite d'envoi des sets mise au **15 novembre 2026**
-      (à confirmer) ; adresse = tnd6tem@gmail.com par défaut.
+- [ ] **ICE BOILER v2** — DJ Contest : date limite d'envoi des sets : **4 novembre 2026**
+      ; adresse = tnd6tem@gmail.com par défaut.
 - [ ] Relire les conseils ajoutés aux infos pratiques (bouchons, hydratation, parking…) ; le
       parking n'a été indiqué que pour la salle de Munchhausen.
 

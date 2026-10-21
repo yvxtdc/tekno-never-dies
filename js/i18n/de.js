@@ -596,7 +596,7 @@ const PAGES = {
   "Le DJ Contest est terminé.": "Der DJ Contest ist vorbei.",
   "Ta place derrière les platines.": "Dein Platz hinter den Decks.",
   "Les inscriptions sont closes : rendez-vous sur la piste pour découvrir le ou la gagnant·e.": "Die Anmeldung ist geschlossen: Wer gewonnen hat, erfährst du auf dem Dancefloor.",
-  "Le set d'ouverture de {title} est à gagner. Envoie-nous ton mix : l'équipe écoute tout et choisit le DJ qui jouera derrière nos platines.": "Das Opening-Set von {title} ist zu gewinnen. Schick uns deinen Mix: Das Team hört sich alles an und wählt, wer an unseren Decks spielt.",
+  "DJ Contest : gagne ta place derrière les platines de {title}. Envoie-nous ton set par mail avant la date limite : le meilleur set gagne et joue à la soirée.": "DJ Contest: Gewinne deinen Platz an den Decks von {title}. Schick uns dein Set per Mail vor dem Einsendeschluss: Das beste Set gewinnt und spielt auf der Party.",
   "Enregistre un mix dans l'esprit de la soirée{genres}.": "Nimm einen Mix im Stil des Abends{genres} auf.",
   "Envoie le lien (SoundCloud, Mixcloud, Google Drive…) à {email}, avec ton nom de DJ et ton Instagram.": "Schick den Link (SoundCloud, Mixcloud, Google Drive…) an {email}, mit deinem DJ-Namen und deinem Instagram.",
   "Date limite : {date}.": "Einsendeschluss: {date}.",
