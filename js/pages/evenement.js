@@ -552,7 +552,7 @@ function setupContest(root, ev, status) {
   const body = encodeURIComponent(tr("Nom de DJ :\nInstagram :\nLien du set (SoundCloud, Mixcloud, Drive…) :\n"));
   const intro = contest.text
     ? tr(contest.text)
-    : t("Le set d'ouverture de {title} est à gagner. Envoie-nous ton mix : l'équipe écoute tout et choisit le DJ qui jouera derrière nos platines.", { title: ev.title });
+    : t("DJ Contest : gagne ta place derrière les platines de {title}. Envoie-nous ton set par mail avant la date limite : le meilleur set gagne et joue à la soirée.", { title: ev.title });
   const steps = [
     t("Enregistre un mix dans l'esprit de la soirée{genres}.", { genres: ev.genres?.length ? ` (${ev.genres.join(", ")})` : "" }),
     t("Envoie le lien (SoundCloud, Mixcloud, Google Drive…) à {email}, avec ton nom de DJ et ton Instagram.", { email }),
