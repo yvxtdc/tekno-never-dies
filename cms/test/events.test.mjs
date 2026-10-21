@@ -86,6 +86,10 @@ describe("API des soirées", () => {
       { label: "Regular", price: 12.5, until: "2030-03-01" },
       { label: "Caisse du soir", price: 18, door: true }
     ]);
+    const coherent = eventChecks(null, { ...res.data, price: "10 à 12,50 € en prévente, 18 € sur place", date: "2999-01-01" });
+    assert.ok(!coherent.warnings.some((w) => w.includes("Résumé du prix")), "résumé cohérent : pas d'avertissement");
+    const wrong = eventChecks(null, { ...res.data, price: "15 € en prévente", date: "2999-01-01" });
+    assert.ok(wrong.warnings.some((w) => w.includes("15 €")), "montant absent des tarifs signalé");
     const bad = await editor.post("/api/events", eventInput({ tickets: [{ label: "Early", price: "dix" }, { label: "", price: "5" }, { label: "A", price: "5", door: true }, { label: "B", price: "6", door: true }] }));
     assert.equal(bad.status, 422);
     assert.ok(bad.data.fields["tickets.0.price"]);
