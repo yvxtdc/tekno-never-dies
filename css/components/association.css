@@ -1,38 +1,83 @@
 /* =====================================================================
    Page Association (association.html) — octobre 2026
-   1. Qui sommes-nous, court, sous le titre : le bandeau de l'équipe apparaît dès le premier écran.
+   1. Qui sommes-nous, sous le titre : texte et chiffres à gauche, photo de l'équipe à droite, avec le public
+      de chaque soirée en vumètres posé sur la photo (le design « barres de son »).
    2. Le bandeau de l'équipe (css/components/team.css).
    3. Notre histoire : un chapitre par année, grande année en contour, une image par chapitre
       (étoile chromée, badge TND, affiches des soirées), deux lignes de texte.
-   4. En chiffres : le public de chaque soirée en vumètres, l'équipe et les DJ.
    Chargé après pages.css et team.css.
    ===================================================================== */
 
 .asso-kicker{display:block;margin:0 0 12px;color:var(--lav);font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase}
 
 /* ---------- 1. Qui sommes-nous ---------- */
-.asso-head{padding-bottom:clamp(4px,1.6vw,20px)}
-.asso-head h1{margin-bottom:clamp(14px,2vw,24px)}
+.asso-head{padding-bottom:clamp(48px,6vw,84px)}
+.asso-head h1{margin-bottom:clamp(18px,2.4vw,32px)}
 .asso-intro{
-  display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px clamp(28px,5vw,72px);align-items:end;
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:clamp(36px,5vw,80px);align-items:center;
   position:relative;z-index:2;
 }
 .asso-intro h2{
-  margin:0;font-family:var(--display);font-weight:400;text-transform:uppercase;
-  font-size:clamp(1.35rem,2.5vw,2.1rem);line-height:1.02;letter-spacing:-.015em;text-wrap:balance;
+  margin:0 0 18px;font-family:var(--display);font-weight:400;text-transform:uppercase;
+  font-size:clamp(1.35rem,2.4vw,2rem);line-height:1.04;letter-spacing:-.015em;text-wrap:balance;
 }
 .asso-intro h2 span{color:var(--lav)}
-.page-head .asso-intro p{max-width:52ch;color:var(--muted);font-size:clamp(.95rem,1.1vw,1.05rem);line-height:1.6}
+.page-head .asso-kicker{max-width:none;margin:0 0 12px;font-size:.72rem}
+.page-head .asso-intro p:not(.asso-kicker){max-width:50ch;color:var(--muted);font-size:clamp(.95rem,1.1vw,1.05rem);line-height:1.6}
 
-/* Ce qu'on fait : quatre lignes de texte côte à côte */
-.asso-does{
-  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px clamp(18px,2.4vw,32px);
-  margin:clamp(24px,3vw,36px) 0 0;counter-reset:does;
+/* Les chiffres : trois grands nombres dégradés sur une ligne */
+.asso-figures{display:flex;flex-wrap:wrap;gap:14px clamp(22px,3vw,44px);margin:clamp(24px,3vw,34px) 0 0;padding:20px 0 0;list-style:none;border-top:1px solid var(--line)}
+.asso-figures[hidden]{display:none}
+.asso-figures li{display:flex;flex-direction:column;gap:6px;min-width:0}
+.asso-figures b{
+  font-family:var(--display);font-weight:400;font-size:clamp(2.2rem,3.4vw,3rem);line-height:.9;
+  background:var(--gradient-title);-webkit-background-clip:text;background-clip:text;color:transparent;
 }
-.asso-does div{counter-increment:does;padding-top:12px;border-top:1px solid var(--line)}
-.asso-does dt{display:flex;align-items:baseline;gap:8px;margin-bottom:4px;font-family:var(--display);font-size:.95rem;text-transform:uppercase}
-.asso-does dt::before{content:counter(does,decimal-leading-zero);color:var(--lav);font-family:var(--text);font-size:.62rem;font-weight:700;letter-spacing:.12em}
-.asso-does dd{margin:0;color:var(--muted);font-size:.84rem;line-height:1.5}
+.asso-figures span{max-width:14ch;color:var(--muted);font-size:.8rem;line-height:1.3}
+
+/* La photo, sur un second cadre dégradé légèrement tourné, teintée de violet par le bas pour coller à la nuit.
+   Cadre et teinte ont la taille de la photo (sur téléphone, la carte du public est sous la photo, dans le bloc). */
+.asso-intro__media{--photo-ratio:5 / 4;position:relative;margin:0 0 0 clamp(0px,4vw,64px)}
+.asso-intro__media::before,
+.asso-intro__media::after{content:"";position:absolute;top:0;left:0;width:100%;aspect-ratio:var(--photo-ratio);border-radius:28px}
+.asso-intro__media::before{background:var(--gradient-tnd);opacity:.55;transform:rotate(3.5deg) translate(10px,6px)}
+.asso-intro__media::after{
+  background:linear-gradient(205deg,transparent 40%,rgba(66,38,182,.6));mix-blend-mode:multiply;pointer-events:none;
+}
+.asso-photo{
+  position:relative;display:block;width:100%;height:auto;aspect-ratio:var(--photo-ratio);object-fit:cover;object-position:72% 45%;
+  border-radius:28px;border:1px solid rgba(255,255,255,.18);background:var(--card);
+  box-shadow:0 30px 70px rgba(0,0,0,.55),var(--glow-lav);
+}
+
+/* Le public : une carte compacte posée sur le coin de la photo */
+.asso-crowd{
+  position:absolute;left:clamp(-96px,-6vw,-24px);bottom:clamp(-44px,-3vw,-24px);z-index:2;margin:0;
+  padding:16px 20px 14px;border-radius:20px;border:1px solid rgba(149,106,255,.4);
+  background:rgba(11,7,34,.84);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  box-shadow:0 24px 50px rgba(0,0,0,.5);
+}
+.asso-crowd[hidden]{display:none}
+.asso-crowd .asso-kicker{margin-bottom:4px}
+.asso-crowd figcaption{margin-bottom:14px}
+.asso-crowd figcaption > span:last-child{display:block;max-width:27ch;color:#fff;font-size:.8rem;line-height:1.35}
+/* Vumètres : segments entiers (round), du violet au rose ; hauteur = public / le plus grand public */
+.asso-crowd__bars{
+  --meter:clamp(64px,6.4vw,84px);
+  display:flex;align-items:flex-end;gap:16px;margin:0;padding:0;list-style:none;
+}
+.asso-crowd__bars li{display:flex;flex-direction:column;align-items:flex-start;width:72px;min-width:0}
+.asso-crowd__bars b{margin-bottom:6px;font-family:var(--display);font-weight:400;font-size:1rem;line-height:1}
+.asso-crowd__meter{
+  width:32px;height:calc(var(--meter) * var(--level,0));
+  background:linear-gradient(to top,var(--violet),var(--lav) 55%,var(--pink)) bottom/100% var(--meter) no-repeat;
+  -webkit-mask:linear-gradient(to top,#000 0 5px,transparent 5px) bottom/100% 8px round;
+          mask:linear-gradient(to top,#000 0 5px,transparent 5px) bottom/100% 8px round;
+}
+.asso-crowd__name{margin-top:8px;color:#fff;font-size:.62rem;font-weight:700;line-height:1.2;text-transform:uppercase;letter-spacing:.04em;text-decoration:none}
+.asso-crowd__name:hover,
+.asso-crowd__name:focus-visible{color:var(--lav)}
+.asso-crowd__date{margin-top:2px;color:var(--muted);font-size:.62rem}
 
 /* ---------- 3. Notre histoire ---------- */
 .asso-history{margin-bottom:clamp(56px,8vw,110px)}
@@ -101,45 +146,12 @@
 .asso-chapter__events span{color:var(--muted);font-size:.78rem}
 .asso-chapter__events b{color:var(--pink-text)}
 
-/* ---------- 4. En chiffres ---------- */
-.asso-numbers{
-  display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:clamp(28px,5vw,72px);align-items:end;
-  margin-bottom:clamp(32px,5vw,60px);padding:clamp(24px,3.4vw,44px);
-  border:1px solid rgba(149,106,255,.3);border-radius:28px;
-  background:linear-gradient(130deg,rgba(66,38,182,.22),rgba(182,38,154,.08) 70%);
-}
-.asso-numbers[hidden],.asso-crowd[hidden]{display:none}
-.asso-crowd{margin:0}
-.asso-crowd figcaption{margin-bottom:22px;color:#fff;font-size:clamp(1rem,1.3vw,1.15rem);line-height:1.4;max-width:34ch}
-/* Vumètres : segments entiers (round), du violet au rose ; hauteur = public / le plus grand public */
-.asso-crowd__bars{
-  --meter:clamp(120px,13vw,170px);
-  display:flex;align-items:flex-end;gap:clamp(18px,4.4vw,64px);margin:0;padding:0;list-style:none;
-}
-.asso-crowd__bars li{display:flex;flex-direction:column;align-items:flex-start;min-width:0}
-.asso-crowd__bars b{margin-bottom:8px;font-family:var(--display);font-weight:400;font-size:clamp(1.2rem,1.9vw,1.6rem);line-height:1}
-.asso-crowd__meter{
-  width:clamp(44px,5vw,64px);height:calc(var(--meter) * var(--level,0));
-  background:linear-gradient(to top,var(--violet),var(--lav) 55%,var(--pink)) bottom/100% var(--meter) no-repeat;
-  -webkit-mask:linear-gradient(to top,#000 0 7px,transparent 7px) bottom/100% 11px round;
-          mask:linear-gradient(to top,#000 0 7px,transparent 7px) bottom/100% 11px round;
-}
-.asso-crowd__name{margin-top:10px;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
-.asso-crowd__date{color:var(--muted);font-size:.72rem}
-
-.asso-figures{display:grid;gap:0;margin:0;padding:0;list-style:none}
-.asso-figures li{display:flex;align-items:baseline;gap:14px;padding:12px 0;border-top:1px solid var(--line)}
-.asso-figures li:first-child{border-top:0}
-.asso-figures b{
-  min-width:2ch;font-family:var(--display);font-weight:400;font-size:clamp(2.2rem,3.6vw,3.2rem);line-height:1;
-  background:var(--gradient-title);-webkit-background-clip:text;background-clip:text;color:transparent;
-}
-.asso-figures span{color:var(--muted);font-size:.9rem}
-
 /* ---------- Tablette et téléphone ---------- */
 @media (max-width:1000px){
-  .asso-intro{grid-template-columns:1fr;align-items:start}
-  .asso-does{grid-template-columns:repeat(2,minmax(0,1fr))}
+  /* Qui sommes-nous : la photo sous le texte, la carte du public chevauche son bas */
+  .asso-intro{grid-template-columns:1fr;gap:clamp(32px,6vw,48px)}
+  .asso-intro__media{--photo-ratio:3 / 2;margin:0 8px 0 0;max-width:640px}
+  .asso-crowd{position:relative;left:auto;bottom:auto;width:fit-content;max-width:calc(100% - 16px);margin:-36px 0 0 12px}
 
   /* Histoire : les chapitres l'un sous l'autre, l'année et l'image côte à côte, le fil à gauche */
   .asso-chapters{--year:clamp(3rem,13vw,4.6rem);grid-template-columns:1fr;gap:clamp(28px,6vw,44px);padding-left:26px}
@@ -155,18 +167,15 @@
   .asso-flyer + .asso-flyer{margin-left:calc(clamp(72px,19vw,100px) * -.28)}
   .asso-chapter__text{grid-area:text;margin-top:14px}
   .asso-chapter__text p{max-width:46ch}
-
-  .asso-numbers{grid-template-columns:1fr;align-items:start}
-  .asso-figures{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-  .asso-figures li{flex-direction:column;gap:4px;padding:12px 0 0;border-top:1px solid var(--line)}
-  .asso-figures li:first-child{border-top:1px solid var(--line)}
-  .asso-figures span{font-size:.78rem;line-height:1.3}
 }
 @media (max-width:420px){
-  .asso-does{grid-template-columns:1fr 1fr;gap:12px 16px}
-  .asso-does dd{font-size:.8rem}
-  .asso-crowd__bars{gap:14px}
-  .asso-crowd__name{font-size:.68rem}
+  /* « L'association » tient sur une ligne jusqu'à 320 px */
+  .asso-head h1{font-size:clamp(1.9rem,10.6vw,2.4rem)}
+  .asso-figures{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .asso-figures span{font-size:.74rem}
+  .asso-crowd{padding:14px 14px 12px}
+  .asso-crowd__bars{gap:10px}
+  .asso-crowd__bars li{width:66px}
 }
 
 @media (prefers-reduced-motion:reduce){
