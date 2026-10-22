@@ -126,8 +126,10 @@ Avant de publier :
 1. **Adresse du site** : `https://teknoneverdies.fr/` (domaine acheté chez Gandi, publié par GitHub Pages ; le fichier `CNAME` contient le domaine).
    L'ancienne adresse `https://yvxtdc.github.io/tekno-never-dies/` redirige automatiquement vers le domaine.
    Si l'adresse change, mettre à jour `js/data/site.js`, `CNAME`, `robots.txt` et le `<head>` de chaque page (puis `npm run langues` pour `de/`, `en/` et `sitemap.xml`) (`og:url`, `og:image`, `canonical`).
-2. **Agenda** : l'adresse `.ics` est dans `SITE.agenda` (`js/data/site.js`). Si elle change, régénérer le QR code
-   `assets/img/agenda-qr.svg` (encodant l'adresse `webcal://…`).
+2. **Agenda** : l'adresse `.ics` est dans `SITE.agenda` (`js/data/site.js`). Le QR code `assets/img/agenda-qr.svg`
+   encode `SITE.agenda.page` (`https://teknoneverdies.fr/evenements.html#agenda`) et pas le lien `webcal://` :
+   Android ne sait pas ouvrir `webcal://` (iPhone oui). La page propose ensuite le bon bouton (Calendrier sur iPhone,
+   Google Agenda sur Android, fichier `.ics` sinon). Si l'adresse du site change, régénérer le QR code avec cette adresse.
 3. **Aperçu sur les réseaux** : `assets/img/og-image.jpg` (1200×630) est déclarée dans le `<head>` de chaque page, avec `og:url` et `canonical` en adresse absolue. Si l'adresse du site change, les remplacer dans toutes les pages. Les fiches événement utilisent leur flyer, recadré en 1200×630 (`assets/img/events/og/`). Les anciens liens `evenement.html?slug=…` redirigent vers la fiche.
 4. **À compléter** : `npm run validate` liste les champs `[… À REMPLACER]`, les réponses FAQ `needsValidation` et la billetterie ou le line-up manquants des prochaines soirées.
 5. **Page 404** : une balise `<base>` (ajoutée par un petit script) garde styles et liens corrects, même sur une adresse imbriquée. Elle fonctionne à la racine du domaine comme sous l'ancienne adresse `/tekno-never-dies/`.

@@ -261,6 +261,7 @@ function trackLinkClicks() {
     if (url.protocol === "mailto:") return track("E-mail");
     if (url.protocol === "tel:") return track("Téléphone");
     if (url.protocol === "webcal:") return track("Agenda · abonnement");
+    if (url.hostname === "calendar.google.com") return track(url.searchParams.has("cid") ? "Agenda · abonnement Google" : "Agenda · Google");
     if (url.origin === location.origin) return; // page du site : déjà comptée à son ouverture
     const host = url.hostname.replace(/^www\./, "");
     const ticketFor = EVENTS.find((ev) => ev.ticketUrl && safeUrl(ev.ticketUrl) === url.href);

@@ -55,6 +55,7 @@
   <link rel="stylesheet" href="css/style.css?v=2" />
   <link rel="stylesheet" href="css/pages.css" />
   <link rel="stylesheet" href="css/components/team.css" />
+  <link rel="stylesheet" href="css/components/association.css" />
   <script type="module" src="js/partials.js"></script>
 </head>
 <body data-page="association">
@@ -111,30 +112,32 @@
 <!-- /partial:header -->
 
   <main id="main">
-    <section class="page-head container">
+    <!-- Qui sommes-nous : court, pour que le bandeau de l'équipe apparaisse dès le premier écran -->
+    <section class="page-head container asso-head" aria-labelledby="story-title">
       <h1><span class="l2">About us</span></h1>
       <img class="decor decor-r decor--float" src="assets/img/decor/thorn.webp" alt="" aria-hidden="true" />
-      <p>An association of electronic music lovers based in Lauterbourg, in the Bas-Rhin.</p>
-    </section>
-
-    <section class="container about-intro">
-      <div class="about-intro__aside">
-        <p class="about-intro__label">Who are we?</p>
-        <ul class="about-facts">
-          <li>
-            <span class="about-facts__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg></span>
-            <div><span>Mission</span>Promote, bring together, make it shake</div>
-          </li>
-          <li>
-            <span class="about-facts__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="5"/></svg></span>
-            <div><span>Goal</span>Unforgettable sound and visual experiences</div>
-          </li>
-        </ul>
+      <div class="asso-intro">
+        <h2 id="story-title">A sound system born in Lauterbourg, now an association that gets northern Alsace dancing<span>.</span></h2>
+        <p>It all starts with a shared wish: to bring electronic music to life close to home. A group of enthusiasts got the gear together, set up an association, then launched their own parties.</p>
       </div>
-      <div class="about-intro__text">
-        <p>Tekno Never Dies was born in Lauterbourg from a shared desire: to bring electronic music to life in Northern Alsace. A group of enthusiasts gradually became a collective, then an association.</p>
-        <p>We create parties where sound, lights and staging build a one-of-a-kind atmosphere. But a TND night is also about meeting people: familiar faces and newcomers coming together around the same energy.</p>
-      </div>
+      <dl class="asso-does">
+        <div>
+          <dt>The parties</dt>
+          <dd>Designed and produced by us, from the poster to the last bassline.</dd>
+        </div>
+        <div>
+          <dt>The sound</dt>
+          <dd>Our own gear, set up, moved and maintained by the team.</dd>
+        </div>
+        <div>
+          <dt>The region</dt>
+          <dd>A hand for projects by other local collectives.</dd>
+        </div>
+        <div>
+          <dt>The people</dt>
+          <dd>Volunteers, DJs, the curious: anyone who wants to get involved is welcome.</dd>
+        </div>
+      </dl>
     </section>
 
     <section class="team-section" id="equipe" aria-labelledby="equipe-title">
@@ -150,106 +153,47 @@
       </div>
     </section>
 
-    <section class="container history" aria-labelledby="history-title">
-      <p class="eyebrow">Our story</p>
-      <h2 id="history-title">From an idea to a sound system.</h2>
-      <ol class="history-line">
-        <li>
-          <span class="history-line__dot" aria-hidden="true"></span>
-          <time class="history-line__date" datetime="2023-06">June 2023</time>
-          <strong>The idea is born</strong>
-          <p>A shared passion for electronic music and the urge to organise events.</p>
+    <!-- Notre histoire : un chapitre par année, chacun avec son image (les soirées : leurs affiches).
+         Les années des soirées viennent de js/data/events.js (js/pages/association.js). -->
+    <section class="container asso-history" aria-labelledby="history-title">
+      <div class="asso-history__head">
+        <p class="asso-kicker">Our story</p>
+        <h2 id="history-title">From idea to dancefloor<span>.</span></h2>
+      </div>
+      <ol class="asso-chapters" id="asso-chapters">
+        <li class="asso-chapter">
+          <span class="asso-chapter__year" aria-hidden="true">2023</span>
+          <div class="asso-chapter__visual asso-chapter__visual--decor">
+            <img src="assets/img/decor/sparkles-lavender.webp" alt="" loading="lazy" decoding="async" />
+          </div>
+          <div class="asso-chapter__text">
+            <time datetime="2023-06">June 2023</time>
+            <h3>The idea is born</h3>
+            <p>A shared passion, and the urge to throw our own parties.</p>
+          </div>
         </li>
-        <li>
-          <span class="history-line__dot" aria-hidden="true"></span>
-          <time class="history-line__date" datetime="2024">2024</time>
-          <strong>The project takes shape</strong>
-          <p>Setting goals, building the crew, finding equipment and preparing the project.</p>
-        </li>
-        <li>
-          <span class="history-line__dot" aria-hidden="true"></span>
-          <time class="history-line__date" datetime="2024-12-04">4 December 2024</time>
-          <strong>The association is founded</strong>
-          <p>Official registration of the association and launch of the first activities.</p>
-        </li>
-        <li>
-          <span class="history-line__dot" aria-hidden="true"></span>
-          <time class="history-line__date" datetime="2025-06-21">June 2025</time>
-          <strong>First achievements</strong>
-          <p>Organising the first events and developing technical services.</p>
+        <li class="asso-chapter">
+          <span class="asso-chapter__year" aria-hidden="true">2024</span>
+          <div class="asso-chapter__visual asso-chapter__visual--badge">
+            <img src="assets/img/badge-white.webp" alt="" loading="lazy" decoding="async" />
+          </div>
+          <div class="asso-chapter__text">
+            <time datetime="2024-12-04">4 December 2024</time>
+            <h3>The association is founded</h3>
+            <p>After a year bringing the team and gear together, TND officially becomes an association.</p>
+          </div>
         </li>
       </ol>
     </section>
 
-    <section class="container pillars" aria-labelledby="pillars-title">
-      <p class="eyebrow">What we do</p>
-      <h2 id="pillars-title">What drives us.</h2>
-      <ul class="pillars__list">
-        <li>
-          <span class="pillars__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9a2 2 0 0 0 0 6v3a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-3a2 2 0 0 1 0-6V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1z"/><path d="M14 5v2M14 11v2M14 17v2"/></svg></span>
-          <span class="pillars__ghost" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9a2 2 0 0 0 0 6v3a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-3a2 2 0 0 1 0-6V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1z"/><path d="M14 5v2M14 11v2M14 17v2"/></svg></span>
-          <h3>Events</h3>
-          <p>Designing and producing electronic parties, from the poster to the last bassline.</p>
-        </li>
-        <li>
-          <span class="pillars__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><circle cx="12" cy="14.5" r="3.5"/><circle cx="12" cy="14.5" r=".6" fill="currentColor"/><circle cx="12" cy="7" r="1.4"/></svg></span>
-          <span class="pillars__ghost" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><circle cx="12" cy="14.5" r="3.5"/><circle cx="12" cy="14.5" r=".6" fill="currentColor"/><circle cx="12" cy="7" r="1.4"/></svg></span>
-          <h3>Sound system</h3>
-          <p>Building, transporting and maintaining our gear, designed for deep bass.</p>
-        </li>
-        <li>
-          <span class="pillars__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/></svg></span>
-          <span class="pillars__ghost" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/></svg></span>
-          <h3>Local projects</h3>
-          <p>Supporting initiatives and events run by other collectives in the region.</p>
-        </li>
-        <li>
-          <span class="pillars__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 12.6 12 20l-7.5-7.4A4.6 4.6 0 0 1 12 6.6a4.6 4.6 0 0 1 7.5 6z"/><path d="M12 6.6 9.2 9.4a1.6 1.6 0 0 0 2.3 2.3l1.3-1.2 2.6 2.6"/></svg></span>
-          <span class="pillars__ghost" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 12.6 12 20l-7.5-7.4A4.6 4.6 0 0 1 12 6.6a4.6 4.6 0 0 1 7.5 6z"/><path d="M12 6.6 9.2 9.4a1.6 1.6 0 0 0 2.3 2.3l1.3-1.2 2.6 2.6"/></svg></span>
-          <h3>Volunteering</h3>
-          <p>Welcoming everyone who wants to get involved, and DJ set proposals.</p>
-        </li>
-      </ul>
-    </section>
-
-    <section class="container values-band" aria-label="Our values">
-      <p class="eyebrow">Our values</p>
-      <p class="values-band__words">
-        <span>Passion</span><i aria-hidden="true">✳</i>
-        <span class="is-accent">Sharing</span><i aria-hidden="true">✳</i>
-        <span>Energy</span>
-      </p>
-    </section>
-
-    <section class="container event-path" aria-labelledby="event-path-title">
-      <p class="eyebrow">Our events</p>
-      <h2 id="event-path-title">An association that keeps growing.</h2>
-      <ul class="event-path__list">
-        <li style="--level:0">
-          <span class="event-path__photo"><img src="assets/img/events/soiree1.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" /><b>150 <small>people</small></b></span>
-          <strong>Fête de la musique</strong>
-          <span>21 June 2025<i> · </i>Wissembourg</span>
-        </li>
-        <li style="--level:1">
-          <span class="event-path__photo"><img src="assets/img/events/soiree2.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" /><b>200 <small>people</small></b></span>
-          <strong>ICE BOILER</strong>
-          <span>22 November 2025<i> · </i>Munchhausen</span>
-        </li>
-        <li style="--level:2">
-          <span class="event-path__photo"><img src="assets/img/img1.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" /><b>250 <small>people</small></b></span>
-          <strong>Center Drop</strong>
-          <span>4 April 2026<i> · </i>Niederroedern</span>
-        </li>
-      </ul>
-    </section>
-
-    <section class="container project-current" aria-labelledby="project-title">
-      <p class="project-current__label">Ongoing project</p>
-      <div>
-        <h2 id="project-title">The next date<span>.</span></h2>
-        <p id="next-event-text" translate="no">La prochaine date annoncée est ICE BOILER v2, le samedi 28 novembre 2026 à 21h00, à la salle polyvalente de Munchhausen. Entrée 10 à 16 € en prévente, 18 € sur place, dès 16 ans.</p>
-        <a class="btn btn-line" id="next-event-link" href="en/evenement-ice-boiler-v2-2026.html">See the party</a>
-      </div>
+    <!-- En chiffres : le public de chaque soirée (vumètres), l'équipe et les DJ d'aujourd'hui (js/pages/association.js) -->
+    <section class="container asso-numbers" id="asso-numbers" aria-labelledby="numbers-title" hidden>
+      <h2 class="sr-only" id="numbers-title">In numbers</h2>
+      <figure class="asso-crowd">
+        <figcaption><span class="asso-kicker">The crowd</span><span id="crowd-sentence">People at each party (approx.)</span></figcaption>
+        <ol class="asso-crowd__bars" id="crowd-bars"></ol>
+      </figure>
+      <ul class="asso-figures" id="asso-figures"></ul>
     </section>
 
     <a class="cta-row" href="en/rejoindre.html">

@@ -3,7 +3,7 @@ import { splitB2B, artistsOf, artistUrl, artistPhoto, slotStyle, visibleLineup }
 import { SITE } from "../data/site.js";
 import { formatDate, formatTime, readParam, eventStatus, safeUrl, track, eventPath } from "./helpers.js";
 import { t, tr, plural, locale } from "../i18n/i18n.js";
-import { downloadICS, eventRange } from "./ics.js";
+import { downloadICS, eventRange, googleCalendarUrl } from "./ics.js";
 import { eventStats } from "../components/event-stats.js";
 import { sortedTickets, ticketState, formatPrice, priceSummary } from "../components/tickets.js";
 
@@ -363,12 +363,13 @@ if (!root) {
           <li class="ticket is-${state}${ticket.door ? " ticket--door" : ""}${current ? " is-current" : ""}">
             <span class="ticket__step" aria-hidden="true">${ticket.door ? "✦" : String(i + 1).padStart(2, "0")}</span>
             <span class="ticket__label">${escapeHTML(tr(ticket.label))}</span>
-            <span class="ticket__price">${state === "soldout" ? `<s>${escapeHTML(formatPrice(ticket.price))}</s>` : escapeHTML(formatPrice(ticket.price))}</span>
+            <span class="ticket__price${formatPrice(ticket.price).length > 5 ? " is-long" : ""}">${state === "soldout" ? `<s>${escapeHTML(formatPrice(ticket.price))}</s>` : escapeHTML(formatPrice(ticket.price))}</span>
             ${ticket.note ? `<span class="ticket__note">${escapeHTML(tr(ticket.note))}</span>` : ""}
             ${ticket.until && state !== "soldout" && state !== "closed" ? `<span class="ticket__until">${escapeHTML(t("Jusqu'au {date}", { date: shortDate(ticket.until) }))}</span>` : ""}
             ${current ? `<span class="ticket__badge">${escapeHTML(tr("En vente"))}</span>`
               : state !== "available" ? `<span class="ticket__badge ticket__badge--${state}">${escapeHTML(tr(STATE_LABELS[state]))}</span>`
               : ticket.door && upcoming ? `<span class="ticket__badge ticket__badge--door">${escapeHTML(tr("Sur place"))}</span>` : ""}
+            <span class="ticket__code" aria-hidden="true" translate="no">${escapeHTML(`${ev.title} · ${ev.date.split("-").reverse().join(".")} · N°${String(i + 1).padStart(2, "0")}`)}</span>
           </li>`;
         }).join("")}</ol>
         <div class="event-tickets__foot">
@@ -383,13 +384,23 @@ if (!root) {
   const practicalItems = (ev.practical || []).filter((item) => item !== ageText && !/^Début\s*:/i.test(item) && !/\d+\s*participant/i.test(item));
   // Liens complémentaires saisis dans le CMS (événement Facebook, page partenaire…) : à la suite.
   const links = (ev.links || []).map((link) => ({ label: link.label, url: safeUrl(link.url) })).filter((link) => link.url);
+  // Chaque info commence par son sujet en gras (« Le son est fort », « Parking… ») : le début de la phrase,
+  // jusqu'au premier « : » ou « ? » (sinon la première virgule). La phrase reste entière ; sans début
+  // assez court, rien en gras.
+  const practicalLine = (item) => {
+    const text = tr(item);
+    const lead = text.match(/^.{6,70}?(?:(?=\s?:\s)|\s?\?(?=\s))/)?.[0] || text.match(/^.{6,45}?(?=,\s)/)?.[0];
+    return lead
+      ? `<strong>${escapeHTML(lead)}</strong>${escapeHTML(text.slice(lead.length))}`
+      : escapeHTML(text);
+  };
   const practicalContent = practicalItems.length || links.length
     ? `<section class="event-practical" aria-labelledby="practical-title">
         <div class="event-section-head">
           <h2 id="practical-title">Infos pratiques<span class="event-title__dot">.</span></h2>
           <p class="event-section-head__note">À SAVOIR<br />AVANT DE VENIR.</p>
         </div>
-        <ul>${practicalItems.map((item) => `<li>${escapeHTML(item)}</li>`).join("")}${links.map((link) => `<li><a href="${escapeHTML(link.url)}" target="_blank" rel="noopener noreferrer">${escapeHTML(link.label)} <span aria-hidden="true">↗</span></a></li>`).join("")}</ul>
+        <ul class="event-practical__list">${practicalItems.map((item) => `<li translate="no">${practicalLine(item)}</li>`).join("")}${links.map((link) => `<li><a href="${escapeHTML(link.url)}" target="_blank" rel="noopener noreferrer">${escapeHTML(link.label)} <span aria-hidden="true">↗</span></a></li>`).join("")}</ul>
       </section>`
     : "";
 
@@ -456,8 +467,11 @@ if (!root) {
   layoutMap(root.querySelector(".event-mapstage"));
   setupContest(root, ev, status);
 
+  // Android : Google Agenda n'importe pas un .ics téléchargé, on ouvre sa fiche d'ajout à la place.
+  // Ailleurs (iPhone, ordinateur) : le fichier .ics, compris par tous les agendas.
   document.getElementById("add-to-calendar")?.addEventListener("click", () => {
-    downloadICS([ev], `tnd-${ev.slug}.ics`);
+    if (/Android/i.test(navigator.userAgent)) window.open(googleCalendarUrl(ev), "_blank", "noopener");
+    else downloadICS([ev], `tnd-${ev.slug}.ics`);
     track(`Ajouter à l'agenda · ${ev.title}`);
   });
 

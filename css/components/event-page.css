@@ -173,16 +173,23 @@ button.btn{font-family:var(--text);cursor:pointer;background-color:transparent}
 .event-mapstage__pin::before,.event-mapstage__pin::after{display:none}
 @keyframes map-ping{from{transform:scale(.3);opacity:1}to{transform:scale(2.2);opacity:0}}
 
-/* ---------- Infos pratiques : cartes ---------- */
+/* ---------- Infos pratiques : liste à lire d'un trait ----------
+   Chaque info commence par son sujet en gras, la phrase continue sur la même ligne. Deux colonnes
+   dès qu'elles tiennent (largeur de colonne, pas de seuil d'écran), une seule sur téléphone. */
 .event-practical{margin:0 0 clamp(56px,8vw,100px)}
-.event-practical ul{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
-.event-practical li,
-.event-practical li:first-child{
-  display:flex;align-items:flex-start;gap:12px;padding:18px 20px;
-  border:1px solid rgba(255,255,255,.12);border-radius:18px;background:rgba(255,255,255,.03);
-  color:rgba(255,255,255,.85);font-size:.9rem;
+.event-practical .event-practical__list{
+  display:block;margin:0;padding:0;list-style:none;
+  columns:2 24rem;column-gap:clamp(36px,6vw,88px);
 }
-.event-practical li::before{content:"✦";color:var(--lav);line-height:1.5}
+.event-practical .event-practical__list li{
+  break-inside:avoid;padding:clamp(14px,1.6vw,18px) 0;border:0;border-bottom:1px solid var(--line);
+  color:rgba(255,255,255,.74);font-size:clamp(.92rem,.4vw + .8rem,1rem);line-height:1.62;
+  max-width:52ch;
+}
+.event-practical__list li:first-child{border-top:0}
+.event-practical__list strong{color:#fff;font-weight:700}
+.event-practical__list a{color:#fff;font-weight:700;text-underline-offset:4px}
+.event-practical__list a:hover{color:var(--lav)}
 
 /* ---------- Billets : les tarifs sur une ligne, reliés par un fil (prévente → caisse du soir) ----------
    Chaque tarif est un « ticket » à encoches. Le tarif en vente est mis en avant (anneau dégradé) ;
@@ -205,6 +212,7 @@ button.btn{font-family:var(--text);cursor:pointer;background-color:transparent}
   border:1px solid rgba(149,106,255,.35);border-radius:22px;
   /* Fond opaque : le fil qui relie les tarifs passe derrière */
   background:
+    linear-gradient(180deg,transparent var(--cut),rgba(255,255,255,.035) var(--cut)),
     radial-gradient(120% 90% at 50% 0%,rgba(149,106,255,.22),transparent 70%),
     linear-gradient(160deg,rgba(66,38,182,.35),rgba(11,7,34,.6)),
     #0e0830;
@@ -215,8 +223,11 @@ button.btn{font-family:var(--text);cursor:pointer;background-color:transparent}
                radial-gradient(circle at 100% var(--cut),transparent var(--notch),#000 calc(var(--notch) + .5px)) right/51% 100% no-repeat;
   transition:transform .3s cubic-bezier(.2,.8,.2,1),border-color .3s,box-shadow .3s;
 }
-/* Pointillés de découpe entre le haut (nom) et le bas (prix) */
-.ticket::after{content:"";position:absolute;left:calc(var(--notch) + 6px);right:calc(var(--notch) + 6px);top:var(--cut);border-top:2px dashed rgba(255,255,255,.16)}
+/* Perforation (trous ronds) entre le haut (nom) et le talon (prix) */
+.ticket::after{
+  content:"";position:absolute;left:calc(var(--notch) + 6px);right:calc(var(--notch) + 6px);top:calc(var(--cut) - 1px);height:3px;
+  background:radial-gradient(circle,rgba(255,255,255,.3) 1.1px,transparent 1.6px) center/7px 3px repeat-x;
+}
 .ticket:hover{transform:translateY(-4px);border-color:rgba(149,106,255,.7)}
 .ticket__step{
   display:grid;place-items:center;width:44px;height:44px;margin-bottom:4px;border-radius:50%;
@@ -231,6 +242,18 @@ button.btn{font-family:var(--text);cursor:pointer;background-color:transparent}
 .ticket__price s{text-decoration-thickness:3px;text-decoration-color:rgba(255,255,255,.75)}
 .ticket__note{color:var(--muted);font-size:.78rem;line-height:1.4}
 .ticket__until{color:rgba(255,255,255,.55);font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+/* Bas du billet : code-barres et ligne imprimée (soirée, date, numéro), alignés d'un billet à l'autre */
+.ticket__code{
+  display:grid;justify-items:center;gap:5px;width:100%;margin-top:auto;padding-top:10px;
+  color:rgba(255,255,255,.42);font-size:.5rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;
+}
+.ticket__code::before{
+  content:"";width:min(100%,150px);height:16px;opacity:.55;
+  background:
+    repeating-linear-gradient(90deg,#fff 0 1px,transparent 1px 3px,#fff 3px 5px,transparent 5px 6px,#fff 6px 7px,transparent 7px 10px),
+    repeating-linear-gradient(90deg,transparent 0 13px,#0e0830 13px 15px);
+}
 .ticket__badge{
   position:absolute;top:12px;right:12px;padding:3px 9px;border-radius:999px;
   background:var(--gradient-tnd);color:#fff;font-size:.58rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
@@ -257,6 +280,8 @@ button.btn{font-family:var(--text);cursor:pointer;background-color:transparent}
 /* Caisse du soir : bordure pointillée, toujours la dernière */
 .ticket--door{border-style:dashed;background:linear-gradient(160deg,rgba(182,38,154,.18),rgba(11,7,34,.6))}
 .ticket--door .ticket__step{color:var(--pink-text);border-style:dashed}
+.ticket.is-current .ticket__code{color:rgba(255,255,255,.6)}
+.ticket.is-current .ticket__code::before{opacity:.8}
 .event-tickets.is-past .ticket{filter:saturate(.6)}
 
 .event-tickets__foot{display:grid;justify-items:center;gap:10px;margin-top:clamp(22px,3vw,34px)}
@@ -334,6 +359,8 @@ button.btn{font-family:var(--text);cursor:pointer;background-color:transparent}
   .contest-dialog[open],
   .event-map__pin::before,
   .event-map__pin::after{animation:none}
+  .ticket{transition:none}
+  .ticket:hover{transform:none}
 }
 
 /* ---------- Tablette ---------- */
@@ -387,21 +414,38 @@ button.btn{font-family:var(--text);cursor:pointer;background-color:transparent}
   .ticket,
   .event-tickets__list.is-many .ticket,
   .event-tickets__list.is-crowded .ticket{
-    --notch:9px;flex:none;min-width:0;max-width:none;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"label price" "note price" "until price";
-    align-items:center;gap:2px 14px;text-align:left;padding:14px 18px;border-radius:16px;
-    -webkit-mask:radial-gradient(circle at 72% 0,transparent var(--notch),#000 calc(var(--notch) + .5px)) top/100% 51% no-repeat,
-                 radial-gradient(circle at 72% 100%,transparent var(--notch),#000 calc(var(--notch) + .5px)) bottom/100% 51% no-repeat;
-            mask:radial-gradient(circle at 72% 0,transparent var(--notch),#000 calc(var(--notch) + .5px)) top/100% 51% no-repeat,
-                 radial-gradient(circle at 72% 100%,transparent var(--notch),#000 calc(var(--notch) + .5px)) bottom/100% 51% no-repeat;
+    --notch:9px;--stub:96px;flex:none;min-width:0;max-width:none;display:grid;
+    grid-template-columns:minmax(0,1fr) var(--stub);grid-template-areas:"label price" "note price" "until price";
+    align-items:center;gap:2px 18px;text-align:left;padding:14px 0 14px 18px;border-radius:16px;
+    background:
+      linear-gradient(90deg,transparent calc(100% - var(--stub)),rgba(255,255,255,.035) 0),
+      radial-gradient(120% 90% at 0 0,rgba(149,106,255,.22),transparent 70%),
+      linear-gradient(160deg,rgba(66,38,182,.35),rgba(11,7,34,.6)),
+      #0e0830;
+    -webkit-mask:radial-gradient(circle at calc(100% - var(--stub)) 0,transparent var(--notch),#000 calc(var(--notch) + .5px)) top/100% 51% no-repeat,
+                 radial-gradient(circle at calc(100% - var(--stub)) 100%,transparent var(--notch),#000 calc(var(--notch) + .5px)) bottom/100% 51% no-repeat;
+            mask:radial-gradient(circle at calc(100% - var(--stub)) 0,transparent var(--notch),#000 calc(var(--notch) + .5px)) top/100% 51% no-repeat,
+                 radial-gradient(circle at calc(100% - var(--stub)) 100%,transparent var(--notch),#000 calc(var(--notch) + .5px)) bottom/100% 51% no-repeat;
   }
-  .ticket::after{left:72%;right:auto;top:calc(var(--notch) + 4px);bottom:calc(var(--notch) + 4px);border-top:0;border-left:2px dashed rgba(255,255,255,.16)}
+  .ticket--door{background:
+    linear-gradient(90deg,transparent calc(100% - var(--stub)),rgba(255,255,255,.035) 0),
+    linear-gradient(160deg,rgba(182,38,154,.18),rgba(11,7,34,.6)),#0e0830}
+  .ticket::after{left:calc(100% - var(--stub) - 1px);right:auto;top:calc(var(--notch) + 4px);bottom:calc(var(--notch) + 4px);width:3px;height:auto;
+    background:radial-gradient(circle,rgba(255,255,255,.3) 1.1px,transparent 1.6px) center/3px 7px repeat-y}
   .ticket__step{display:none}
   .ticket__label{grid-area:label;min-height:0;font-size:.78rem;padding-right:4px}
   .ticket__note{grid-area:note;font-size:.76rem}
   .ticket__until{grid-area:until}
-  .ticket__price{grid-area:price;justify-self:end;margin:0;padding:0 0 0 6px;font-size:1.9rem;min-width:24%;text-align:right}
+  .ticket__price{grid-area:price;justify-self:center;margin:0 14px 0 0;padding:0;font-size:1.45rem;text-align:center}
+  .ticket__price.is-long{font-size:1rem}
   .ticket__badge{position:static;grid-area:until;justify-self:start;margin-top:6px}
   .ticket__until + .ticket__badge{grid-area:auto;grid-column:1}
+  /* Code-barres couché le long du talon, sans la ligne imprimée */
+  .ticket__code{position:absolute;right:9px;top:14px;bottom:14px;width:7px;margin:0;padding:0;font-size:0;display:block}
+  .ticket__code::before{display:block;width:100%;height:100%;
+    background:
+      repeating-linear-gradient(180deg,#fff 0 1px,transparent 1px 3px,#fff 3px 5px,transparent 5px 6px,#fff 6px 7px,transparent 7px 10px),
+      repeating-linear-gradient(180deg,transparent 0 13px,#0e0830 13px 15px)}
   .event-tickets__foot{justify-items:stretch;text-align:center}
   .event-tickets__cta{text-align:center}
   .contest-dialog__card{grid-template-columns:1fr}

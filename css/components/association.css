@@ -1,0 +1,174 @@
+/* =====================================================================
+   Page Association (association.html) — octobre 2026
+   1. Qui sommes-nous, court, sous le titre : le bandeau de l'équipe apparaît dès le premier écran.
+   2. Le bandeau de l'équipe (css/components/team.css).
+   3. Notre histoire : un chapitre par année, grande année en contour, une image par chapitre
+      (étoile chromée, badge TND, affiches des soirées), deux lignes de texte.
+   4. En chiffres : le public de chaque soirée en vumètres, l'équipe et les DJ.
+   Chargé après pages.css et team.css.
+   ===================================================================== */
+
+.asso-kicker{display:block;margin:0 0 12px;color:var(--lav);font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase}
+
+/* ---------- 1. Qui sommes-nous ---------- */
+.asso-head{padding-bottom:clamp(4px,1.6vw,20px)}
+.asso-head h1{margin-bottom:clamp(14px,2vw,24px)}
+.asso-intro{
+  display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px clamp(28px,5vw,72px);align-items:end;
+  position:relative;z-index:2;
+}
+.asso-intro h2{
+  margin:0;font-family:var(--display);font-weight:400;text-transform:uppercase;
+  font-size:clamp(1.35rem,2.5vw,2.1rem);line-height:1.02;letter-spacing:-.015em;text-wrap:balance;
+}
+.asso-intro h2 span{color:var(--lav)}
+.page-head .asso-intro p{max-width:52ch;color:var(--muted);font-size:clamp(.95rem,1.1vw,1.05rem);line-height:1.6}
+
+/* Ce qu'on fait : quatre lignes de texte côte à côte */
+.asso-does{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px clamp(18px,2.4vw,32px);
+  margin:clamp(24px,3vw,36px) 0 0;counter-reset:does;
+}
+.asso-does div{counter-increment:does;padding-top:12px;border-top:1px solid var(--line)}
+.asso-does dt{display:flex;align-items:baseline;gap:8px;margin-bottom:4px;font-family:var(--display);font-size:.95rem;text-transform:uppercase}
+.asso-does dt::before{content:counter(does,decimal-leading-zero);color:var(--lav);font-family:var(--text);font-size:.62rem;font-weight:700;letter-spacing:.12em}
+.asso-does dd{margin:0;color:var(--muted);font-size:.84rem;line-height:1.5}
+
+/* ---------- 3. Notre histoire ---------- */
+.asso-history{margin-bottom:clamp(56px,8vw,110px)}
+.asso-history__head{margin-bottom:clamp(20px,3vw,36px)}
+.asso-history h2{
+  margin:0;font-family:var(--display);font-weight:400;text-transform:uppercase;
+  font-size:clamp(2.2rem,5.6vw,4.4rem);line-height:.88;letter-spacing:-.03em;
+}
+.asso-history h2 span{color:var(--lav)}
+
+.asso-chapters{
+  --year:clamp(3.4rem,7vw,6.4rem);
+  position:relative;display:grid;grid-template-columns:repeat(var(--chapters,2),minmax(0,1fr));gap:0 clamp(18px,2.6vw,36px);
+  margin:0;padding:0;list-style:none;
+}
+/* Le fil du temps, sous les années, du violet au rose */
+.asso-chapters::before{
+  content:"";position:absolute;left:0;right:0;top:calc(var(--year) * .86 + 18px);height:2px;
+  background:linear-gradient(90deg,rgba(149,106,255,.15),var(--lav) 30%,var(--pink));
+}
+.asso-chapter{position:relative;display:grid;grid-template-rows:auto auto 1fr;min-width:0}
+.asso-chapter::after{
+  content:"";position:absolute;left:2px;top:calc(var(--year) * .86 + 13px);width:12px;height:12px;border-radius:50%;
+  background:var(--page);border:2px solid var(--lav);box-shadow:0 0 14px rgba(149,106,255,.6);
+}
+.asso-chapter--events::after{background:var(--lav)}
+.asso-chapter__year{
+  display:block;margin-bottom:46px;font-family:var(--display);font-size:var(--year);line-height:.86;letter-spacing:-.03em;
+  color:transparent;-webkit-text-stroke:1.5px rgba(193,177,255,.7);
+}
+.asso-chapter:last-child .asso-chapter__year{-webkit-text-stroke-color:rgba(222,92,196,.85)}
+@supports not (-webkit-text-stroke:1px){.asso-chapter__year{color:rgba(193,177,255,.7)}}
+
+/* L'image du chapitre : même hauteur pour tous, pour aligner les textes */
+.asso-chapter__visual{position:relative;display:flex;align-items:center;height:clamp(170px,17vw,220px);margin-bottom:22px}
+.asso-chapter__visual--decor img{width:clamp(110px,11vw,150px);filter:drop-shadow(0 0 30px rgba(149,106,255,.45))}
+.asso-chapter__visual--badge img{
+  width:clamp(120px,12vw,160px);aspect-ratio:1;border-radius:50%;transform:rotate(-8deg);
+  box-shadow:0 0 0 6px rgba(149,106,255,.22),0 20px 50px rgba(0,0,0,.5);
+}
+/* Affiches en éventail ; la prochaine soirée porte une étiquette « À venir » */
+.asso-chapter__visual--flyers{padding-left:6px}
+.asso-flyer{
+  position:relative;flex:none;display:block;width:clamp(96px,9.4vw,128px);aspect-ratio:4 / 5;
+  border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,.22);background:var(--card);
+  box-shadow:0 18px 40px rgba(0,0,0,.5);transform:rotate(-6deg);transition:transform .35s cubic-bezier(.2,.8,.2,1);
+}
+.asso-flyer + .asso-flyer{margin-left:calc(clamp(96px,9.4vw,128px) * -.28);transform:rotate(5deg) translateY(10px)}
+.asso-flyer img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 20%}
+.asso-flyer > span:not(.asso-flyer__tag){display:grid;place-items:center;height:100%;padding:8px;font-family:var(--display);font-size:.8rem;text-align:center;text-transform:uppercase}
+.asso-flyer.is-next{border:1px dashed rgba(222,92,196,.8)}
+.asso-flyer__tag{
+  position:absolute;left:6px;bottom:6px;padding:3px 8px;border-radius:999px;background:var(--gradient-tnd);
+  color:#fff;font-size:.56rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+}
+.asso-chapter__visual--flyers:hover .asso-flyer{transform:rotate(-9deg) translateX(-6px)}
+.asso-chapter__visual--flyers:hover .asso-flyer + .asso-flyer{transform:rotate(8deg) translate(8px,6px)}
+
+.asso-chapter__text time{display:block;margin-bottom:6px;color:var(--lav);font-size:.68rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase}
+.asso-chapter__text h3{margin:0 0 8px;font-family:var(--display);font-weight:400;font-size:clamp(1rem,1.4vw,1.25rem);line-height:1.05;text-transform:uppercase}
+.asso-chapter__text p{margin:0;max-width:30ch;color:var(--muted);font-size:.86rem;line-height:1.55}
+.asso-chapter__events{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.asso-chapter__events a{display:block;color:#fff;font-weight:700;font-size:.9rem;text-decoration:none}
+.asso-chapter__events a:hover,
+.asso-chapter__events a:focus-visible{color:var(--lav)}
+.asso-chapter__events span{color:var(--muted);font-size:.78rem}
+.asso-chapter__events b{color:var(--pink-text)}
+
+/* ---------- 4. En chiffres ---------- */
+.asso-numbers{
+  display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:clamp(28px,5vw,72px);align-items:end;
+  margin-bottom:clamp(32px,5vw,60px);padding:clamp(24px,3.4vw,44px);
+  border:1px solid rgba(149,106,255,.3);border-radius:28px;
+  background:linear-gradient(130deg,rgba(66,38,182,.22),rgba(182,38,154,.08) 70%);
+}
+.asso-numbers[hidden],.asso-crowd[hidden]{display:none}
+.asso-crowd{margin:0}
+.asso-crowd figcaption{margin-bottom:22px;color:#fff;font-size:clamp(1rem,1.3vw,1.15rem);line-height:1.4;max-width:34ch}
+/* Vumètres : segments entiers (round), du violet au rose ; hauteur = public / le plus grand public */
+.asso-crowd__bars{
+  --meter:clamp(120px,13vw,170px);
+  display:flex;align-items:flex-end;gap:clamp(18px,4.4vw,64px);margin:0;padding:0;list-style:none;
+}
+.asso-crowd__bars li{display:flex;flex-direction:column;align-items:flex-start;min-width:0}
+.asso-crowd__bars b{margin-bottom:8px;font-family:var(--display);font-weight:400;font-size:clamp(1.2rem,1.9vw,1.6rem);line-height:1}
+.asso-crowd__meter{
+  width:clamp(44px,5vw,64px);height:calc(var(--meter) * var(--level,0));
+  background:linear-gradient(to top,var(--violet),var(--lav) 55%,var(--pink)) bottom/100% var(--meter) no-repeat;
+  -webkit-mask:linear-gradient(to top,#000 0 7px,transparent 7px) bottom/100% 11px round;
+          mask:linear-gradient(to top,#000 0 7px,transparent 7px) bottom/100% 11px round;
+}
+.asso-crowd__name{margin-top:10px;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.asso-crowd__date{color:var(--muted);font-size:.72rem}
+
+.asso-figures{display:grid;gap:0;margin:0;padding:0;list-style:none}
+.asso-figures li{display:flex;align-items:baseline;gap:14px;padding:12px 0;border-top:1px solid var(--line)}
+.asso-figures li:first-child{border-top:0}
+.asso-figures b{
+  min-width:2ch;font-family:var(--display);font-weight:400;font-size:clamp(2.2rem,3.6vw,3.2rem);line-height:1;
+  background:var(--gradient-title);-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.asso-figures span{color:var(--muted);font-size:.9rem}
+
+/* ---------- Tablette et téléphone ---------- */
+@media (max-width:1000px){
+  .asso-intro{grid-template-columns:1fr;align-items:start}
+  .asso-does{grid-template-columns:repeat(2,minmax(0,1fr))}
+
+  /* Histoire : les chapitres l'un sous l'autre, l'année et l'image côte à côte, le fil à gauche */
+  .asso-chapters{--year:clamp(3rem,13vw,4.6rem);grid-template-columns:1fr;gap:clamp(28px,6vw,44px);padding-left:26px}
+  .asso-chapters::before{left:5px;right:auto;top:10px;bottom:10px;width:2px;height:auto;
+    background:linear-gradient(180deg,rgba(149,106,255,.3),var(--lav) 30%,var(--pink))}
+  .asso-chapter{grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;grid-template-areas:"year visual" "text text";column-gap:18px;align-items:center}
+  .asso-chapter::after{left:-26px;top:calc(var(--year) * .43 - 6px)}
+  .asso-chapter__year{grid-area:year;margin:0}
+  .asso-chapter__visual{grid-area:visual;justify-content:flex-end;height:auto;min-height:0;margin:0}
+  .asso-chapter__visual--decor img{width:clamp(70px,20vw,100px)}
+  .asso-chapter__visual--badge img{width:clamp(72px,20vw,104px)}
+  .asso-flyer{width:clamp(72px,19vw,100px)}
+  .asso-flyer + .asso-flyer{margin-left:calc(clamp(72px,19vw,100px) * -.28)}
+  .asso-chapter__text{grid-area:text;margin-top:14px}
+  .asso-chapter__text p{max-width:46ch}
+
+  .asso-numbers{grid-template-columns:1fr;align-items:start}
+  .asso-figures{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .asso-figures li{flex-direction:column;gap:4px;padding:12px 0 0;border-top:1px solid var(--line)}
+  .asso-figures li:first-child{border-top:1px solid var(--line)}
+  .asso-figures span{font-size:.78rem;line-height:1.3}
+}
+@media (max-width:420px){
+  .asso-does{grid-template-columns:1fr 1fr;gap:12px 16px}
+  .asso-does dd{font-size:.8rem}
+  .asso-crowd__bars{gap:14px}
+  .asso-crowd__name{font-size:.68rem}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .asso-flyer{transition:none}
+}
