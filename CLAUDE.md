@@ -207,4 +207,4 @@ annoncer un succès (test, rendu mobile, publication) non constaté.
   les tests concernés.
 - Compte rendu final : fichiers modifiés et pourquoi, composants examinés sans changement, commandes exécutées
   et leur résultat réel, vérifications non effectuées, risques restants.
-- Après toute modification du code, des dépendances, des migrations ou de la configuration du CMS susceptible de nécessiter une mise à jour en production, vérifier la procédure documentée et m'indiquer explicitement si la commande `cms-update` doit être exécutée, pourquoi et à quel moment ; ne jamais l'exécuter sans mon autorisation explicite.
+- Après toute modification du code, des dépendances, des migrations ou de la configuration du CMS susceptible de nécessiter une mise à jour en production, vérifier la procédure documentée et m'indiquer explicitement si la commande `update-cms` doit être exécutée, pourquoi et à quel moment ; ne jamais l'exécuter sans mon autorisation explicite.
