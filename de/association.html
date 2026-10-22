@@ -112,32 +112,26 @@
 <!-- /partial:header -->
 
   <main id="main">
-    <!-- Qui sommes-nous : court, pour que le bandeau de l'équipe apparaisse dès le premier écran -->
+    <!-- Qui sommes-nous : le texte et les chiffres à gauche, la photo de l'équipe à droite avec le public de chaque
+         soirée en vumètres. Chiffres et vumètres viennent de js/data (js/pages/association.js). -->
     <section class="page-head container asso-head" aria-labelledby="story-title">
       <h1><span class="l2">Der Verein</span></h1>
       <img class="decor decor-r decor--float" src="assets/img/decor/thorn.webp" alt="" aria-hidden="true" />
       <div class="asso-intro">
-        <h2 id="story-title">Ein Soundsystem aus Lauterbourg, das zum Verein wurde und das nördliche Elsass zum Tanzen bringt<span>.</span></h2>
-        <p>Alles beginnt mit einem gemeinsamen Wunsch: elektronische Musik bei uns vor Ort lebendig zu machen. Eine Gruppe von Begeisterten hat sich ausgerüstet, einen Verein gegründet und dann ihre eigenen Partys gestartet.</p>
+        <div class="asso-intro__text">
+          <p class="asso-kicker">Wer sind wir?</p>
+          <h2 id="story-title">Ein Soundsystem aus Lauterbourg, das zum Verein wurde und das nördliche Elsass zum Tanzen bringt<span>.</span></h2>
+          <p>Alles beginnt mit einem gemeinsamen Wunsch: elektronische Musik bei uns vor Ort lebendig zu machen. Eine Gruppe von Begeisterten hat sich ausgerüstet, einen Verein gegründet und dann ihre eigenen Partys gestartet.</p>
+          <ul class="asso-figures" id="asso-figures" aria-label="In Zahlen" hidden></ul>
+        </div>
+        <div class="asso-intro__media">
+          <img class="asso-photo" src="assets/img/events/soiree2.webp" width="1086" height="724" alt="Das Team baut vor einer Party Sound und Licht auf" decoding="async" />
+          <figure class="asso-crowd" id="asso-crowd" hidden>
+            <figcaption><span class="asso-kicker">Das Publikum</span><span id="crowd-sentence">Besucher·innen pro Party (ungefähr)</span></figcaption>
+            <ol class="asso-crowd__bars" id="crowd-bars"></ol>
+          </figure>
+        </div>
       </div>
-      <dl class="asso-does">
-        <div>
-          <dt>Die Partys</dt>
-          <dd>Von uns geplant und produziert, vom Plakat bis zum letzten Bass.</dd>
-        </div>
-        <div>
-          <dt>Der Sound</dt>
-          <dd>Unser eigenes Equipment, vom Team aufgebaut, transportiert und gewartet.</dd>
-        </div>
-        <div>
-          <dt>Die Region</dt>
-          <dd>Unterstützung für Projekte anderer Kollektive aus der Gegend.</dd>
-        </div>
-        <div>
-          <dt>Die Menschen</dt>
-          <dd>Freiwillige, DJs, Neugierige: Wer mitmachen will, ist willkommen.</dd>
-        </div>
-      </dl>
     </section>
 
     <section class="team-section" id="equipe" aria-labelledby="equipe-title">
@@ -184,16 +178,6 @@
           </div>
         </li>
       </ol>
-    </section>
-
-    <!-- En chiffres : le public de chaque soirée (vumètres), l'équipe et les DJ d'aujourd'hui (js/pages/association.js) -->
-    <section class="container asso-numbers" id="asso-numbers" aria-labelledby="numbers-title" hidden>
-      <h2 class="sr-only" id="numbers-title">In Zahlen</h2>
-      <figure class="asso-crowd">
-        <figcaption><span class="asso-kicker">Das Publikum</span><span id="crowd-sentence">Besucher·innen pro Party (ungefähr)</span></figcaption>
-        <ol class="asso-crowd__bars" id="crowd-bars"></ol>
-      </figure>
-      <ul class="asso-figures" id="asso-figures"></ul>
     </section>
 
     <a class="cta-row" href="de/rejoindre.html">

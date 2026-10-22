@@ -2,7 +2,8 @@
 // est ajoutée dans le CMS.
 //   - « De l'idée au dancefloor » : les débuts (2023, 2024) sont écrits dans association.html ; ici
 //     s'ajoute un chapitre par année de soirées, illustré par leurs affiches.
-//   - « En chiffres » : le public de chaque soirée passée (vumètres), l'équipe et les DJ.
+//   - Qui sommes-nous : les chiffres (équipe, DJ, soirées) et, sur la photo, le public de chaque soirée
+//     passée en vumètres.
 import { EVENTS } from "../data/events.js";
 import { TEAM } from "../data/equipe.js";
 import { eventStatus, esc, eventPath } from "./helpers.js";
@@ -46,26 +47,32 @@ if (chapters) {
   chapters.style.setProperty("--chapters", chapters.children.length);
 }
 
-/* ---------- En chiffres ---------- */
-const numbers = document.getElementById("asso-numbers");
-if (numbers) {
-  const past = events.filter((ev) => !isNext(ev));
+/* ---------- Le public (vumètres sur la photo) ---------- */
+const past = events.filter((ev) => !isNext(ev));
+const crowdBox = document.getElementById("asso-crowd");
+if (crowdBox) {
   const crowd = past.map((ev) => ({ ev, n: Number(eventStats(ev).crowd) || 0 })).filter((item) => item.n);
   const max = Math.max(0, ...crowd.map((item) => item.n));
+  const monthYear = new Intl.DateTimeFormat(locale, { month: "short", year: "2-digit", timeZone: "UTC" });
 
   // Vumètre par soirée : hauteur = fréquentation / la plus grande (rien d'inventé : sans chiffre, pas de barre)
   document.getElementById("crowd-bars").innerHTML = crowd.map(({ ev, n }) => `
     <li style="--level:${(n / max).toFixed(3)}">
       <b>≈ ${n}<span class="sr-only"> ${esc(tr("personnes"))}</span></b>
       <span class="asso-crowd__meter" aria-hidden="true"></span>
-      <span class="asso-crowd__name" translate="no">${esc(ev.title)}</span>
-      <span class="asso-crowd__date">${esc(new Intl.DateTimeFormat(locale, { month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(`${ev.date}T12:00:00Z`)))}</span>
+      <a class="asso-crowd__name" href="${esc(eventPath(ev.slug))}" translate="no">${esc(ev.title)}</a>
+      <span class="asso-crowd__date">${esc(monthYear.format(new Date(`${ev.date}T12:00:00Z`)))}</span>
     </li>`).join("");
   // « Chaque soirée a réuni plus de monde… » seulement si les chiffres le disent
   if (crowd.length > 1 && crowd.length === past.length && crowd.every((item, i) => i === 0 || item.n > crowd[i - 1].n)) {
     document.getElementById("crowd-sentence").textContent = tr("Chaque soirée a réuni plus de monde que la précédente.");
   }
+  crowdBox.hidden = !crowd.length;
+}
 
+/* ---------- En chiffres ---------- */
+const figuresList = document.getElementById("asso-figures");
+if (figuresList) {
   // Les personnes de l'équipe (une fiche peut en présenter deux : « Céleste & Yelena »), les DJ, les soirées
   const people = TEAM.filter((member) => !member.demo).flatMap((member) => member.name.split(/\s+(?:&|et)\s+/)).length;
   const djs = collectArtists(events).length;
@@ -74,9 +81,7 @@ if (numbers) {
     [djs, tr("DJ à l'affiche")],
     [past.length, t("soirées depuis {year}", { year: past[0]?.date.slice(0, 4) || "" })]
   ].filter(([n]) => n);
-  document.getElementById("asso-figures").innerHTML = figures
+  figuresList.innerHTML = figures
     .map(([n, label]) => `<li><b>${n}</b><span>${esc(label)}</span></li>`).join("");
-
-  numbers.hidden = !crowd.length && !figures.length;
-  if (!crowd.length) numbers.querySelector(".asso-crowd").hidden = true;
+  figuresList.hidden = !figures.length;
 }
