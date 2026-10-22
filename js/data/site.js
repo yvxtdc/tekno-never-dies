@@ -15,10 +15,16 @@ export const SITE = {
   // Elle est aussi écrite en clair dans les pages et dans partials/ (header, footer).
   email: "tnd6tem@gmail.com",
   // Agenda .ics à jour (généré par tools/generate-calendar.mjs). Si l'adresse du site change,
-  // mettre à jour AGENDA_PATH puis régénérer assets/img/agenda-qr.svg (voir README).
+  // mettre à jour AGENDA_PATH et `page`, puis régénérer assets/img/agenda-qr.svg (voir README).
   agenda: {
     https: `https://${AGENDA_PATH}`,
-    webcal: `webcal://${AGENDA_PATH}`
+    // iPhone, iPad, Mac : l'app Calendrier s'abonne directement. Android ne sait pas ouvrir webcal://.
+    webcal: `webcal://${AGENDA_PATH}`,
+    // Google Agenda (Android) : abonnement à la même adresse
+    google: `https://calendar.google.com/calendar/render?cid=${encodeURIComponent(`webcal://${AGENDA_PATH}`)}`,
+    // Adresse du QR code (assets/img/agenda-qr.svg) : une page https, lisible par tous les téléphones,
+    // qui propose le bon bouton d'abonnement (js/pages/evenements.js).
+    page: "https://teknoneverdies.fr/evenements.html#agenda"
   },
   // Statistiques de visite (GoatCounter, sans cookie). Tableau de bord : https://teknoneverdies.goatcounter.com
   // Vide = pas de comptage. Si cette adresse change, la mettre aussi dans la CSP de chaque page.

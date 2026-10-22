@@ -187,6 +187,25 @@ export function buildICS(events) {
   return lines.map(fold).join("\r\n") + "\r\n";
 }
 
+/**
+ * Lien « ajouter à Google Agenda » d'une soirée : mêmes horaires (heure de Paris), titre, lieu et
+ * description que le fichier .ics. Sur Android, Google Agenda ne sait pas importer un .ics téléchargé :
+ * ce lien ouvre directement la fiche d'ajout (appli ou site).
+ */
+export function googleCalendarUrl(ev) {
+  const { allDay, start, end } = eventTimes(ev);
+  const details = eventCalendarDetails(ev, { tr, locale, time: formatTime });
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: details.summary,
+    dates: allDay ? `${fmtDay(start)}/${fmtDay(end)}` : `${fmtLocal(start)}/${fmtLocal(end)}`,
+    ctz: "Europe/Paris",
+    details: details.description,
+    location: details.location
+  });
+  return `https://calendar.google.com/calendar/render?${params}`;
+}
+
 /** Fait télécharger le fichier .ics au visiteur. */
 export function downloadICS(events, filename) {
   const blob = new Blob([buildICS(events)], { type: "text/calendar;charset=utf-8" });

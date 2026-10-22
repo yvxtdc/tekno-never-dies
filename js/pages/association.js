@@ -1,49 +1,82 @@
-// « Le prochain rendez-vous » : rempli depuis js/data/events.js pour ne jamais afficher une date passée.
+// Page association : tout ce qui dépend des soirées vient de js/data, pour rester juste quand une soirée
+// est ajoutée dans le CMS.
+//   - « De l'idée au dancefloor » : les débuts (2023, 2024) sont écrits dans association.html ; ici
+//     s'ajoute un chapitre par année de soirées, illustré par leurs affiches.
+//   - « En chiffres » : le public de chaque soirée passée (vumètres), l'équipe et les DJ.
 import { EVENTS } from "../data/events.js";
-import { eventStatus, formatDate, formatTime, esc, eventPath } from "./helpers.js";
-import { t, tr } from "../i18n/i18n.js";
-import { priceSummary } from "../components/tickets.js";
+import { TEAM } from "../data/equipe.js";
+import { eventStatus, esc, eventPath } from "./helpers.js";
+import { collectArtists } from "../components/artists.js";
+import { eventStats } from "../components/event-stats.js";
+import { t, tr, locale } from "../i18n/i18n.js";
 
-const text = document.getElementById("next-event-text");
-const link = document.getElementById("next-event-link");
-const next = EVENTS
-  .filter((ev) => eventStatus(ev) === "a-venir")
-  .sort((a, b) => a.date.localeCompare(b.date))[0];
+const events = EVENTS
+  .filter((ev) => !ev.cancelled && !ev.demo)
+  .sort((a, b) => a.date.localeCompare(b.date));
+const isNext = (ev) => eventStatus(ev) === "a-venir";
+const town = (ev) => (ev.place || "").split(",").at(-1).trim();
+const dayMonth = (ev) => new Intl.DateTimeFormat(locale, ev.datePrecision === "month" ? { month: "long", timeZone: "UTC" } : { day: "numeric", month: "long", timeZone: "UTC" })
+  .format(new Date(`${ev.date}T12:00:00Z`));
 
-if (text && link) {
-  if (next) {
-    const start = next.time?.match(/\d{1,2}h\d{2}/)?.[0];
-    const details = [priceSummary(next) && t("Entrée {price}", { price: priceSummary(next) }), next.age && tr(next.age)].filter(Boolean).join(" · ");
-    // Phrase déjà traduite ici (elle contient des valeurs) : le traducteur automatique la laisse telle quelle.
-    text.setAttribute("translate", "no");
-    text.innerHTML = t("La prochaine date annoncée est {title}, le {date}{time}{place}.", {
-      title: `<strong>${esc(next.title)}</strong>`,
-      date: esc(formatDate(next.date, next.datePrecision)),
-      time: start ? ` ${esc(t("à {time}", { time: formatTime(start) }))}` : "",
-      place: next.place ? `, ${esc(next.place)}` : ""
-    }) + (details ? ` ${esc(details)}.` : "");
-    link.href = eventPath(next.slug);
-    link.textContent = "Voir la soirée";
-  } else {
-    text.setAttribute("translate", "no");
-    text.textContent = tr("La prochaine date sera annoncée ici et sur Instagram @tnd6tem dès qu'elle sera confirmée.");
-    link.href = "evenements.html";
-    link.textContent = "Voir les événements";
-  }
+/* ---------- Un chapitre par année de soirées ---------- */
+const chapters = document.getElementById("asso-chapters");
+if (chapters) {
+  const years = [...new Set(events.map((ev) => ev.date.slice(0, 4)))];
+  chapters.insertAdjacentHTML("beforeend", years.map((year, i) => {
+    const list = events.filter((ev) => ev.date.startsWith(year));
+    const title = i === 0 ? "Les premières soirées" : list.every(isNext) ? "La suite" : "La série continue";
+    return `
+      <li class="asso-chapter asso-chapter--events">
+        <span class="asso-chapter__year" aria-hidden="true">${esc(year)}</span>
+        <div class="asso-chapter__visual asso-chapter__visual--flyers" style="--count:${list.length}">
+          ${list.map((ev) => `
+            <a class="asso-flyer${isNext(ev) ? " is-next" : ""}" href="${esc(eventPath(ev.slug))}" tabindex="-1" aria-hidden="true">
+              ${ev.flyer || ev.cover ? `<img src="${esc(ev.flyer || ev.cover)}" alt="" loading="lazy" decoding="async" />` : `<span translate="no">${esc(ev.title)}</span>`}
+              ${isNext(ev) ? `<span class="asso-flyer__tag">${esc(tr("À venir"))}</span>` : ""}
+            </a>`).join("")}
+        </div>
+        <div class="asso-chapter__text">
+          <h3>${esc(tr(title))}</h3>
+          <ul class="asso-chapter__events">${list.map((ev) => `
+            <li><a href="${esc(eventPath(ev.slug))}" translate="no">${esc(ev.title)}</a><span>${esc([dayMonth(ev), town(ev)].filter(Boolean).join(" · "))}${isNext(ev) ? ` · <b>${esc(tr("À venir"))}</b>` : ""}</span></li>`).join("")}
+          </ul>
+        </div>
+      </li>`;
+  }).join(""));
+  chapters.style.setProperty("--chapters", chapters.children.length);
 }
 
-/* ---------- « Ce qui nous porte » : halo sous la souris, carte allumée au défilement sur téléphone ---------- */
-const pillars = document.querySelectorAll(".pillars__list li");
-if (matchMedia("(hover: hover) and (pointer: fine)").matches) {
-  pillars.forEach((card) => card.addEventListener("pointermove", (event) => {
-    const r = card.getBoundingClientRect();
-    card.style.setProperty("--mx", `${event.clientX - r.left}px`);
-    card.style.setProperty("--my", `${event.clientY - r.top}px`);
-  }));
-} else if ("IntersectionObserver" in window) {
-  const observer = new IntersectionObserver(
-    (entries) => entries.forEach((entry) => entry.target.classList.toggle("is-active", entry.isIntersecting)),
-    { rootMargin: "-40% 0px -40% 0px" } // bande centrale de l'écran
-  );
-  pillars.forEach((card) => observer.observe(card));
+/* ---------- En chiffres ---------- */
+const numbers = document.getElementById("asso-numbers");
+if (numbers) {
+  const past = events.filter((ev) => !isNext(ev));
+  const crowd = past.map((ev) => ({ ev, n: Number(eventStats(ev).crowd) || 0 })).filter((item) => item.n);
+  const max = Math.max(0, ...crowd.map((item) => item.n));
+
+  // Vumètre par soirée : hauteur = fréquentation / la plus grande (rien d'inventé : sans chiffre, pas de barre)
+  document.getElementById("crowd-bars").innerHTML = crowd.map(({ ev, n }) => `
+    <li style="--level:${(n / max).toFixed(3)}">
+      <b>≈ ${n}<span class="sr-only"> ${esc(tr("personnes"))}</span></b>
+      <span class="asso-crowd__meter" aria-hidden="true"></span>
+      <span class="asso-crowd__name" translate="no">${esc(ev.title)}</span>
+      <span class="asso-crowd__date">${esc(new Intl.DateTimeFormat(locale, { month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(`${ev.date}T12:00:00Z`)))}</span>
+    </li>`).join("");
+  // « Chaque soirée a réuni plus de monde… » seulement si les chiffres le disent
+  if (crowd.length > 1 && crowd.length === past.length && crowd.every((item, i) => i === 0 || item.n > crowd[i - 1].n)) {
+    document.getElementById("crowd-sentence").textContent = tr("Chaque soirée a réuni plus de monde que la précédente.");
+  }
+
+  // Les personnes de l'équipe (une fiche peut en présenter deux : « Céleste & Yelena »), les DJ, les soirées
+  const people = TEAM.filter((member) => !member.demo).flatMap((member) => member.name.split(/\s+(?:&|et)\s+/)).length;
+  const djs = collectArtists(events).length;
+  const figures = [
+    [people, tr("membres et bénévoles")],
+    [djs, tr("DJ à l'affiche")],
+    [past.length, t("soirées depuis {year}", { year: past[0]?.date.slice(0, 4) || "" })]
+  ].filter(([n]) => n);
+  document.getElementById("asso-figures").innerHTML = figures
+    .map(([n, label]) => `<li><b>${n}</b><span>${esc(label)}</span></li>`).join("");
+
+  numbers.hidden = !crowd.length && !figures.length;
+  if (!crowd.length) numbers.querySelector(".asso-crowd").hidden = true;
 }

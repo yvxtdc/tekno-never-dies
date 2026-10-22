@@ -107,8 +107,27 @@ if (teaser) {
 }
 
 /* ---------- Abonnement à l'agenda ---------- */
+/* Un bouton par type de téléphone : webcal:// ouvre l'app Calendrier sur iPhone, iPad et Mac, mais
+   Android ne sait pas l'ouvrir (lien sans effet). Sur Android, on passe par Google Agenda, avec le
+   fichier .ics en https en second choix (Samsung Calendar, Outlook…). */
 const subscribeLink = document.getElementById("download-agenda");
-if (subscribeLink) subscribeLink.href = SITE.agenda.webcal;
+const isAndroid = /Android/i.test(navigator.userAgent);
+if (subscribeLink) {
+  subscribeLink.href = isAndroid ? SITE.agenda.google : SITE.agenda.webcal;
+  if (isAndroid) {
+    subscribeLink.target = "_blank";
+    subscribeLink.rel = "noopener";
+    subscribeLink.textContent = "S'abonner avec Google Agenda";
+    const other = document.createElement("a");
+    other.className = "events-agenda__alt";
+    other.href = SITE.agenda.https;
+    other.textContent = "Autre agenda : fichier .ics";
+    other.addEventListener("click", () => track("Agenda · fichier .ics"));
+    subscribeLink.parentElement.append(other);
+  }
+}
+// Arrivée par le QR code (…/evenements.html#agenda) : le bloc est mis en avant.
+if (location.hash === "#agenda") document.getElementById("agenda")?.classList.add("is-target");
 
 async function copyToClipboard(text) {
   // Méthode moderne (nécessite https:// ou localhost)
@@ -146,10 +165,11 @@ document.getElementById("copy-events-link")?.addEventListener("click", async (ev
   setTimeout(() => { button.textContent = "Partager l'agenda"; }, 1800);
 });
 
-/* Sur mobile, le lien webcal:// suffit (l'app Calendrier s'ouvre directement). Sur ordinateur,
-   on affiche un QR code à scanner avec le téléphone plutôt que de laisser le lien échouer.
+/* Sur ordinateur, on affiche un QR code à scanner avec le téléphone, avec en dessous les liens pour
+   s'abonner sur l'ordinateur lui-même. Le QR code mène en https à cette page (SITE.agenda.page) :
+   iPhone et Android l'ouvrent tous les deux, et le bouton ci-dessus s'adapte au téléphone.
    Le QR code est un fichier local (assets/img/agenda-qr.svg) : aucune requête vers un service tiers. */
-if (subscribeLink && matchMedia("(pointer: fine)").matches) {
+if (subscribeLink && !isAndroid && matchMedia("(pointer: fine)").matches) {
   subscribeLink.textContent = "S'abonner (QR code)";
   subscribeLink.addEventListener("click", (event) => {
     event.preventDefault();
@@ -164,10 +184,12 @@ function openAgendaQrModal() {
     <div class="agenda-qr-modal__box" role="dialog" aria-modal="true" aria-label="S'abonner à l'agenda depuis un téléphone">
       <button type="button" class="agenda-qr-modal__close" aria-label="Fermer">✕</button>
       <img src="assets/img/agenda-qr.svg" alt="QR code d'abonnement à l'agenda TND" width="260" height="260" />
-      <p>Scanne ce code avec l'appareil photo de ton téléphone pour t'abonner directement à l'agenda.</p>
+      <p>Scanne ce code avec l'appareil photo de ton téléphone (iPhone ou Android), puis appuie sur « S'abonner ».</p>
+      <p class="agenda-qr-modal__here" translate="no">${esc(tr("Sur cet ordinateur :"))} <a href="${esc(SITE.agenda.google)}" target="_blank" rel="noopener">Google Agenda</a> · <a href="${esc(SITE.agenda.webcal)}">${esc(tr("Apple Calendrier, Outlook"))}</a></p>
     </div>`;
   document.body.appendChild(modal);
-  modal.querySelector(".agenda-qr-modal__close").focus();
+  const focusables = [...modal.querySelectorAll("button, a[href]")];
+  focusables[0].focus();
 
   const close = () => {
     modal.remove();
@@ -176,10 +198,11 @@ function openAgendaQrModal() {
   };
   function onKey(event) {
     if (event.key === "Escape") close();
-    // Un seul élément interactif dans la fenêtre : le focus reste sur le bouton Fermer
+    // Le focus reste dans la fenêtre (Fermer, puis les deux liens)
     if (event.key === "Tab") {
+      const i = focusables.indexOf(document.activeElement);
       event.preventDefault();
-      modal.querySelector(".agenda-qr-modal__close").focus();
+      focusables[(i + (event.shiftKey ? -1 : 1) + focusables.length) % focusables.length].focus();
     }
   }
   modal.addEventListener("click", (event) => {

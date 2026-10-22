@@ -30,6 +30,12 @@
 .events-agenda__steps svg{flex:none;width:34px;height:34px;padding:7px;border-radius:50%;border:1px solid rgba(149,106,255,.5);background:rgba(149,106,255,.14);fill:none;stroke:var(--lav);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .events-agenda__actions{display:flex;flex-wrap:wrap;gap:10px}
 .page-head .events-agenda__actions .btn{margin:0}
+/* Android : le fichier .ics en second choix, sous les boutons */
+.events-agenda__alt{flex-basis:100%;color:var(--muted);font-size:.8rem;text-underline-offset:3px}
+.events-agenda__alt:hover{color:#fff}
+/* Arrivée par le QR code (#agenda) : le bloc s'illumine et ne passe pas sous l'en-tête fixe */
+.events-agenda{scroll-margin-top:110px}
+.events-agenda.is-target{border-color:var(--lav);box-shadow:0 0 0 3px rgba(149,106,255,.25),0 0 40px rgba(149,106,255,.25)}
 
 /* ---------- À venir : grande carte ---------- */
 .events-upcoming{display:grid;gap:clamp(22px,3vw,36px);margin-top:clamp(18px,2.4vw,28px)}
