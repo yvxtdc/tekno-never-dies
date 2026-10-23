@@ -17,7 +17,8 @@ const dateOf = ({ y, mo, d }) => `${y}-${pad(mo)}-${pad(d)}`;
 
 export function eventSchema(ev) {
   const pageUrl = new URL(eventPath(ev.slug), SITE.url).href;
-  const ticketUrl = safeUrl(ev.ticketUrl);
+  // Soirée annulée : les offres ne mènent plus à la billetterie (comme sur la fiche).
+  const ticketUrl = ev.cancelled ? "" : safeUrl(ev.ticketUrl);
   const visual = ev.flyer || ev.cover;
   const times = ev.datePrecision !== "month" && ev.time ? eventTimes(ev) : null;
   const [placeName, ...placeRest] = (ev.place || "").split(",").map((part) => part.trim());

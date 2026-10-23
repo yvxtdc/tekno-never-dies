@@ -856,6 +856,11 @@ body.tnd-lock{overflow:hidden}
 /* « .is-scrolled » aussi : sinon « .home-page .top.is-scrolled », plus précis, gardait le fond flouté sur le menu */
 body.tnd-lock .top,
 body.tnd-lock .top.is-scrolled{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;border-bottom-color:transparent;box-shadow:none}
+/* Sans transition à l'ouverture : le fond du header (0,35 s) s'effaçait moins vite que le menu n'apparaît
+   (0,25 s) et restait visible en bande sombre au-dessus. À la fermeture, la transition de .top s'applique.
+   Barre de défilement classique (Windows, Linux) : elle disparaît avec le blocage du défilement ; le header
+   garde sa largeur (--lock-gap, largeur de la barre, posée par initMenu) pour que « Fermer » ne saute pas. */
+body.tnd-lock .top{transition:none;right:var(--lock-gap,0px)}
 
 body.tnd-lock .top .brand{visibility:hidden}
 /* Menu ouvert : la barre du haut laisse passer les clics vers le logo du menu (lien vers l'accueil),
@@ -2057,4 +2062,9 @@ main:has(.event-page__container > .cta-row:last-child) ~ .site-footer{margin-top
   .site-footer__brand-text span{display:none}
   .site-footer__legal{flex-direction:column;align-items:flex-start;gap:6px}
   .site-footer__legal nav{gap:4px 14px}
+}
+/* Petit téléphone (320 px) : marque + 3 icônes de 40 px ne tiennent pas sur une ligne (débordement de 7 px) ;
+   les icônes passent sous les liens plutôt que de rétrécir les cibles tactiles. */
+@media (max-width:360px){
+  .site-footer__main{grid-template-columns:1fr}
 }
