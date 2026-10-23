@@ -103,11 +103,18 @@
   background:linear-gradient(90deg,rgba(149,106,255,.15),var(--lav) 30%,var(--pink));
 }
 .asso-chapter{position:relative;display:grid;grid-template-rows:auto auto 1fr;min-width:0}
+/* Les points ont la couleur du fil à leur place : lavande jusqu'à 30 % du fil, puis de plus en plus rose
+   (--i : rang du chapitre, posé par js/pages/association.js ; --chapters : leur nombre) */
 .asso-chapter::after{
   content:"";position:absolute;left:2px;top:calc(var(--year) * .86 + 13px);width:12px;height:12px;border-radius:50%;
-  background:var(--page);border:2px solid var(--lav);box-shadow:0 0 14px rgba(149,106,255,.6);
+  background:var(--lav);box-shadow:0 0 14px rgba(149,106,255,.6);
 }
-.asso-chapter--events::after{background:var(--lav)}
+@supports (color:color-mix(in srgb,red,blue)){
+  .asso-chapter::after{
+    --dot:color-mix(in srgb,var(--pink) clamp(0%,(var(--i,0) / var(--chapters,2) - .3) / .7 * 100%,100%),var(--lav));
+    background:var(--dot);box-shadow:0 0 14px color-mix(in srgb,var(--dot) 60%,transparent);
+  }
+}
 .asso-chapter__year{
   display:block;margin-bottom:46px;font-family:var(--display);font-size:var(--year);line-height:.86;letter-spacing:-.03em;
   color:transparent;-webkit-text-stroke:1.5px rgba(193,177,255,.7);
