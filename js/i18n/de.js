@@ -61,7 +61,7 @@ const PAGES = {
   "Artistes": "Künstler",
   "Nous suivre": "Folge uns",
   "Réseaux sociaux de l'association": "Soziale Netzwerke des Vereins",
-  "© 2026 Tekno Never Dies · site créé et maintenu par Yannis et Yanniv": "© 2026 Tekno Never Dies · Website erstellt und gepflegt von Yannis und Yanniv",
+  "© 2026 Tekno Never Dies · Tous droits réservés · site créé et maintenu par Yannis et Yanniv": "© 2026 Tekno Never Dies · Alle Rechte vorbehalten · Website erstellt und gepflegt von Yannis und Yanniv",
   "Informations légales": "Rechtliche Informationen",
   "Mentions légales": "Impressum",
   "Confidentialité": "Datenschutz",
