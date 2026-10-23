@@ -853,7 +853,9 @@ body.tnd-lock{overflow:hidden}
    que le menu est ouvert pour laisser voir le logo blanc du menu. */
 .tnd-menu{z-index:999}
 
-body.tnd-lock .top{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;border-bottom-color:transparent;box-shadow:none}
+/* « .is-scrolled » aussi : sinon « .home-page .top.is-scrolled », plus précis, gardait le fond flouté sur le menu */
+body.tnd-lock .top,
+body.tnd-lock .top.is-scrolled{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;border-bottom-color:transparent;box-shadow:none}
 
 body.tnd-lock .top .brand{visibility:hidden}
 /* Menu ouvert : la barre du haut laisse passer les clics vers le logo du menu (lien vers l'accueil),
@@ -1381,6 +1383,21 @@ body{
   border-bottom-color:rgba(149,106,255,.22);
   box-shadow:0 12px 38px rgba(0,0,0,.28);
 }
+/* Au chargement, rien derrière le logo et les boutons : le fond flouté n'apparaît que lorsqu'on
+   défile et que du contenu passe dessous (classe is-scrolled posée par js/partials.js). */
+.top:not(.is-scrolled){
+  background:transparent;
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+  border-bottom-color:transparent;
+}
+/* Accueil : sur le hero, un voile très léger qui monte avec le défilement (--top-veil, de 0 à 1,
+   posé par js/partials.js) ; le fond complet n'arrive qu'une fois le hero sorti de l'écran. */
+body.home-page:not(.tnd-lock) .top:not(.is-scrolled){
+  background:rgba(11,7,34,calc(var(--top-veil,0) * .3));
+  -webkit-backdrop-filter:blur(calc(var(--top-veil,0) * 6px));
+  backdrop-filter:blur(calc(var(--top-veil,0) * 6px));
+}
 
 
 .home-grid{overflow:hidden}
@@ -1494,12 +1511,6 @@ main{position:relative;overflow-x:clip}
 }
 @keyframes chrome-flow{to{--chrome-angle:360deg}}
 
-/* Entrée : le cadre apparaît avec le halo */
-.home-next.is-ready .home-next__frame,
-.home-next.is-ready .home-next__inner::before{opacity:0;transition:opacity .9s ease}
-.home-next.is-in .home-next__frame,
-.home-next.is-in .home-next__inner::before{opacity:1}
-
 /* Flyer : posé de travers sur la page, avec la rafale chromée qui tourne lentement au coin */
 .home-next__flyer{
   position:relative;grid-column:1;grid-row:1 / span 2;display:block;
@@ -1567,26 +1578,6 @@ main{position:relative;overflow-x:clip}
 }
 .countdown__live span{width:14px;height:14px;border-radius:50%;background:var(--pink);box-shadow:0 0 18px var(--pink);animation:live-pulse 1.4s ease-in-out infinite}
 @keyframes live-pulse{50%{opacity:.25;transform:scale(.7)}}
-
-/* ---------- Entrée à l'écran (classes posées par js/pages/accueil.js) ---------- */
-.home-next.is-ready::before{opacity:0}
-.home-next.is-ready .home-next__flyer{opacity:0;transform:rotate(-16deg) translateY(28px) scale(.9)}
-.home-next.is-ready :is(.home-next__text,.home-next__actions){opacity:0;transform:translateY(16px)}
-.home-next.is-ready .countdown__units span{opacity:0;transform:translateY(14px) scale(.94)}
-.home-next.is-ready :is(.home-next__flyer,.home-next__text,.home-next__actions,.countdown__units span){
-  transition:opacity .6s ease,transform .8s cubic-bezier(.2,.8,.2,1);
-}
-.home-next.is-in::before{opacity:1}
-.home-next.is-in .home-next__flyer{opacity:1;transform:rotate(-6deg)}
-.home-next.is-in .home-next__flyer:hover{transform:rotate(-2deg) scale(1.03)}
-.home-next.is-in :is(.home-next__text,.home-next__actions){opacity:1;transform:none}
-.home-next.is-in .home-next__text{transition-delay:.1s}
-.home-next.is-in .home-next__actions{transition-delay:.2s}
-.home-next.is-in .countdown__units span{opacity:1;transform:none}
-.home-next.is-in .countdown__units span:nth-child(1){transition-delay:.25s}
-.home-next.is-in .countdown__units span:nth-child(2){transition-delay:.33s}
-.home-next.is-in .countdown__units span:nth-child(3){transition-delay:.41s}
-.home-next.is-in .countdown__units span:nth-child(4){transition-delay:.49s}
 
 @media (prefers-reduced-motion:reduce){
   .countdown__live span,
@@ -2012,13 +2003,15 @@ main{min-height:100svh}
    Une ligne : marque · liens utiles · e-mail, Instagram, haut de page ; puis une fine ligne légale.
    Discret (peu de hauteur, textes atténués) mais complet : tout reste à un clic.
    ===================================================================== */
+/* Fond transparent : le fond de la page continue sous le pied de page, sans bande plus sombre ;
+   seul le fin filet du haut le sépare du contenu. */
 .site-footer{
   position:relative;margin-top:clamp(32px,5vw,64px);padding:clamp(26px,3vw,36px) 0 clamp(18px,2vw,24px);
-  border-top:1px solid rgba(149,106,255,.22);background:#070419;color:#fff;
+  border-top:1px solid rgba(149,106,255,.22);background:transparent;color:#fff;
 }
 /* Accueil : la dernière section (« Une idée, un live… ») s'assombrit jusqu'à la couleur du footer,
    qui la suit sans marge (sinon une bande plus claire apparaissait entre les deux) */
-.home-page .site-footer{margin-top:0;border-top-color:rgba(149,106,255,.14)}
+.home-page .site-footer{margin-top:0;border-top-color:rgba(149,106,255,.14);background:#070419}
 /* Pages qui finissent par le grand lien « Écris-nous » / « Tous les événements » (déjà aéré) : pas de marge en plus */
 main:has(> .cta-row:last-child) ~ .site-footer,
 main:has(.event-page__container > .cta-row:last-child) ~ .site-footer{margin-top:0}

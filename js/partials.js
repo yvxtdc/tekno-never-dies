@@ -212,13 +212,24 @@ function initLangSuggestion() {
   document.body.append(bar);
 }
 
-// Header opaque dès qu'on a défilé
+// Header transparent au chargement, fond flouté dès qu'on a défilé. Sur l'accueil : voile léger et
+// progressif sur le hero (--top-veil, de 0 à 1 sur le premier tiers du hero), fond complet une fois le hero passé.
 function initScrolledHeader() {
   const header = document.querySelector(".top");
   if (!header) return;
-  const update = () => header.classList.toggle("is-scrolled", window.scrollY > 24);
+  const hero = document.querySelector(".hero--home");
+  const update = () => {
+    if (!hero) {
+      header.classList.toggle("is-scrolled", window.scrollY > 24);
+      return;
+    }
+    header.classList.toggle("is-scrolled", hero.getBoundingClientRect().bottom <= header.offsetHeight);
+    const veil = Math.min(1, window.scrollY / (hero.offsetHeight / 3 || 1));
+    header.style.setProperty("--top-veil", veil.toFixed(2));
+  };
   update();
   window.addEventListener("scroll", update, { passive: true });
+  if (hero) window.addEventListener("resize", update, { passive: true });
 }
 
 // Page 404 (balise <base>) : les ancres "#main" doivent rester sur la page courante.

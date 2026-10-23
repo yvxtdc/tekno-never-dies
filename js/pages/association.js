@@ -81,7 +81,24 @@ if (figuresList) {
     [djs, tr("DJ à l'affiche")],
     [past.length, t("soirées depuis {year}", { year: past[0]?.date.slice(0, 4) || "" })]
   ].filter(([n]) => n);
+  // Le nombre animé est masqué aux lecteurs d'écran, qui lisent directement la valeur finale
   figuresList.innerHTML = figures
-    .map(([n, label]) => `<li><b>${n}</b><span>${esc(label)}</span></li>`).join("");
+    .map(([n, label]) => `<li><b aria-hidden="true" data-count="${n}">${n}</b><span><span class="sr-only">${n} </span>${esc(label)}</span></li>`).join("");
   figuresList.hidden = !figures.length;
+  countUp(figuresList.querySelectorAll("[data-count]"));
+}
+
+/* Compteurs : de 0 à leur valeur en 1,6 s (ralentit vers la fin), une seule fois au chargement de la page,
+   pas à chaque passage à l'écran. Valeur finale directement si le système limite les animations. */
+function countUp(numbers, duration = 1600) {
+  if (!numbers.length || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const start = performance.now();
+  const step = (now) => {
+    const progress = Math.min(1, (now - start) / duration);
+    const eased = 1 - (1 - progress) ** 3;
+    numbers.forEach((el) => { el.textContent = Math.round(Number(el.dataset.count) * eased); });
+    if (progress < 1) requestAnimationFrame(step);
+  };
+  numbers.forEach((el) => { el.textContent = "0"; });
+  requestAnimationFrame(step);
 }
