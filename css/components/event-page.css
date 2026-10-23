@@ -37,9 +37,10 @@ button.btn{font-family:var(--text);cursor:pointer;background-color:transparent}
 .event-actions .btn-hero-line{color:#fff}
 
 /* ---------- « La soirée » : texte à gauche, deux photos encadrées et légendées à droite ---------- */
+/* Pas de marge haute : le fondu en bas du hero (--hero-fade) suffit à séparer les deux sections */
 .event-about{
   display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,.55fr);gap:clamp(28px,5vw,72px);align-items:center;
-  margin:clamp(56px,8vw,110px) 0 0;
+  margin:0;
 }
 .event-about.has-photos{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)}
 .event-about__intro .event-eyebrow{margin-bottom:14px}

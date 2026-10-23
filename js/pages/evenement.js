@@ -394,6 +394,10 @@ if (!root) {
       ? `<strong>${escapeHTML(lead)}</strong>${escapeHTML(text.slice(lead.length))}`
       : escapeHTML(text);
   };
+  // « Une question ? » : à droite, sous la dernière info pratique (le partage est déjà dans les boutons du haut)
+  const contactLink = `<p class="event-contact"><a class="event-gallery-link" href="contact.html?type=evenement&evenement=${encodeURIComponent(ev.title)}">
+          <span>Une question ? Contacter l'équipe</span><span aria-hidden="true">↗</span>
+        </a></p>`;
   const practicalContent = practicalItems.length || links.length
     ? `<section class="event-practical" aria-labelledby="practical-title">
         <div class="event-section-head">
@@ -401,6 +405,7 @@ if (!root) {
           <p class="event-section-head__note">À SAVOIR<br />AVANT DE VENIR.</p>
         </div>
         <ul class="event-practical__list">${practicalItems.map((item) => `<li translate="no">${practicalLine(item)}</li>`).join("")}${links.map((link) => `<li><a href="${escapeHTML(link.url)}" target="_blank" rel="noopener noreferrer">${escapeHTML(link.label)} <span aria-hidden="true">↗</span></a></li>`).join("")}</ul>
+        ${contactLink}
       </section>`
     : "";
 
@@ -440,18 +445,7 @@ if (!root) {
 
     ${accessContent}
     ${ticketsContent}
-    ${practicalContent}
-
-    <section class="event-bottom-actions">
-      <div class="actions">
-        <button type="button" class="event-gallery-link js-share">
-          <span>Partager la soirée</span><span aria-hidden="true">↗</span>
-        </button>
-        <a class="event-gallery-link" href="contact.html?type=evenement&evenement=${encodeURIComponent(ev.title)}">
-          <span>Une question ? Contacter l'équipe</span><span aria-hidden="true">↗</span>
-        </a>
-      </div>
-    </section>
+    ${practicalContent || contactLink}
 
     <a class="cta-row" href="evenements.html">
       <span class="cta-row__inner">

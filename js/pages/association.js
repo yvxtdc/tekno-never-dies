@@ -45,6 +45,8 @@ if (chapters) {
       </li>`;
   }).join(""));
   chapters.style.setProperty("--chapters", chapters.children.length);
+  // Rang de chaque chapitre : son point sur le fil en prend la couleur (association.css)
+  [...chapters.children].forEach((chapter, i) => chapter.style.setProperty("--i", i));
 }
 
 /* ---------- Le public (vumètres sur la photo) ---------- */

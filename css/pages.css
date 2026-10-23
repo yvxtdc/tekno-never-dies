@@ -1321,11 +1321,9 @@ button.event-gallery-link{background:none;border-width:0 0 1px;border-radius:0;f
 }
 .event-practical li:first-child{border-top:1px solid var(--line)}
 
-/* ---------- FIN DE PAGE : réutilise .cta-row (déjà sur le site) ---------- */
-.event-bottom-actions{padding:0}
-.event-bottom-actions .actions{
-  display:flex;flex-wrap:wrap;gap:20px;margin-bottom:8px;
-}
+/* ---------- FIN DE PAGE : « Une question ? » à droite sous les infos pratiques, puis .cta-row ---------- */
+.event-contact{margin:clamp(14px,1.6vw,18px) 0 0;text-align:right}
+.event-contact .event-gallery-link{margin-top:0}
 .event-not-found{padding:clamp(140px,20vw,220px) var(--pad) clamp(70px,12vw,140px)}
 .event-not-found h1{font-family:var(--display);font-size:clamp(2.6rem,7vw,5.5rem);text-transform:uppercase;line-height:.9}
 .event-not-found h1 span{color:var(--lav)}
