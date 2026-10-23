@@ -596,9 +596,14 @@ select option{background:#150d3b;color:#fff}
 .btn-line{border-color:rgba(255,255,255,.4)}
 
 /* ---------- 6 bis. Galerie masonry + lightbox ---------- */
-.gallery-masonry{
+/* Voile violet des photos : galerie, line-ups des fiches soirées et page Artistes */
+.gallery-masonry,
+.lineup-rows,
+.artists-grid{
   --tint:#4226b6;          /* teinte violette (charte) */
   --tint-opacity:.75;      /* 0 = noir et blanc pur · 1 = violet très marqué */
+}
+.gallery-masonry{
   column-count:3;
   column-gap:10px;
 }
@@ -1148,18 +1153,27 @@ select option{background:#150d3b;color:#fff}
   border-radius:50%;overflow:hidden;
   border:1px solid rgba(255,255,255,.25);
   background:linear-gradient(135deg,#1a1050,#0b0722);
+  isolation:isolate;
 }
+/* Même traitement que la galerie : noir et blanc sous un voile violet, en couleur au survol */
 .lineup-row__photo img{
   position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-  filter:grayscale(1) brightness(.65);
+  filter:grayscale(1) contrast(1.05);
   transform:scale(1.06);
   transition:filter .5s ease, transform .6s cubic-bezier(.22,1,.36,1);
+}
+.lineup-row__photo:has(img)::after{
+  content:"";position:absolute;inset:0;border-radius:50%;
+  background:var(--tint);mix-blend-mode:color;opacity:var(--tint-opacity);
+  transition:opacity .5s ease;pointer-events:none;
 }
 .lineup-row:hover .lineup-row__photo img,
 .lineup-row:focus-within .lineup-row__photo img{
   filter:grayscale(0) brightness(.95);
   transform:scale(1);
 }
+.lineup-row:hover .lineup-row__photo::after,
+.lineup-row:focus-within .lineup-row__photo::after{opacity:0}
 /* B2B : un deuxième cercle qui chevauche le premier */
 .lineup-row__photo--mystery{
   display:grid;place-items:center;
@@ -1173,6 +1187,7 @@ select option{background:#150d3b;color:#fff}
 /* Téléphone : pas de survol, les photos s'affichent directement en couleur */
 @media (hover:none){
   .lineup-row__photo img{filter:grayscale(0) brightness(.95);transform:scale(1)}
+  .lineup-row__photo::after{opacity:0}
 }
 
 .lineup-row__info{min-width:0;flex:1}
@@ -1273,6 +1288,7 @@ button.event-gallery-link{background:none;border-width:0 0 1px;border-radius:0;f
 }
 .lineup-row.is-live .lineup-row__photo{border-color:var(--pink);box-shadow:0 0 0 3px rgba(182,38,154,.35),0 0 28px rgba(182,38,154,.55)}
 .lineup-row.is-live .lineup-row__photo img{filter:none;transform:scale(1)}
+.lineup-row.is-live .lineup-row__photo::after{opacity:0}
 .lineup-row.is-live::before{background:var(--pink);box-shadow:0 0 14px var(--pink)}
 .event-hero.is-live .event-hero__top .event-eyebrow{display:inline-flex;align-items:center;gap:10px}
 .event-hero.is-live .event-hero__top .event-eyebrow::before{background:var(--pink)}
@@ -1367,14 +1383,23 @@ button.event-gallery-link{background:none;border-width:0 0 1px;border-radius:0;f
   position:relative;display:block;width:clamp(120px,12vw,150px);aspect-ratio:1;margin-bottom:18px;
   border-radius:50%;overflow:hidden;border:1px solid rgba(255,255,255,.25);
   background:linear-gradient(135deg,#1a1050,#0b0722);
+  isolation:isolate;
 }
+/* Même traitement que la galerie : noir et blanc sous un voile violet, en couleur au survol */
 .artist-card__photo img{
   width:100%;height:100%;object-fit:cover;display:block;
-  filter:grayscale(1) brightness(.7);transform:scale(1.06);
+  filter:grayscale(1) contrast(1.05);transform:scale(1.06);
   transition:filter .5s ease,transform .6s cubic-bezier(.22,1,.36,1);
+}
+.artist-card__photo:has(img)::after{
+  content:"";position:absolute;inset:0;
+  background:var(--tint);mix-blend-mode:color;opacity:var(--tint-opacity);
+  transition:opacity .5s ease;pointer-events:none;
 }
 .artist-card:hover .artist-card__photo img,
 .artist-card:focus-within .artist-card__photo img{filter:none;transform:scale(1)}
+.artist-card:hover .artist-card__photo::after,
+.artist-card:focus-within .artist-card__photo::after{opacity:0}
 .artist-card__name{
   margin:0;font-family:var(--display);font-weight:400;text-transform:uppercase;
   font-size:clamp(1.4rem,2.2vw,1.8rem);line-height:1;letter-spacing:-.01em;
@@ -1401,6 +1426,7 @@ button.event-gallery-link{background:none;border-width:0 0 1px;border-radius:0;f
 /* Téléphone : pas de survol, les photos s'affichent directement en couleur */
 @media (hover:none){
   .artist-card__photo img{filter:none;transform:scale(1)}
+  .artist-card__photo::after{opacity:0}
 }
 @media (max-width:520px){
   .artists-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
@@ -1411,7 +1437,7 @@ button.event-gallery-link{background:none;border-width:0 0 1px;border-radius:0;f
   .artist-card__sets a{font-size:.76rem}
 }
 @media (prefers-reduced-motion:reduce){
-  .artist-card,.artist-card__photo img{transition:none}
+  .artist-card,.artist-card__photo img,.artist-card__photo::after{transition:none}
 }
 
 /* Page Événements : bandeau vers la page Artistes (à la place de la recherche, masquée) */

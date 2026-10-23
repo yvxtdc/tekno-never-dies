@@ -116,6 +116,7 @@ button.btn{font-family:var(--text);cursor:pointer;background-color:transparent}
 /* Photo dans un anneau dégradé */
 .event-lineup .lineup-row__photo{--photo:clamp(56px,5vw,70px);border:0;padding:3px;background:var(--gradient-tnd)}
 .event-lineup .lineup-row__photo img{inset:3px;width:calc(100% - 6px);height:calc(100% - 6px);border-radius:50%}
+.event-lineup .lineup-row__photo::after{inset:3px} /* voile violet sur la photo seulement, pas sur l'anneau */
 .event-lineup .lineup-row__photos .lineup-row__photo + .lineup-row__photo{box-shadow:0 0 0 3px #120b38}
 /* Artiste pas encore dévoilé : « ? » blanc sur fond sombre, dans l'anneau dégradé */
 .event-lineup .lineup-row__photo--mystery{padding:0;border:3px solid transparent;background:linear-gradient(#120b38,#120b38) padding-box,var(--gradient-tnd) border-box;color:#fff;font-size:calc(var(--photo) * .5)}
