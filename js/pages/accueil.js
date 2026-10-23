@@ -32,21 +32,6 @@ if (nextBlock && next) {
   }
   nextBlock.hidden = false;
   startCountdown(next);
-  revealOnScroll(nextBlock);
-}
-
-/* ---------- Entrée de la section quand elle arrive à l'écran ----------
-   Le halo s'allume, le flyer pivote en place, les cases du compte à rebours apparaissent une à une
-   (styles : .home-next.is-ready / .is-in). Sans animation si le système le demande. */
-function revealOnScroll(section) {
-  if (!("IntersectionObserver" in window) || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  section.classList.add("is-ready");
-  const observer = new IntersectionObserver((entries) => {
-    if (!entries[0].isIntersecting) return;
-    section.classList.add("is-in");
-    observer.disconnect();
-  }, { threshold: 0.3 });
-  observer.observe(section);
 }
 
 /* ---------- Cadre chromé : reflet blanc qui suit la souris (ordinateur) ---------- */
