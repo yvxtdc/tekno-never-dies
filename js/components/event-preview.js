@@ -21,6 +21,8 @@ function formatDate(ev, locale, weekday) {
 export function eventPreview(ev, { tr = same, locale = "fr-FR", time = same } = {}) {
   const when = [formatDate(ev, locale, true), ev.time ? time(ev.time) : ""].filter(Boolean).join(", ");
   const parts = [
+    // Soirée annulée : dit en premier (l'aperçu garde la date pour les personnes qui l'avaient notée).
+    ev.cancelled ? tr("Soirée annulée") : "",
     [when, ev.place].filter(Boolean).join(" · "),
     (ev.genres || []).join(" · "),
     ev.price ? tr(ev.price) : ""

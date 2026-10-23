@@ -31,7 +31,8 @@ function longDate(ev, locale) {
 export function eventCalendarDetails(ev, { tr = same, locale = "fr-FR", time = same } = {}) {
   const t = (template, vars = {}) => tr(template).replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? "");
   const pageUrl = new URL(eventPath(ev.slug), SITE.url).href;
-  const ticketUrl = safeUrl(ev.ticketUrl);
+  // Soirée annulée : plus de billetterie (comme sur la fiche).
+  const ticketUrl = ev.cancelled ? "" : safeUrl(ev.ticketUrl);
   const genres = (ev.genres || []).join(" · ");
   const lineup = visibleLineup(ev).filter((slot) => slot.name);
   // L'âge et l'horaire de début ont déjà leur ligne : pas de doublon dans les infos pratiques.

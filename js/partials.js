@@ -82,6 +82,8 @@ function initMenu() {
   const isOpen = () => button.getAttribute("aria-expanded") === "true";
 
   const setOpen = (open) => {
+    // Largeur de la barre de défilement, mesurée avant qu'elle disparaisse (css/style.css, --lock-gap)
+    if (open) document.body.style.setProperty("--lock-gap", `${window.innerWidth - document.documentElement.clientWidth}px`);
     button.setAttribute("aria-expanded", String(open));
     nav.classList.toggle("is-open", open);
     document.body.classList.toggle("tnd-lock", open);
@@ -112,10 +114,11 @@ function initMenu() {
 }
 
 // Menu (ordinateur) : la prochaine soirée de js/data/events.js dans la colonne de droite
+// (hors soirées annulées, comme l'annonce de l'accueil)
 function initMenuNext() {
   const box = document.querySelector(".tnd-next");
   const next = EVENTS
-    .filter((ev) => eventStatus(ev) === "a-venir")
+    .filter((ev) => eventStatus(ev) === "a-venir" && !ev.cancelled)
     .sort((a, b) => a.date.localeCompare(b.date))[0];
   if (!box || !next) return;
   const ficheUrl = eventPath(next.slug);
@@ -170,11 +173,11 @@ function initLangSwitch() {
 }
 
 // Bouton « Billetterie » du header : la prochaine soirée à venir qui a une billetterie en ligne.
-// Sans date à venir (ou sans billetterie), le bouton reste masqué.
+// Sans date à venir (ou sans billetterie), le bouton reste masqué. Soirée annulée : plus de billetterie.
 function initHeaderTicket() {
   const link = document.querySelector(".top-ticket");
   const next = EVENTS
-    .filter((ev) => eventStatus(ev) === "a-venir" && safeUrl(ev.ticketUrl))
+    .filter((ev) => eventStatus(ev) === "a-venir" && !ev.cancelled && safeUrl(ev.ticketUrl))
     .sort((a, b) => a.date.localeCompare(b.date))[0];
   if (!link || !next) return;
   link.href = safeUrl(next.ticketUrl);
