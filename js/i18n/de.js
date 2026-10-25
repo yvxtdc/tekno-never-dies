@@ -533,6 +533,7 @@ const PAGES = {
   "Les artistes s'afficheront ici dès qu'un line-up sera publié.": "Die Künstler erscheinen hier, sobald ein Line-up veröffentlicht ist.",
   "La galerie sera alimentée après les prochains événements.": "Die Galerie wird nach den nächsten Events gefüllt.",
   "Photos à venir": "Fotos folgen",
+  "Crédit photo : Jennifer Samtmann (Nebula Studio)": "Foto: Jennifer Samtmann (Nebula Studio)",
   "Visuel à venir": "Visual folgt",
   "Photo à ajouter": "Foto folgt",
   "Horaire à confirmer": "Uhrzeit folgt",

@@ -1198,6 +1198,15 @@ body{overflow-x:clip}
   transition:background .5s ease;
 }
 
+.home-cards__credit{
+  margin:12px 0 0;
+  padding:0 clamp(14px,4vw,56px);
+  color:rgba(255,255,255,.7);
+  font-size:.68rem;
+  line-height:1.25;
+  text-align:right;
+}
+
 .home-card__body{
   position:relative;
   z-index:2;

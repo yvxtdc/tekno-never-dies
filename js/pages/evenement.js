@@ -1,5 +1,6 @@
 import { EVENTS, EVENT_REDIRECTS } from "../data/events.js";
 import { splitB2B, artistsOf, artistUrl, artistPhoto, slotStyle, visibleLineup } from "../components/artists.js";
+import { photoCreditFor } from "../components/photo-credit.js";
 import { SITE } from "../data/site.js";
 import { formatDate, formatTime, readParam, eventStatus, safeUrl, track, eventPath } from "./helpers.js";
 import { t, tr, plural, locale } from "../i18n/i18n.js";
@@ -221,6 +222,7 @@ if (!root) {
   /* ---------- « La soirée » : ce qui distingue cette soirée ---------- */
   const about = ev.about || {};
   const photos = (about.photos || []).slice(0, 2);
+  const photoCredit = tr(photos.map((photo) => photoCreditFor(photo.src)).find(Boolean) || "");
   const statsContent = stats.length ? `<ul class="event-stats">${stats.map(([n, label]) => `<li><b>${escapeHTML(n)}</b><span>${escapeHTML(label)}</span></li>`).join("")}</ul>` : "";
   const aboutContent = `
     <section class="event-about${photos.length ? " has-photos" : ""}" aria-labelledby="about-title">
@@ -232,11 +234,15 @@ if (!root) {
         ${galleryLink}
       </div>
       ${photos.length
-        ? `<div class="event-about__photos">${photos.map((photo) => `
+        ? `<div class="event-about__photos">${photos.map((photo, i) => {
+          const caption = photo.caption ? `<span>${escapeHTML(tr(photo.caption))}</span>` : "";
+          const credit = i === 0 ? photoCredit : "";
+          return `
             <figure class="event-photo">
               <span class="event-photo__frame"><img src="${escapeHTML(photo.src)}" alt="${escapeHTML(photo.alt ? tr(photo.alt) : "")}" loading="lazy" decoding="async" /></span>
-              ${photo.caption ? `<figcaption>${escapeHTML(tr(photo.caption))}</figcaption>` : ""}
-            </figure>`).join("")}</div>`
+              ${caption || credit ? `<figcaption>${caption}${credit ? `<span class="event-photo__credit">${escapeHTML(credit)}</span>` : ""}</figcaption>` : ""}
+            </figure>`;
+        }).join("")}</div>`
         : `<div class="event-about__side">
             <div class="event-story__stamp" aria-hidden="true" translate="no">
               <svg class="event-story__ring" viewBox="0 0 200 200">

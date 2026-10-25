@@ -631,6 +631,13 @@ select option{background:#150d3b;color:#fff}
 
 .gallery-more{display:flex;margin:18px auto 0}
 
+.gallery-event__credit{
+  margin:-.45em 0 .75em;
+  color:rgba(255,255,255,.7);
+  font-size:.68rem;
+  line-height:1.4;
+}
+
 .g-tile img{
   display:block;
   width:100%;
@@ -702,12 +709,20 @@ select option{background:#150d3b;color:#fff}
   display:flex;
   align-items:center;
   justify-content:space-between;
+  flex-wrap:wrap;
   gap:16px;
   width:100%;
   font-size:.75rem;
   letter-spacing:.14em;
   text-transform:uppercase;
   color:var(--muted);
+}
+
+.lb-credit{
+  color:rgba(255,255,255,.78);
+  font-size:.68rem;
+  letter-spacing:normal;
+  text-transform:none;
 }
 
 .lb-dl{
