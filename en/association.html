@@ -188,20 +188,36 @@
     </a>
   </main>
 
+  <!-- Fiche d'un membre (js/components/team.js, css/components/team.css) : photo sur plaque chromée,
+       ambiance tirée de la photo, missions illustrées aux couleurs de sa carte. Les flèches précédent /
+       suivant restent à la même place à l'écran, quelle que soit la hauteur de la fiche. -->
   <div class="team-modal" id="team-modal" hidden>
     <div class="team-modal-backdrop" data-close></div>
-    <div class="team-modal-card" role="dialog" aria-modal="true" aria-labelledby="team-modal-name">
-      <button class="team-modal-close" type="button" data-close aria-label="Close">✕</button>
-      <div class="team-modal-photo"><img id="team-modal-img" alt=""></div>
+    <div class="team-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="team-modal-name">
+      <div class="team-modal-card">
+        <div class="team-modal-mood" id="team-modal-mood" aria-hidden="true"></div>
+        <button class="team-modal-close" type="button" data-close aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
 
-      <div class="team-modal-body">
-        <h3 id="team-modal-name"></h3>
-        <p class="team-modal-role" id="team-modal-role"></p>
-        <p class="team-modal-bio" id="team-modal-bio"></p>
-        <div class="team-modal-tags" id="team-modal-tags"></div>
-  <dl class="team-modal-extra" id="team-modal-extra"></dl>
-</div>
-      
+        <div class="team-modal-scroll">
+          <div class="team-modal-media">
+            <div class="team-modal-photo"><img id="team-modal-img" alt=""></div>
+            <span class="team-modal-decor" id="team-modal-decor" aria-hidden="true"></span>
+          </div>
+
+          <div class="team-modal-body">
+            <p class="team-modal-kicker"><span translate="no">TND6TEM</span><span id="team-modal-pole"></span></p>
+            <h3 id="team-modal-name" translate="no"></h3>
+            <p class="team-modal-role" id="team-modal-role"></p>
+            <p class="team-modal-bio" id="team-modal-bio"></p>
+            <p class="team-modal-label" id="team-modal-tags-label">Missions</p>
+            <ul class="team-modal-tags" id="team-modal-tags" role="list" aria-labelledby="team-modal-tags-label"></ul>
+            <dl class="team-modal-extra" id="team-modal-extra"></dl>
+          </div>
+        </div>
+        <p class="team-modal-count" id="team-modal-count" aria-hidden="true"></p>
+      </div>
+      <button class="team-modal-step team-modal-step--prev" type="button" data-step="-1" aria-label="Previous member"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <button class="team-modal-step team-modal-step--next" type="button" data-step="1" aria-label="Next member"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
     </div>
   </div>
 

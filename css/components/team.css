@@ -1,7 +1,8 @@
 /* Équipe TND — structure inspirée du bandeau de la version de Yannis */
 .team-section{
   width: 100%;
-  margin: 0 0 clamp(56px, 8vw, 100px);
+  /* Proche de « Notre histoire » : le bas du bandeau garde déjà une marge pour les objets chromés */
+  margin: 0 0 clamp(16px, 2vw, 28px);
   overflow: hidden;
 }
 
@@ -26,13 +27,14 @@
   margin: 0 0 1.5rem;
 }
 
+/* Marges haute et basse : place pour les objets chromés qui dépassent des cartes */
 .team-carousel{
   position: relative;
   width: 100vw;
   margin-left: 50%;
   transform: translateX(-50%);
   overflow: hidden;
-  padding: 8px 0 22px;
+  padding: clamp(28px, 3vw, 40px) 0 clamp(30px, 3.4vw, 48px);
   cursor: grab;
   touch-action: pan-y;
   user-select: none;
@@ -41,62 +43,240 @@
 
 .team-carousel.is-dragging{ cursor: grabbing; }
 
+/* Couches du bandeau (contexte d'empilement unique : la piste, transformée pour défiler) :
+     0 objets « back »  <  1 cartes et objets « between » (ordre du DOM)  <  3 objets « front ».
+   Aucune de ces valeurs ne change au survol : un objet garde sa couche quoi qu'il arrive. */
 .team-track{
+  --team-gap: clamp(14px, 1.6vw, 24px);
   display: flex;
   width: max-content;
   align-items: stretch;
-  gap: clamp(14px, 1.6vw, 24px);
+  gap: var(--team-gap);
   margin: 0;
   padding: 0 var(--pad);
   list-style: none;
   will-change: transform;
 }
 
-.team-track > li{ flex: 0 0 auto; }
-
-.team-card,
-.team-card img{
-  display: block;
+/* Une diapositive = la carte + ses objets chromés (positionnés par rapport à elle).
+   Jamais de transform ni de z-index ici : la diapositive ne crée pas de couche à part. */
+.team-slide{
+  position: relative;
+  flex: 0 0 auto;
 }
 
+/* ---------- Plaque de métal brossé (cartes du bandeau et photo de la fiche) ---------- */
+.team-card,
+.team-modal-photo{
+  background:
+    linear-gradient(90deg, rgba(20,18,34,.34), rgba(20,18,34,0) 9%, rgba(20,18,34,0) 91%, rgba(20,18,34,.34)),
+    linear-gradient(180deg, #f7f7fb 0%, #cfced8 13%, #8f8d9d 33%, #e8e7ef 49%, #a6a4b3 67%, #d8d7e0 86%, #fbfbfd 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.95),
+    inset 0 -1px 0 rgba(13,11,23,.45),
+    0 14px 30px rgba(0,0,0,.38);
+}
+
+/* ---------- Carte : photo brute encastrée dans la plaque ----------
+   Les tailles en cqi suivent la largeur de la carte : la composition garde ses proportions. */
 .team-card{
+  --card-w: clamp(210px, 18vw, 235px);
   position: relative;
-  width: clamp(170px, 18vw, 235px);
+  z-index: 1;
+  display: block;
+  width: var(--card-w);
   aspect-ratio: 4 / 5;
   padding: 0;
   border: 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 18px;
-  overflow: hidden;
-  background: var(--card);
+  border-radius: calc(var(--card-w) * .075);
+  container-type: inline-size;
   color: #fff;
   text-align: left;
-  box-shadow: 0 10px 28px rgba(0,0,0,.12);
 }
 
 button.team-card{
   cursor: pointer;
 }
 
-.team-card img{
+.team-card__photo{
   position: absolute;
-  inset: 5px;
-  width: calc(100% - 10px);
-  height: calc(100% - 10px);
+  inset: 4.4cqi;
+  display: block;
+  width: calc(100% - 8.8cqi);
+  height: calc(100% - 8.8cqi);
   object-fit: cover;
-  border-radius: 14px;
+  border-radius: 5.2cqi;
+  background: var(--card);
+  /* Arête nette entre le métal et la photo */
+  box-shadow: 0 0 0 1px rgba(13,11,23,.5), 0 1px 0 1px rgba(255,255,255,.55);
   pointer-events: none;
 }
 
-button.team-card:hover{
-  transform: translateY(-4px);
-  box-shadow: var(--glow-violet), 0 14px 30px rgba(0,0,0,.14);
+/* ---------- Pastilles : nom en haut ; rôle en haut ou en bas ; missions en bas ---------- */
+.team-card__head,
+.team-card__foot{
+  position: absolute;
+  inset-inline: 7cqi;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6cqi;
+  pointer-events: none;
+}
+
+.team-card__head{ top: 9.5cqi; }
+.team-card__foot{ bottom: 8cqi; gap: 1.3cqi; align-items: center; text-align: center; }
+
+.team-card--center .team-card__head{ text-align: center; }
+.team-card--end .team-card__head{ text-align: end; }
+.team-card__foot--start{ align-items: flex-start; text-align: start; }
+.team-card__foot--end{ align-items: flex-end; text-align: end; }
+
+/* Lignes équilibrées : « JONATHAN / & AXEL » plutôt que « JONATHAN & / AXEL » */
+.team-card__line{ display: block; text-wrap: balance; }
+
+.team-pill{
+  color: #fff;
+  font-family: var(--text);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+  overflow-wrap: break-word;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.28), 0 2px 8px rgba(5,3,20,.35);
+}
+
+.team-pill--violet{ background: var(--violet); }
+/* Turquoise de la charte assombri : texte blanc lisible (contraste ≥ 4,5:1) */
+.team-pill--cyan{ background: #1e7b92; background: color-mix(in srgb, var(--cyan) 80%, #000); }
+
+/* Nom et rôle : une pastille par ligne quand le texte passe à la ligne (comme les anciens visuels) */
+.team-pill--name,
+.team-pill--role{
+  display: inline;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  border-radius: 999px;
+}
+
+.team-pill--name{
+  padding: .1em .5em .02em;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(13px, 7.4cqi, 18px);
+  line-height: 1.32;
+  letter-spacing: .01em;
+}
+
+/* Rôle : bordé de blanc pour se distinguer des missions quand il les rejoint en bas */
+.team-pill--role{
+  padding: .28em .75em .22em;
+  font-size: clamp(8.5px, 4cqi, 10px);
+  line-height: 1.85;
+  letter-spacing: .015em;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.55), 0 2px 8px rgba(5,3,20,.35);
+}
+
+/* Missions : un médaillon chromé par mission (pictogramme dessiné, mission-icons.js), côte à côte.
+   Leur texte est dans la fiche, et en bulle au survol. */
+.team-card__missions{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.8cqi;
+  align-self: stretch;
+}
+
+.team-card__foot--start .team-card__missions{ justify-content: flex-start; }
+.team-card__foot--end .team-card__missions{ justify-content: flex-end; }
+
+.team-mission{
+  --size: clamp(26px, 13.5cqi, 34px);
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: var(--size);
+  height: var(--size);
+  border: 1.5px solid transparent;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 26%, rgba(255,255,255,.38), transparent 55%) padding-box,
+    var(--mission-bg) padding-box,
+    linear-gradient(160deg, #fff 0%, #c9c8d3 30%, #5e5b70 52%, #ecebf2 72%, #8f8d9d 100%) border-box;
+  color: #fff;
+  box-shadow: 0 3px 9px rgba(5,3,20,.45);
+}
+
+.team-mission--violet{ --mission-bg: linear-gradient(160deg, #5a3ad6, var(--violet) 58%, #2c1785); }
+.team-mission--cyan{ --mission-bg: linear-gradient(160deg, #2ea3bf, #1e7b92 58%, #135669); }
+
+.team-mission svg{
+  width: 58%;
+  height: 58%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 1px 1px rgba(5,3,20,.45));
+}
+
+/* ---------- Objets chromés (team-composition.js, chrome.js) ----------
+   Centre de l'objet en (x, y) % de la carte, largeur en % de la carte ; valeurs « -m » sur mobile.
+   « end » : x compté depuis le milieu de l'espace qui suit la carte. Objets statiques. */
+.team-decor{
+  --x: var(--x-d);
+  --y: var(--y-d);
+  --s: var(--s-d);
+  --r: var(--r-d);
+  position: absolute;
+  z-index: 3;
+  left: calc(var(--x) * 1%);
+  top: calc(var(--y) * 1%);
+  width: calc(var(--s) * 1%);
+  pointer-events: none;
+  transform: translate(-50%, -50%) rotate(var(--r));
+  filter: drop-shadow(0 5px 9px rgba(5,3,20,.42));
+}
+
+.team-decor--end{ left: calc(100% + var(--team-gap) / 2 + var(--x) * 1%); }
+.team-decor--between{ z-index: 1; }
+.team-decor--back{ z-index: 0; }
+
+.team-decor__shape{
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.team-decor--flip .team-decor__shape{ transform: scaleX(-1); }
+
+/* Contrôle ?composition (team-composition-check.js) : les formes deviennent testables au pointeur */
+.team-checking .team-decor svg *,
+.team-checking .team-decor img{ pointer-events: auto; }
+
+/* ---------- Survol (souris) / focus clavier ----------
+   Seule la carte se soulève ; sa couche (z-index 1) ne change pas et les objets restent en place. */
+.team-card:focus-visible{ transform: translateY(-4px); }
+
+@media (hover: hover){
+  .team-card:hover{
+    transform: translateY(-4px);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.95),
+      inset 0 -1px 0 rgba(13,11,23,.45),
+      var(--glow-lav), 0 16px 32px rgba(0,0,0,.4);
+  }
 }
 
 @media (prefers-reduced-motion: no-preference){
   .team-card{ transition: transform .25s ease, box-shadow .25s ease; }
 }
 
+/* =========================================================
+   Fiche d'un membre (modale)
+   Plaque chromée pour la photo, ambiance tirée de la photo, bordure chromée, missions aux couleurs
+   de la carte. Apparition courte ; rien ne bouge ensuite.
+========================================================= */
 .team-modal[hidden]{ display: none; }
 
 .team-modal{
@@ -105,71 +285,406 @@ button.team-card:hover{
   z-index: 2000;
   display: grid;
   place-items: center;
-  padding: 24px;
+  padding: clamp(12px, 3vw, 32px);
 }
 
 .team-modal-backdrop{
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,.64);
-  backdrop-filter: blur(6px);
+  background: radial-gradient(120% 90% at 50% 40%, rgba(66,38,182,.36), rgba(5,3,20,.88) 72%);
+  backdrop-filter: blur(8px);
+}
+
+/* Le dialogue contient la carte et les flèches précédent / suivant (placées à part, voir plus bas) */
+.team-modal-dialog{
+  position: relative;
+  z-index: 1;
+  width: min(940px, 100%);
 }
 
 .team-modal-card{
   position: relative;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: minmax(220px, 320px) minmax(280px, 1fr);
-  align-items: center;
-  width: min(860px, 100%);
-  max-height: calc(100vh - 48px);
+  isolation: isolate;
+  width: 100%;
+  max-height: calc(100dvh - 2 * clamp(12px, 3vw, 32px));
+  display: flex;
   overflow: hidden;
-  border-radius: 24px;
-  background: var(--page);
-  box-shadow: 0 30px 70px rgba(0,0,0,.32);
+  border: 1.5px solid transparent;
+  border-radius: 28px;
+  background:
+    linear-gradient(160deg, #1b1050 0%, #0b0722 52%, #130a36 100%) padding-box,
+    linear-gradient(135deg, #fff 0%, #c9bfff 16%, #4a4170 34%, #f4f1ff 50%, #241d3a 64%, #956aff 82%, #e9e4ff 100%) border-box;
+  box-shadow: 0 40px 90px rgba(0,0,0,.55), 0 0 70px rgba(149,106,255,.2);
+}
+
+/* Ambiance : la photo, très floutée, s'efface vers le bas ; fines lignes horizontales par-dessus */
+.team-modal-mood{
+  position: absolute;
+  inset: -12%;
+  z-index: -1;
+  background: center / cover no-repeat;
+  filter: blur(46px) saturate(1.5);
+  opacity: .45;
+  -webkit-mask-image: linear-gradient(180deg, #000 10%, transparent 75%);
+  mask-image: linear-gradient(180deg, #000 10%, transparent 75%);
+}
+
+.team-modal-card::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: repeating-linear-gradient(180deg, rgba(255,255,255,.028) 0 1px, transparent 1px 4px);
+}
+
+.team-modal-scroll{
+  display: grid;
+  grid-template-columns: minmax(220px, 330px) minmax(0, 1fr);
+  gap: clamp(22px, 3.4vw, 44px);
+  align-items: start;
+  width: 100%;
+  padding: clamp(18px, 2.6vw, 30px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Bouton rond cerclé de chrome (fermer, précédent, suivant) */
+.team-modal-close,
+.team-modal-step{
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1.5px solid transparent;
+  border-radius: 50%;
+  background:
+    linear-gradient(#150d3b, #150d3b) padding-box,
+    linear-gradient(135deg, #fff, #8f87b3 35%, #241c48 55%, #d9d2ff 80%, #956aff) border-box;
+  color: #fff;
+  cursor: pointer;
+}
+
+.team-modal-close svg,
+.team-modal-step svg{
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.team-modal-close{
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 3;
+}
+
+.team-modal-close:focus-visible,
+.team-modal-step:focus-visible{ outline: 3px solid var(--lav); outline-offset: 3px; }
+
+@media (hover: hover){
+  .team-modal-close:hover,
+  .team-modal-step:hover{ box-shadow: var(--glow-lav); color: var(--lav); }
+}
+
+/* Photo sur plaque de métal, objet chromé posé sur le coin */
+.team-modal-media{
+  position: relative;
+  margin: 6px 0 0;
 }
 
 .team-modal-photo{
-  align-self: start;
-  margin: 14px;
   aspect-ratio: 4 / 5;
-  border-radius: 16px;
-  overflow: hidden;
-  background: var(--card);
+  padding: 4.4%;
+  border-radius: 24px;
 }
 
-.team-modal-photo img{ width:100%; height:100%; object-fit:cover; object-position:center top; display:block; }
+.team-modal-photo img{
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0 0 0 1px rgba(13,11,23,.5), 0 1px 0 1px rgba(255,255,255,.55);
+}
 
-.team-modal-body{ max-height: calc(100vh - 48px); overflow: auto; padding: clamp(24px, 4vw, 42px); }
+.team-modal-decor{
+  position: absolute;
+  top: -7%;
+  right: -9%;
+  width: 34%;
+  pointer-events: none;
+  transform: rotate(-8deg);
+  filter: drop-shadow(0 6px 12px rgba(5,3,20,.5));
+}
 
-.team-modal-body h3{ font-family: var(--display); font-weight:400; text-transform:uppercase; margin:.2em 0 .2em; font-size:clamp(1.8rem, 4vw, 3rem); }
+.team-modal-decor[data-type="cocktails"]{ width: 44%; top: auto; bottom: -6%; right: -12%; }
+.team-modal-decor[data-type="thorn"],
+.team-modal-decor[data-type="star-pair"]{ width: 42%; }
 
-.team-modal-role{ color:var(--muted); margin-top:0; }
+.team-modal-decor > *{ display: block; width: 100%; height: auto; }
 
-.team-modal-bio{ max-width: 60ch; line-height: 1.65; margin: 18px 0 0; }
+/* Texte */
+.team-modal-body{
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: clamp(4px, 1vw, 12px) clamp(0px, 1.4vw, 18px) 0 0;
+}
 
-.team-modal-close{ position:absolute; right:14px; top:14px; z-index:2; width:42px; height:42px; border:0; border-radius:50%; background:rgba(0,0,0,.72); color:#fff; cursor:pointer; font-size:1.2rem; }
+.team-modal-kicker{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5em .7em;
+  margin: 0 56px 14px 0;
+  color: var(--lav);
+  font-family: var(--display);
+  font-size: .78rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
 
-.team-modal-tags{ display:flex; flex-wrap:wrap; gap:8px; margin-top:18px; }
+.team-modal-kicker > span + span::before{
+  content: "";
+  display: inline-block;
+  width: 22px;
+  height: 2px;
+  margin-right: .7em;
+  vertical-align: middle;
+  background: var(--gradient-tnd);
+}
 
-.team-modal-tags span{ padding:.45em .75em; border-radius:999px; background:var(--card); font-size:.82rem; font-weight:700; }
+.team-modal-body h3{
+  margin: 0 56px 0 0;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(2.2rem, 5vw, 3.7rem);
+  line-height: .92;
+  letter-spacing: -.01em;
+  text-transform: uppercase;
+  text-wrap: balance;
+  color: #fff;
+  background: linear-gradient(180deg, #fff 0%, #e4defc 30%, #a59cd3 49%, #3a2f73 53%, #8a7fc4 60%, #e9e4ff 82%, #fff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 6px 18px rgba(149,106,255,.35));
+}
 
-.team-modal-extra{ display:grid; gap:8px; margin:20px 0 0; }
+.team-modal-role{
+  margin: 14px 0 0;
+  color: var(--ink);
+  font-size: clamp(1rem, 1.6vw, 1.12rem);
+  font-weight: 600;
+}
 
-.team-modal-extra div{ display:flex; justify-content:space-between; gap:18px; padding-top:8px; border-top:1px solid var(--line); }
+.team-modal-bio{
+  max-width: 54ch;
+  margin: 14px 0 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
 
-.team-modal-extra dt{ font-weight:700; }
+.team-modal-label{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 24px 0 10px;
+  color: var(--lav);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
 
-.team-modal-extra dd{ margin:0; color:var(--muted); text-align:right; }
+.team-modal-label::after{
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(149,106,255,.6), transparent);
+}
+
+/* Missions : chaque médaillon de la carte avec le texte de sa mission */
+.team-modal-tags{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.team-modal-mission{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 7px 14px 7px 7px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: linear-gradient(160deg, rgba(255,255,255,.08), rgba(255,255,255,.015));
+  font-size: .92rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.team-modal-mission .team-mission{ --size: 40px; }
+
+/* Rôle, pôle… : une seule plaque, colonnes séparées par un filet */
+.team-modal-extra{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  margin: 18px 0 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background:
+    linear-gradient(90deg, rgba(149,106,255,.16), rgba(149,106,255,.03) 70%),
+    rgba(255,255,255,.02);
+}
+
+.team-modal-extra div{
+  padding: 14px 18px;
+  box-shadow: -1px 0 0 var(--line);
+}
+
+.team-modal-extra dt{
+  margin: 0 0 5px;
+  color: var(--lav);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.team-modal-extra dd{ margin: 0; color: var(--ink); font-weight: 600; line-height: 1.45; }
+
+/* Compteur, en bas à droite de la fiche (hors du contenu qui défile et s'anime) */
+.team-modal-count{
+  position: absolute;
+  right: 28px;
+  bottom: 20px;
+  z-index: 3;
+  margin: 0;
+  color: var(--muted);
+  font-family: var(--display);
+  font-size: .9rem;
+  letter-spacing: .08em;
+}
+
+.team-modal-scroll{ padding-bottom: 56px; }
+
+/* Précédent / suivant : fixés à l'écran, de part et d'autre de la fiche, à mi-hauteur. Leur place ne
+   dépend pas de la hauteur de la fiche : on enchaîne les membres sans bouger la souris. */
+.team-modal-step{
+  position: fixed;
+  top: 50%;
+  z-index: 2;
+  width: 52px;
+  height: 52px;
+  transform: translateY(-50%);
+}
+
+.team-modal-step--prev{ left: calc(50% - 470px - 76px); }
+.team-modal-step--next{ right: calc(50% - 470px - 76px); }
+
+.team-modal-step svg{ width: 24px; height: 24px; }
+
+.team-modal-step[hidden]{ display: none; }
+
+/* Apparition / disparition : brèves, sans mouvement permanent */
+@media (prefers-reduced-motion: no-preference){
+  .team-modal:not([hidden]) .team-modal-backdrop,
+  .team-modal:not([hidden]) .team-modal-step{ animation: team-modal-fade .25s ease both; }
+  .team-modal:not([hidden]) .team-modal-card{ animation: team-modal-in .34s cubic-bezier(.22,1,.36,1) both; }
+  .team-modal.is-closing .team-modal-backdrop,
+  .team-modal.is-closing .team-modal-step{ animation: team-modal-fade .18s ease reverse both; }
+  .team-modal.is-closing .team-modal-card{ animation: team-modal-out .18s ease both; }
+  .team-modal-card.is-swapping .team-modal-media,
+  .team-modal-card.is-swapping .team-modal-body{ animation: team-modal-swap .26s ease both; }
+}
+
+@keyframes team-modal-fade{ from{ opacity: 0; } }
+@keyframes team-modal-in{ from{ opacity: 0; transform: translateY(18px) scale(.97); } }
+@keyframes team-modal-out{ to{ opacity: 0; transform: translateY(10px) scale(.98); } }
+@keyframes team-modal-swap{ from{ opacity: .15; transform: translateX(8px); } }
+
+/* Pas la place de part et d'autre de la fiche : elle prend toute la hauteur disponible (hauteur fixe),
+   et une barre en bas réunit les flèches (à gauche) et le compteur (à droite), toujours au même endroit. */
+@media (max-width: 1099px){
+  .team-modal{ --gutter: clamp(12px, 3vw, 32px); }
+
+  .team-modal-card{ height: calc(100dvh - 2 * var(--gutter)); }
+
+  .team-modal-scroll{ padding-bottom: 84px; }
+
+  .team-modal-card::before{
+    content: "";
+    position: absolute;
+    inset: auto 0 0;
+    z-index: 2;
+    height: 72px;
+    pointer-events: none;
+    border-top: 1px solid var(--line);
+    background: #0e082b;
+    box-shadow: 0 -14px 16px -6px #0e082b;
+  }
+
+  .team-modal-step{
+    top: auto;
+    bottom: calc(var(--gutter) + 13px);
+    width: 46px;
+    height: 46px;
+    transform: none;
+  }
+
+  .team-modal-step--prev{ left: calc(var(--gutter) + 18px); }
+  .team-modal-step--next{ left: calc(var(--gutter) + 18px + 46px + 12px); right: auto; }
+
+  .team-modal-count{ right: 22px; bottom: 25px; }
+}
 
 @media (max-width: 700px){
   .team-track{ padding-inline: 20px; }
 
-  .team-card{ width: min(62vw, 240px); border-radius: 15px; }
+  .team-card{ --card-w: min(68vw, 250px); }
 
-  .team-modal-card{ grid-template-columns: 1fr; max-height: calc(100vh - 40px); overflow:auto; }
+  .team-decor{
+    --x: var(--x-m, var(--x-d));
+    --y: var(--y-m, var(--y-d));
+    --s: var(--s-m, var(--s-d));
+    --r: var(--r-m, var(--r-d));
+  }
 
-  .team-modal-photo{ width: min(calc(100% - 28px), 300px); justify-self: center; margin: 14px auto 0; }
+  .team-decor--desktop-only{ display: none; }
 
-  .team-modal-body{ max-height: none; overflow: visible; }
+  .team-modal-card{ border-radius: 22px; }
+
+  .team-modal-scroll{ grid-template-columns: 1fr; gap: 18px; padding: 18px 18px 84px; }
+
+  /* Photo plus étroite : le bouton Fermer garde son coin ; l'objet chromé passe en bas à gauche */
+  .team-modal-media{ width: min(56%, 240px); justify-self: center; margin-top: 8px; }
+
+  .team-modal-close{ top: 10px; right: 10px; width: 40px; height: 40px; }
+
+  .team-modal-decor,
+  .team-modal-decor[data-type]{ top: auto; right: auto; bottom: -8%; left: -16%; transform: rotate(6deg); }
+
+  .team-modal-body{ padding: 0; }
+
+  .team-modal-kicker{ margin-right: 0; gap: .4em .5em; font-size: .7rem; letter-spacing: .12em; }
+
+  .team-modal-kicker > span + span::before{ width: 14px; margin-right: .5em; }
+
+  .team-modal-body h3{ margin-right: 0; }
+
+  .team-modal-extra{ grid-template-columns: 1fr; }
+
+  .team-modal-extra div + div{ box-shadow: 0 -1px 0 var(--line); }
 }
