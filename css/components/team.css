@@ -549,6 +549,8 @@ button.team-card{
     rgba(255,255,255,.02);
 }
 
+.team-modal-extra[hidden]{ display: none; }
+
 .team-modal-extra div{
   padding: 14px 18px;
   box-shadow: -1px 0 0 var(--line);

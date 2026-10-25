@@ -525,12 +525,16 @@ function fillModal(member) {
 
   /* -------------------------
      INFORMATIONS
+     Pôle (dans le surtitre) et rôle (sous le nom) sont déjà
+     affichés : seules les autres informations du CMS restent.
   ------------------------- */
+
+  const shown = ['Pôle', 'Rôle'];
 
   modalExtra.replaceChildren(
     ...Object.entries(
       member.extra || {}
-    ).map(([key, value]) => {
+    ).filter(([key]) => !shown.includes(key)).map(([key, value]) => {
 
       const wrap =
         document.createElement('div');
@@ -549,6 +553,8 @@ function fillModal(member) {
       return wrap;
     })
   );
+
+  modalExtra.hidden = !modalExtra.children.length;
 
 
   /* -------------------------
