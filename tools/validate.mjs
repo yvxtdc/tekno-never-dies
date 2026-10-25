@@ -118,6 +118,14 @@ const { TEAM } = await dataModule("equipe.js");
 const { FAQ } = await dataModule("faq.js");
 const demoCount = (list) => list.filter((x) => x.demo).length;
 if (demoCount(TEAM)) todo.push(`js/data/equipe.js : ${demoCount(TEAM)} profil(s) de démo`);
+// Bandeau de l'équipe : fiches à régler (nouveau membre, photo changée), objets chromés inconnus ou répétés
+// sur des cartes voisines (selon l'ordre du CMS), missions sans pictogramme dédié.
+// Avertissements seulement : un changement fait dans le CMS ne doit pas bloquer une mise en ligne.
+const { compositionIssues } = await import(pathToFileURL(path.join(root, "js/components/team-composition.js")).href);
+for (const issue of compositionIssues(TEAM)) todo.push(`js/components/team-composition.js : ${issue}`);
+const { missionIcon, DEFAULT_MISSION_ICON } = await import(pathToFileURL(path.join(root, "js/components/mission-icons.js")).href);
+const genericMissions = [...new Set(TEAM.flatMap((m) => m.tags || []))].filter((tag) => missionIcon(tag) === DEFAULT_MISSION_ICON);
+if (genericMissions.length) todo.push(`js/components/mission-icons.js : mission(s) sans pictogramme dédié (éclair par défaut) : ${genericMissions.join(", ")}`);
 const toCheck = FAQ.filter((x) => x.needsValidation).length;
 if (toCheck) todo.push(`js/data/faq.js : ${toCheck} réponse(s) marquée(s) needsValidation à faire valider par l'équipe`);
 
