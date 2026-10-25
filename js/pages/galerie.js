@@ -1,6 +1,7 @@
 import { GALLERY } from "../data/galerie.js";
 import { thumb, esc, track } from "./helpers.js";
-import { t } from "../i18n/i18n.js";
+import { photoCreditFor } from "../components/photo-credit.js";
+import { t, tr } from "../i18n/i18n.js";
 
 const root = document.getElementById("gallery-root");
 
@@ -40,10 +41,12 @@ if (!GALLERY.length) {
         ${yearBlock.events
           .map((ev) => {
             const photos = ev.photos.map((p) => norm(p, ev.title));
+            const credit = tr(photos.map((photo) => photoCreditFor(photo.src)).find(Boolean) || "");
             const setIdx = sets.push({ title: ev.title, photos }) - 1;
             return `
           <div class="gallery-event" id="${esc(anchorOf(ev))}">
             <h3>${esc(ev.title)}</h3>
+            ${credit ? `<p class="gallery-event__credit">${esc(credit)}</p>` : ""}
             <div class="gallery-masonry">
               ${photos.length ? photos.map((p, i) => tile(p, setIdx, i)).join("") : thumb(null, ev.title, "Photos à venir")}
             </div>
@@ -132,6 +135,7 @@ lb.innerHTML = `
     <img class="lb-img" alt="" />
     <figcaption class="lb-cap">
       <span><span class="lb-title"></span> · <span class="lb-count"></span></span>
+      <span class="lb-credit" hidden></span>
       <a class="lb-dl" href="galerie.html" download>Enregistrer</a>
     </figcaption>
   </figure>
@@ -152,6 +156,9 @@ function show(setIdx, i) {
   $(".lb-img").alt = p.alt;
   $(".lb-title").textContent = s.title;
   $(".lb-count").textContent = `${cur.i + 1} / ${n}`;
+  const credit = photoCreditFor(p.src);
+  $(".lb-credit").textContent = tr(credit);
+  $(".lb-credit").hidden = !credit;
   const file = p.full || p.src; // JPEG haute qualité si dispo, sinon le WebP
   const dl = $(".lb-dl");
   dl.href = file;

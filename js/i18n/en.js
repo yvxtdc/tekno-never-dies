@@ -527,6 +527,7 @@ const PAGES = {
   "Les artistes s'afficheront ici dès qu'un line-up sera publié.": "Artists will appear here as soon as a line-up is published.",
   "La galerie sera alimentée après les prochains événements.": "The gallery will be filled after the next events.",
   "Photos à venir": "Photos coming soon",
+  "Crédit photo : Jennifer Samtmann (Nebula Studio)": "Photo credit: Jennifer Samtmann (Nebula Studio)",
   "Visuel à venir": "Visual coming soon",
   "Photo à ajouter": "Photo coming soon",
   "Horaire à confirmer": "Time TBC",

@@ -80,6 +80,7 @@ button.btn{font-family:var(--text);cursor:pointer;background-color:transparent}
 .event-photo__frame::after{right:-3px;bottom:-3px;border-left:0;border-top:0}
 .event-photo img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;filter:saturate(.85) contrast(1.05)}
 .event-photo figcaption{margin-top:12px;color:rgba(255,255,255,.62);font-style:italic;font-size:.85rem;line-height:1.5}
+.event-photo__credit{display:block;margin-top:.3rem;font-size:.68rem;font-style:normal}
 
 /* ---------- Line-up : cartes compactes, graphiques ----------
    Deux colonnes dans l'ordre de passage. Chaque carte : grand numéro chromé qui déborde, photo dans un
