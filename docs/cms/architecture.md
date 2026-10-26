@@ -90,12 +90,17 @@ venues ──< events >── media (affiche, fond)
               │  └──  gallery_albums ──< gallery_photos >── media
 faq_items     team_members ── media      translations (texte français → de / en)
 revisions (historique de chaque fiche)   audit_log (journal)   preview_tokens
+scheduled_changes ──< scheduled_change_log   (programmations ciblées, voir programmations.md)
 ```
 
 - **Identifiants stables** : clé entière par table ; `slug` unique pour les adresses ; `uid` aléatoire
   pour les fichiers de médias.
-- **Verrou optimiste** : colonne `version` ; une sauvegarde sur une version périmée est refusée (409)
-  au lieu d'écraser le travail d'un autre membre.
+- **Verrou optimiste** : colonne `version` ; une sauvegarde sur une version périmée est fusionnée champ
+  par champ avec la version de départ du formulaire (historique), ou refusée (409) si un même champ a
+  été modifié des deux côtés : jamais d'écrasement silencieux.
+- **Programmations** : modifications ciblées par clé (champ, passage `lineup_slots.uid`, statut),
+  appliquées à une date sur l'état le plus récent ; conflits, dépendances et ordre décrits dans
+  [programmations.md](programmations.md).
 - **Intégrité** : clés étrangères `ON DELETE RESTRICT` sur les médias, lieux et artistes utilisés
   (suppression refusée avec la liste des usages), `CASCADE` pour les éléments dépendants (passages,
   photos d'une soirée), `CHECK` sur les statuts et rôles.

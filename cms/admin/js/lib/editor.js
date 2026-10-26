@@ -6,7 +6,8 @@ import { h, append } from "./dom.js";
 import { setDirtyChecker, navigate } from "./router.js";
 import { toast, errorMessage, showFieldErrors, busy, confirm } from "./ui.js";
 
-export function createEditor({ model, toPayload = (m) => m, onSave, savedLabel = "Tout est enregistré", newLabel = "Nouvelle fiche", isNew = false }) {
+/** onSubmit : action de la touche Entrée / Ctrl+S à la place de l'enregistrement (mode préparation d'une programmation). */
+export function createEditor({ model, toPayload = (m) => m, onSave, onSubmit = null, savedLabel = "Tout est enregistré", newLabel = "Nouvelle fiche", isNew = false }) {
   let saved = JSON.stringify(toPayload(model));
   const isDirty = () => JSON.stringify(toPayload(model)) !== saved;
   setDirtyChecker(isDirty);
@@ -25,18 +26,24 @@ export function createEditor({ model, toPayload = (m) => m, onSave, savedLabel =
       saved = JSON.stringify(toPayload(model));
       showFieldErrors(form, {}, errors);
       touch();
+      // Fusion avec une modification faite entre-temps : le formulaire est rechargé pour l'afficher.
+      if (result?.mergedFields?.length) {
+        toast(`Modifié entre-temps (par une programmation ou une autre personne) et conservé : ${result.mergedFields.join(", ")}.`, "warn", { timeout: 12000 });
+        navigate(location.pathname, { replace: true, force: true });
+      }
       return result;
     } catch (error) {
       if (error.status === 422) showFieldErrors(form, error.fields, errors);
       else if (error.status === 409 && error.data?.stale) {
-        if (await confirm({ title: "Fiche modifiée entre-temps", message: "Quelqu'un l'a enregistrée pendant que vous la modifiiez. Recharger sa dernière version ? (Vos modifications non enregistrées seront perdues.)", confirmLabel: "Recharger", danger: true })) {
+        const fields = error.data.conflicts?.length ? ` Champs modifiés des deux côtés : ${error.data.conflicts.map((c) => c.label).join(", ")}.` : "";
+        if (await confirm({ title: "Fiche modifiée entre-temps", message: `Quelqu'un (ou une programmation) l'a modifiée pendant que vous la modifiiez.${fields} Recharger sa dernière version ? (Vos modifications non enregistrées seront perdues.)`, confirmLabel: "Recharger", danger: true })) {
           navigate(location.pathname, { replace: true, force: true });
         }
       } else toast(errorMessage(error), "error");
       return undefined;
     }
   });
-  form.addEventListener("submit", (e) => { e.preventDefault(); save(); });
+  form.addEventListener("submit", (e) => { e.preventDefault(); (onSubmit || save)(); });
   const bind = (key, el, transform = (v) => v) => {
     const read = () => (el.type === "checkbox" ? el.checked : transform(el.value));
     el.addEventListener("input", () => { model[key] = read(); touch(); });

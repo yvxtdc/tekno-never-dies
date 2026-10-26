@@ -7,9 +7,14 @@
  *  - push   : idem + push vers CMS_GIT_REMOTE/CMS_GIT_BRANCH (GitHub Actions déploie le site).
  *
  * Garde-fous :
- *  - une seule mise en ligne à la fois ;
+ *  - une seule mise en ligne à la fois, y compris entre processus (serveur et ligne de commande) : verrou
+ *    en base renouvelé à chaque étape ; chaque mise en ligne exporte l'état complet et à jour de la base,
+ *    donc une mise en ligne ne peut pas remplacer le site par une version plus ancienne que la sienne ;
  *  - en mode commit/push, les fichiers gérés doivent être propres avant de commencer et la branche
  *    est d'abord mise à jour (fast-forward uniquement) ;
+ *  - en mode push, une mise en ligne réussie laisse la branche sans commit à envoyer (un commit du CMS
+ *    dont l'envoi avait échoué part avec la suivante), et n'envoie jamais un commit qui ne vient pas du
+ *    CMS (autre auteur, fusion, fichier non géré) : elle s'arrête sans rien envoyer ni supprimer ;
  *  - un fichier géré modifié hors du CMS depuis le dernier export (ex. events.js édité à la main)
  *    bloque la mise en ligne au lieu d'être écrasé (option « forcer » réservée aux administrateurs) ;
  *  - si la validation du site échoue, les fichiers sont restaurés (mode commit/push) et rien n'est
@@ -25,6 +30,7 @@ import { buildSiteData } from "../export/site-data.mjs";
 import { renderModules, MANAGED_MODULES } from "../export/modules.mjs";
 import { variantFile } from "../services/media.mjs";
 import { audit } from "../services/audit.mjs";
+import { appliedIds, markPublished, notePublishFailure } from "../services/schedule.mjs";
 
 /** Fichiers et dossiers écrits par la mise en ligne (seuls ceux-ci sont ajoutés au commit). */
 export const MANAGED_PATHS = [
@@ -40,6 +46,8 @@ export const MANAGED_PATHS = [
 ];
 
 const CMS_MEDIA_DIR = "assets/img/cms";
+/** Durée du verrou de mise en ligne sans renouvellement (processus arrêté brutalement). */
+const LOCK_MS = 15 * 60e3;
 /** Chemin géré -> pathspec Git (motif « evenement-*.html » interprété comme un glob). */
 const pathspec = (p) => (p.includes("*") ? `:(glob)${p}` : p);
 const sha = (buffer) => crypto.createHash("sha256").update(buffer).digest("hex");
@@ -71,11 +79,30 @@ export class Publisher {
     this.db = db;
     this.log = log;
     this.running = null;
+    this.owner = `${process.pid}-${crypto.randomBytes(4).toString("hex")}`;
     // Une mise en ligne interrompue (arrêt du serveur) ne doit pas rester « en cours ». Ses fichiers
     // à moitié écrits sont remis en état au début de la prochaine mise en ligne (sinon elle refuserait
-    // de démarrer : « fichiers gérés modifiés »).
-    const { changes } = db.run("UPDATE publications SET status = 'failed', finished_at = ?, summary = 'Interrompue (redémarrage du serveur).' WHERE status = 'running'", now());
+    // de démarrer : « fichiers gérés modifiés »). Sauf si un autre processus est en train de publier.
+    const lock = this.getSetting("publish.lock", null);
+    const busyElsewhere = lock && Date.parse(lock.expiresAt) > Date.now();
+    const { changes } = busyElsewhere ? { changes: 0 } : db.run("UPDATE publications SET status = 'failed', finished_at = ?, summary = 'Interrompue (redémarrage du serveur).' WHERE status = 'running'", now());
     this.interrupted = changes > 0;
+  }
+
+  /** Verrou de mise en ligne partagé par les processus (serveur, ligne de commande) : true si obtenu. */
+  acquireLock() {
+    return this.db.tx(() => {
+      const lock = this.getSetting("publish.lock", null);
+      if (lock && lock.owner !== this.owner && Date.parse(lock.expiresAt) > Date.now()) return false;
+      this.setSetting("publish.lock", { owner: this.owner, pid: process.pid, expiresAt: new Date(Date.now() + LOCK_MS).toISOString() });
+      return true;
+    });
+  }
+
+  releaseLock() {
+    this.db.tx(() => {
+      if (this.getSetting("publish.lock", null)?.owner === this.owner) this.db.run("DELETE FROM settings WHERE key = 'publish.lock'");
+    });
   }
 
   getSetting(key, fallback) {
@@ -175,6 +202,24 @@ export class Publisher {
     return (await this.git(["reset", "-q", "--keep", upstream])).code === 0;
   }
 
+  /**
+   * Commits locaux absents de la branche distante qui ne viennent pas du CMS : auteur ou committer autre
+   * que le CMS, fusion, ou fichier hors des chemins gérés. Un push envoie TOUS les commits de la branche :
+   * la mise en ligne refuse d'envoyer s'il y en a (rien n'est supprimé ni réécrit).
+   */
+  async foreignCommits(upstream) {
+    const email = this.config.gitAuthorEmail;
+    const foreign = [];
+    for (const line of (await this.git(["rev-list", "--parents", `${upstream}..HEAD`])).out.split("\n").filter(Boolean)) {
+      const [sha, ...parents] = line.split(" ");
+      const [author, committer, subject] = (await this.git(["log", "-1", "--format=%ae%x09%ce%x09%s", sha])).out.split("\t");
+      const files = (await this.git(["diff-tree", "--no-commit-id", "--name-only", "-r", sha])).out.split("\n").filter(Boolean);
+      const managed = (await this.git(["diff-tree", "--no-commit-id", "--name-only", "-r", sha, "--", ...MANAGED_PATHS.map(pathspec)])).out.split("\n").filter(Boolean);
+      if (parents.length !== 1 || author !== email || committer !== email || files.length !== managed.length) foreign.push(`${sha.slice(0, 7)} ${subject} (${author})`);
+    }
+    return foreign;
+  }
+
   async git(args, options = {}) {
     const env = {
       GIT_AUTHOR_NAME: this.config.gitAuthorName,
@@ -192,6 +237,7 @@ export class Publisher {
    */
   async publish({ trigger = "manual", user = null, force = false, ip = null } = {}) {
     if (this.running) throw conflict("Une mise en ligne est déjà en cours. Patientez quelques instants.");
+    if (!this.acquireLock()) throw conflict("Une mise en ligne est déjà en cours (lancée par un autre processus). Patientez quelques instants.");
     const { db, config } = this;
     const mode = config.publishMode;
     const { lastInsertRowid } = db.run(
@@ -203,10 +249,15 @@ export class Publisher {
     const step = (text) => {
       lines.push(`[${new Date().toISOString().slice(11, 19)}] ${text}`);
       db.run("UPDATE publications SET log = ? WHERE id = ?", lines.join("\n"), id);
+      this.acquireLock();
     };
+    // Programmations appliquées incluses dans l'export de cette mise en ligne (lues en même temps).
+    let included = [];
     const finish = (status, summary, commitSha = null) => {
       db.run("UPDATE publications SET status = ?, finished_at = ?, summary = ?, commit_sha = ?, log = ? WHERE id = ?", status, now(), summary, commitSha, lines.join("\n"), id);
       audit(db, { user, ip }, status === "success" ? "site.publish" : "site.publish.failed", "publication", id, summary);
+      if (status === "success") markPublished(db, included, id, summary);
+      else notePublishFailure(db, included.length ? included : appliedIds(db), summary);
       return db.get("SELECT * FROM publications WHERE id = ?", id);
     };
 
@@ -240,6 +291,10 @@ export class Publisher {
               merge = await this.git(["merge", "--ff-only", upstream]);
             }
             if (merge.code !== 0) throw new Error(`Impossible de mettre à jour la branche sans fusion (historique divergent) :\n${merge.out}`);
+            const foreign = await this.foreignCommits(upstream);
+            if (foreign.length) {
+              throw new Error(`La branche locale contient des commits qui ne viennent pas du CMS ; ils partiraient avec la mise en ligne. Rien n'a été envoyé. Faites-les relire et pousser (ou retirer) par l'équipe technique :\n${foreign.join("\n")}`);
+            }
           }
         }
 
@@ -250,7 +305,12 @@ export class Publisher {
         if (drift.length) step(`Fichiers modifiés hors du CMS remplacés (mise en ligne forcée) : ${drift.join(", ")}.`);
 
         step("Export des contenus publiés…");
-        const data = buildSiteData(db, { mode: "public" });
+        // Lecture cohérente : l'export et la liste des programmations qu'il contient viennent du même état.
+        const data = db.tx(() => {
+          included = appliedIds(db);
+          return buildSiteData(db, { mode: "public" });
+        });
+        if (included.length) step(`Programmations incluses : n° ${included.join(", n° ")}.`);
         wrote = true;
         // Images : variantes optimisées copiées dans assets/img/cms (seulement celles utilisées).
         const mediaDir = path.join(config.siteDir, CMS_MEDIA_DIR);
@@ -321,36 +381,50 @@ export class Publisher {
         if (gitMode) {
           await this.git(["add", "-A", "--", ...pathspecs]);
           const staged = await this.git(["diff", "--cached", "--name-only"]);
-          if (!staged.out) {
+          if (staged.out) {
+            const files = staged.out.split("\n");
+            const changedEvents = db.all(
+              "SELECT title FROM events WHERE updated_at > COALESCE((SELECT MAX(finished_at) FROM publications WHERE status = 'success'), '') ORDER BY date DESC LIMIT 10"
+            ).map((e) => `- ${e.title}`);
+            const message = [
+              "contenu: mise en ligne depuis le CMS",
+              "",
+              `Mise en ligne ${trigger === "schedule" ? "programmée" : `par ${user?.name || "la ligne de commande"}`} (${files.length} fichier(s)).`,
+              ...(changedEvents.length ? ["", "Soirées modifiées :", ...changedEvents] : [])
+            ].join("\n");
+            const commit = await this.git(["commit", "-q", "-F", "-"], { input: message });
+            if (commit.code !== 0) throw new Error(`git commit a échoué :\n${commit.out}`);
+            step(`Commit ${(await this.git(["rev-parse", "--short", "HEAD"])).out} (${files.length} fichier(s)).`);
+            summary = `Commit ${(await this.git(["rev-parse", "--short", "HEAD"])).out} : ${files.length} fichier(s).`;
+          } else {
             summary = "Aucun changement à mettre en ligne : le site est déjà à jour.";
             step(summary);
-            this.rememberRendered(modules);
-            return finish("success", summary);
           }
-          const files = staged.out.split("\n");
-          const changedEvents = db.all(
-            "SELECT title FROM events WHERE updated_at > COALESCE((SELECT MAX(finished_at) FROM publications WHERE status = 'success'), '') ORDER BY date DESC LIMIT 10"
-          ).map((e) => `- ${e.title}`);
-          const message = [
-            "contenu: mise en ligne depuis le CMS",
-            "",
-            `Mise en ligne ${trigger === "schedule" ? "programmée" : `par ${user?.name || "la ligne de commande"}`} (${files.length} fichier(s)).`,
-            ...(changedEvents.length ? ["", "Soirées modifiées :", ...changedEvents] : [])
-          ].join("\n");
-          const commit = await this.git(["commit", "-q", "-F", "-"], { input: message });
-          if (commit.code !== 0) throw new Error(`git commit a échoué :\n${commit.out}`);
           commitSha = (await this.git(["rev-parse", "HEAD"])).out;
-          step(`Commit ${commitSha.slice(0, 7)} (${files.length} fichier(s)).`);
-          summary = `Commit ${commitSha.slice(0, 7)} : ${files.length} fichier(s).`;
           if (mode === "push") {
-            const push = await this.git(["push", config.gitRemote, `HEAD:${config.gitBranch}`], { timeout: 180e3 });
-            if (push.code !== 0) {
-              // Le commit reste local : il partira avec la prochaine mise en ligne (ou sera abandonné et
-              // refait si la branche distante a avancé entre-temps, voir dropUnpushedCmsCommits).
-              throw new Error(`git push a échoué (le commit ${commitSha.slice(0, 7)} est conservé localement) :\n${push.out}`);
+            // Envoi de tout ce que la branche distante n'a pas encore, y compris un commit d'une mise en
+            // ligne précédente dont l'envoi avait échoué : une mise en ligne « réussie » en mode push
+            // garantit que le dernier état exporté est sur GitHub.
+            const upstream = `${config.gitRemote}/${config.gitBranch}`;
+            const ahead = Number((await this.git(["rev-list", "--count", `${upstream}..HEAD`])).out) || 0;
+            if (ahead > 0) {
+              // Nouvelle vérification juste avant l'envoi (commit ajouté à la main pendant la mise en ligne).
+              const foreign = await this.foreignCommits(upstream);
+              if (foreign.length) throw new Error(`Envoi annulé : des commits qui ne viennent pas du CMS sont apparus sur la branche pendant la mise en ligne (le commit du CMS est conservé localement) :\n${foreign.join("\n")}`);
+              if (!staged.out) step(`${ahead} commit(s) d'une mise en ligne précédente pas encore envoyé(s) : envoi.`);
+              const push = await this.git(["push", config.gitRemote, `HEAD:${config.gitBranch}`], { timeout: 180e3 });
+              if (push.code !== 0) {
+                // Le commit reste local : il partira avec la prochaine mise en ligne (ou sera abandonné et
+                // refait si la branche distante a avancé entre-temps, voir dropUnpushedCmsCommits).
+                throw new Error(`git push a échoué (le commit ${commitSha.slice(0, 7)} est conservé localement) :\n${push.out}`);
+              }
+              step(`Envoyé sur ${upstream} : GitHub Actions publie ensuite le site (quelques minutes ; déploiement non suivi par le CMS).`);
+              summary = `Envoyé sur GitHub (${commitSha.slice(0, 7)}) : GitHub Pages publie le site en quelques minutes (déploiement non vérifié par le CMS, voir l'onglet Actions du dépôt).`;
             }
-            step(`Envoyé sur ${config.gitRemote}/${config.gitBranch} : GitHub Actions publie le site (quelques minutes).`);
-            summary = `Envoyé sur GitHub (${commitSha.slice(0, 7)}) : le site sera à jour d'ici quelques minutes.`;
+          }
+          if (!staged.out) {
+            this.rememberRendered(modules);
+            return finish("success", summary, commitSha);
           }
         }
         // Soirée publiée sans plan : la référence reste le rendu complet, donc la modification reste
@@ -370,6 +444,7 @@ export class Publisher {
         return finish("failed", error.message.split("\n")[0].slice(0, 400));
       } finally {
         this.running = null;
+        this.releaseLock();
       }
     })();
     return this.running;

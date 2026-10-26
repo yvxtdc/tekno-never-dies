@@ -10,11 +10,23 @@ import * as faq from "../services/faq.mjs";
 import * as team from "../services/team.mjs";
 import * as gallery from "../services/gallery.mjs";
 import * as translations from "../services/translations.mjs";
+import { eventStatusAction, mergeStale, orphanChanges } from "../services/schedule.mjs";
+import { generationOf } from "../services/schedule-targets.mjs";
 import { createPreviewToken } from "../preview/preview.mjs";
 
 const READ = { perm: "content.read" };
 const WRITE = { perm: "content.write" };
 const DELETE = { perm: "content.delete" };
+
+/**
+ * Enregistrement d'un formulaire : sur une version périmée (modifiée entre-temps par une programmation
+ * ou une autre personne), fusion champ par champ (services/schedule.mjs, mergeStale) ; mergedFields :
+ * champs modifiés entre-temps dont la valeur actuelle a été conservée.
+ */
+const saveMerged = (db, type, id, body, update) => db.tx(() => {
+  const { input, merged } = mergeStale(db, type, id, body);
+  return { ...update(input), mergedFields: merged };
+});
 
 export function registerContentRoutes(router, { config, db }) {
   /* ---------- Soirées ---------- */
@@ -29,12 +41,14 @@ export function registerContentRoutes(router, { config, db }) {
   }, { ...WRITE, status: 201 });
   router.get("/api/events/:id", (ctx) => events.getEvent(db, ctx.params.id), READ);
   router.put("/api/events/:id", async (ctx) => {
-    const ev = events.updateEvent(db, ctx.params.id, await readJson(ctx.req), ctx.user);
-    audit(db, ctx.actor, "event.update", "event", ev.id, ev.title);
+    const body = await readJson(ctx.req);
+    const ev = saveMerged(db, "event", ctx.params.id, body, (input) => events.updateEvent(db, ctx.params.id, input, ctx.user));
+    audit(db, ctx.actor, "event.update", "event", ev.id, `${ev.title}${ev.mergedFields.length ? ` (fusion : ${ev.mergedFields.join(", ")} conservés)` : ""}`);
     return ev;
   }, WRITE);
   router.delete("/api/events/:id", (ctx) => {
     const row = events.deleteEvent(db, ctx.params.id);
+    orphanChanges(db, "event", row.id, ctx.user);
     audit(db, ctx.actor, "event.delete", "event", row.id, row.title);
     return { ok: true };
   }, DELETE);
@@ -45,7 +59,7 @@ export function registerContentRoutes(router, { config, db }) {
   }, { ...WRITE, status: 201 });
   router.post("/api/events/:id/status", async (ctx) => {
     const body = await readJson(ctx.req, 16 * 1024);
-    const { event, transition } = events.changeStatus(db, ctx.params.id, String(body.action || ""), { publishAt: body.publishAt }, ctx.user);
+    const { event, transition } = eventStatusAction(db, ctx.params.id, String(body.action || ""), { publishAt: body.publishAt, runAt: body.runAt }, ctx.user);
     audit(db, ctx.actor, `event.${body.action}`, "event", event.id, `${event.title} : ${transition.label}${event.publishAt ? ` (${event.publishAt})` : ""}`);
     return event;
   }, { perm: "content.publish" });
@@ -61,9 +75,10 @@ export function registerContentRoutes(router, { config, db }) {
     return { ok: true };
   }, WRITE);
   router.post("/api/events/:id/revisions/:revisionId/restore", (ctx) => {
-    const rev = getRevision(db, "event", ctx.params.id, ctx.params.revisionId);
+    // Versions de cette soirée seulement (pas d'une soirée supprimée dont l'identifiant a été réutilisé).
+    const rev = getRevision(db, "event", ctx.params.id, ctx.params.revisionId, { generation: generationOf(db, "event", ctx.params.id) });
     if (!rev) throw notFound("Version introuvable.");
-    const ev = events.restoreRevision(db, ctx.params.id, rev.data, ctx.user);
+    const ev = db.tx(() => events.restoreRevision(db, ctx.params.id, rev.data, ctx.user));
     audit(db, ctx.actor, "event.restore", "event", ev.id, `${ev.title} : version ${rev.version} restaurée`);
     return ev;
   }, WRITE);
@@ -72,11 +87,11 @@ export function registerContentRoutes(router, { config, db }) {
   const TYPES = new Set(["event", "artist", "venue", "faq", "team"]);
   router.get("/api/revisions/:type/:id", (ctx) => {
     if (!TYPES.has(ctx.params.type)) throw notFound();
-    return listRevisions(db, ctx.params.type, ctx.params.id);
+    return listRevisions(db, ctx.params.type, ctx.params.id, { generation: generationOf(db, ctx.params.type, ctx.params.id) });
   }, READ);
   router.get("/api/revisions/:type/:id/:revisionId", (ctx) => {
     if (!TYPES.has(ctx.params.type)) throw notFound();
-    const rev = getRevision(db, ctx.params.type, ctx.params.id, ctx.params.revisionId);
+    const rev = getRevision(db, ctx.params.type, ctx.params.id, ctx.params.revisionId, { generation: generationOf(db, ctx.params.type, ctx.params.id) });
     if (!rev) throw notFound("Version introuvable.");
     return rev;
   }, READ);
@@ -94,12 +109,14 @@ export function registerContentRoutes(router, { config, db }) {
   }, { ...WRITE, status: 201 });
   router.get("/api/artists/:id", (ctx) => artists.getArtist(db, ctx.params.id), READ);
   router.put("/api/artists/:id", async (ctx) => {
-    const a = artists.updateArtist(db, ctx.params.id, await readJson(ctx.req), ctx.user);
+    const body = await readJson(ctx.req);
+    const a = saveMerged(db, "artist", ctx.params.id, body, (input) => artists.updateArtist(db, ctx.params.id, input, ctx.user));
     audit(db, ctx.actor, "artist.update", "artist", a.id, a.name);
     return a;
   }, WRITE);
   router.delete("/api/artists/:id", (ctx) => {
     const a = artists.deleteArtist(db, ctx.params.id);
+    orphanChanges(db, "artist", a.id, ctx.user);
     audit(db, ctx.actor, "artist.delete", "artist", a.id, a.name);
     return { ok: true };
   }, DELETE);
@@ -108,6 +125,7 @@ export function registerContentRoutes(router, { config, db }) {
     const targetId = Number(body.targetId);
     if (!Number.isInteger(targetId)) throw badRequest("Choisissez la fiche à conserver.");
     const { source, target } = artists.mergeArtists(db, ctx.params.id, targetId, ctx.user);
+    orphanChanges(db, "artist", source.id, ctx.user);
     audit(db, ctx.actor, "artist.merge", "artist", target.id, `« ${source.name} » fusionné dans « ${target.name} »`);
     return target;
   }, DELETE);
@@ -121,7 +139,8 @@ export function registerContentRoutes(router, { config, db }) {
   }, { ...WRITE, status: 201 });
   router.get("/api/venues/:id", (ctx) => venues.getVenue(db, ctx.params.id), READ);
   router.put("/api/venues/:id", async (ctx) => {
-    const v = venues.updateVenue(db, ctx.params.id, await readJson(ctx.req), ctx.user);
+    const body = await readJson(ctx.req);
+    const v = saveMerged(db, "venue", ctx.params.id, body, (input) => venues.updateVenue(db, ctx.params.id, input, ctx.user));
     // Les soirées de ce lieu changent aussi (adresse, plan) : elles sont à republier.
     db.run("UPDATE events SET updated_at = ? WHERE venue_id = ?", new Date().toISOString(), v.id);
     audit(db, ctx.actor, "venue.update", "venue", v.id, v.name);
@@ -129,6 +148,7 @@ export function registerContentRoutes(router, { config, db }) {
   }, WRITE);
   router.delete("/api/venues/:id", (ctx) => {
     const v = venues.deleteVenue(db, ctx.params.id);
+    orphanChanges(db, "venue", v.id, ctx.user);
     audit(db, ctx.actor, "venue.delete", "venue", v.id, v.name);
     return { ok: true };
   }, DELETE);
@@ -141,12 +161,14 @@ export function registerContentRoutes(router, { config, db }) {
     return item;
   }, { ...WRITE, status: 201 });
   router.put("/api/faq/:id", async (ctx) => {
-    const item = faq.updateFaq(db, ctx.params.id, await readJson(ctx.req), ctx.user);
+    const body = await readJson(ctx.req);
+    const item = saveMerged(db, "faq", ctx.params.id, body, (input) => faq.updateFaq(db, ctx.params.id, input, ctx.user));
     audit(db, ctx.actor, "faq.update", "faq", item.id, item.question);
     return item;
   }, WRITE);
   router.delete("/api/faq/:id", (ctx) => {
     const item = faq.deleteFaq(db, ctx.params.id);
+    orphanChanges(db, "faq", item.id, ctx.user);
     audit(db, ctx.actor, "faq.delete", "faq", item.id, item.question);
     return { ok: true };
   }, DELETE);
@@ -165,12 +187,14 @@ export function registerContentRoutes(router, { config, db }) {
   }, { ...WRITE, status: 201 });
   router.get("/api/team/:id", (ctx) => team.getMember(db, ctx.params.id), READ);
   router.put("/api/team/:id", async (ctx) => {
-    const m = team.updateMember(db, ctx.params.id, await readJson(ctx.req), ctx.user);
+    const body = await readJson(ctx.req);
+    const m = saveMerged(db, "team", ctx.params.id, body, (input) => team.updateMember(db, ctx.params.id, input, ctx.user));
     audit(db, ctx.actor, "team.update", "team", m.id, m.name);
     return m;
   }, WRITE);
   router.delete("/api/team/:id", (ctx) => {
     const m = team.deleteMember(db, ctx.params.id);
+    orphanChanges(db, "team", m.id, ctx.user);
     audit(db, ctx.actor, "team.delete", "team", m.id, m.name);
     return { ok: true };
   }, DELETE);

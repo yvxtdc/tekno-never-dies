@@ -4,6 +4,7 @@ import { get } from "../lib/api.js";
 import { icon, loadingState, errorState, statusBadge, pageHead } from "../lib/ui.js";
 import { shortDay, relative, formatDate, plural } from "../lib/format.js";
 import { session, can } from "../lib/session.js";
+import { changeBadge, changeDialog, formatLocal } from "../lib/schedule.js";
 
 const ACTIONS = {
   "event.create": "a créé la soirée", "event.update": "a modifié la soirée", "event.publish": "a publié", "event.schedule": "a programmé",
@@ -13,7 +14,10 @@ const ACTIONS = {
   "media.delete": "a supprimé l'image", "site.publish": "a mis le site en ligne", "site.publish.failed": "mise en ligne échouée :",
   "faq.create": "a ajouté la question", "faq.update": "a modifié la question", "team.update": "a modifié la fiche équipe de",
   "album.photos": "a modifié l'album", "translation.update": "a traduit", "user.create": "a créé le compte", "backup.create": "a sauvegardé la base",
-  "event.published.scheduled": "Publication programmée :", import: "a importé les contenus existants du site :"
+  "event.published.scheduled": "Publication programmée :", import: "a importé les contenus existants du site :",
+  "schedule.create": "a programmé", "schedule.edit": "a modifié la programmation", "schedule.reschedule": "a déplacé la programmation", "schedule.cancel": "a annulé la programmation",
+  "schedule.force": "a imposé la programmation", "schedule.retry": "a relancé la programmation", "schedule.run": "a exécuté la programmation",
+  "schedule.applied": "Programmation appliquée :", "schedule.conflict": "Programmation en conflit :", "schedule.blocked": "Programmation bloquée :", "schedule.failed": "Programmation en échec :"
 };
 
 export async function dashboardView(ctx, main) {
@@ -52,6 +56,18 @@ export async function dashboardView(ctx, main) {
         })
       : h("p", { class: "muted" }, "Aucune soirée à venir n'est encore créée."));
 
+  const sc = data.schedule.counts;
+  const attention = (sc.conflict || 0) + (sc.blocked || 0) + (sc.failed || 0);
+  const scheduleCard = h("section", { class: `card ${attention ? "card--warn" : ""}`, "aria-labelledby": "sched-title" },
+    h("div", { class: "card__head" }, h("h2", { id: "sched-title" }, "Programmations"), h("a", { class: "btn btn--sm btn--ghost", href: "/admin/schedule" }, "Toutes")),
+    attention ? h("p", {}, h("a", { href: "/admin/schedule?status=attention", style: { color: "var(--amber)", fontWeight: 700 } }, `${plural(attention, "programmation demande", "programmations demandent")} une intervention →`)) : null,
+    sc.applied ? h("p", { class: "small" }, `${plural(sc.applied, "modification appliquée", "modifications appliquées")}, en attente de mise en ligne.`) : null,
+    data.schedule.next.length
+      ? h("ul", { class: "activity" }, data.schedule.next.map((c) => h("li", {},
+          h("span", { class: "row", style: { gap: "6px" } }, changeBadge(c), h("button", { type: "button", class: "link-btn", onclick: () => changeDialog(c.id, { onChanged: () => dashboardView(ctx, main) }) }, `${c.entityName} : ${c.summary}`)),
+          h("time", { datetime: c.runAt }, formatLocal(c.runAtLocal)))))
+      : h("p", { class: "muted small" }, "Aucune modification programmée."));
+
   const quality = [
     counts.drafts ? [`${plural(counts.drafts, "brouillon", "brouillons")} de soirée`, "/admin/events?status=draft"] : null,
     counts.scheduled ? [`${plural(counts.scheduled, "soirée programmée", "soirées programmées")}`, "/admin/events?status=scheduled"] : null,
@@ -81,6 +97,7 @@ export async function dashboardView(ctx, main) {
       h("div", { class: "stack" }, upcomingCard, activity),
       h("div", { class: "split__side" },
         publishCard,
+        scheduleCard,
         h("section", { class: "card", "aria-labelledby": "todo-title" },
           h("div", { class: "card__head" }, h("h2", { id: "todo-title" }, "À compléter")),
           quality.length ? h("ul", { class: "checklist" }, quality.map(([text, href]) => h("li", {}, h("a", { href }, text)))) : h("ul", { class: "checklist" }, h("li", { class: "is-ok" }, "Rien à signaler.")),

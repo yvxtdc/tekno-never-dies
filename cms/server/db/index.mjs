@@ -56,6 +56,21 @@ function wrap(raw) {
         throw error;
       }
     },
+    /**
+     * Exécute fn dans une transaction toujours annulée : simulation (état prévu à une date, aperçu,
+     * validation d'une programmation) sans rien modifier. fn doit être synchrone.
+     */
+    dryRun(fn) {
+      const name = `dry${depth}`;
+      raw.exec(depth === 0 ? "BEGIN IMMEDIATE" : `SAVEPOINT ${name}`);
+      depth++;
+      try {
+        return fn();
+      } finally {
+        depth--;
+        raw.exec(depth === 0 ? "ROLLBACK" : `ROLLBACK TO ${name}; RELEASE ${name}`);
+      }
+    },
     close: () => raw.close(),
     migrate: () => migrate(db)
   };

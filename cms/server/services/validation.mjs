@@ -8,9 +8,11 @@ import { ValidationError } from "../http/errors.mjs";
 // Caractères de contrôle interdits (sauf tabulation et retour à la ligne).
 const CONTROL = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
 
+// Espaces regroupés sur une ligne, sauf les espaces insécables de la typographie française (« bénévole ? ») :
+// un texte relu puis réenregistré reste identique.
 export const cleanText = (value, { multiline = false } = {}) => {
   let text = String(value ?? "").replace(CONTROL, "").replace(/\r\n?/g, "\n");
-  text = multiline ? text.replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n") : text.replace(/\s+/g, " ");
+  text = multiline ? text.replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n") : text.replace(/[^\S\u00a0\u202f]+/g, " ");
   return text.trim();
 };
 
