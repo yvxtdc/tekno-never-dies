@@ -30,6 +30,8 @@ const ADMIN_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..
 const SERVER_DIR = path.dirname(fileURLToPath(import.meta.url));
 // Modules sans dépendance Node partagés avec l'interface (mêmes règles des deux côtés).
 const SHARED = { "richtext.mjs": "services/richtext.mjs", "timeutil.mjs": "services/timeutil.mjs", "slug.mjs": "services/slug.mjs" };
+// Module du site servi tel quel à l'interface : catalogue et pictogrammes des missions (Équipe).
+const SHARED_SITE = { "mission-icons.js": "js/components/mission-icons.js" };
 // Polices et logo du site, réutilisés par l'interface (identité visuelle commune).
 const SITE_ASSETS = /^(fonts\/[\w.-]+\.woff2|img\/badge-white\.webp|img\/favicon\.png)$/;
 const SAFE_METHODS = new Set(["GET", "HEAD"]);
@@ -50,6 +52,7 @@ function adminVersion() {
   };
   walk(ADMIN_DIR);
   for (const file of Object.values(SHARED)) hash.update(fs.readFileSync(path.join(SERVER_DIR, file)));
+  for (const file of Object.values(SHARED_SITE)) hash.update(fs.readFileSync(path.join(REPO_ROOT, file)));
   return hash.digest("hex").slice(0, 12);
 }
 const ADMIN_VERSION = adminVersion();
@@ -167,6 +170,9 @@ export function createApp({ config, db, log = createLogger(config.logLevel), pub
         const rel = p.slice("/admin/".length);
         if (rel.startsWith("shared/") && SHARED[rel.slice(7)]) {
           if (serveFile(req, res, path.join(SERVER_DIR, SHARED[rel.slice(7)]), { cache: "no-cache" })) return;
+        }
+        if (rel.startsWith("shared/") && SHARED_SITE[rel.slice(7)]) {
+          if (serveFile(req, res, path.join(REPO_ROOT, SHARED_SITE[rel.slice(7)]), { cache: "no-cache" })) return;
         }
         if (rel.startsWith("site/") && SITE_ASSETS.test(rel.slice(5))) {
           if (serveFile(req, res, path.join(REPO_ROOT, "assets", rel.slice(5)), { cache: "public, max-age=604800" })) return;
