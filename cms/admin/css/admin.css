@@ -230,6 +230,22 @@ a.stat:hover { border-color: var(--lav); }
 .tag button { border: 0; background: none; width: 22px; height: 22px; border-radius: 50%; cursor: pointer; color: #fff; display: grid; place-items: center; }
 .tag button:hover { background: rgba(255, 255, 255, .15); }
 
+/* Badges des missions (Équipe) : même médaillon que sur le site (css/components/team.css) */
+.mission-badge { --size: 34px; display: inline-grid; place-items: center; flex: none; width: var(--size); height: var(--size); border: 1.5px solid transparent; border-radius: 50%; color: #fff;
+  background: radial-gradient(circle at 34% 26%, rgba(255, 255, 255, .38), transparent 55%) padding-box, linear-gradient(160deg, #5a3ad6, var(--violet) 58%, #2c1785) padding-box, linear-gradient(160deg, #fff 0%, #c9c8d3 30%, #5e5b70 52%, #ecebf2 72%, #8f8d9d 100%) border-box; }
+.mission-badge--sm { --size: 22px; border-width: 1px; margin-left: -6px; }
+.mission-icon { width: 58%; height: 58%; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.mission-catalog__bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 12px 0 4px; position: sticky; top: -1px; z-index: 1; padding: 8px 0; background: var(--card); }
+.mission-catalog__bar .input { flex: 1; min-width: 200px; }
+.mission-catalog__count { margin: 0; color: var(--muted); font-size: 13px; font-weight: 600; }
+.mission-catalog__group h3 { margin: 16px 0 8px; color: var(--lav); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; }
+.mission-catalog__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px; }
+.mission-option { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 5px 12px 5px 5px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255, 255, 255, .03); color: var(--ink); font: inherit; font-size: 14px; font-weight: 600; text-align: left; cursor: pointer; }
+.mission-option:hover:not(:disabled) { border-color: var(--line-strong); background: rgba(255, 255, 255, .07); }
+.mission-option[aria-pressed="true"] { border-color: var(--lav); background: rgba(149, 106, 255, .22); box-shadow: inset 0 0 0 1px var(--lav); }
+.mission-option:disabled { opacity: .45; cursor: not-allowed; }
+.mission-option[hidden], .mission-catalog__group[hidden] { display: none; }
+
 /* Barre d'enregistrement collante */
 .savebar {
   position: sticky; bottom: 0; z-index: 20; margin: 20px calc(-1 * clamp(16px, 3vw, 40px)) -120px; padding: 12px clamp(16px, 3vw, 40px);

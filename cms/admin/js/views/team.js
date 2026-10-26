@@ -4,6 +4,9 @@ import { get, post, put, del } from "../lib/api.js";
 import { icon, pageHead, loadingState, errorState, emptyState, field, input, textarea, checkbox, toast, errorMessage, confirm, dialog, busy, sortableList, showFieldErrors, statusBadge } from "../lib/ui.js";
 import { tagInput, linksEditor, mediaSlot } from "../lib/widgets.js";
 import { isAdmin } from "../lib/session.js";
+import { missionIconNode, catalogMissions, openMissionCatalog } from "../lib/mission-badges.js";
+
+const MAX_MISSIONS = 6;
 
 export async function teamView(ctx, main) {
   document.title = "Équipe — Administration TND";
@@ -48,11 +51,15 @@ export async function teamView(ctx, main) {
     const role = input({ value: m.role, maxlength: 100 });
     const bio = textarea({ value: m.bio, rows: 3, maxlength: 600 });
     const published = checkbox("Affiché sur la page « L'association »", { checked: m.published });
+    const missions = tagInput({ values: m.tags, label: "Missions", max: MAX_MISSIONS, suggestions: catalogMissions,
+      decorate: (tag) => h("span", { class: "mission-badge mission-badge--sm" }, missionIconNode(tag)),
+      onChange: (v) => { m.tags = [...v]; } });
     const form = h("div", { class: "fields fields--2" },
       h("div", { class: "fields" },
         field({ label: "Nom", control: name, name: "name", required: true, hint: "Prénom(s), comme sur le site." }),
         field({ label: "Rôle", control: role, name: "role", required: true }),
-        field({ label: "Missions", control: tagInput({ values: m.tags, label: "Missions", max: 6, onChange: (v) => { m.tags = [...v]; } }), name: "tags" })),
+        field({ label: "Missions", control: missions, name: "tags", hint: "Chaque mission devient un badge sur la carte du membre. Choisissez-les dans le catalogue, ou écrivez-en une (pictogramme choisi d'après ses mots)." }),
+        h("div", {}, h("button", { type: "button", class: "btn btn--sm", onclick: () => openMissionCatalog({ selected: m.tags, max: MAX_MISSIONS, onChange: (v) => missions.setValues(v) }) }, icon("plus"), "Catalogue des badges"))),
       h("div", { class: "field", dataset: { field: "photoMediaId" } }, mediaSlot({ media: m.photo, label: "Photo", hint: "Portrait, recadré en 720 × 900.", onChange: (media) => { m.photo = media; m.photoMediaId = media?.id ?? null; } }), h("p", { class: "error-text", hidden: true })),
       field({ label: "Présentation", control: bio, name: "bio", wide: true }),
       field({ label: "Détails de la carte", control: linksEditor({ values: m.extra.map((e) => ({ label: e.label, url: e.value })), labelPlaceholder: "Intitulé (ex. Pôle)", onChange: (v) => { m.extra = v.map((x) => ({ label: x.label, value: x.url })); } }), name: "extra", wide: true, hint: "Paires « intitulé : valeur » (ex. Pôle : Technique)." }),

@@ -5,14 +5,14 @@ import { icon, dialog, toast, errorMessage, loadingState, emptyState, input } fr
 import { fileSize } from "./format.js";
 
 /** Étiquettes (styles musicaux, missions…) : Entrée ou virgule pour ajouter. */
-export function tagInput({ values = [], placeholder = "Ajouter…", label, onChange, max = 12, suggestions = [] }) {
+export function tagInput({ values = [], placeholder = "Ajouter…", label, onChange, max = 12, suggestions = [], decorate = null }) {
   let items = [...values];
   const listId = uid("dl");
   const field = h("input", { type: "text", placeholder, "aria-label": label, list: suggestions.length ? listId : undefined });
   const root = h("div", { class: "tags" });
   const render = () => {
     clear(root);
-    items.forEach((tag, i) => root.append(h("span", { class: "tag" }, tag,
+    items.forEach((tag, i) => root.append(h("span", { class: "tag" }, decorate ? decorate(tag) : null, tag,
       h("button", { type: "button", "aria-label": `Retirer ${tag}`, onclick: () => { items.splice(i, 1); render(); onChange(items); field.focus(); } }, "×"))));
     root.append(field);
     if (suggestions.length) root.append(h("datalist", { id: listId }, suggestions.map((s) => h("option", { value: s }))));
@@ -41,6 +41,12 @@ export function tagInput({ values = [], placeholder = "Ajouter…", label, onCha
   field.addEventListener("blur", add);
   render();
   root.input = field;
+  // Remplacement de toute la liste (ex. choix dans un catalogue), sans repasser par la saisie
+  root.setValues = (next) => {
+    items = [...next].slice(0, max);
+    render();
+    onChange(items);
+  };
   return root;
 }
 
