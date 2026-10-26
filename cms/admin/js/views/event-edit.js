@@ -18,6 +18,7 @@ import { can, isAdmin } from "../lib/session.js";
 import { nightMinutes, duration } from "/admin/shared/timeutil.mjs";
 import { slugify } from "/admin/shared/slug.mjs";
 import { sectionFromHash } from "../lib/hash.js";
+import { prepublicationDialog, lifecycleCard } from "../lib/supervision.js";
 
 const GENRES = ["Techno", "Hard Techno", "Trance", "Hard Trance", "Groovy", "Bouncy", "Schranz", "Acid", "Hardtechno", "Groove", "Bounce", "Tekno", "House", "Minimal"];
 let meta = null;
@@ -598,7 +599,7 @@ function render(main, ev, isNew, predicted = null) {
   if (predicted) {
     side.append(pendingCard({ type: "event", id: ev.id, onPrepare: prepare }));
   } else if (!isNew) {
-    append(side, [statusCard(m, ev, isDirty, main), pendingCard({ type: "event", id: ev.id, onPrepare: prepare, onChanged: reloadCurrent }), checksCard(ev), previewCard(ev, isDirty),
+    append(side, [statusCard(m, ev, isDirty, main), lifecycleCard(ev.id, { onCheck: () => prepublicationDialog(ev.id, { isDirty }) }), pendingCard({ type: "event", id: ev.id, onPrepare: prepare, onChanged: reloadCurrent }), checksCard(ev), previewCard(ev, isDirty),
       historyCard({ type: "event", id: ev.id, isDirty, onRestored: (restored) => render(main, restored, false) }), metaCard(ev)]);
   } else {
     side.append(h("section", { class: "card" }, h("h2", {}, "Nouvelle soirée"), h("p", { class: "muted", style: { marginTop: "8px" } }, "Elle est créée en brouillon : rien n'apparaît sur le site avant sa publication et la mise en ligne.")));
@@ -652,6 +653,8 @@ function statusCard(m, ev, isDirty, main) {
   const run = (action, extra = {}) => async (e) => {
     const btn = e.currentTarget;
     if (isDirty() && !(await confirm({ title: "Modifications non enregistrées", message: "Enregistrez d'abord vos modifications (sinon elles ne seront pas prises en compte).", confirmLabel: "Continuer sans enregistrer" }))) return;
+    // Vérification avant publication : bloquante en cas d'erreur, confirmation explicite si avertissements.
+    if (action === "publish" && !(await prepublicationDialog(ev.id, { confirmLabel: "Publier", isDirty }))) return;
     await busy(btn, async () => {
       try {
         const updated = await post(`/api/events/${ev.id}/status`, { action, ...extra });
@@ -671,6 +674,7 @@ function statusCard(m, ev, isDirty, main) {
     });
   };
   const schedule = async () => {
+    if (!(await prepublicationDialog(ev.id, { confirmLabel: "Programmer la mise en ligne", isDirty }))) return;
     const field_ = input({ type: "datetime-local", value: toLocalInput(ev.publishAt || new Date(Date.now() + 86400e3).toISOString()), step: 60 });
     const ok = h("button", { type: "button", class: "btn btn--primary" }, "Programmer");
     const d = dialog({ title: "Programmer la mise en ligne", body: h("div", { class: "stack" }, field({ label: "Date et heure (heure de Paris)", control: field_ }), h("p", { class: "hint" }, "D'ici là, la soirée reste invisible. À l'heure dite, elle est publiée et le site est mis à jour automatiquement, même si personne n'est connecté. Les modifications programmées après cette heure (line-up…) attendront cette mise en ligne.")), actions: [h("button", { type: "button", class: "btn", onclick: () => d.close() }, "Annuler"), ok] });
@@ -745,6 +749,7 @@ function statusCard(m, ev, isDirty, main) {
       archived: "Archivée : retirée du site, conservée dans le CMS."
     }[ev.status]),
     h("div", { class: "actions" }, actions),
+    h("div", { style: { marginTop: "10px" } }, h("button", { type: "button", class: "btn btn--sm", onclick: () => prepublicationDialog(ev.id, { isDirty }) }, icon("check"), "Vérifier avant publication")),
     duplicateButton(ev)
   ]);
   return card;
@@ -823,5 +828,6 @@ function metaCard(ev) {
       h("dt", { class: "muted" }, "Modifiée"), h("dd", { style: { margin: 0 } }, `${relative(ev.updatedAt)}${ev.updatedBy ? ` par ${ev.updatedBy}` : ""}`),
       ev.firstPublishedAt ? [h("dt", { class: "muted" }, "1ʳᵉ publication"), h("dd", { style: { margin: 0 } }, formatDateTime(ev.firstPublishedAt))] : null,
       publicUrl && ["published", "cancelled"].includes(ev.status) ? [h("dt", { class: "muted" }, "Sur le site"), h("dd", { style: { margin: 0, wordBreak: "break-all" } }, h("a", { href: publicUrl, target: "_blank", rel: "noopener" }, publicUrl.replace(/^https?:\/\//, "")))] : null,
-      ev.redirects.length ? [h("dt", { class: "muted" }, "Anciennes adresses"), h("dd", { style: { margin: 0 } }, ev.redirects.map((r) => `evenement-${r}.html`).join(", "))] : null));
+      ev.redirects.length ? [h("dt", { class: "muted" }, "Anciennes adresses"), h("dd", { style: { margin: 0 } }, ev.redirects.map((r) => `evenement-${r}.html`).join(", "))] : null,
+      ev.firstPublishedAt ? [h("dt", { class: "muted" }, "Statistiques"), h("dd", { style: { margin: 0 } }, h("a", { href: `/admin/stats?event=${ev.id}#soirees` }, "Visites et clics de la soirée"))] : null));
 }

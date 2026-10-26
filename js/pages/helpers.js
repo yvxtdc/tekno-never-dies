@@ -80,6 +80,22 @@ export function track(name) {
 }
 
 /**
+ * Nom d'un clic lié à une soirée : « Catégorie · <adresse de la fiche> » (ex. « Billetterie ·
+ * ice-boiler-v2-2026 »). L'adresse identifie la soirée même si son titre change ou si deux soirées ont le
+ * même titre ; après un renommage, l'ancienne adresse reste rattachée à la soirée (EVENT_REDIRECTS).
+ * Les clics enregistrés avant ce format (« Billetterie · <titre> ») restent lus par le CMS.
+ */
+export function eventTrackName(category, ev) {
+  return `${category} · ${ev.slug}`;
+}
+
+/** Compte un clic lié à une soirée (titre lisible en libellé dans GoatCounter). */
+export function trackEvent(category, ev) {
+  if (!ev?.slug) return track(`${category} · ?`);
+  window.goatcounter?.count?.({ path: eventTrackName(category, ev), title: `${category} · ${ev.title}`, event: true });
+}
+
+/**
  * Adresse de la fiche d'une soirée : "evenement-ice-boiler-v2-2026.html". Les fiches sont des pages
  * statiques générées par tools/event-pages.mjs (npm run calendar), lisibles par les réseaux sociaux.
  */

@@ -91,6 +91,9 @@ venues ──< events >── media (affiche, fond)
 faq_items     team_members ── media      translations (texte français → de / en)
 revisions (historique de chaque fiche)   audit_log (journal)   preview_tokens
 scheduled_changes ──< scheduled_change_log   (programmations ciblées, voir programmations.md)
+publications (étape, validation, état du déploiement GitHub Pages)   event_tasks (confirmations du suivi
+des soirées ; tâches déduites des données jamais stockées)   event_names (adresses et titres portés par
+chaque soirée, datés : statistiques)   — voir supervision.md, statistiques.md
 ```
 
 - **Identifiants stables** : clé entière par table ; `slug` unique pour les adresses ; `uid` aléatoire
@@ -98,6 +101,10 @@ scheduled_changes ──< scheduled_change_log   (programmations ciblées, voir 
 - **Verrou optimiste** : colonne `version` ; une sauvegarde sur une version périmée est fusionnée champ
   par champ avec la version de départ du formulaire (historique), ou refusée (409) si un même champ a
   été modifié des deux côtés : jamais d'écrasement silencieux.
+- **Supervision** : l'état d'un déploiement est enregistré sur sa mise en ligne (`publications.deploy_*`),
+  seule source pour la page Mise en ligne, le tableau de santé, les programmations et le suivi des
+  soirées ; les appels à GitHub et à GoatCounter sont faits côté serveur (planificateur, cache), jamais
+  pendant l'affichage d'une autre page. Voir [supervision.md](supervision.md), [statistiques.md](statistiques.md).
 - **Programmations** : modifications ciblées par clé (champ, passage `lineup_slots.uid`, statut),
   appliquées à une date sur l'état le plus récent ; conflits, dépendances et ordre décrits dans
   [programmations.md](programmations.md).

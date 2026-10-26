@@ -70,6 +70,21 @@ export function loadConfig(overrides = {}) {
     // Sauvegarde automatique quotidienne de la base (0 = désactivée).
     backupEveryHours: int(env.CMS_BACKUP_EVERY_HOURS, 24, 0),
     logLevel: env.CMS_LOG_LEVEL || "info",
+    // Suivi du déploiement GitHub Pages (API GitHub en lecture). Dépôt « propriétaire/nom » : déduit du
+    // dépôt distant Git s'il est vide. Jeton facultatif (dépôt public) : lecture seule, jamais envoyé au
+    // navigateur ; il relève seulement la limite d'appels (60 par heure sans jeton).
+    deployTracking: bool(env.CMS_DEPLOY_TRACKING, true),
+    githubRepo: env.CMS_GITHUB_REPO || "",
+    githubWorkflow: env.CMS_GITHUB_WORKFLOW || "deploy-pages.yml",
+    githubToken: env.CMS_GITHUB_TOKEN || "",
+    // Statistiques GoatCounter (onglet Statistiques) : jeton d'API en lecture, côté serveur uniquement.
+    // Adresse du compte : déduite de js/data/site.js si vide.
+    goatcounterUrl: env.CMS_GOATCOUNTER_URL || "",
+    goatcounterToken: env.CMS_GOATCOUNTER_TOKEN || "",
+    // Début du comptage (AAAA-MM-JJ) : pas de comparaison avec une période antérieure.
+    statsSince: env.CMS_STATS_SINCE || "",
+    // Sauvegarde hors serveur (cms/deploy/backup-media.sh) : âge maximal attendu, en heures.
+    externalBackupMaxHours: int(env.CMS_EXTERNAL_BACKUP_MAX_HOURS, 36, 1),
     timezone: "Europe/Paris"
   });
 }

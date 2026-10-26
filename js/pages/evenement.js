@@ -2,7 +2,7 @@ import { EVENTS, EVENT_REDIRECTS } from "../data/events.js";
 import { splitB2B, artistsOf, artistUrl, artistPhoto, slotStyle, visibleLineup } from "../components/artists.js";
 import { photoCreditFor } from "../components/photo-credit.js";
 import { SITE } from "../data/site.js";
-import { formatDate, formatTime, readParam, eventStatus, safeUrl, track, eventPath } from "./helpers.js";
+import { formatDate, formatTime, readParam, eventStatus, safeUrl, trackEvent, eventPath } from "./helpers.js";
 import { t, tr, plural, locale } from "../i18n/i18n.js";
 import { downloadICS, eventRange, googleCalendarUrl } from "./ics.js";
 import { eventStats } from "../components/event-stats.js";
@@ -472,7 +472,7 @@ if (!root) {
   document.getElementById("add-to-calendar")?.addEventListener("click", () => {
     if (/Android/i.test(navigator.userAgent)) window.open(googleCalendarUrl(ev), "_blank", "noopener");
     else downloadICS([ev], `tnd-${ev.slug}.ics`);
-    track(`Ajouter à l'agenda · ${ev.title}`);
+    trackEvent("Ajouter à l'agenda", ev);
   });
 
   // Partager : menu de partage du téléphone (Insta, WhatsApp, SMS…), sinon copie du lien.
@@ -485,7 +485,7 @@ if (!root) {
     const label = button.querySelector("span") || button;
     const original = label.textContent;
     button.addEventListener("click", async () => {
-      track(`Partager · ${ev.title}`);
+      trackEvent("Partager", ev);
       if (navigator.share) {
         try { await navigator.share(shareData); } catch { /* partage annulé */ }
         return;
@@ -604,6 +604,6 @@ function setupContest(root, ev, status) {
   dialog.addEventListener("click", (event) => { if (event.target === dialog) close(); });
   buttons.forEach((button) => button.addEventListener("click", () => {
     dialog.showModal();
-    track(`DJ Contest · ${ev.title}`);
+    trackEvent("DJ Contest", ev);
   }));
 }

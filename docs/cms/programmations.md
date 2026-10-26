@@ -135,7 +135,7 @@ la liste des champs.
 |---|---|
 | Programmée (`pending`) | en attente de son heure ou d'une dépendance |
 | Appliquée (`applied`) | modification faite dans la base du CMS ; mise en ligne à faire (automatique) |
-| Envoyée sur GitHub (`published`, mode `push`) | incluse dans une mise en ligne réussie et poussée sur GitHub ; **disponibilité publique non vérifiée** (voir ci-dessous) |
+| Envoyée, déploiement en cours / Déployée / Envoyée, déploiement échoué… (`published`, mode `push`) | incluse dans une mise en ligne réussie et poussée sur GitHub ; la suite dépend du déploiement GitHub Pages de ce commit, suivi par le CMS (voir ci-dessous) |
 | Commitée, non envoyée / Fichiers générés (`published`, modes `commit` / `files`) | mise en ligne réussie localement seulement : **rien n'est visible sur le site public** |
 | Conflit (`conflict`) | élément modifié entre-temps, ou modification devenue impossible |
 | Bloquée (`blocked`) | dépendance en échec, en conflit, bloquée ou annulée |
@@ -146,15 +146,13 @@ Le brouillon (fiche enregistrée non publiée), le contenu publié dans le CMS, 
 programmations restent distincts : une programmation n'est visible nulle part sur le site avant
 d'être appliquée **et** mise en ligne.
 
-**Ce que le CMS sait, et ce qu'il ne sait pas.** Le dernier maillon, le déploiement par GitHub Actions
-vers GitHub Pages, n'est pas suivi : le CMS n'a ni jeton GitHub ni accès à l'état des workflows, et
-vérifier le site public lui-même ne serait pas fiable (fichiers minifiés au déploiement, caches). Le
-CMS n'affiche donc jamais « en ligne » ni « visible » : en mode `push`, l'état le plus avancé est
-« Envoyée sur GitHub », avec le commit envoyé et la mention « disponibilité sur le site public non
-vérifiée » ; le déploiement se contrôle dans l'onglet Actions du dépôt. En mode `push`, une mise en
-ligne n'est réussie que si la branche locale n'a plus aucun commit à envoyer (un commit dont l'envoi
-avait échoué part avec la mise en ligne suivante, même sans nouveau changement). Un suivi réel du
-déploiement (API GitHub, jeton en lecture) pourrait être ajouté plus tard sans changer ce modèle.
+**Déploiement.** Le dernier maillon, le déploiement par GitHub Actions vers GitHub Pages, est suivi
+par le CMS pour le commit exact envoyé (API GitHub en lecture, [supervision.md](supervision.md) § 1).
+Une programmation est « Déployée » seulement quand GitHub a confirmé le déploiement de ce commit, ou
+d'un commit plus récent qui le contient. Sinon, son libellé dit où en est la chaîne : en cours, échoué,
+annulé, écrasé, ou inconnu si GitHub ne répond pas. En mode `push`, une mise en ligne n'est réussie
+que si la branche locale n'a plus aucun commit à envoyer : un commit dont l'envoi avait échoué part
+avec la mise en ligne suivante, même sans nouveau changement.
 
 ## 6. Exécution fiable
 

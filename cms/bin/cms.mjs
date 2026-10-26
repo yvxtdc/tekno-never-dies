@@ -13,6 +13,8 @@
  *   publish [--force]                     mise en ligne (selon CMS_PUBLISH_MODE)
  *   backup [--label L]                    sauvegarde de la base dans CMS_DATA_DIR/backups
  *   restore <fichier> --yes               restaure une sauvegarde (serveur arrêté !)
+ *   verify-backup [--name F]              teste la dernière sauvegarde (ou F) sur une copie temporaire,
+ *                                         sans toucher à la base ; résultat affiché au tableau de santé
  *   status                                état de la base et de la configuration
  */
 import fs from "node:fs";
@@ -22,7 +24,7 @@ import { openDatabase } from "../server/db/index.mjs";
 import { importFromRepo, verifyRoundtrip, contentIsEmpty } from "../server/export/import-repo.mjs";
 import { createUser, resetPassword, listUsers } from "../server/services/users.mjs";
 import { Publisher } from "../server/publish/publisher.mjs";
-import { createBackup, restoreBackup, inspectBackup, listBackups } from "../server/services/backup.mjs";
+import { createBackup, restoreBackup, inspectBackup, listBackups, verifyBackupRestore } from "../server/services/backup.mjs";
 import { audit } from "../server/services/audit.mjs";
 import { HttpError } from "../server/http/errors.mjs";
 
@@ -125,6 +127,14 @@ try {
       const db = openDb();
       audit(db, cli, "backup.restore", "backup", null, path.basename(file));
       console.log("✓ Restauration terminée. Redémarrez le serveur du CMS.");
+      break;
+    }
+    case "verify-backup": {
+      const db = openDb();
+      const result = verifyBackupRestore(config, db, typeof opts.name === "string" ? opts.name : null);
+      audit(db, cli, "backup.restore-test", "backup", null, `${result.ok ? "Réussi" : "Échec"} : ${result.backup || "aucune sauvegarde"}`);
+      console.log(result.ok ? `✓ Sauvegarde ${result.backup} utilisable : ${result.detail}` : `✗ ${result.detail}`);
+      process.exitCode = result.ok ? 0 : 1;
       break;
     }
     case "status": {

@@ -19,6 +19,7 @@ import { loadSession, parseCookies } from "./auth/sessions.mjs";
 import { can } from "./auth/permissions.mjs";
 import { Publisher } from "./publish/publisher.mjs";
 import { REPO_ROOT } from "./config.mjs";
+import { runtime, recordError } from "./runtime.mjs";
 import { servePreview, resolvePreviewToken } from "./preview/preview.mjs";
 import { registerAuthRoutes } from "./api/auth.mjs";
 import { registerContentRoutes } from "./api/content.mjs";
@@ -26,6 +27,7 @@ import { registerMediaRoutes } from "./api/media.mjs";
 import { registerUserRoutes } from "./api/users.mjs";
 import { registerSiteRoutes } from "./api/site.mjs";
 import { registerScheduleRoutes } from "./api/schedule.mjs";
+import { registerSupervisionRoutes } from "./api/supervision.mjs";
 
 const ADMIN_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../admin");
 const SERVER_DIR = path.dirname(fileURLToPath(import.meta.url));
@@ -63,6 +65,8 @@ const ADMIN_INDEX = fs.readFileSync(path.join(ADMIN_DIR, "index.html"), "utf8")
 export function createLogger(level = "info") {
   const quiet = level === "silent";
   const write = (lvl, msg, extra) => {
+    // Erreurs gardées en mémoire pour le tableau de santé (message seul, sans pile).
+    if (lvl === "error") recordError(msg, extra instanceof Error ? extra : msg);
     if (quiet) return;
     const line = `${new Date().toISOString()} ${lvl.toUpperCase()} ${msg}`;
     if (lvl === "error") console.error(line, extra instanceof Error ? extra.stack : extra ?? "");
@@ -73,6 +77,7 @@ export function createLogger(level = "info") {
 
 export function createApp({ config, db, log = createLogger(config.logLevel), publisher = new Publisher({ config, db, log }) }) {
   const router = new Router();
+  runtime.config = config;
   const deps = { config, db, log, publisher };
   registerAuthRoutes(router, deps);
   registerContentRoutes(router, deps);
@@ -80,6 +85,7 @@ export function createApp({ config, db, log = createLogger(config.logLevel), pub
   registerUserRoutes(router, deps);
   registerSiteRoutes(router, deps);
   registerScheduleRoutes(router, deps);
+  registerSupervisionRoutes(router, deps);
 
   const clientIp = (req) => {
     if (config.trustProxy) {

@@ -3,7 +3,7 @@
 // page courante, l'en-tête au défilement et les données de référencement.
 import { SITE } from "./data/site.js";
 import { EVENTS } from "./data/events.js";
-import { eventStatus, formatDate, formatTime, esc, safeUrl, track, eventPath } from "./pages/helpers.js";
+import { eventStatus, formatDate, formatTime, esc, safeUrl, track, trackEvent, eventPath } from "./pages/helpers.js";
 import { lang, setLang, savedLang, pageInLang, t } from "./i18n/i18n.js";
 import { guardDecor } from "./components/decor-guard.js";
 
@@ -280,10 +280,10 @@ function trackLinkClicks() {
     const host = url.hostname.replace(/^www\./, "");
     const ticketFor = EVENTS.find((ev) => ev.ticketUrl && safeUrl(ev.ticketUrl) === url.href);
     const current = EVENTS.find((ev) => ev.slug === document.body.dataset.slug);
-    if (ticketFor) track(`Billetterie · ${ticketFor.title}`);
+    if (ticketFor) trackEvent("Billetterie", ticketFor);
     else if (host === "instagram.com") track(`Instagram · @${url.pathname.split("/")[1] || "tnd6tem"}`);
     else if (/google\.[a-z.]+$/.test(host) && url.pathname.startsWith("/maps") || host === "waze.com" || host === "maps.apple.com") {
-      track(`Itinéraire · ${current?.title || "?"}`);
+      trackEvent("Itinéraire", current);
     } else track(`Lien externe · ${host}`);
   }, { capture: true });
 }

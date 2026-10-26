@@ -10,7 +10,9 @@ Documentation de référence, à lire avant de toucher au domaine concerné (ne 
 `README.md` (structure, « Où modifier quoi », langues, outils), `docs/cms/README.md` (utilisation, commandes,
 « Mettre en ligne »), `docs/cms/architecture.md` (modèle de données, correspondance base ↔ `js/data`),
 `docs/cms/exploitation.md` (production, sécurité, sauvegardes), `docs/cms/programmations.md` (modifications
-programmées : représentation, conflits, dépendances, états). Le code prime sur une doc qui le contredit.
+programmées : représentation, conflits, dépendances, états), `docs/cms/supervision.md` (déploiement GitHub Pages,
+santé, vérification avant publication, suivi des soirées), `docs/cms/statistiques.md` (GoatCounter). Le code prime
+sur une doc qui le contredit.
 `A-COMPLETER.md` est une liste de travail interne : ne pas la traiter comme des tâches à faire spontanément.
 
 ## 1. Stack et architecture
@@ -39,7 +41,11 @@ programmées : représentation, conflits, dépendances, états). Le code prime s
   SQLite (brouillons jamais exportés) → export `js/data/*.js` + `js/i18n/contenus-*.js` + images `assets/img/cms/`
   → `event-pages` → `generate-calendar` → `maps` (si `CMS_RUN_MAPS`) → `langues` → `validate` → selon
   `CMS_PUBLISH_MODE` : fichiers seuls (`files`, défaut local), `commit`, ou commit + push sur `main` (prod) →
-  `.github/workflows/deploy-pages.yml` (validate + `generate-calendar --check`) → GitHub Pages.
+  `.github/workflows/deploy-pages.yml` (validate + `generate-calendar --check`) → GitHub Pages. La mise en ligne
+  lance `validate --json` (erreurs / avertissements séparés) et enregistre son étape ; le déploiement du commit
+  envoyé est suivi par `publish/deploy-tracker.mjs` (API GitHub en lecture, état dans `publications.deploy_*`,
+  source unique pour Mise en ligne, santé, programmations, suivi des soirées). Ne jamais afficher « déployé » sans
+  confirmation de GitHub pour ce commit (ou un descendant).
   Si la validation échoue, les fichiers sont restaurés et rien n'est commité.
 - **Programmations** (`services/schedule.mjs`, `schedule-targets.mjs`, `publish/scheduler.mjs`) : modifications
   ciblées par clé (champ, passage du line-up par `lineup_slots.uid`, statut), jamais une copie de fiche ; appliquées
@@ -47,6 +53,16 @@ programmées : représentation, conflits, dépendances, états). Le code prime s
   automatique. Un nouveau champ affiché doit être ajouté à la liste fermée de `schedule-targets.mjs` (sinon il
   n'est ni programmable ni comparé dans l'historique). Un enregistrement d'un formulaire doit rester un
   aller-retour sans perte (test « lecture puis réenregistrement » de `schedule.test.mjs`).
+- **Supervision** : contrôles d'une soirée dans `eventCheckItems` (`services/events.mjs`, niveaux error / warning /
+  ok / na) et `services/event-checklist.mjs` (fichiers, rendu) ; une erreur bloque publication, programmation et
+  exécution. Suivi des soirées (`services/lifecycle.mjs`) : tâches déduites des données (jamais stockées), seules
+  les confirmations manuelles en base (`event_tasks`). Santé (`services/health.mjs`) et statistiques
+  (`services/stats.mjs`, GoatCounter) : calculs côté serveur, appels externes via `runtime.fetch` (simulé dans
+  les tests, jamais d'appel réel), jetons (`CMS_GITHUB_TOKEN`, `CMS_GOATCOUNTER_TOKEN`) jamais renvoyés au navigateur.
+  Une donnée indisponible n'est jamais affichée comme saine ni comme zéro. Un clic lié à une soirée se compte avec
+  `trackEvent(catégorie, ev)` (`js/pages/helpers.js`, nom « Catégorie · <adresse> ») : jamais par le titre. Une
+  adresse (actuelle ou ancienne) n'appartient qu'à une soirée (déclencheurs de la migration 006) ; `event_names`
+  date chaque adresse et titre portés (statistiques) : ne pas contourner ces déclencheurs.
 
 ## 2. Sources de vérité (priorité absolue)
 
@@ -185,7 +201,7 @@ Génèrent ou réécrivent des fichiers du dépôt (à lancer seulement si la t�
 Agissent sur une base du CMS (jamais sans demande explicite, après avoir vérifié la base ciblée, § 4) :
 - `npm run cms` (serveur ; migrations au démarrage, sauvegardes automatiques, planificateur qui applique les
   programmations arrivées à échéance et peut mettre en ligne) et `npm run cms:admin -- <commande>` (`migrate`, `import`, `create-user`,
-  `reset-password`, `backup`, `restore`, et même `status`, `verify`, `list-users`).
+  `reset-password`, `backup`, `restore`, `verify-backup`, et même `status`, `verify`, `list-users`).
 
 Peuvent publier : `npm run cms:admin -- publish` et la mise en ligne depuis l'interface. Selon
 `CMS_PUBLISH_MODE`, elles écrivent les fichiers, commitent, ou commitent **et poussent sur `main`** (production).
