@@ -1,6 +1,8 @@
 /**
  * Fiche d'une soirée : informations, horaires, lieu, visuels, line-up, « La soirée », infos
- * pratiques, SEO, traductions ; statut, contrôles, aperçu et historique dans la colonne latérale.
+ * pratiques, SEO, traductions ; statut, contrôles, aperçu, programmations et historique dans la
+ * colonne latérale. Avec ?at=… (ou ?change=n° pour modifier une programmation), le formulaire montre
+ * l'état prévu à cette date et ne sert qu'à programmer des modifications.
  */
 import { h, replace, append, clear, uid } from "../lib/dom.js";
 import { get, post, put, del, qs } from "../lib/api.js";
@@ -10,10 +12,12 @@ import {
   statusBadge, busy, confirm, dialog, copyText, pageHead
 } from "../lib/ui.js";
 import { tagInput, listEditor, linksEditor, combobox, mediaSlot } from "../lib/widgets.js";
-import { formatDate, formatDateTime, relative, toLocalInput, fromLocalInput } from "../lib/format.js";
+import { formatDate, formatDateTime, relative, toLocalInput } from "../lib/format.js";
+import { scheduleChangesDialog, pendingCard, historyCard, predictedBanner, loadPredicted, askDate, formatLocal } from "../lib/schedule.js";
 import { can, isAdmin } from "../lib/session.js";
 import { nightMinutes, duration } from "/admin/shared/timeutil.mjs";
 import { slugify } from "/admin/shared/slug.mjs";
+import { sectionFromHash } from "../lib/hash.js";
 
 const GENRES = ["Techno", "Hard Techno", "Trance", "Hard Trance", "Groovy", "Bouncy", "Schranz", "Acid", "Hardtechno", "Groove", "Bounce", "Tekno", "House", "Minimal"];
 let meta = null;
@@ -36,28 +40,33 @@ const payload = (m) => ({
   aboutKicker: m.aboutKicker, aboutTitle: m.aboutTitle, aboutText: m.aboutText,
   photos: m.photos.map((p) => ({ mediaId: p.mediaId, caption: p.caption })), galleryAlbumId: m.galleryAlbumId,
   seoTitle: m.seoTitle, seoDescription: m.seoDescription, notes: m.notes,
-  lineup: m.lineup.map((s) => ({ artistIds: s.artists.map((a) => a.id), label: s.label || "", style: s.style || "", startTime: s.startTime || "", endTime: s.endTime || "", notes: s.notes || "" }))
+  // uid : identifiant stable du passage (visé par les programmations) ; absent pour un nouveau passage.
+  lineup: m.lineup.map((s) => ({ uid: s.uid || null, artistIds: s.artists.map((a) => a.id), label: s.label || "", style: s.style || "", startTime: s.startTime || "", endTime: s.endTime || "", notes: s.notes || "" }))
 });
 
 export async function eventEditView(ctx, main) {
   const isNew = ctx.params.id === "new";
   replace(main, loadingState());
   let model;
+  let predicted = null;
   try {
     meta ??= await get("/api/meta");
     if (isNew) {
       model = blank();
       const copyDate = ctx.query.get("date");
       if (copyDate) model.date = copyDate;
-    } else model = await get(`/api/events/${Number(ctx.params.id)}`);
+    } else {
+      predicted = await loadPredicted("event", Number(ctx.params.id), ctx.query);
+      model = predicted ? { ...predicted.entity, checks: { errors: [], warnings: [] } } : await get(`/api/events/${Number(ctx.params.id)}`);
+    }
   } catch (error) {
     return replace(main, errorState(error, () => eventEditView(ctx, main)));
   }
-  render(main, model, isNew);
+  render(main, model, isNew, predicted);
   return { isDirty: () => main.isDirty?.() };
 }
 
-function render(main, ev, isNew) {
+function render(main, ev, isNew, predicted = null) {
   const m = structuredClone(ev);
   let saved = JSON.stringify(payload(m));
   let slugTouched = Boolean(m.slug);
@@ -66,14 +75,14 @@ function render(main, ev, isNew) {
   setDirtyChecker(isDirty);
   document.title = `${isNew ? "Nouvelle soirée" : m.title} — Administration TND`;
 
-  const form = h("form", { class: "stack", novalidate: true, onsubmit: (e) => { e.preventDefault(); save(); } });
+  const form = h("form", { class: "stack", novalidate: true, onsubmit: (e) => { e.preventDefault(); if (predicted) scheduleForm(); else save(); } });
   const errorsBox = h("div", { class: "form-errors", hidden: true, role: "alert" });
   const savebar = h("div", { class: "savebar" });
   const stateText = h("span", { class: "savebar__state" });
   const touch = () => {
     const dirty = isDirty();
     savebar.classList.toggle("is-dirty", dirty);
-    stateText.textContent = dirty ? "Modifications non enregistrées" : isNew ? "Nouvelle soirée (brouillon)" : "Tout est enregistré";
+    stateText.textContent = predicted ? (dirty ? "Modifications à programmer" : "État prévu (rien à programmer)") : dirty ? "Modifications non enregistrées" : isNew ? "Nouvelle soirée (brouillon)" : "Tout est enregistré";
     refreshSerp();
     refreshTimeline();
   };
@@ -459,6 +468,7 @@ function render(main, ev, isNew) {
     ["lineup", "Line-up"], ["contest", "DJ Contest"], ["soiree", "La soirée"], ["pratique", "Infos pratiques"], ["seo", "Référencement"], ["traductions", "Traductions"], ["notes", "Notes internes"]
   ];
   append(form, [
+    predicted ? predictedBanner({ predicted, replaceId: predicted.replaceId, exitHref: `/admin/events/${m.id}` }) : null,
     errorsBox,
     h("nav", { class: "section-nav", "aria-label": "Sections de la fiche" }, sections.map(([id, label]) => h("a", { href: `#${id}`, onclick: (e) => { e.preventDefault(); document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" }); } }, label))),
     section("essentiel", "L'essentiel", null, h("div", { class: "fields" },
@@ -532,6 +542,7 @@ function render(main, ev, isNew) {
       saved = JSON.stringify(payload(m));
       showFieldErrors(form, {}, errorsBox);
       toast(isNew ? "Soirée créée (brouillon)." : "Modifications enregistrées.");
+      if (data.mergedFields?.length) toast(`Modifié entre-temps (par une programmation ou une autre personne) et conservé : ${data.mergedFields.join(", ")}.`, "warn", { timeout: 12000 });
       if (isNew) return navigate(`/admin/events/${data.id}`, { replace: true, force: true });
       const scrollY = window.scrollY;
       render(main, data, false);
@@ -540,20 +551,55 @@ function render(main, ev, isNew) {
       if (error.status === 422) {
         showFieldErrors(form, error.fields, errorsBox);
       } else if (error.status === 409 && error.data?.stale) {
-        const reload = await confirm({ title: "Fiche modifiée entre-temps", message: "Quelqu'un a enregistré cette soirée pendant que vous la modifiiez. Recharger la dernière version ? (Vos modifications non enregistrées seront perdues : copiez d'abord ce que vous voulez garder.)", confirmLabel: "Recharger la dernière version", danger: true });
+        const fields = error.data.conflicts?.length ? ` Champs modifiés des deux côtés : ${error.data.conflicts.map((c) => c.label).join(", ")}.` : "";
+        const reload = await confirm({ title: "Fiche modifiée entre-temps", message: `Quelqu'un (ou une programmation) a modifié cette soirée pendant que vous la modifiiez.${fields} Recharger la dernière version ? (Vos modifications non enregistrées seront perdues : copiez d'abord ce que vous voulez garder.)`, confirmLabel: "Recharger la dernière version", danger: true });
         if (reload) navigate(`/admin/events/${m.id}`, { replace: true, force: true });
       } else toast(errorMessage(error), "error");
     }
   });
+  const reloadCurrent = async () => {
+    try {
+      render(main, await get(`/api/events/${m.id}`), false);
+    } catch (error) {
+      toast(errorMessage(error), "error");
+    }
+  };
+  /** Programmer les modifications du formulaire (état actuel, ou état prévu en mode préparation). */
+  const scheduleForm = async () => {
+    if (!predicted && !isDirty()) {
+      const local = await askDate({ title: "Préparer une modification programmée", hint: "Le formulaire affichera l'état prévu à cette date (programmations déjà prévues incluses) : modifiez-le, puis « Programmer ces modifications »." });
+      if (local) navigate(`/admin/events/${m.id}?at=${encodeURIComponent(local)}`);
+      return;
+    }
+    scheduleChangesDialog({
+      type: "event", id: m.id, input: payload(m),
+      basis: predicted ? predicted.basis : { mode: "current", version: m.version },
+      replaceId: predicted?.replaceId || null,
+      runAtLocal: predicted ? predicted.atLocal : null,
+      title: predicted?.replaceId ? `Modifier la programmation n° ${predicted.replaceId}` : "Programmer ces modifications",
+      onPredict: (local) => navigate(`/admin/events/${m.id}?at=${encodeURIComponent(local)}`, { force: true }),
+      onDone: () => {
+        saved = JSON.stringify(payload(m));
+        if (predicted) navigate(`/admin/events/${m.id}`, { force: true });
+        else reloadCurrent();
+      }
+    });
+  };
+  const scheduleBtn = h("button", { type: "button", class: `btn ${predicted ? "btn--primary" : ""}`, onclick: scheduleForm, title: "Appliquer ces modifications automatiquement à une date (rien n'est visible avant)" }, icon("clock"), predicted ? "Programmer ces modifications" : "Programmer…");
   append(savebar, [stateText, h("span", { class: "spacer" }),
-    !isNew ? h("a", { class: "btn btn--ghost", href: `/preview/event-${m.id}/evenement-${ev.slug}.html`, target: "_blank", rel: "noopener" }, icon("eye"), "Aperçu") : null,
-    saveBtn]);
+    !isNew && !predicted ? h("a", { class: "btn btn--ghost", href: `/preview/event-${m.id}/evenement-${ev.slug}.html`, target: "_blank", rel: "noopener" }, icon("eye"), "Aperçu") : null,
+    !isNew && can("content.publish") ? scheduleBtn : null,
+    predicted ? null : saveBtn]);
   form.append(savebar);
 
   /* ---------- Colonne latérale ---------- */
   const side = h("div", { class: "split__side" });
-  if (!isNew) {
-    append(side, [statusCard(m, ev, isDirty, main), checksCard(ev), previewCard(ev, isDirty), historyCard(ev, isDirty, main), metaCard(ev)]);
+  const prepare = (local) => navigate(`/admin/events/${ev.id}?at=${encodeURIComponent(local)}`);
+  if (predicted) {
+    side.append(pendingCard({ type: "event", id: ev.id, onPrepare: prepare }));
+  } else if (!isNew) {
+    append(side, [statusCard(m, ev, isDirty, main), pendingCard({ type: "event", id: ev.id, onPrepare: prepare, onChanged: reloadCurrent }), checksCard(ev), previewCard(ev, isDirty),
+      historyCard({ type: "event", id: ev.id, isDirty, onRestored: (restored) => render(main, restored, false) }), metaCard(ev)]);
   } else {
     side.append(h("section", { class: "card" }, h("h2", {}, "Nouvelle soirée"), h("p", { class: "muted", style: { marginTop: "8px" } }, "Elle est créée en brouillon : rien n'apparaît sur le site avant sa publication et la mise en ligne.")));
   }
@@ -561,6 +607,7 @@ function render(main, ev, isNew) {
   replace(main,
     pageHead({
       title: isNew ? "Nouvelle soirée" : m.title,
+      eyebrow: predicted ? `État prévu le ${formatLocal(predicted.atLocal)}` : null,
       breadcrumb: [["Soirées", "/admin/events"], [isNew ? "Nouvelle" : formatDate(m.date)]],
       actions: isNew ? [] : [statusBadge(m.status, m.statusLabel)]
     }),
@@ -569,8 +616,8 @@ function render(main, ev, isNew) {
   loadTranslations();
   if (isNew) title.focus();
   // Lien direct vers une section (ex. « Gérer les billets » depuis l'aperçu : #billetterie).
-  const target = location.hash && document.getElementById(location.hash.slice(1));
-  if (target?.classList.contains("form-section")) requestAnimationFrame(() => target.scrollIntoView({ block: "start" }));
+  const target = sectionFromHash(location.hash, (id) => document.getElementById(id));
+  if (target) requestAnimationFrame(() => target.scrollIntoView({ block: "start" }));
 }
 
 function translationRow(t) {
@@ -624,14 +671,37 @@ function statusCard(m, ev, isDirty, main) {
     });
   };
   const schedule = async () => {
-    const field_ = input({ type: "datetime-local", value: toLocalInput(ev.publishAt || new Date(Date.now() + 86400e3).toISOString()) });
+    const field_ = input({ type: "datetime-local", value: toLocalInput(ev.publishAt || new Date(Date.now() + 86400e3).toISOString()), step: 60 });
     const ok = h("button", { type: "button", class: "btn btn--primary" }, "Programmer");
-    const d = dialog({ title: "Programmer la mise en ligne", body: h("div", { class: "stack" }, field({ label: "Date et heure (heure de Paris)", control: field_ }), h("p", { class: "hint" }, "À l'heure dite, la soirée est publiée et le site est mis à jour automatiquement.")), actions: [h("button", { type: "button", class: "btn", onclick: () => d.close() }, "Annuler"), ok] });
+    const d = dialog({ title: "Programmer la mise en ligne", body: h("div", { class: "stack" }, field({ label: "Date et heure (heure de Paris)", control: field_ }), h("p", { class: "hint" }, "D'ici là, la soirée reste invisible. À l'heure dite, elle est publiée et le site est mis à jour automatiquement, même si personne n'est connecté. Les modifications programmées après cette heure (line-up…) attendront cette mise en ligne.")), actions: [h("button", { type: "button", class: "btn", onclick: () => d.close() }, "Annuler"), ok] });
     ok.addEventListener("click", async (e) => {
       if (!field_.value) return;
       d.close();
-      await run("schedule", { publishAt: fromLocalInput(field_.value) })({ currentTarget: e.currentTarget });
+      // Heure de Paris envoyée telle quelle : le serveur la convertit (heure d'été / d'hiver).
+      await run("schedule", { runAt: field_.value })({ currentTarget: e.currentTarget });
     });
+  };
+  /** Annulation, retrait du site ou archivage à une date (programmation de statut). */
+  const scheduleStatus = async (e) => {
+    const btn = e.currentTarget;
+    const choices = { cancel: "Annuler la soirée (reste visible avec la mention « annulée »)", unpublish: "Retirer du site (repasse en brouillon)", archive: "Archiver (retirée du site)", publish: "Publier (rétablir sur le site)" };
+    const allowed = Object.keys(choices).filter((a) => (a === "publish" ? ["cancelled", "archived"].includes(ev.status) : ev.status !== "archived" && !(a === "cancel" && ev.status === "cancelled")));
+    if (!allowed.length) return;
+    const action = select(allowed.map((a) => [a, choices[a]]), { value: allowed[0] });
+    const when = input({ type: "datetime-local", value: toLocalInput(new Date(Date.now() + 86400e3).toISOString()), step: 60 });
+    const ok = h("button", { type: "button", class: "btn btn--primary" }, "Programmer");
+    const d = dialog({ title: "Programmer un changement de statut", body: h("div", { class: "stack" }, field({ label: "Changement", control: action }), field({ label: "Date et heure (heure de Paris)", control: when })), actions: [h("button", { type: "button", class: "btn", onclick: () => d.close() }, "Annuler"), ok] });
+    ok.addEventListener("click", () => busy(ok, async () => {
+      try {
+        const res = await post("/api/schedule/status", { entityType: "event", entityId: ev.id, action: action.value, runAt: when.value });
+        d.close();
+        toast(`Programmé pour le ${formatLocal(res.change.runAtLocal)} (n° ${res.change.id}).`);
+        render(main, await get(`/api/events/${ev.id}`), false);
+      } catch (error) {
+        toast(error.status === 422 ? `${error.message} ${Object.values(error.fields).join(" ")}` : errorMessage(error), "error");
+      }
+    }));
+    btn.blur();
   };
   const btn = (label, onclick, cls = "") => h("button", { type: "button", class: `btn btn--sm ${cls}`, onclick }, label);
   const canPublish = can("content.publish");
@@ -649,6 +719,7 @@ function statusCard(m, ev, isDirty, main) {
       if (await confirm({ title: "Archiver la soirée ?", message: "Elle sera retirée du site et rangée dans les archives du CMS (restaurable).", confirmLabel: "Archiver" })) run("archive")({ currentTarget: e.target });
     }, "btn--ghost"));
     if (ev.status === "archived") actions.push(btn("Restaurer en brouillon", run("restore")));
+    if (["published", "cancelled"].includes(ev.status)) actions.push(btn("Programmer un changement de statut…", scheduleStatus, "btn--ghost"));
   }
   if (isAdmin() && ["draft", "archived"].includes(ev.status)) {
     actions.push(btn("Supprimer définitivement", async (e) => {
@@ -668,7 +739,7 @@ function statusCard(m, ev, isDirty, main) {
     h("div", { class: "card__head" }, h("h2", { id: "status-t" }, "Publication"), statusBadge(ev.status, ev.statusLabel)),
     h("p", { class: "small muted" }, {
       draft: "Brouillon : invisible sur le site.",
-      scheduled: `Sera publiée le ${ev.publishAt ? formatDateTime(ev.publishAt) : "?"}, puis le site sera mis à jour automatiquement.`,
+      scheduled: `Invisible jusqu'au ${ev.publishAt ? formatDateTime(ev.publishAt) : "?"} : elle sera alors publiée et le site mis à jour automatiquement.`,
       published: "Publiée : visible sur le site (après la mise en ligne).",
       cancelled: "Annulée : visible avec la mention « Soirée annulée ».",
       archived: "Archivée : retirée du site, conservée dans le CMS."
@@ -740,35 +811,6 @@ function previewCard(ev, isDirty) {
           toast("Liens d'aperçu révoqués.");
         } }, "Révoquer")),
       share));
-}
-
-function historyCard(ev, isDirty, main) {
-  const list = h("div", { class: "stack" }, h("p", { class: "muted small" }, "Chargement…"));
-  const details = h("details", {}, h("summary", { class: "small", style: { cursor: "pointer", fontWeight: 600 } }, "Voir les versions"), list);
-  details.addEventListener("toggle", async () => {
-    if (!details.open || details.dataset.loaded) return;
-    details.dataset.loaded = "1";
-    try {
-      const revisions = await get(`/api/revisions/event/${ev.id}`);
-      replace(list, revisions.length ? h("ul", { class: "activity" }, revisions.map((r, i) => h("li", {},
-        h("span", {}, h("strong", {}, `Version ${r.version}`), i === 0 ? h("span", { class: "pill", style: { marginLeft: "6px" } }, "actuelle") : null, r.user_name ? ` · ${r.user_name}` : ""),
-        h("span", { class: "row" }, h("time", { datetime: r.created_at }, formatDateTime(r.created_at)),
-          i > 0 && can("content.write") ? h("button", { type: "button", class: "link-btn small", onclick: async () => {
-            if (isDirty() && !(await confirm({ title: "Modifications non enregistrées", message: "Elles seront perdues.", confirmLabel: "Continuer", danger: true }))) return;
-            if (!(await confirm({ title: `Restaurer la version ${r.version} ?`, message: "Le contenu (textes, horaires, line-up, visuels) revient à cette version. Le statut et l'adresse actuels sont conservés. La version actuelle reste dans l'historique.", confirmLabel: "Restaurer" }))) return;
-            try {
-              const restored = await post(`/api/events/${ev.id}/revisions/${r.id}/restore`);
-              toast(`Version ${r.version} restaurée.`);
-              render(main, restored, false);
-            } catch (error) {
-              toast(errorMessage(error), "error");
-            }
-          } }, "Restaurer") : null)))) : h("p", { class: "muted" }, "Aucune version."));
-    } catch (error) {
-      replace(list, h("p", { class: "error-text" }, errorMessage(error)));
-    }
-  });
-  return h("section", { class: "card", "aria-labelledby": "hist-t" }, h("div", { class: "card__head" }, h("h2", { id: "hist-t" }, "Historique"), h("p", {}, "Chaque enregistrement crée une version restaurable.")), details);
 }
 
 function metaCard(ev) {

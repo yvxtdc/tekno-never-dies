@@ -15,6 +15,7 @@ import { faqView } from "./views/faq.js";
 import { teamView } from "./views/team.js";
 import { translationsView } from "./views/translations.js";
 import { publishView } from "./views/publish.js";
+import { scheduleView } from "./views/schedule.js";
 import { usersView, auditView, backupsView } from "./views/admin.js";
 import { accountView } from "./views/account.js";
 
@@ -24,7 +25,7 @@ const NAV = [
   [null, [["Tableau de bord", "/admin", "dashboard"]]],
   ["Programmation", [["Soirées", "/admin/events", "events"], ["Artistes", "/admin/artists", "artists"], ["Lieux", "/admin/venues", "venues"]]],
   ["Contenus", [["Médiathèque", "/admin/media", "media"], ["Galerie photo", "/admin/gallery", "gallery"], ["FAQ", "/admin/faq", "faq"], ["Équipe", "/admin/team", "team"], ["Traductions", "/admin/translations", "translate"]]],
-  ["Site", [["Mise en ligne", "/admin/publish", "publish"]]],
+  ["Site", [["Programmations", "/admin/schedule", "clock"], ["Mise en ligne", "/admin/publish", "publish"]]],
   ["Administration", [["Comptes", "/admin/users", "users", "users.manage"], ["Journal d'activité", "/admin/audit", "audit", "audit.read"], ["Sauvegardes", "/admin/backups", "backup", "backups.manage"]]]
 ];
 
@@ -203,6 +204,7 @@ function registerRoutes() {
   route("/admin/team", teamView);
   route("/admin/translations", translationsView);
   route("/admin/publish", publishView);
+  route("/admin/schedule", scheduleView);
   route("/admin/users", usersView);
   route("/admin/audit", auditView);
   route("/admin/backups", backupsView);

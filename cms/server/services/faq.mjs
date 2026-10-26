@@ -56,7 +56,7 @@ export function createFaq(db, input, user) {
   return item;
 }
 
-export function updateFaq(db, id, input, user) {
+export function updateFaq(db, id, input, user, { origin = "manual", changeId = null } = {}) {
   const current = getFaq(db, id);
   if (input.version !== undefined && Number(input.version) !== current.version) throw conflict("Cette question a été modifiée entre-temps. Rechargez la page.", { stale: true });
   const data = validate(input);
@@ -65,7 +65,7 @@ export function updateFaq(db, id, input, user) {
     data.question, data.answer, data.category, data.needs_validation, data.published, now(), id
   );
   const item = getFaq(db, id);
-  saveRevision(db, "faq", id, item.version, item, user?.id);
+  saveRevision(db, "faq", id, item.version, item, user?.id, { origin, changeId });
   return item;
 }
 

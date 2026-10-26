@@ -6,6 +6,7 @@ import { icon, pageHead, loadingState, errorState, emptyState, statusBadge, fiel
 import { createEditor } from "../lib/editor.js";
 import { formatDate, plural } from "../lib/format.js";
 import { isAdmin } from "../lib/session.js";
+import { loadPredicted, editorScheduling } from "../lib/schedule.js";
 
 export async function venuesListView(ctx, main) {
   document.title = "Lieux — Administration TND";
@@ -43,8 +44,10 @@ export async function venueEditView(ctx, main) {
   const isNew = ctx.params.id === "new";
   replace(main, loadingState());
   let venue;
+  let predicted = null;
   try {
-    venue = isNew ? { name: "", publicLabel: "", address: "", postalCode: "", city: "", country: "FR", lat: null, lon: null, precise: true, mapSpanKm: null, description: "", websiteUrl: "", accessInfo: "", capacity: null, notes: "", archived: false, events: [] } : await get(`/api/venues/${Number(ctx.params.id)}`);
+    if (!isNew) predicted = await loadPredicted("venue", Number(ctx.params.id), ctx.query);
+    venue = isNew ? { name: "", publicLabel: "", address: "", postalCode: "", city: "", country: "FR", lat: null, lon: null, precise: true, mapSpanKm: null, description: "", websiteUrl: "", accessInfo: "", capacity: null, notes: "", archived: false, events: [] } : predicted ? predicted.entity : await get(`/api/venues/${Number(ctx.params.id)}`);
   } catch (error) {
     return replace(main, errorState(error, () => venueEditView(ctx, main)));
   }
@@ -57,8 +60,11 @@ export async function venueEditView(ctx, main) {
   const toPayload = (x) => ({ version: x.version, name: x.name, publicLabel: x.publicLabel, address: x.address, postalCode: x.postalCode, city: x.city, country: x.country, lat: x.lat, lon: x.lon, precise: x.precise, mapSpanKm: x.mapSpanKm, description: x.description, websiteUrl: x.websiteUrl, accessInfo: x.accessInfo, capacity: x.capacity, notes: x.notes, archived: x.archived });
   const placePreview = h("p", { class: "hint", "aria-live": "polite" });
   const updatePlace = () => { placePreview.textContent = `Affiché sur le site : « ${m.publicLabel || [m.name, m.address, m.city].filter(Boolean).join(", ") || "…"} »`; };
+  let sched = null;
   const ed = createEditor({
     model: m, toPayload, isNew, newLabel: "Nouveau lieu",
+    savedLabel: predicted ? "État prévu (rien à programmer)" : undefined,
+    onSubmit: predicted ? () => sched.schedule() : null,
     onSave: async (data) => {
       let saved;
       try {
@@ -125,10 +131,16 @@ export async function venueEditView(ctx, main) {
         h("div", { class: "field--wide" }, archived))),
     ed.bar
   ]);
+  if (!isNew) {
+    sched = editorScheduling({ ed, type: "venue", id: m.id, model: m, toPayload, predicted, path: `/admin/venues/${m.id}` });
+    if (sched.banner) ed.form.prepend(sched.banner);
+  }
   ed.form.addEventListener("input", updatePlace);
   updatePlace();
   const side = h("div", { class: "split__side" });
-  if (!isNew) {
+  if (predicted) side.append(...sched.cards);
+  else if (!isNew) {
+    side.append(...sched.cards);
     side.append(h("section", { class: "card" }, h("div", { class: "card__head" }, h("h2", {}, "Soirées dans ce lieu"), h("p", {}, plural(venue.events.length, "soirée", "soirées"))),
       venue.events.length ? h("ul", { class: "activity" }, venue.events.map((e) => h("li", {}, h("a", { href: `/admin/events/${e.id}` }, e.title), h("span", { class: "small muted" }, formatDate(e.date))))) : h("p", { class: "muted" }, "Aucune soirée.")));
     if (isAdmin()) side.append(h("section", { class: "card card--danger" }, h("h2", {}, "Supprimer le lieu"),

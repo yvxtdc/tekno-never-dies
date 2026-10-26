@@ -3,12 +3,14 @@
  *
  * Statuts :
  *  - draft      brouillon, invisible sur le site ;
- *  - scheduled  mise en ligne programmée (publish_at) : le planificateur la publie à l'heure dite ;
+ *  - scheduled  mise en ligne programmée (publish_at) : une programmation (services/schedule.mjs) la publie
+ *               à l'heure dite ;
  *  - published  visible sur le site ;
  *  - cancelled  visible, marquée « annulée » (agenda .ics : STATUS:CANCELLED) ;
  *  - archived   retirée du site mais conservée (restaurable en brouillon).
  * « À venir » / « passée » reste calculé par le site à partir de la date, comme avant.
  */
+import crypto from "node:crypto";
 import { now, fromJson } from "../db/index.mjs";
 import { badRequest, conflict, notFound, ValidationError } from "../http/errors.mjs";
 import { Validator, cleanText } from "./validation.mjs";
@@ -42,6 +44,7 @@ export function loadLineup(db, eventId) {
   );
   return slots.map((s) => ({
     id: s.id,
+    uid: s.uid,
     position: s.position,
     label: s.label,
     style: s.style,
@@ -376,6 +379,8 @@ function validateInput(db, input, { current } = {}) {
       for (const [i, raw] of input.lineup.entries()) {
         const sv = new Validator(raw);
         const slot = {
+          // Identifiant stable du passage (conservé d'un enregistrement à l'autre) ; absent = nouveau passage.
+          uid: typeof raw?.uid === "string" && SLOT_UID.test(raw.uid) ? raw.uid : null,
           label: sv.text("label", { max: 100, label: "Le nom affiché" }),
           style: sv.text("style", { max: 60, label: "Le style" }),
           start_time: sv.time("startTime", { label: "L'heure de début" }),
@@ -391,6 +396,7 @@ function validateInput(db, input, { current } = {}) {
           if (!Number.isInteger(id) || !db.get("SELECT id FROM artists WHERE id = ?", id)) sv.error("artistIds", "Artiste introuvable.");
         }
         slot.artistIds = ids;
+        if (slot.uid && lineup.some((other) => other.uid === slot.uid)) slot.uid = null;
         if (!ids.length && !slot.label) sv.error("artistIds", "Choisissez un artiste ou saisissez un nom.");
         if (slot.end_time && !slot.start_time) sv.error("endTime", "Indiquez d'abord l'heure de début.");
         for (const [field, message] of Object.entries(sv.errors)) v.error(`lineup.${i}.${field}`, `Passage ${i + 1} : ${message}`);
@@ -413,20 +419,38 @@ function validateInput(db, input, { current } = {}) {
   return { data, photos: input.photos !== undefined ? photos : null, lineup: input.lineup !== undefined ? lineup : null };
 }
 
+const SLOT_UID = /^[0-9a-f]{16}$/;
+export const newSlotUid = () => crypto.randomBytes(8).toString("hex");
+
+/**
+ * Photos et line-up. Les passages sont mis à jour sur place d'après leur uid (identifiant stable,
+ * visé par les programmations) ; un passage sans uid connu de cette soirée est ajouté (avec l'uid
+ * demandé s'il est libre : passage préparé par une programmation), les passages absents sont retirés.
+ */
 function writeChildren(db, eventId, photos, lineup) {
   if (photos) {
     db.run("DELETE FROM event_photos WHERE event_id = ?", eventId);
     photos.forEach((p, i) => db.run("INSERT INTO event_photos (event_id, media_id, caption, position) VALUES (?, ?, ?, ?)", eventId, p.mediaId, p.caption, i));
   }
   if (lineup) {
-    db.run("DELETE FROM lineup_slots WHERE event_id = ?", eventId);
+    const existing = new Map(db.all("SELECT id, uid FROM lineup_slots WHERE event_id = ?", eventId).map((r) => [r.uid, r.id]));
+    const kept = [];
     lineup.forEach((s, i) => {
-      const { lastInsertRowid } = db.run(
-        "INSERT INTO lineup_slots (event_id, position, label, style, start_time, end_time, notes) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        eventId, i, s.label, s.style, s.start_time, s.end_time, s.notes
-      );
-      s.artistIds.forEach((artistId, j) => db.run("INSERT INTO lineup_slot_artists (slot_id, artist_id, position) VALUES (?, ?, ?)", Number(lastInsertRowid), artistId, j));
+      let slotId = s.uid ? existing.get(s.uid) : null;
+      if (slotId) {
+        db.run("UPDATE lineup_slots SET position = ?, label = ?, style = ?, start_time = ?, end_time = ?, notes = ? WHERE id = ?", i, s.label, s.style, s.start_time, s.end_time, s.notes, slotId);
+        db.run("DELETE FROM lineup_slot_artists WHERE slot_id = ?", slotId);
+      } else {
+        const uid = s.uid && !db.get("SELECT 1 FROM lineup_slots WHERE uid = ?", s.uid) ? s.uid : newSlotUid();
+        slotId = Number(db.run(
+          "INSERT INTO lineup_slots (event_id, position, label, style, start_time, end_time, notes, uid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+          eventId, i, s.label, s.style, s.start_time, s.end_time, s.notes, uid
+        ).lastInsertRowid);
+      }
+      kept.push(slotId);
+      s.artistIds.forEach((artistId, j) => db.run("INSERT INTO lineup_slot_artists (slot_id, artist_id, position) VALUES (?, ?, ?)", slotId, artistId, j));
     });
+    db.run(`DELETE FROM lineup_slots WHERE event_id = ? AND id NOT IN (${kept.map(() => "?").join(",") || "NULL"})`, eventId, ...kept);
   }
 }
 
@@ -443,7 +467,7 @@ const snapshot = (db, id) => {
   return ev;
 };
 
-export function createEvent(db, input, user) {
+export function createEvent(db, input, user, { origin = "manual" } = {}) {
   return db.tx(() => {
     const { data, photos, lineup } = validateInput(db, input);
     const t = now();
@@ -454,12 +478,13 @@ export function createEvent(db, input, user) {
     );
     const id = Number(lastInsertRowid);
     writeChildren(db, id, photos, lineup);
-    saveRevision(db, "event", id, 1, snapshot(db, id), user?.id);
+    saveRevision(db, "event", id, 1, snapshot(db, id), user?.id, { origin });
     return getEvent(db, id);
   });
 }
 
-export function updateEvent(db, id, input, user) {
+/** options : origine de la version (saisie, programmation, restauration) et programmation associée. */
+export function updateEvent(db, id, input, user, { origin = "manual", changeId = null } = {}) {
   return db.tx(() => {
     const current = getEventRow(db, id);
     if (input.version === undefined || Number(input.version) !== current.version) {
@@ -479,13 +504,13 @@ export function updateEvent(db, id, input, user) {
     );
     writeChildren(db, id, photos, lineup);
     const ev = snapshot(db, id);
-    saveRevision(db, "event", id, ev.version, ev, user?.id);
+    saveRevision(db, "event", id, ev.version, ev, user?.id, { origin, changeId });
     return getEvent(db, id);
   });
 }
 
 /** Transitions de statut autorisées : action -> { from, to }. */
-const TRANSITIONS = {
+export const TRANSITIONS = {
   publish: { from: ["draft", "scheduled", "cancelled", "archived"], to: "published", label: "publié" },
   schedule: { from: ["draft", "scheduled"], to: "scheduled", label: "programmé" },
   unpublish: { from: ["published", "scheduled", "cancelled"], to: "draft", label: "repassé en brouillon" },
@@ -494,7 +519,7 @@ const TRANSITIONS = {
   restore: { from: ["archived"], to: "draft", label: "restauré en brouillon" }
 };
 
-export function changeStatus(db, id, action, { publishAt } = {}, user) {
+export function changeStatus(db, id, action, { publishAt } = {}, user, { origin = "status", changeId = null } = {}) {
   const transition = TRANSITIONS[action];
   if (!transition) throw badRequest("Action inconnue.");
   return db.tx(() => {
@@ -519,21 +544,11 @@ export function changeStatus(db, id, action, { publishAt } = {}, user) {
          version = version + 1, updated_by = ?, updated_at = ? WHERE id = ?`,
       transition.to, when, transition.to, transition.to, t, user?.id ?? null, t, id
     );
+    // Chaque version a son entrée dans l'historique (fusion des enregistrements concurrents, comparaison).
+    const ev = snapshot(db, id);
+    saveRevision(db, "event", id, ev.version, ev, user?.id, { origin, changeId });
     return { event: getEvent(db, id), transition };
   });
-}
-
-/** Mises en ligne programmées arrivées à échéance ; renvoie les événements publiés. */
-export function publishDue(db) {
-  const due = db.all("SELECT id, title FROM events WHERE status = 'scheduled' AND publish_at <= ?", now());
-  for (const ev of due) {
-    const t = now();
-    db.run(
-      "UPDATE events SET status = 'published', first_published_at = COALESCE(first_published_at, ?), version = version + 1, updated_at = ? WHERE id = ? AND status = 'scheduled'",
-      t, t, ev.id
-    );
-  }
-  return due;
 }
 
 export function duplicateEvent(db, id, user) {
@@ -544,7 +559,7 @@ export function duplicateEvent(db, id, user) {
     slug: "",
     galleryAlbumId: null,
     photos: src.photos.map((p) => ({ mediaId: p.mediaId, caption: p.caption })),
-    lineup: src.lineup.map((s) => ({ ...s, artistIds: s.artists.map((a) => a.id) }))
+    lineup: src.lineup.map((s) => ({ ...s, uid: null, artistIds: s.artists.map((a) => a.id) }))
   };
   delete input.slug;
   return createEvent(db, input, user);
@@ -561,7 +576,7 @@ export function deleteEvent(db, id) {
 }
 
 /** Restaure le contenu d'une version antérieure (le statut et l'adresse actuels sont conservés). */
-export function restoreRevision(db, id, data, user) {
+export function restoreRevision(db, id, data, user, options = { origin: "restore" }) {
   const current = getEventRow(db, id);
   const artistExists = (aid) => db.get("SELECT 1 FROM artists WHERE id = ?", aid);
   const mediaExists = (mid) => mid && db.get("SELECT 1 FROM media WHERE id = ?", mid);
@@ -578,7 +593,7 @@ export function restoreRevision(db, id, data, user) {
       .map((s) => ({ ...s, artistIds: (s.artists || []).map((a) => a.id).filter(artistExists) }))
       .filter((s) => s.artistIds.length || s.label)
   };
-  return updateEvent(db, id, input, user);
+  return updateEvent(db, id, input, user, options);
 }
 
 export { venuePlace, slugify };

@@ -15,6 +15,7 @@ import { ACCEPTED_EXTENSIONS } from "../services/media.mjs";
 import { parisToday } from "../services/timeutil.mjs";
 import { eventChecks, serializeEvent } from "../services/events.mjs";
 import { listTranslations } from "../services/translations.mjs";
+import { listChanges } from "../services/schedule.mjs";
 
 // Adresse publique du site (js/data/site.js), pour afficher les adresses des fiches dans l'interface.
 const { SITE } = await import(pathToFileURL(path.join(REPO_ROOT, "js/data/site.js")).href);
@@ -49,6 +50,7 @@ export function registerSiteRoutes(router, { config, db, publisher }) {
     const pending = publisher.pending();
     const lastPublication = db.get("SELECT p.*, u.name AS user_name FROM publications p LEFT JOIN users u ON u.id = p.user_id ORDER BY p.id DESC LIMIT 1") || null;
     const translationsMissing = listTranslations(db, { missing: "any" }).length;
+    const nextChanges = listChanges(db, { status: "pending", pageSize: 5 });
     return {
       counts: {
         events: count("SELECT COUNT(*) AS n FROM events WHERE status <> 'archived'"),
@@ -67,6 +69,8 @@ export function registerSiteRoutes(router, { config, db, publisher }) {
       drift: publisher.drift(),
       lastPublication,
       publishing: Boolean(publisher.running),
+      // Programmations : prochaines échéances et nombre par état (à traiter, appliquées pas encore en ligne…).
+      schedule: { next: nextChanges.items, counts: nextChanges.counts },
       lastBackupAt: ctx.user.role === "admin" ? lastBackupAt(config) : undefined,
       activity: db.all(
         "SELECT a.action, a.summary, a.created_at, a.entity_type, a.entity_id, u.name AS user_name FROM audit_log a LEFT JOIN users u ON u.id = a.user_id WHERE a.action NOT LIKE 'auth.%' ORDER BY a.id DESC LIMIT 12"

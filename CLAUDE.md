@@ -9,7 +9,8 @@ Ne jamais renommer du code pour des raisons purement linguistiques.
 Documentation de référence, à lire avant de toucher au domaine concerné (ne pas la recopier ici) :
 `README.md` (structure, « Où modifier quoi », langues, outils), `docs/cms/README.md` (utilisation, commandes,
 « Mettre en ligne »), `docs/cms/architecture.md` (modèle de données, correspondance base ↔ `js/data`),
-`docs/cms/exploitation.md` (production, sécurité, sauvegardes). Le code prime sur une doc qui le contredit.
+`docs/cms/exploitation.md` (production, sécurité, sauvegardes), `docs/cms/programmations.md` (modifications
+programmées : représentation, conflits, dépendances, états). Le code prime sur une doc qui le contredit.
 `A-COMPLETER.md` est une liste de travail interne : ne pas la traiter comme des tâches à faire spontanément.
 
 ## 1. Stack et architecture
@@ -40,6 +41,12 @@ Documentation de référence, à lire avant de toucher au domaine concerné (ne 
   `CMS_PUBLISH_MODE` : fichiers seuls (`files`, défaut local), `commit`, ou commit + push sur `main` (prod) →
   `.github/workflows/deploy-pages.yml` (validate + `generate-calendar --check`) → GitHub Pages.
   Si la validation échoue, les fichiers sont restaurés et rien n'est commité.
+- **Programmations** (`services/schedule.mjs`, `schedule-targets.mjs`, `publish/scheduler.mjs`) : modifications
+  ciblées par clé (champ, passage du line-up par `lineup_slots.uid`, statut), jamais une copie de fiche ; appliquées
+  à l'échéance sur l'état le plus récent de la base (conflit si l'élément visé a changé), puis mise en ligne
+  automatique. Un nouveau champ affiché doit être ajouté à la liste fermée de `schedule-targets.mjs` (sinon il
+  n'est ni programmable ni comparé dans l'historique). Un enregistrement d'un formulaire doit rester un
+  aller-retour sans perte (test « lecture puis réenregistrement » de `schedule.test.mjs`).
 
 ## 2. Sources de vérité (priorité absolue)
 
@@ -176,8 +183,8 @@ Génèrent ou réécrivent des fichiers du dépôt (à lancer seulement si la t�
   ils réécrivent des fichiers gérés par le CMS : ne pas les utiliser sans demande explicite).
 
 Agissent sur une base du CMS (jamais sans demande explicite, après avoir vérifié la base ciblée, § 4) :
-- `npm run cms` (serveur ; migrations au démarrage, sauvegardes automatiques, planificateur qui peut mettre en
-  ligne les soirées programmées) et `npm run cms:admin -- <commande>` (`migrate`, `import`, `create-user`,
+- `npm run cms` (serveur ; migrations au démarrage, sauvegardes automatiques, planificateur qui applique les
+  programmations arrivées à échéance et peut mettre en ligne) et `npm run cms:admin -- <commande>` (`migrate`, `import`, `create-user`,
   `reset-password`, `backup`, `restore`, et même `status`, `verify`, `list-users`).
 
 Peuvent publier : `npm run cms:admin -- publish` et la mise en ligne depuis l'interface. Selon

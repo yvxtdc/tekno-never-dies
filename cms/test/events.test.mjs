@@ -171,13 +171,13 @@ describe("API des soirées", () => {
   });
 
   test("publication programmée : publiée par le planificateur à l'échéance", async () => {
-    const { publishDue } = await import("../server/services/events.mjs");
+    const { runDue } = await import("../server/services/schedule.mjs");
     const ev = (await editor.post("/api/events", eventInput({ title: "Programmée" }))).data;
     await editor.post(`/api/events/${ev.id}/status`, { action: "schedule", publishAt: new Date(Date.now() + 3600e3).toISOString() });
-    assert.equal(publishDue(cms.db).length, 0);
-    cms.db.run("UPDATE events SET publish_at = ? WHERE id = ?", new Date(Date.now() - 1000).toISOString(), ev.id);
-    const due = publishDue(cms.db);
-    assert.deepEqual(due.map((e) => e.id), [ev.id]);
+    assert.equal(runDue(cms.db).filter((r) => r.status === "applied").length, 0);
+    cms.db.run("UPDATE scheduled_changes SET run_at = ? WHERE entity_type = 'event' AND entity_id = ?", new Date(Date.now() - 1000).toISOString(), ev.id);
+    const due = runDue(cms.db);
+    assert.deepEqual(due.filter((r) => r.status === "applied").length, 1);
     assert.equal((await editor.get(`/api/events/${ev.id}`)).data.status, "published");
   });
 

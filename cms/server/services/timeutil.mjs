@@ -62,3 +62,30 @@ export function duration(start, end) {
 export function parisToday(date = new Date()) {
   return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Paris", year: "numeric", month: "2-digit", day: "2-digit" }).format(date);
 }
+
+/** Instant (ISO UTC ou millisecondes) -> heure de Paris « AAAA-MM-JJTHH:MM » et décalage (« +01:00 »). */
+export function utcToParis(value) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Paris", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false, timeZoneName: "longOffset"
+  }).formatToParts(new Date(value));
+  const get = (type) => parts.find((p) => p.type === type)?.value;
+  const offset = (get("timeZoneName") || "GMT+01:00").replace("GMT", "") || "+00:00";
+  return { local: `${get("year")}-${get("month")}-${get("day")}T${get("hour") === "24" ? "00" : get("hour")}:${get("minute")}`, offset };
+}
+
+/**
+ * Heure de Paris « AAAA-MM-JJTHH:MM » -> { iso } (UTC) ou { error }.
+ * Changement d'heure : au printemps, de 2 h à 3 h n'existe pas (refusé) ; à l'automne, de 2 h à 3 h
+ * existe deux fois : la première (heure d'été, UTC+2) est retenue et signalée par ambiguous: true.
+ */
+export function parisToUtc(local) {
+  const m = String(local || "").match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/);
+  if (!m) return { error: "Indiquez une date et une heure (JJ/MM/AAAA HH:MM)." };
+  const [y, mo, d, hh, mm] = m.slice(1).map(Number);
+  const naive = Date.UTC(y, mo - 1, d, hh, mm);
+  if (new Date(naive).getUTCDate() !== d || hh > 23 || mm > 59) return { error: "Date ou heure invalide." };
+  // Paris est à UTC+1 (hiver) ou UTC+2 (été) : seuls ces deux instants peuvent correspondre.
+  const matches = [2, 1].map((h) => naive - h * 3600e3).filter((t) => utcToParis(t).local === local);
+  if (!matches.length) return { error: "Cette heure n'existe pas à Paris (passage à l'heure d'été : de 2 h à 3 h, l'heure avance d'une heure)." };
+  return { iso: new Date(matches[0]).toISOString(), ambiguous: matches.length > 1 };
+}

@@ -39,7 +39,8 @@ la copie de travail. Relisez avec `git diff`, puis committez vous-même. Pour vo
 |---|---|
 | Annoncer une soirée | **Soirées → Nouvelle soirée** : nom, date, horaires, lieu, billetterie, affiche, line-up. Enregistrer (brouillon), vérifier l'**aperçu**, puis **Publier** et **Mettre en ligne**. |
 | Préparer la prochaine édition | Sur une soirée : **Dupliquer** (copie en brouillon avec le line-up). |
-| Programmer une annonce | **Programmer…** : la soirée est publiée et le site mis à jour automatiquement à l'heure choisie. |
+| Programmer une annonce | Carte **Publication → Programmer…** : la soirée reste invisible, puis elle est publiée et le site mis à jour automatiquement à l'heure choisie. |
+| Programmer une modification (prix, line-up, infos pratiques, artiste, lieu, équipe, FAQ…) | Modifier le formulaire puis **Programmer…** au lieu d'**Enregistrer** ; suivi dans le menu **Programmations**. Seuls les éléments modifiés sont appliqués, sur la version la plus récente : voir [programmations.md](programmations.md). |
 | Annuler une soirée | **Annuler la soirée** : elle reste affichée « Soirée annulée », sans billetterie ; l'agenda des abonnés est mis à jour. |
 | Retirer une soirée du site | **Dépublier** (brouillon) ou **Archiver**. Une soirée en ligne ne peut pas être supprimée directement. |
 | Modifier le line-up | Section **Line-up** : un passage = un créneau, un ou plusieurs artistes (B2B). Glisser-déposer ou flèches ↑ ↓ pour l'ordre ; **Enchaîner les horaires**, **Trier par horaire**. La frise signale les chevauchements. |
@@ -51,7 +52,7 @@ la copie de travail. Relisez avec `git diff`, puis committez vous-même. Pour vo
 | Publier un album | **Galerie photo → Nouvel album**, ajouter les photos, cocher « publié », puis le lier à la soirée (champ « Album de la galerie »). |
 | Traduire | **Traductions** (ou section Traductions d'une soirée) : allemand et anglais. Sans traduction, le français s'affiche. |
 | Mettre le site à jour | **Mise en ligne** : liste ce qui a changé, lance la régénération et la validation complète, affiche le journal. |
-| Revenir en arrière | Fiche soirée → **Historique** : restaurer une version précédente. |
+| Revenir en arrière | Carte **Historique** (soirée, artiste, lieu) : comparer les versions, restaurer (nouvelle version, rien n'est effacé). |
 
 Statuts d'une soirée : **Brouillon** (invisible), **Programmé**, **Publié**, **Annulé** (visible avec
 mention), **Archivé** (retiré, conservé). « À venir » / « passée » reste calculé par la date.
@@ -124,8 +125,9 @@ Voir [`cms/.env.example`](../../cms/.env.example), commenté. Principales variab
 ## 7. Tests
 
 ```sh
-npm test            # 70+ tests : authentification, permissions, CRUD, validation, line-up,
-                    # médias, export identique, mise en ligne (fichiers, commit, push), aperçu, sauvegardes
+npm test            # 100+ tests : authentification, permissions, CRUD, validation, line-up,
+                    # médias, export identique, mise en ligne (fichiers, commit, push), aperçu, sauvegardes,
+                    # programmations (schedule.test.mjs : conflits, dépendances, reprise, heure d'été…)
 npm run validate    # site public
 ```
 
@@ -142,7 +144,7 @@ cms/
     services/                        règles métier (soirées, artistes, lieux, médias, FAQ, équipe…)
     api/                             routes de l'API JSON
     export/                          import initial et export vers js/data
-    publish/                         mise en ligne et planificateur
+    publish/                         mise en ligne et planificateur (exécute les programmations)
     preview/                         prévisualisation du site
   admin/                             interface (HTML, CSS, modules JS natifs)
   bin/cms.mjs                        ligne de commande d'exploitation

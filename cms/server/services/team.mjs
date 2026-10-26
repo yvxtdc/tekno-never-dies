@@ -72,7 +72,7 @@ export function createMember(db, input, user) {
   return member;
 }
 
-export function updateMember(db, id, input, user) {
+export function updateMember(db, id, input, user, { origin = "manual", changeId = null } = {}) {
   const current = db.get("SELECT * FROM team_members WHERE id = ?", id);
   if (!current) throw notFound("Membre introuvable.");
   if (input.version !== undefined && Number(input.version) !== current.version) throw conflict("Cette fiche a été modifiée entre-temps. Rechargez la page.", { stale: true });
@@ -83,7 +83,7 @@ export function updateMember(db, id, input, user) {
     slug, data.name, data.role, data.photo_media_id, JSON.stringify(data.tags), JSON.stringify(data.extra), data.bio, data.published, now(), id
   );
   const member = getMember(db, id);
-  saveRevision(db, "team", id, member.version, member, user?.id);
+  saveRevision(db, "team", id, member.version, member, user?.id, { origin, changeId });
   return member;
 }
 

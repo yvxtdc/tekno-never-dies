@@ -25,6 +25,7 @@ import { registerContentRoutes } from "./api/content.mjs";
 import { registerMediaRoutes } from "./api/media.mjs";
 import { registerUserRoutes } from "./api/users.mjs";
 import { registerSiteRoutes } from "./api/site.mjs";
+import { registerScheduleRoutes } from "./api/schedule.mjs";
 
 const ADMIN_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../admin");
 const SERVER_DIR = path.dirname(fileURLToPath(import.meta.url));
@@ -78,6 +79,7 @@ export function createApp({ config, db, log = createLogger(config.logLevel), pub
   registerMediaRoutes(router, deps);
   registerUserRoutes(router, deps);
   registerSiteRoutes(router, deps);
+  registerScheduleRoutes(router, deps);
 
   const clientIp = (req) => {
     if (config.trustProxy) {
@@ -199,10 +201,12 @@ export function createApp({ config, db, log = createLogger(config.logLevel), pub
         if (!session) return redirect(res, `/admin/login?next=${encodeURIComponent(p)}`);
         // /preview/site/…  : site tel qu'il serait après la prochaine mise en ligne (+ soirées programmées)
         // /preview/event-12/… : idem + la soirée 12, même en brouillon
-        const m = p.match(/^\/preview\/(site|event-(\d{1,12}))(\/.*)?$/);
+        // /preview/at-1767225600/… : site tel qu'il sera à cette date (secondes Unix), programmations appliquées
+        const m = p.match(/^\/preview\/(site|event-(\d{1,12})|at-(\d{9,11}))(\/.*)?$/);
         if (!m) throw notFound();
-        if (!m[3]) return redirect(res, `${p}/`);
-        return await servePreview(req, res, { config, db, subPath: m[3], includeEventIds: m[2] ? [Number(m[2])] : [], label: m[2] ? "brouillon" : "prochaine mise en ligne", editLinks: true });
+        if (!m[4]) return redirect(res, `${p}/`);
+        const at = m[3] ? new Date(Number(m[3]) * 1000).toISOString() : null;
+        return await servePreview(req, res, { config, db, subPath: m[4], includeEventIds: m[2] ? [Number(m[2])] : [], at, label: m[2] ? "brouillon" : "prochaine mise en ligne", editLinks: true });
       }
       if (p.startsWith("/p/")) {
         // Lien d'aperçu partageable (sans compte) : une soirée, durée limitée.

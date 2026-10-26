@@ -128,7 +128,7 @@ export function createArtist(db, input, user) {
   return artist;
 }
 
-export function updateArtist(db, id, input, user) {
+export function updateArtist(db, id, input, user, { origin = "manual", changeId = null } = {}) {
   const current = db.get("SELECT * FROM artists WHERE id = ?", id);
   if (!current) throw notFound("Artiste introuvable.");
   if (input.version !== undefined && Number(input.version) !== current.version) {
@@ -148,7 +148,7 @@ export function updateArtist(db, id, input, user) {
   // Les soirées où joue l'artiste changent aussi (nom, photo) : elles sont « à republier ».
   db.run(`UPDATE events SET updated_at = ? WHERE id IN (SELECT s.event_id FROM lineup_slots s JOIN lineup_slot_artists la ON la.slot_id = s.id WHERE la.artist_id = ?)`, now(), id);
   const artist = getArtist(db, id);
-  saveRevision(db, "artist", id, artist.version, artist, user?.id);
+  saveRevision(db, "artist", id, artist.version, artist, user?.id, { origin, changeId });
   return artist;
 }
 

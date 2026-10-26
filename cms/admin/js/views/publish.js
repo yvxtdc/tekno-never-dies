@@ -8,7 +8,7 @@ import { can, isAdmin, session } from "../lib/session.js";
 const MODES = {
   files: "Les fichiers du site sont écrits dans la copie de travail (mode développement : relisez puis committez-les vous-même).",
   commit: "Les fichiers du site sont écrits puis enregistrés dans un commit Git (à pousser ensuite).",
-  push: "Les fichiers du site sont écrits, enregistrés dans un commit et envoyés sur GitHub, qui publie le site en quelques minutes."
+  push: "Les fichiers du site sont écrits, enregistrés dans un commit et envoyés sur GitHub, qui publie le site en quelques minutes (déploiement non suivi par le CMS : onglet Actions du dépôt)."
 };
 
 export async function publishView(ctx, main) {
@@ -82,7 +82,7 @@ export async function publishView(ctx, main) {
             h("li", {}, "Les outils du site régénèrent les fiches soirées, l'agenda, les plans, les pages allemandes et anglaises et le plan du site."),
             h("li", {}, "Le site est validé (liens, images, pages). En cas d'erreur, rien n'est mis en ligne et le site reste dans son dernier état."),
             h("li", {}, MODES[session.publishMode] || MODES.files)),
-          h("p", { class: "small muted", style: { marginTop: "10px" } }, "Les soirées programmées sont mises en ligne automatiquement à l'heure prévue.")))));
+          h("p", { class: "small muted", style: { marginTop: "10px" } }, "Les modifications programmées (", h("a", { href: "/admin/schedule" }, "Programmations"), ") sont appliquées à l'heure prévue, puis mises en ligne automatiquement. Une programmation n'est « Envoyée sur GitHub » qu'après une mise en ligne réussie qui l'inclut ; GitHub Pages publie ensuite le site en quelques minutes, sans que le CMS le vérifie (onglet Actions du dépôt).")))));
 }
 
 function showLog(p, container) {

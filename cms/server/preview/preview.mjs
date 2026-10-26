@@ -15,6 +15,8 @@ import { safeResolve, serveFile } from "../http/static.mjs";
 import { sendText, MIME } from "../http/respond.mjs";
 import { now } from "../db/index.mjs";
 import { notFound } from "../http/errors.mjs";
+import { simulate } from "../services/schedule.mjs";
+import { utcToParis } from "../services/timeutil.mjs";
 
 // Dossiers et fichiers du dépôt qui ne font pas partie du site.
 const BLOCKED = /^(cms|tools|import|node_modules|partials|docs|vendor\/.*\.md$)(\/|$)|^(package(-lock)?\.json|README\.md|A-COMPLETER\.md|serve\.json|CNAME)$/;
@@ -74,10 +76,21 @@ export function purgePreviewTokens(db) {
  * @param {string} opts.subPath chemin relatif au site (« evenement-x.html », « js/data/events.js »…)
  * @param {number[]} opts.includeEventIds soirées à montrer même si elles ne sont pas publiées
  * @param {boolean} opts.includeScheduled montrer aussi les soirées programmées
+ * @param {string|null} opts.at site public tel qu'il sera à cette date (ISO) : programmations prévues
+ *   d'ici là appliquées dans une transaction annulée (rien n'est modifié ni exécuté pour de vrai)
  */
-export async function servePreview(req, res, { config, db, subPath, includeEventIds = [], includeScheduled = true, label = "non publié", editLinks = false }) {
+export async function servePreview(req, res, { config, db, subPath, includeEventIds = [], includeScheduled = true, at = null, label = "non publié", editLinks = false }) {
   const rel = subPath.replace(/^\/+/, "") || "index.html";
-  const data = buildSiteData(db, { mode: "preview", includeEventIds, includeScheduled });
+  const data = at
+    ? db.dryRun(() => {
+        simulate(db, at);
+        return buildSiteData(db, { mode: "public" });
+      })
+    : buildSiteData(db, { mode: "preview", includeEventIds, includeScheduled });
+  if (at) {
+    const [date, time] = utcToParis(at).local.split("T");
+    label = `état prévu le ${date.split("-").reverse().join("/")} à ${time.replace(":", "h")}`;
+  }
   const modules = renderModules(data);
 
   // Modules de données générés depuis la base.

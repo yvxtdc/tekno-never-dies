@@ -17,6 +17,7 @@ import { artistKey, uniqueSlug, slugify } from "../services/slug.mjs";
 import { parseFrenchRange } from "../services/timeutil.mjs";
 import { htmlToRichText, richTextToHtml } from "../services/richtext.mjs";
 import { venuePlace } from "../services/venues.mjs";
+import { newSlotUid } from "../services/events.mjs";
 import { buildSiteData } from "./site-data.mjs";
 import { MANAGED_MODULES, renderModules } from "./modules.mjs";
 
@@ -194,9 +195,9 @@ export async function importFromRepo(db, config, { log = () => {} } = {}) {
         const times = slot.time ? parseFrenchRange(slot.time) : { start: null, end: null };
         if (slot.time && !times) warnings.push(`Soirée « ${ev.slug} », ${name} : horaire « ${slot.time} » non reconnu.`);
         const { lastInsertRowid: slotId } = db.run(
-          "INSERT INTO lineup_slots (event_id, position, label, style, start_time, end_time, notes) VALUES (?, ?, ?, ?, ?, ?, ?)",
+          "INSERT INTO lineup_slots (event_id, position, label, style, start_time, end_time, notes, uid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
           eventId, i, canonical === name ? "" : name, slot.style || "", times?.start ?? null, times?.end ?? null,
-          slot.time && !times ? `Horaire d'origine : ${slot.time}` : ""
+          slot.time && !times ? `Horaire d'origine : ${slot.time}` : "", newSlotUid()
         );
         ids.forEach((id, j) => db.run("INSERT INTO lineup_slot_artists (slot_id, artist_id, position) VALUES (?, ?, ?)", Number(slotId), id, j));
       });

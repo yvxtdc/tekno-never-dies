@@ -119,7 +119,7 @@ export function createVenue(db, input, user) {
   return getVenue(db, id);
 }
 
-export function updateVenue(db, id, input, user) {
+export function updateVenue(db, id, input, user, { origin = "manual", changeId = null } = {}) {
   const current = db.get("SELECT * FROM venues WHERE id = ?", id);
   if (!current) throw notFound("Lieu introuvable.");
   if (input.version !== undefined && Number(input.version) !== current.version) {
@@ -137,7 +137,7 @@ export function updateVenue(db, id, input, user) {
     data.map_span_km, data.description, data.website_url, data.access_info, data.capacity, data.notes, data.archived, now(), id
   );
   const venue = getVenue(db, id);
-  saveRevision(db, "venue", id, venue.version, venue, user?.id);
+  saveRevision(db, "venue", id, venue.version, venue, user?.id, { origin, changeId });
   return venue;
 }
 

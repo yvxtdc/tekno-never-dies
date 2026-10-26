@@ -7,6 +7,7 @@ import { mediaSlot, linksEditor, combobox } from "../lib/widgets.js";
 import { createEditor } from "../lib/editor.js";
 import { formatDate, plural } from "../lib/format.js";
 import { isAdmin } from "../lib/session.js";
+import { loadPredicted, editorScheduling } from "../lib/schedule.js";
 
 export async function artistsListView(ctx, main) {
   document.title = "Artistes — Administration TND";
@@ -51,16 +52,21 @@ export async function artistEditView(ctx, main) {
   const isNew = ctx.params.id === "new";
   replace(main, loadingState());
   let artist;
+  let predicted = null;
   try {
-    artist = isNew ? { name: "", slug: "", styles: "", bio: "", origin: "", instagramUrl: "", soundcloudUrl: "", links: [], contact: "", notes: "", archived: false, mystery: false, photo: null, photoMediaId: null, events: [] } : await get(`/api/artists/${Number(ctx.params.id)}`);
+    if (!isNew) predicted = await loadPredicted("artist", Number(ctx.params.id), ctx.query);
+    artist = isNew ? { name: "", slug: "", styles: "", bio: "", origin: "", instagramUrl: "", soundcloudUrl: "", links: [], contact: "", notes: "", archived: false, mystery: false, photo: null, photoMediaId: null, events: [] } : predicted ? predicted.entity : await get(`/api/artists/${Number(ctx.params.id)}`);
   } catch (error) {
     return replace(main, errorState(error, () => artistEditView(ctx, main)));
   }
   const m = structuredClone(artist);
   document.title = `${isNew ? "Nouvel artiste" : m.name} — Administration TND`;
   const toPayload = (x) => ({ version: x.version, name: x.name, slug: x.slug, photoMediaId: x.photoMediaId, styles: x.styles, bio: x.bio, origin: x.origin, instagramUrl: x.instagramUrl, soundcloudUrl: x.soundcloudUrl, links: x.links.filter((l) => l.label || l.url), contact: x.contact, notes: x.notes, archived: x.archived, mystery: x.mystery });
+  let sched = null;
   const ed = createEditor({
     model: m, toPayload, isNew, newLabel: "Nouvel artiste",
+    savedLabel: predicted ? "État prévu (rien à programmer)" : undefined,
+    onSubmit: predicted ? () => sched.schedule() : null,
     onSave: async (data) => {
       const saved = isNew ? await post("/api/artists", data) : await put(`/api/artists/${m.id}`, data);
       toast(isNew ? `Artiste « ${saved.name} » créé.` : "Fiche enregistrée. Les soirées où joue l'artiste seront mises à jour à la prochaine mise en ligne.");
@@ -102,9 +108,15 @@ export async function artistEditView(ctx, main) {
         (() => { const c = checkbox("Fiche archivée (n'est plus proposée dans les line-ups)", { checked: m.archived }); ed.bind("archived", c.input); return c; })())),
     ed.bar
   ]);
+  if (!isNew) {
+    sched = editorScheduling({ ed, type: "artist", id: m.id, model: m, toPayload, predicted, path: `/admin/artists/${m.id}` });
+    if (sched.banner) ed.form.prepend(sched.banner);
+  }
 
   const side = h("div", { class: "split__side" });
-  if (!isNew) {
+  if (predicted) side.append(...sched.cards);
+  else if (!isNew) {
+    side.append(...sched.cards);
     side.append(h("section", { class: "card" },
       h("div", { class: "card__head" }, h("h2", {}, "Soirées"), h("p", {}, plural(artist.events.length, "passage", "passages"))),
       artist.events.length ? h("ul", { class: "activity" }, artist.events.map((e) => h("li", {},
