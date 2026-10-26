@@ -11,6 +11,13 @@ const next = EVENTS
   .filter((ev) => eventStatus(ev) === "a-venir" && !ev.cancelled)
   .sort((a, b) => a.date.localeCompare(b.date))[0];
 
+// Bouton du hero : « Nos événements » par défaut (index.html), « Prochaine soirée » vers sa fiche s'il y en a une.
+const heroNext = document.getElementById("hero-cta-next");
+if (heroNext && next) {
+  heroNext.href = eventPath(next.slug);
+  heroNext.querySelector("span").textContent = tr("Prochaine soirée");
+}
+
 if (nextBlock && next) {
   const ficheUrl = eventPath(next.slug);
   const ticketUrl = safeUrl(next.ticketUrl);
