@@ -2,6 +2,8 @@
 //
 //   ✗ erreurs    → font échouer la commande (liens cassés, HTML mal fermé, header/footer pas à jour…)
 //   ! à compléter → informations encore fictives ou manquantes ; ne bloquent pas (--strict pour bloquer)
+//   --json        → résultat structuré sur une ligne { ok, errors, warnings, files, pages } (utilisé par la
+//                   mise en ligne du CMS pour distinguer erreurs et avertissements) ; même code de sortie
 import fs from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
@@ -10,6 +12,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const strict = process.argv.includes("--strict");
+const json = process.argv.includes("--json");
 const errors = [];
 const todo = [];
 const rel = (f) => path.relative(root, f).replaceAll("\\", "/");
@@ -226,6 +229,11 @@ for (const file of files.filter((f) => /\.(html|js)$/.test(f) && !f.includes("to
 if (SITE.url.includes("example.org")) todo.push("js/data/site.js, sitemap.xml, robots.txt : le domaine (example.org) reste à renseigner");
 
 /* ---------- résultat ---------- */
+if (json) {
+  const ok = !errors.length && !(strict && todo.length);
+  console.log(JSON.stringify({ ok, errors, warnings: todo, files: files.length, pages: pages.length }));
+  process.exit(ok ? 0 : 1);
+}
 if (todo.length) console.log(`! À compléter avant la mise en ligne (${todo.length}) :\n  - ${todo.join("\n  - ")}\n`);
 if (errors.length) {
   console.error(`✗ ${errors.length} erreur(s) :\n  - ${errors.join("\n  - ")}`);

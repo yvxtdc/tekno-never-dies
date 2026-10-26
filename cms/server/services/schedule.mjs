@@ -28,6 +28,9 @@ import { TARGETS, SLOT_FIELDS, slotOf, exists, generationOf, pick, isPublic, equ
 import * as events from "./events.mjs";
 import { comparable, changedKeys, getRevision, listRevisions } from "./audit.mjs";
 import { parisToUtc, utcToParis } from "./timeutil.mjs";
+import { deploymentView } from "../publish/deploy-tracker.mjs";
+import { blockingProblems } from "./event-checklist.mjs";
+import { runtime } from "../runtime.mjs";
 
 export const CHANGE_STATUSES = {
   pending: "Programmée",
@@ -100,13 +103,25 @@ function describeChanges(db, type, changes, current = null) {
 }
 
 /**
- * Libellé et explication d'une programmation incluse dans une mise en ligne réussie, selon le mode de
- * cette mise en ligne : le CMS ne prétend jamais que le contenu est visible sur le site public.
+ * Libellé et explication d'une programmation incluse dans une mise en ligne réussie, d'après l'état de
+ * cette mise en ligne et de son déploiement (publish/deploy-tracker.mjs, même source que la page Mise en
+ * ligne) : « Déployée » seulement quand GitHub a confirmé le déploiement du commit.
  */
 function publishedState(pub) {
   const sha = pub?.commit_sha ? pub.commit_sha.slice(0, 7) : "";
   if (pub?.mode === "push") {
-    return { label: "Envoyée sur GitHub", availability: `Commit ${sha} envoyé sur GitHub. Disponibilité sur le site public non vérifiée par le CMS : GitHub Pages déploie normalement en quelques minutes (voir l'onglet Actions du dépôt).` };
+    const deploy = deploymentView(pub);
+    const labels = {
+      success: "Déployée", superseded: "Déployée", waiting: "Envoyée, déploiement en cours", queued: "Envoyée, déploiement en cours",
+      in_progress: "Envoyée, déploiement en cours", failure: "Envoyée, déploiement échoué", cancelled: "Envoyée, déploiement annulé",
+      overwritten: "Envoyée, écrasée par une version antérieure", skipped: "Envoyée, déploiement ignoré"
+    };
+    return {
+      label: labels[deploy.status] || "Envoyée, déploiement non vérifié",
+      availability: `Commit ${sha} envoyé sur GitHub. ${deploy.label || "Déploiement non suivi"} : ${deploy.message || "aucune information"}`,
+      deployStatus: deploy.status,
+      deployRunUrl: deploy.runUrl
+    };
   }
   if (pub?.mode === "commit") {
     return { label: "Commitée, non envoyée", availability: `Commit local ${sha} : pas encore visible sur le site public tant qu'il n'est pas poussé sur GitHub.` };
@@ -151,9 +166,9 @@ function serialize(db, row, { full = false } = {}) {
     updatedAt: row.updated_at
   };
   if (row.status === "published") {
-    const pub = row.publication_id ? db.get("SELECT mode, commit_sha FROM publications WHERE id = ?", row.publication_id) : null;
+    const pub = row.publication_id ? db.get("SELECT * FROM publications WHERE id = ?", row.publication_id) : null;
     const state = publishedState(pub);
-    Object.assign(item, { statusLabel: state.label, availability: state.availability, publicationMode: pub?.mode ?? null, publicationCommit: pub?.commit_sha ?? null });
+    Object.assign(item, { statusLabel: state.label, availability: state.availability, publicationMode: pub?.mode ?? null, publicationCommit: pub?.commit_sha ?? null, deployStatus: state.deployStatus ?? null, deployRunUrl: state.deployRunUrl ?? null });
   }
   if (full) {
     item.log = db.all(
@@ -475,8 +490,8 @@ export function scheduleStatus(db, { id, action, runAt: runAtInput, user = null 
     let base = predChange ? predChange.to : real.status;
     if (base === to) throw new ValidationError({ runAt: `La soirée sera déjà « ${events.STATUSES[to]} » à cette date.` });
     if (action === "publish") {
-      const checks = events.eventChecks(db, real);
-      if (checks.errors.length) throw new ValidationError({ status: checks.errors.join(" ") }, "Corrigez d'abord les erreurs signalées avant de programmer la mise en ligne.");
+      const errors = blockingProblems(db, runtime.config, real.id);
+      if (errors.length) throw new ValidationError({ status: errors.join(" ") }, "Corrigez d'abord les erreurs signalées avant de programmer la mise en ligne.");
       if (base === "draft" && !pred) {
         events.changeStatus(db, real.id, "schedule", { publishAt: runAt }, user, { origin: "schedule" });
         base = "scheduled";
@@ -698,8 +713,16 @@ export function executeChange(db, id, { force = false, user = null, reason = "" 
         return fail("conflict", `Modifié entre-temps : ${labels.join(", ")}. Rien n'a été appliqué : choisissez la valeur à garder.`, { details: { conflicts, current } });
       }
       const options = { origin: "schedule", changeId: id };
+      // Soirée visible (ou qui le devient) : contrôle bloquant refait à l'exécution, sur le contenu du moment.
+      const wasPublic = row.entity_type === "event" && events.PUBLIC_STATUSES.includes(cur.status);
+      const before = wasPublic ? new Set(blockingProblems(db, runtime.config, row.entity_id)) : new Set();
       if (touched) t.save(db, row.entity_id, { ...input, version: cur.version }, options, user);
       if (statusTo) events.changeStatus(db, row.entity_id, t.status.action(statusTo), {}, user, options);
+      if (row.entity_type === "event" && events.PUBLIC_STATUSES.includes(events.getEventRow(db, row.entity_id).status)) {
+        const introduced = blockingProblems(db, runtime.config, row.entity_id).filter((m) => !before.has(m));
+        // Transaction annulée : rien n'est appliqué, la programmation est conservée en « Échec » avec le motif.
+        if (introduced.length) throw new ValidationError({ status: introduced.join(" ") }, "Contrôle avant publication non satisfait au moment de l'exécution :");
+      }
       const revision = db.get("SELECT MAX(id) AS id FROM revisions WHERE entity_type = ? AND entity_id = ? AND change_id = ?", row.entity_type, row.entity_id, id)?.id ?? null;
       const late = Date.now() - Date.parse(row.run_at);
       const message = [
@@ -809,6 +832,10 @@ export function eventStatusAction(db, id, action, { publishAt, runAt } = {}, use
     if (result.status !== "applied") throw conflict(`Mise en ligne impossible : ${result.message}`);
     return { event: events.getEvent(db, id), transition: { label: "publié" } };
   }
+  if (action === "publish") {
+    const errors = blockingProblems(db, runtime.config, id);
+    if (errors.length) throw new ValidationError({ status: errors.join(" ") }, "Corrigez d'abord les erreurs signalées avant de publier.");
+  }
   return db.tx(() => {
     const result = events.changeStatus(db, id, action, { publishAt }, user);
     // La mise en ligne programmée d'une soirée « Programmée » n'a plus lieu d'être.
@@ -842,10 +869,10 @@ export const appliedIds = (db) => db.all("SELECT id FROM scheduled_changes WHERE
  */
 export function markPublished(db, ids, publicationId, summary = "") {
   if (!ids.length) return;
-  const state = publishedState(db.get("SELECT mode, commit_sha FROM publications WHERE id = ?", publicationId));
+  const state = publishedState(db.get("SELECT * FROM publications WHERE id = ?", publicationId));
   db.tx(() => {
     for (const id of ids) {
-      const { changes } = db.run("UPDATE scheduled_changes SET status = 'published', published_at = ?, publication_id = ?, result = ?, updated_at = ? WHERE id = ? AND status = 'applied'", now(), publicationId, state.availability, now(), id);
+      const { changes } = db.run("UPDATE scheduled_changes SET status = 'published', published_at = ?, publication_id = ?, result = ?, updated_at = ? WHERE id = ? AND status = 'applied'", now(), publicationId, `Incluse dans la mise en ligne n° ${publicationId}.`, now(), id);
       if (changes) log(db, id, "published", `Mise en ligne n° ${publicationId} réussie (${state.label.toLowerCase()}). ${summary}`.trim());
     }
   });

@@ -31,6 +31,7 @@ import { renderModules, MANAGED_MODULES } from "../export/modules.mjs";
 import { variantFile } from "../services/media.mjs";
 import { audit } from "../services/audit.mjs";
 import { appliedIds, markPublished, notePublishFailure } from "../services/schedule.mjs";
+import { deploymentView } from "./deploy-tracker.mjs";
 
 /** Fichiers et dossiers écrits par la mise en ligne (seuls ceux-ci sont ajoutés au commit). */
 export const MANAGED_PATHS = [
@@ -71,6 +72,19 @@ function run(cmd, args, { cwd, env, timeout = 300e3, input } = {}) {
     if (input) child.stdin.end(input);
     else child.stdin.end();
   });
+}
+
+/**
+ * Résultat de tools/validate.mjs --json ; sortie illisible (outil interrompu…) : une erreur explicite,
+ * jamais une validation réussie par défaut.
+ */
+export function parseValidation(result) {
+  const line = String(result.out || "").trim().split("\n").reverse().find((l) => l.startsWith("{"));
+  try {
+    const report = JSON.parse(line);
+    if (Array.isArray(report.errors) && Array.isArray(report.warnings)) return { ...report, ok: Boolean(report.ok) && result.code === 0 };
+  } catch { /* sortie non structurée */ }
+  return { ok: false, errors: [`Résultat de la validation illisible (code ${result.code}).`], warnings: [], files: 0, pages: 0, unreadable: true };
 }
 
 export class Publisher {
@@ -251,10 +265,22 @@ export class Publisher {
       db.run("UPDATE publications SET log = ? WHERE id = ?", lines.join("\n"), id);
       this.acquireLock();
     };
+    // Étape en cours : situe un échec (préparation, export, génération, validation, commit, envoi).
+    const setStage = (stage) => db.run("UPDATE publications SET stage = ? WHERE id = ?", stage, id);
+    setStage("preparation");
     // Programmations appliquées incluses dans l'export de cette mise en ligne (lues en même temps).
     let included = [];
     const finish = (status, summary, commitSha = null) => {
       db.run("UPDATE publications SET status = ?, finished_at = ?, summary = ?, commit_sha = ?, log = ? WHERE id = ?", status, now(), summary, commitSha, lines.join("\n"), id);
+      if (status === "success") {
+        // Déploiement : suivi par publish/deploy-tracker.mjs pour un commit présent sur GitHub (mode push) ;
+        // dans les autres modes, rien n'est envoyé.
+        setStage("done");
+        const tracked = mode === "push" && commitSha;
+        db.run("UPDATE publications SET deploy_status = ?, deploy_next_check_at = ?, deploy_message = ? WHERE id = ?",
+          tracked ? "waiting" : "not_sent", tracked ? now() : null,
+          tracked ? "Envoyé sur GitHub : en attente du déploiement GitHub Pages." : mode === "commit" ? "Commit local, pas envoyé sur GitHub." : "Fichiers écrits dans la copie de travail, rien n'est envoyé.", id);
+      }
       audit(db, { user, ip }, status === "success" ? "site.publish" : "site.publish.failed", "publication", id, summary);
       if (status === "success") markPublished(db, included, id, summary);
       else notePublishFailure(db, included.length ? included : appliedIds(db), summary);
@@ -304,6 +330,7 @@ export class Publisher {
         }
         if (drift.length) step(`Fichiers modifiés hors du CMS remplacés (mise en ligne forcée) : ${drift.join(", ")}.`);
 
+        setStage("export");
         step("Export des contenus publiés…");
         // Lecture cohérente : l'export et la liste des programmations qu'il contient viennent du même état.
         const data = db.tx(() => {
@@ -361,6 +388,7 @@ export class Publisher {
           ["tools/validate.mjs", "Validation complète du site"]
         ];
         let degraded = [];
+        setStage("generation");
         for (const [tool, label] of tools) {
           if (tool === "tools/langues.mjs") degraded = this.dropMissingMaps(data, step);
           if (degraded.length && tool === "tools/langues.mjs") {
@@ -369,6 +397,18 @@ export class Publisher {
             this.rememberHashes();
           }
           step(`${label}…`);
+          if (tool === "tools/validate.mjs") {
+            // Validation : résultat structuré (erreurs bloquantes / avertissements « à compléter »).
+            setStage("validation");
+            const result = await run(process.execPath, [tool, "--json"], { cwd: config.siteDir, timeout: 600e3 });
+            const report = parseValidation(result);
+            db.run("UPDATE publications SET validation = ? WHERE id = ?", JSON.stringify(report), id);
+            if (report.errors.length) step(`Validation : ${report.errors.length} erreur(s) bloquante(s) :\n- ${report.errors.slice(0, 15).join("\n- ")}`);
+            if (report.warnings.length) step(`Validation : ${report.warnings.length} avertissement(s) (non bloquants) :\n- ${report.warnings.slice(0, 15).join("\n- ")}`);
+            if (!report.ok) throw new Error(`${label} : échec (${report.errors.length || "?"} erreur(s)).`);
+            step(`Validation OK : ${report.files} fichiers, ${report.pages} pages.`);
+            continue;
+          }
           const result = await run(process.execPath, [tool], { cwd: config.siteDir, timeout: 600e3 });
           if (result.out) step(result.out.split("\n").slice(-15).join("\n"));
           // Plans : un échec (OpenStreetMap injoignable) n'empêche pas la mise en ligne (voir dropMissingMaps).
@@ -379,6 +419,7 @@ export class Publisher {
         let commitSha = null;
         let summary = "Site mis à jour (fichiers écrits).";
         if (gitMode) {
+          setStage("commit");
           await this.git(["add", "-A", "--", ...pathspecs]);
           const staged = await this.git(["diff", "--cached", "--name-only"]);
           if (staged.out) {
@@ -408,6 +449,7 @@ export class Publisher {
             const upstream = `${config.gitRemote}/${config.gitBranch}`;
             const ahead = Number((await this.git(["rev-list", "--count", `${upstream}..HEAD`])).out) || 0;
             if (ahead > 0) {
+              setStage("push");
               // Nouvelle vérification juste avant l'envoi (commit ajouté à la main pendant la mise en ligne).
               const foreign = await this.foreignCommits(upstream);
               if (foreign.length) throw new Error(`Envoi annulé : des commits qui ne viennent pas du CMS sont apparus sur la branche pendant la mise en ligne (le commit du CMS est conservé localement) :\n${foreign.join("\n")}`);
@@ -418,8 +460,8 @@ export class Publisher {
                 // refait si la branche distante a avancé entre-temps, voir dropUnpushedCmsCommits).
                 throw new Error(`git push a échoué (le commit ${commitSha.slice(0, 7)} est conservé localement) :\n${push.out}`);
               }
-              step(`Envoyé sur ${upstream} : GitHub Actions publie ensuite le site (quelques minutes ; déploiement non suivi par le CMS).`);
-              summary = `Envoyé sur GitHub (${commitSha.slice(0, 7)}) : GitHub Pages publie le site en quelques minutes (déploiement non vérifié par le CMS, voir l'onglet Actions du dépôt).`;
+              step(`Envoyé sur ${upstream} : GitHub Actions déploie ensuite le site (quelques minutes) ; le CMS suit ce déploiement.`);
+              summary = `Envoyé sur GitHub (${commitSha.slice(0, 7)}) : déploiement GitHub Pages en cours de suivi.`;
             }
           }
           if (!staged.out) {
@@ -451,10 +493,16 @@ export class Publisher {
   }
 }
 
-export function listPublications(db, { limit = 30 } = {}) {
+/** Historique des mises en ligne, avec l'étape d'un échec, la validation et l'état du déploiement. */
+export function listPublications(db, { limit = 30, siteUrl = null } = {}) {
   return db.all(
-    `SELECT p.id, p.status, p.trigger, p.mode, p.started_at, p.finished_at, p.commit_sha, p.summary, u.name AS user_name
-       FROM publications p LEFT JOIN users u ON u.id = p.user_id ORDER BY p.id DESC LIMIT ?`,
+    `SELECT p.*, u.name AS user_name FROM publications p LEFT JOIN users u ON u.id = p.user_id ORDER BY p.id DESC LIMIT ?`,
     limit
-  );
+  ).map((p) => publicationView(p, siteUrl));
+}
+
+/** Mise en ligne pour l'interface : sans le journal (détail à part), validation et déploiement lisibles. */
+export function publicationView(p, siteUrl = null, { withLog = false } = {}) {
+  const { log, validation, ...rest } = p;
+  return { ...rest, ...(withLog ? { log } : {}), validation: fromJson(validation, null), deployment: deploymentView(p, { siteUrl }) };
 }

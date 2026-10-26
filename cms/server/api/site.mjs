@@ -6,7 +6,9 @@ import { REPO_ROOT } from "../config.mjs";
 import { readJson } from "../http/body.mjs";
 import { notFound } from "../http/errors.mjs";
 import { audit } from "../services/audit.mjs";
-import { listPublications } from "../publish/publisher.mjs";
+import { listPublications, publicationView } from "../publish/publisher.mjs";
+import { healthReport } from "../services/health.mjs";
+import { lifecycleOverview } from "../services/lifecycle.mjs";
 import { createBackup, listBackups, backupFile, lastBackupAt } from "../services/backup.mjs";
 import { STATUSES } from "../services/events.mjs";
 import { ROLES } from "../auth/permissions.mjs";
@@ -48,7 +50,11 @@ export function registerSiteRoutes(router, { config, db, publisher }) {
         };
       });
     const pending = publisher.pending();
-    const lastPublication = db.get("SELECT p.*, u.name AS user_name FROM publications p LEFT JOIN users u ON u.id = p.user_id ORDER BY p.id DESC LIMIT 1") || null;
+    const lastRow = db.get("SELECT p.*, u.name AS user_name FROM publications p LEFT JOIN users u ON u.id = p.user_id ORDER BY p.id DESC LIMIT 1");
+    const lastPublication = lastRow ? publicationView(lastRow, SITE.url) : null;
+    // Santé (résumé par section, selon le rôle) et suivi des soirées : mêmes calculs que leurs pages.
+    const health = healthReport(db, config, { full: ctx.user.role === "admin", publisher, siteUrl: SITE.url });
+    const lifecycle = lifecycleOverview(db, config);
     const translationsMissing = listTranslations(db, { missing: "any" }).length;
     const nextChanges = listChanges(db, { status: "pending", pageSize: 5 });
     return {
@@ -68,6 +74,8 @@ export function registerSiteRoutes(router, { config, db, publisher }) {
       pending,
       drift: publisher.drift(),
       lastPublication,
+      health: { level: health.level, sections: health.sections.map((s) => ({ id: s.id, title: s.title, level: s.level, problems: s.items.filter((i) => ["error", "warning", "unknown"].includes(i.level)).map((i) => ({ label: i.label, level: i.level, value: i.value })) })) },
+      lifecycle: { counts: lifecycle.counts, next: lifecycle.items.filter((l) => l.next && (l.overdue || l.phase === "after" || l.blocking)).slice(0, 5) },
       publishing: Boolean(publisher.running),
       // Programmations : prochaines échéances et nombre par état (à traiter, appliquées pas encore en ligne…).
       schedule: { next: nextChanges.items, counts: nextChanges.counts },
@@ -79,12 +87,12 @@ export function registerSiteRoutes(router, { config, db, publisher }) {
   }, { perm: "content.read" });
 
   /* ---------- Mise en ligne ---------- */
-  router.get("/api/publications", () => ({ items: listPublications(db), running: Boolean(publisher.running), mode: config.publishMode }), { perm: "content.read" });
+  router.get("/api/publications", () => ({ items: listPublications(db, { siteUrl: SITE.url }), running: Boolean(publisher.running), mode: config.publishMode, deployTracking: config.deployTracking }), { perm: "content.read" });
   router.get("/api/publications/pending", () => ({ ...publisher.pending(), drift: publisher.drift() }), { perm: "content.read" });
   router.get("/api/publications/:id", (ctx) => {
     const row = db.get("SELECT p.*, u.name AS user_name FROM publications p LEFT JOIN users u ON u.id = p.user_id WHERE p.id = ?", ctx.params.id);
     if (!row) throw notFound("Mise en ligne introuvable.");
-    return row;
+    return publicationView(row, SITE.url, { withLog: true });
   }, { perm: "content.read" });
   router.post("/api/publications", async (ctx) => {
     const body = await readJson(ctx.req, 4096);

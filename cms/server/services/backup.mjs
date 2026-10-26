@@ -4,6 +4,7 @@
  * sauvegarder avec le reste du dossier de données (voir docs/cms/exploitation.md).
  */
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { backup as sqliteBackup, DatabaseSync } from "node:sqlite";
 
@@ -80,4 +81,64 @@ export async function restoreBackup(config, source) {
   for (const ext of ["", "-wal", "-shm"]) fs.rmSync(`${config.dbFile}${ext}`, { force: true });
   fs.copyFileSync(source, config.dbFile);
   return { info, safety };
+}
+
+/**
+ * Test de restauration : la dernière sauvegarde (ou celle indiquée) est copiée dans un dossier temporaire,
+ * puis ouverte et contrôlée (intégrité, migrations, contenus). La base en service et les sauvegardes ne
+ * sont jamais modifiées. Le résultat est noté (settings « backup.restoreTest ») pour le tableau de santé.
+ */
+export function verifyBackupRestore(config, db, name = null) {
+  const latest = listBackups(config).find((b) => !b.name.includes("-avant-restauration"));
+  const target = name ? backupFile(config, name) : latest ? backupFile(config, latest.name) : null;
+  const result = { at: new Date().toISOString(), backup: target ? path.basename(target) : null, ok: false, detail: "" };
+  if (!target) result.detail = "Aucune sauvegarde à tester.";
+  else {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "tnd-restore-test-"));
+    try {
+      const copy = path.join(dir, "test.sqlite");
+      fs.copyFileSync(target, copy);
+      const info = inspectBackup(copy);
+      result.ok = true;
+      result.detail = `${info.counts.events} soirée(s), ${info.counts.artists} artiste(s), ${info.counts.users} compte(s) ; migrations ${info.migrations.at(-1) || "aucune"}.`;
+    } catch (error) {
+      result.detail = `Sauvegarde inutilisable : ${String(error.message).split("\n")[0].slice(0, 200)}`;
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  }
+  db.run("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('backup.restoreTest', ?, ?)", JSON.stringify(result), result.at);
+  return result;
+}
+
+/** Fichier d'état écrit par cms/deploy/backup-media.sh (sauvegarde hors serveur). */
+export const externalStatusFile = (config) => path.join(config.dataDir, "status", "backup-externe.json");
+
+/**
+ * Dernier rapport de la sauvegarde hors serveur, ou null (script jamais exécuté, ou version sans rapport).
+ * commandOk : envoi terminé sans erreur ; verified : contenu distant vérifié identique (true), différences
+ * ou machine injoignable à la vérification (false), non vérifié (null : vérification désactivée, ou rapport
+ * d'une version du script sans vérification). Jamais de chemin ni d'identifiant.
+ */
+export function externalBackupStatus(config) {
+  const file = externalStatusFile(config);
+  if (!fs.existsSync(file)) return null;
+  try {
+    const data = JSON.parse(fs.readFileSync(file, "utf8"));
+    const count = (v) => (Number.isInteger(v) && v >= 0 ? v : null);
+    return {
+      finishedAt: String(data.finishedAt || ""),
+      ok: data.ok === true,
+      step: String(data.step || ""),
+      message: String(data.message || "").slice(0, 300),
+      // Rapport sans ces champs (version précédente du script) : envoi seulement, rien de vérifié.
+      commandOk: "commandOk" in data ? data.commandOk === true : data.ok === true,
+      verified: data.verified === true ? true : data.verified === false ? false : null,
+      verifiedFiles: count(data.verifiedFiles),
+      differences: count(data.differences),
+      latestBackup: /^cms-\d{8}-\d{6}(-[a-z0-9-]+)?\.sqlite$/.test(data.latestBackup || "") ? data.latestBackup : null
+    };
+  } catch {
+    return { finishedAt: "", ok: false, step: "", message: "Rapport illisible.", commandOk: false, verified: null, verifiedFiles: null, differences: null, latestBackup: null };
+  }
 }

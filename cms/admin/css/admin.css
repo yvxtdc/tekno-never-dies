@@ -489,3 +489,31 @@ dialog.dialog::backdrop { background: rgba(5, 3, 20, .72); backdrop-filter: blur
 .artist-chip .pill { font-size: 10px; padding: 1px 6px; background: rgba(213, 79, 192, .25); color: #fff; }
 .contest-details > summary { cursor: pointer; font-weight: 700; margin-bottom: 12px; }
 .tickets-howto { margin: 0 0 8px; padding-left: 18px; display: grid; gap: 2px; }
+
+/* ---------- Supervision : santé, suivi des soirées, statistiques ---------- */
+.health-list { list-style: none; margin: 0; padding: 0; display: grid; }
+.health-list li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; padding: 10px 0; border-top: 1px solid var(--line); }
+.health-list li:first-child { border-top: 0; }
+.health-list__label { font-weight: 600; }
+.health-list__value { justify-self: end; text-align: right; }
+.health-list__more { grid-column: 1 / -1; overflow-wrap: anywhere; }
+@media (max-width: 600px) { .health-list li { grid-template-columns: 1fr; } .health-list__value { justify-self: start; text-align: left; } }
+.tasklist { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 10px; }
+.tasklist li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 8px; font-size: 14px; }
+.tasklist__mark { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 12px; background: rgba(255, 255, 255, .08); color: var(--muted); }
+.tasklist li.is-done .tasklist__mark { background: rgba(69, 211, 154, .2); color: var(--green); }
+.tasklist li.is-late .tasklist__mark { background: rgba(255, 197, 96, .2); color: var(--amber); }
+.tasklist__body { display: grid; gap: 2px; min-width: 0; }
+.tasklist li.is-done .tasklist__body > span:first-child, .tasklist li.is-skipped .tasklist__body > span:first-child { color: var(--muted); }
+.bar-chart-wrap { width: 100%; overflow: hidden; }
+.bar-chart { width: 100%; height: auto; display: block; }
+.bar-chart__bar { fill: var(--lav); }
+.bar-chart__bar.is-active { fill: var(--lav-soft); }
+.bar-chart__hit { fill: transparent; cursor: crosshair; }
+.bar-chart__axis { stroke: var(--line); stroke-width: 1; }
+.bar-chart__label { fill: var(--muted); font: 600 11px var(--text); }
+.rank-list { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 14px; }
+.rank-list li > span { overflow-wrap: anywhere; }
+.rank-list li { display: list-item; }
+.rank-list li strong { float: right; margin-left: 12px; }
+.table tr.is-selected td { background: rgba(149, 106, 255, .12); }

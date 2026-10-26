@@ -16,6 +16,9 @@ import { teamView } from "./views/team.js";
 import { translationsView } from "./views/translations.js";
 import { publishView } from "./views/publish.js";
 import { scheduleView } from "./views/schedule.js";
+import { healthView } from "./views/health.js";
+import { lifecycleView } from "./views/lifecycle.js";
+import { statsView } from "./views/stats.js";
 import { usersView, auditView, backupsView } from "./views/admin.js";
 import { accountView } from "./views/account.js";
 
@@ -23,9 +26,9 @@ const app = document.getElementById("app");
 
 const NAV = [
   [null, [["Tableau de bord", "/admin", "dashboard"]]],
-  ["Programmation", [["Soirées", "/admin/events", "events"], ["Artistes", "/admin/artists", "artists"], ["Lieux", "/admin/venues", "venues"]]],
+  ["Programmation", [["Soirées", "/admin/events", "events"], ["Suivi des soirées", "/admin/suivi", "tasks"], ["Artistes", "/admin/artists", "artists"], ["Lieux", "/admin/venues", "venues"]]],
   ["Contenus", [["Médiathèque", "/admin/media", "media"], ["Galerie photo", "/admin/gallery", "gallery"], ["FAQ", "/admin/faq", "faq"], ["Équipe", "/admin/team", "team"], ["Traductions", "/admin/translations", "translate"]]],
-  ["Site", [["Programmations", "/admin/schedule", "clock"], ["Mise en ligne", "/admin/publish", "publish"]]],
+  ["Site", [["Programmations", "/admin/schedule", "clock"], ["Mise en ligne", "/admin/publish", "publish"], ["Statistiques", "/admin/stats", "chart"], ["Santé du CMS", "/admin/health", "pulse"]]],
   ["Administration", [["Comptes", "/admin/users", "users", "users.manage"], ["Journal d'activité", "/admin/audit", "audit", "audit.read"], ["Sauvegardes", "/admin/backups", "backup", "backups.manage"]]]
 ];
 
@@ -205,6 +208,9 @@ function registerRoutes() {
   route("/admin/translations", translationsView);
   route("/admin/publish", publishView);
   route("/admin/schedule", scheduleView);
+  route("/admin/health", healthView);
+  route("/admin/suivi", lifecycleView);
+  route("/admin/stats", statsView);
   route("/admin/users", usersView);
   route("/admin/audit", auditView);
   route("/admin/backups", backupsView);

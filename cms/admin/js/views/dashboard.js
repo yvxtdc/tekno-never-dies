@@ -5,6 +5,7 @@ import { icon, loadingState, errorState, statusBadge, pageHead } from "../lib/ui
 import { shortDay, relative, formatDate, plural } from "../lib/format.js";
 import { session, can } from "../lib/session.js";
 import { changeBadge, changeDialog, formatLocal } from "../lib/schedule.js";
+import { levelBadge, deploymentBadge } from "../lib/supervision.js";
 
 const ACTIONS = {
   "event.create": "a créé la soirée", "event.update": "a modifié la soirée", "event.publish": "a publié", "event.schedule": "a programmé",
@@ -39,6 +40,7 @@ export async function dashboardView(ctx, main) {
       : h("p", { class: "muted" }, "Tout ce qui est publié dans le CMS est en ligne."),
     drift.length ? h("p", { class: "error-text" }, `Fichiers modifiés hors du CMS : ${drift.join(", ")}.`) : null,
     lastPublication ? h("p", { class: "small muted" }, `Dernière mise en ligne ${relative(lastPublication.finished_at || lastPublication.started_at)} — `, statusBadge(lastPublication.status, { success: "réussie", failed: "échouée", running: "en cours" }[lastPublication.status])) : h("p", { class: "small muted" }, "Aucune mise en ligne depuis le CMS pour l'instant."),
+    lastPublication?.deployment?.status ? h("p", { class: "small" }, "Site public : ", deploymentBadge(lastPublication.deployment)) : null,
     can("site.publish") ? h("a", { class: `btn ${pending.hasChanges ? "btn--primary" : ""}`, href: "/admin/publish" }, icon("publish"), "Mettre en ligne") : null);
 
   const upcomingCard = h("section", { class: "card", "aria-labelledby": "next-title" },
@@ -67,6 +69,27 @@ export async function dashboardView(ctx, main) {
           h("span", { class: "row", style: { gap: "6px" } }, changeBadge(c), h("button", { type: "button", class: "link-btn", onclick: () => changeDialog(c.id, { onChanged: () => dashboardView(ctx, main) }) }, `${c.entityName} : ${c.summary}`)),
           h("time", { datetime: c.runAt }, formatLocal(c.runAtLocal)))))
       : h("p", { class: "muted small" }, "Aucune modification programmée."));
+
+  // Santé du CMS : uniquement ce qui demande de l'attention (détail sur la page Santé).
+  const healthCard = h("section", { class: `card ${data.health.level === "error" ? "card--danger" : data.health.level === "warning" ? "card--warn" : ""}`, "aria-labelledby": "health-title" },
+    h("div", { class: "card__head" }, h("h2", { id: "health-title" }, "Santé du CMS"), h("a", { class: "btn btn--sm btn--ghost", href: "/admin/health" }, "Détail")),
+    h("ul", { class: "activity" }, data.health.sections.map((sec) => h("li", {},
+      h("span", { class: "row", style: { gap: "6px" } }, levelBadge(sec.level), h("strong", {}, sec.title)),
+      sec.problems.length ? h("span", { class: "small muted" }, sec.problems.slice(0, 3).map((p) => `${p.label} : ${p.value}`).join(" · ")) : null))));
+
+  // Suivi des soirées : tâches en retard, erreurs bloquantes, clôtures à faire.
+  const lc = data.lifecycle;
+  const lifecycleCardEl = h("section", { class: `card ${lc.counts.late || lc.counts.errors ? "card--warn" : ""}`, "aria-labelledby": "lc-title" },
+    h("div", { class: "card__head" }, h("h2", { id: "lc-title" }, "Suivi des soirées"), h("a", { class: "btn btn--sm btn--ghost", href: "/admin/suivi" }, "Tout voir")),
+    h("p", { class: "small" }, [
+      lc.counts.late ? h("a", { href: "/admin/suivi?filter=late" }, plural(lc.counts.late, "soirée avec des tâches en retard", "soirées avec des tâches en retard")) : null,
+      lc.counts.errors ? h("a", { href: "/admin/suivi?filter=errors" }, plural(lc.counts.errors, "soirée avec une erreur bloquante", "soirées avec une erreur bloquante")) : null,
+      lc.counts.closing ? h("a", { href: "/admin/suivi?filter=closing" }, plural(lc.counts.closing, "clôture à faire", "clôtures à faire")) : null
+    ].filter(Boolean).flatMap((el, i) => (i ? [" · ", el] : [el]))),
+    !lc.counts.late && !lc.counts.errors && !lc.counts.closing ? h("p", { class: "small muted" }, "Rien en retard.") : null,
+    lc.next.length ? h("ul", { class: "activity" }, lc.next.map((l) => h("li", {},
+      h("a", { href: `/admin/events/${l.event.id}#suivi` }, l.event.title),
+      h("span", { class: "small muted" }, `${l.phaseLabel} · ${l.next.label}${l.next.overdue ? " (en retard)" : ""}`)))) : null);
 
   const quality = [
     counts.drafts ? [`${plural(counts.drafts, "brouillon", "brouillons")} de soirée`, "/admin/events?status=draft"] : null,
@@ -97,7 +120,9 @@ export async function dashboardView(ctx, main) {
       h("div", { class: "stack" }, upcomingCard, activity),
       h("div", { class: "split__side" },
         publishCard,
+        healthCard,
         scheduleCard,
+        lifecycleCardEl,
         h("section", { class: "card", "aria-labelledby": "todo-title" },
           h("div", { class: "card__head" }, h("h2", { id: "todo-title" }, "À compléter")),
           quality.length ? h("ul", { class: "checklist" }, quality.map(([text, href]) => h("li", {}, h("a", { href }, text)))) : h("ul", { class: "checklist" }, h("li", { class: "is-ok" }, "Rien à signaler.")),

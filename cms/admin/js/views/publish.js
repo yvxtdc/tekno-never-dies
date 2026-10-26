@@ -4,6 +4,9 @@ import { get, post } from "../lib/api.js";
 import { icon, pageHead, loadingState, errorState, statusBadge, toast, errorMessage, confirm, busy, dialog } from "../lib/ui.js";
 import { relative, formatDateTime } from "../lib/format.js";
 import { can, isAdmin, session } from "../lib/session.js";
+import { deploymentBadge, deploymentDetails } from "../lib/supervision.js";
+
+const STAGES = { preparation: "préparation (Git)", export: "export des contenus", generation: "génération des pages", validation: "validation du site", commit: "commit", push: "envoi sur GitHub", done: "terminée" };
 
 const MODES = {
   files: "Les fichiers du site sont écrits dans la copie de travail (mode développement : relisez puis committez-les vous-même).",
@@ -45,6 +48,24 @@ export async function publishView(ctx, main) {
     });
   };
   const running = history.running;
+  // Déploiement GitHub Pages de la dernière mise en ligne réussie (suivi par le serveur, sans appel depuis cette page).
+  const lastSent = history.items.find((p) => p.status === "success");
+  const deployBox = h("div");
+  const renderDeploy = (pub) => replace(deployBox, pub?.deployment?.status ? h("section", { class: `card ${pub.deployment.level === "error" ? "card--danger" : pub.deployment.level === "warning" ? "card--warn" : ""}` },
+    h("div", { class: "card__head" }, h("h2", {}, "Site public"), h("p", {}, `Dernière mise en ligne réussie : ${formatDateTime(pub.finished_at)}`)),
+    deploymentDetails(pub.deployment),
+    pub.deployment.status !== "not_sent" && can("site.publish") ? h("div", { class: "actions", style: { marginTop: "10px" } }, h("button", { type: "button", class: "btn btn--sm", onclick: (e) => busy(e.currentTarget, async () => {
+      try {
+        const res = await post("/api/deployments/check", {});
+        const fresh = res.items.find((d) => d.publicationId === pub.id);
+        if (res.error) toast(res.error, "warn");
+        if (fresh) renderDeploy({ ...pub, deployment: fresh });
+      } catch (error) {
+        toast(errorMessage(error), "error");
+      }
+    }) }, "Vérifier maintenant")) : null,
+    !history.deployTracking && pub.mode === "push" ? h("p", { class: "small muted" }, "Suivi des déploiements désactivé (CMS_DEPLOY_TRACKING=0).") : null) : null);
+  renderDeploy(lastSent);
   replace(main,
     pageHead({ title: "Mise en ligne", subtitle: "Publier dans le CMS ne suffit pas : la mise en ligne régénère le site public avec tout ce qui est publié." }),
     h("div", { class: "split" },
@@ -64,14 +85,17 @@ export async function publishView(ctx, main) {
             pending.drift.length && isAdmin() ? h("button", { type: "button", class: "btn btn--danger", onclick: run(true) }, "Forcer la mise en ligne") : null,
             h("a", { class: "btn btn--ghost", href: "/preview/site/", target: "_blank", rel: "noopener" }, icon("eye"), "Aperçu du site")),
           logBox),
+        deployBox,
         h("section", { class: "card" }, h("div", { class: "card__head" }, h("h2", {}, "Historique")),
           history.items.length
             ? h("div", { class: "table-wrap" }, h("table", { class: "table table--stack" },
-                h("thead", {}, h("tr", {}, h("th", {}, "Date"), h("th", {}, "Par"), h("th", {}, "Résultat"), h("th", {}, h("span", { class: "sr-only" }, "Journal")))),
+                h("thead", {}, h("tr", {}, h("th", {}, "Date"), h("th", {}, "Par"), h("th", {}, "Résultat"), h("th", {}, "Site public"), h("th", {}, h("span", { class: "sr-only" }, "Journal")))),
                 h("tbody", {}, history.items.map((p) => h("tr", {},
                   h("td", { "data-label": "Date" }, formatDateTime(p.started_at)),
                   h("td", { "data-label": "Par" }, p.trigger === "schedule" ? "Programmation" : p.trigger === "cli" ? "Ligne de commande" : p.user_name || "—"),
-                  h("td", { class: "title-col" }, statusBadge(p.status, { success: "Réussie", failed: "Échouée", running: "En cours" }[p.status]), h("div", { class: "small muted" }, p.summary)),
+                  h("td", { class: "title-col" }, statusBadge(p.status, { success: "Réussie", failed: "Échouée", running: "En cours" }[p.status]),
+                    p.status === "failed" && p.stage ? h("div", { class: "small", style: { color: "var(--red)" } }, `Étape : ${STAGES[p.stage] || p.stage}`) : null, h("div", { class: "small muted" }, p.summary)),
+                  h("td", { "data-label": "Site public" }, deploymentBadge(p.deployment) || h("span", { class: "muted" }, "—")),
                   h("td", {}, h("button", { type: "button", class: "btn btn--sm btn--ghost", onclick: async () => showLog(await get(`/api/publications/${p.id}`)) }, "Journal")))))))
             : h("p", { class: "muted" }, "Aucune mise en ligne depuis le CMS."),
           h("div", { id: "last-log" }))),
@@ -83,12 +107,22 @@ export async function publishView(ctx, main) {
             h("li", {}, "Le site est validé (liens, images, pages). En cas d'erreur, rien n'est mis en ligne et le site reste dans son dernier état."),
             h("li", {}, MODES[session.publishMode] || MODES.files)),
           h("p", { class: "small muted", style: { marginTop: "10px" } }, "Les modifications programmées (", h("a", { href: "/admin/schedule" }, "Programmations"), ") sont appliquées à l'heure prévue, puis mises en ligne automatiquement. Une programmation n'est « Envoyée sur GitHub » qu'après une mise en ligne réussie qui l'inclut ; GitHub Pages publie ensuite le site en quelques minutes, sans que le CMS le vérifie (onglet Actions du dépôt).")))));
+  // Lien direct vers le journal d'une mise en ligne (depuis le tableau de santé).
+  const asked = Number(ctx.query.get("publication"));
+  if (asked) get(`/api/publications/${asked}`).then((p) => showLog(p)).catch((error) => toast(errorMessage(error), "error"));
 }
 
 function showLog(p, container) {
+  const v = p.validation;
   const body = h("div", { class: "stack" },
     h("p", {}, statusBadge(p.status, { success: "Réussie", failed: "Échouée", running: "En cours" }[p.status]), " ", p.summary),
+    p.status === "failed" && p.stage ? h("p", { class: "form-errors" }, `Échec à l'étape « ${STAGES[p.stage] || p.stage} ».`) : null,
     p.commit_sha ? h("p", { class: "small muted" }, `Commit ${p.commit_sha.slice(0, 7)}`) : null,
+    p.deployment?.status ? deploymentDetails(p.deployment) : null,
+    v ? h("div", { class: "small" },
+      h("strong", {}, v.ok ? `Validation du site : sans erreur (${v.files} fichiers, ${v.pages} pages)` : `Validation du site : ${v.errors.length} erreur(s) bloquante(s)`),
+      v.errors.length ? h("ul", {}, v.errors.slice(0, 30).map((e) => h("li", { style: { color: "var(--red)" } }, e))) : null,
+      v.warnings.length ? h("details", {}, h("summary", { style: { cursor: "pointer" } }, `${v.warnings.length} point(s) « à compléter » (avertissements, non bloquants)`), h("ul", {}, v.warnings.map((w) => h("li", {}, w)))) : null) : null,
     h("pre", { class: "log" }, p.log || "(journal vide)"));
   if (container) replace(container, h("section", { class: "card", style: { marginTop: "16px" } }, h("h2", {}, "Dernière mise en ligne"), body));
   else dialog({ title: `Mise en ligne du ${formatDateTime(p.started_at)}`, wide: true, body });

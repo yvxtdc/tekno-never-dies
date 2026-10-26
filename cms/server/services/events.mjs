@@ -192,72 +192,101 @@ export function listEvents(db, { q = "", status = "", period = "", sort = "date_
 /* ---------- Contrôles avant publication ---------- */
 
 /**
- * { errors, warnings } : les erreurs bloquent la publication, les avertissements la signalent.
- * Contrôle aussi la cohérence du line-up (horaires hors de la soirée, chevauchements…).
+ * Contrôles d'une soirée, un par élément vérifié : { id, section, level, label, message }.
+ *  - level « error » : bloque la publication (immédiate ou programmée) ;
+ *  - « warning » : à vérifier, n'empêche pas de publier ;
+ *  - « ok » : conforme ; « na » : sans objet dans ce contexte (soirée passée, annulée…).
+ * section : ancre de la fiche dans l'administration (#billetterie…). Les règles dépendent du contexte :
+ * une soirée passée, annulée ou archivée n'a pas besoin de billetterie ni de line-up complet.
+ * Contrôles qui demandent les fichiers (images, rendu de la fiche) : services/event-checklist.mjs.
  */
-export function eventChecks(db, ev) {
-  const errors = [];
-  const warnings = [];
+export function eventCheckItems(db, ev) {
+  const items = [];
+  const add = (id, section, label, level, message = "") => items.push({ id, section, label, level, message });
   const upcoming = ev.date >= parisToday();
-  if (!ev.title) errors.push("Le nom de l'événement est obligatoire.");
-  if (!ev.date) errors.push("La date est obligatoire.");
-  if (ev.endTime && !ev.startTime) errors.push("L'heure de fin est renseignée sans heure de début.");
-  if (!ev.flyer && !ev.cover) warnings.push("Aucun visuel : ajoutez l'affiche (ou une photo) pour la liste et les partages.");
-  if (!ev.description) warnings.push("Résumé vide : il sert de description pour Google et les partages.");
-  if (!ev.venue) warnings.push(upcoming ? "Lieu non renseigné : le site affichera « Lieu à confirmer »." : "Lieu non renseigné.");
-  else if (ev.venue.lat == null) warnings.push("Le lieu n'a pas de coordonnées GPS : pas de plan « Y aller » sur la fiche.");
-  if (upcoming && !ev.ticketUrl && ev.status !== "cancelled") warnings.push("Soirée à venir sans lien de billetterie.");
-  if (upcoming && !ev.lineup.length) warnings.push("Line-up vide.");
+  const sellable = upcoming && ev.status !== "cancelled";
 
-  // Billets
+  // Essentiel
+  add("title", "essentiel", "Nom de la soirée", ev.title ? "ok" : "error", ev.title ? "" : "Le nom de l'événement est obligatoire.");
+  add("date", "horaires", "Date", ev.date ? "ok" : "error", ev.date ? "" : "La date est obligatoire.");
+  add("description", "essentiel", "Résumé (Google, partages)", ev.description ? "ok" : "warning", ev.description ? "" : "Résumé vide : il sert de description pour Google et les partages.");
+  if (ev.datePrecision === "month") add("date-precision", "horaires", "Date exacte", upcoming ? "warning" : "ok", ev.startTime ? "Date au mois près : les horaires ne seront pas affichés." : upcoming ? "Date au mois près : à préciser dès qu'elle est connue." : "");
+
+  // Horaires
+  if (ev.endTime && !ev.startTime) add("times", "horaires", "Horaires", "error", "L'heure de fin est renseignée sans heure de début.");
+  else if (ev.datePrecision === "month" && ev.startTime) add("times", "horaires", "Horaires", "warning", "Date au mois près : les horaires ne seront pas affichés.");
+  else add("times", "horaires", "Horaires", ev.startTime || !upcoming ? "ok" : "warning", ev.startTime || !upcoming ? "" : "Heure de début non renseignée.");
+  if (ev.doorsTime && ev.startTime) {
+    const late = nightMinutes(ev.doorsTime, ev.startTime) > nightMinutes(ev.startTime, ev.startTime);
+    add("doors", "horaires", "Ouverture des portes", late ? "warning" : "ok", late ? "L'ouverture des portes est après le début de la soirée." : "");
+  }
+
+  // Lieu
+  if (!ev.venue) add("venue", "lieu", "Lieu", "warning", upcoming ? "Lieu non renseigné : le site affichera « Lieu à confirmer »." : "Lieu non renseigné.");
+  else if (ev.venue.lat == null) add("venue", "lieu", "Lieu", "warning", "Le lieu n'a pas de coordonnées GPS : pas de plan « Y aller » sur la fiche.");
+  else add("venue", "lieu", "Lieu", "ok");
+  if (ev.venue?.archived && upcoming) add("venue-archived", "lieu", "Lieu actif", "warning", "Le lieu est archivé : vérifiez qu'il est toujours le bon.");
+
+  // Visuels (affiche ou photo : liste des soirées, aperçus de partage)
+  add("visual", "visuels", "Affiche ou photo", ev.flyer || ev.cover ? "ok" : "warning", ev.flyer || ev.cover ? "" : "Aucun visuel : ajoutez l'affiche (ou une photo) pour la liste et les partages.");
+  for (const [key, media, label] of [["flyer-alt", ev.flyer, "Texte alternatif de l'affiche"], ["cover-alt", ev.cover, "Texte alternatif de la photo de fond"]]) {
+    if (media) add(key, "visuels", label, media.alt ? "ok" : "warning", media.alt ? "" : `${label} manquant (lecteurs d'écran) : à renseigner dans la médiathèque.`);
+  }
+
+  // Billetterie (sans objet pour une soirée passée ou annulée)
   const tickets = ev.tickets || [];
   const presale = tickets.filter((t) => !t.door);
-  if (upcoming && ev.status !== "cancelled" && tickets.length) {
-    if (presale.length && presale.every((t) => t.status !== "available")) {
-      warnings.push(`Aucun tarif en prévente n'est « en vente » : le bouton de billetterie est désactivé sur la fiche${tickets.some((t) => t.door && t.status === "available") ? " (la caisse du soir reste affichée)" : ""}.`);
+  if (!sellable) add("ticket-url", "billetterie", "Billetterie", "na", ev.status === "cancelled" ? "Soirée annulée : pas de billetterie." : "Soirée passée : billetterie sans objet.");
+  else {
+    add("ticket-url", "billetterie", "Lien de billetterie", ev.ticketUrl ? "ok" : "warning", ev.ticketUrl ? "" : "Soirée à venir sans lien de billetterie.");
+    if (tickets.length) {
+      const noneAvailable = presale.length && presale.every((t) => t.status !== "available");
+      add("tickets-open", "billetterie", "Tarifs en vente", noneAvailable ? "warning" : "ok", noneAvailable ? `Aucun tarif en prévente n'est « en vente » : le bouton de billetterie est désactivé sur la fiche${tickets.some((t) => t.door && t.status === "available") ? " (la caisse du soir reste affichée)" : ""}.` : "");
+      const lateSale = tickets.some((t) => t.until && ev.date && t.until > ev.date);
+      add("tickets-until", "billetterie", "Fins de vente", lateSale ? "warning" : "ok", lateSale ? "Un tarif a une fin de vente après la date de la soirée." : "");
     }
-    if (tickets.some((t) => t.until && ev.date && t.until > ev.date)) warnings.push("Un tarif a une fin de vente après la date de la soirée.");
+    if (presale.length && !ev.ticketUrl) add("tickets-url", "billetterie", "Tarifs et lien", "warning", "Des tarifs en prévente sont renseignés sans lien de billetterie : le bouton « Prendre ma place » sera désactivé.");
   }
-  if (presale.length && !ev.ticketUrl && upcoming && ev.status !== "cancelled") warnings.push("Des tarifs en prévente sont renseignés sans lien de billetterie : le bouton « Prendre ma place » sera désactivé.");
   // Résumé du prix qui contredit les tarifs : un montant du résumé ne correspond à aucun tarif.
   if (ev.price && tickets.length) {
     const amounts = (ev.price.match(/\d+(?:[.,]\d+)?/g) || []).map((n) => Number(n.replace(",", ".")));
     const prices = new Set(tickets.map((t) => Number(t.price)));
     const unknown = amounts.filter((n) => !prices.has(n));
-    if (unknown.length) warnings.push(`« Résumé du prix » (${ev.price}) cite ${unknown.map((n) => `${String(n).replace(".", ",")} €`).join(", ")}, qui ne correspond à aucun tarif : corrigez-le, ou videz-le pour qu'il soit calculé depuis les tarifs (« Dès … € »).`);
+    add("price-summary", "billetterie", "Résumé du prix", unknown.length ? "warning" : "ok", unknown.length ? `« Résumé du prix » (${ev.price}) cite ${unknown.map((n) => `${String(n).replace(".", ",")} €`).join(", ")}, qui ne correspond à aucun tarif : corrigez-le, ou videz-le pour qu'il soit calculé depuis les tarifs (« Dès … € »).` : "");
   }
 
   // DJ Contest
   const contestSlot = ev.lineup.some((s) => s.artists.some((a) => a.mystery));
   const contest = ev.contest || {};
-  if (contestSlot && upcoming && ev.status !== "cancelled") {
-    if (!contest.deadline) warnings.push("DJ Contest : date limite d'envoi des sets non renseignée.");
-    else if (ev.date && contest.deadline > ev.date) warnings.push("DJ Contest : la date limite est après la soirée.");
+  if (contestSlot && sellable) {
+    if (!contest.deadline) add("contest", "contest", "DJ Contest", "warning", "DJ Contest : date limite d'envoi des sets non renseignée.");
+    else if (ev.date && contest.deadline > ev.date) add("contest", "contest", "DJ Contest", "warning", "DJ Contest : la date limite est après la soirée.");
+    else add("contest", "contest", "DJ Contest", "ok");
   }
-  if (!contestSlot && (contest.deadline || contest.text)) warnings.push("DJ Contest renseigné, mais aucun artiste mystère (DJ Contest) dans le line-up : la fenêtre de participation ne sera pas proposée.");
-  if (ev.datePrecision === "month" && ev.startTime) warnings.push("Date au mois près : les horaires ne seront pas affichés.");
-  if (ev.doorsTime && ev.startTime && nightMinutes(ev.doorsTime, ev.startTime) > nightMinutes(ev.startTime, ev.startTime)) {
-    warnings.push("L'ouverture des portes est après le début de la soirée.");
-  }
-  if (ev.seoDescription && ev.seoDescription.length > 170) warnings.push(`Description SEO longue (${ev.seoDescription.length} caractères) : Google la coupe vers 160.`);
-  if (ev.photos.length && ev.photos.some((p) => !p.caption)) warnings.push("Une photo « La soirée » n'a pas de légende.");
+  if (!contestSlot && (contest.deadline || contest.text)) add("contest", "contest", "DJ Contest", "warning", "DJ Contest renseigné, mais aucun artiste mystère (DJ Contest) dans le line-up : la fenêtre de participation ne sera pas proposée.");
+
+  // Référencement et « La soirée »
+  if (ev.seoDescription) add("seo-length", "seo", "Description SEO", ev.seoDescription.length > 170 ? "warning" : "ok", ev.seoDescription.length > 170 ? `Description SEO longue (${ev.seoDescription.length} caractères) : Google la coupe vers 160.` : "");
+  if (ev.photos.length) add("photo-captions", "soiree", "Légendes des photos", ev.photos.some((p) => !p.caption) ? "warning" : "ok", ev.photos.some((p) => !p.caption) ? "Une photo « La soirée » n'a pas de légende." : "");
+  if (ev.gallery && !ev.gallery.published) add("gallery", "soiree", "Album photo", "warning", "L'album lié n'est pas publié : le lien « Voir les photos » n'apparaîtra pas.");
 
   // Line-up
+  const lineupProblems = [];
+  const lineupErrors = [];
+  if (upcoming && !ev.lineup.length) lineupProblems.push("Line-up vide.");
   const timed = ev.lineup.filter((s) => s.startTime);
-  if (timed.length && timed.length < ev.lineup.length) warnings.push("Certains passages du line-up n'ont pas d'horaire : ils seront affichés à la fin.");
+  if (timed.length && timed.length < ev.lineup.length) lineupProblems.push("Certains passages du line-up n'ont pas d'horaire : ils seront affichés à la fin.");
   for (const [i, s] of ev.lineup.entries()) {
     const name = slotName(s) || `Passage ${i + 1}`;
-    if (!s.artists.length && !s.label) errors.push(`Line-up, passage ${i + 1} : choisissez un artiste ou saisissez un nom.`);
-    if (s.endTime && !s.startTime) errors.push(`Line-up, ${name} : heure de fin sans heure de début.`);
-    if (s.artists.some((a) => a.archived)) warnings.push(`Line-up, ${name} : la fiche d'un artiste est archivée.`);
+    if (!s.artists.length && !s.label) lineupErrors.push(`Line-up, passage ${i + 1} : choisissez un artiste ou saisissez un nom.`);
+    if (s.endTime && !s.startTime) lineupErrors.push(`Line-up, ${name} : heure de fin sans heure de début.`);
+    if (s.artists.some((a) => a.archived)) lineupProblems.push(`Line-up, ${name} : la fiche d'un artiste est archivée.`);
     if (s.label && s.artists.length) {
       const key = (t) => t.toLowerCase().replace(/[^a-z0-9]/g, "");
       const parts = s.label.split(/\s+b2b\s+/i).map(key);
-      if (s.artists.some((a) => !parts.includes(key(a.name)))) {
-        warnings.push(`Line-up, ${name} : le nom affiché ne correspond pas exactement aux fiches artistes (liens Instagram et photos non reliés).`);
-      }
+      if (s.artists.some((a) => !parts.includes(key(a.name)))) lineupProblems.push(`Line-up, ${name} : le nom affiché ne correspond pas exactement aux fiches artistes (liens Instagram et photos non reliés).`);
     }
-    if (s.startTime && s.endTime && duration(s.startTime, s.endTime) > 6 * 60) warnings.push(`Line-up, ${name} : passage de plus de 6 heures, vérifiez les horaires.`);
+    if (s.startTime && s.endTime && duration(s.startTime, s.endTime) > 6 * 60) lineupProblems.push(`Line-up, ${name} : passage de plus de 6 heures, vérifiez les horaires.`);
   }
   if (ev.startTime && timed.length) {
     const start = nightMinutes(ev.startTime, ev.startTime);
@@ -265,7 +294,7 @@ export function eventChecks(db, ev) {
     for (const s of timed) {
       const a = nightMinutes(s.startTime, ev.startTime);
       const b = s.endTime ? a + duration(s.startTime, s.endTime) : a;
-      if (a < start || (end !== null && b > end)) warnings.push(`Line-up, ${slotName(s)} : horaire en dehors de la soirée (${ev.startTime} – ${ev.endTime || "?"}).`);
+      if (a < start || (end !== null && b > end)) lineupProblems.push(`Line-up, ${slotName(s)} : horaire en dehors de la soirée (${ev.startTime} – ${ev.endTime || "?"}).`);
     }
   }
   const sorted = timed
@@ -275,10 +304,13 @@ export function eventChecks(db, ev) {
     })
     .sort((x, y) => x.a - y.a);
   for (let i = 1; i < sorted.length; i++) {
-    if (sorted[i].a < sorted[i - 1].b) warnings.push(`Line-up : ${slotName(sorted[i - 1].s)} et ${slotName(sorted[i].s)} se chevauchent.`);
+    if (sorted[i].a < sorted[i - 1].b) lineupProblems.push(`Line-up : ${slotName(sorted[i - 1].s)} et ${slotName(sorted[i].s)} se chevauchent.`);
   }
   const order = ev.lineup.filter((s) => s.startTime).map((s) => nightMinutes(s.startTime, ev.startTime || s.startTime));
-  if (order.some((t, i) => i && t < order[i - 1])) warnings.push("L'ordre du line-up ne suit pas les horaires (le site les affiche dans l'ordre des horaires) : utilisez « Trier par horaire ».");
+  if (order.some((t, i) => i && t < order[i - 1])) lineupProblems.push("L'ordre du line-up ne suit pas les horaires (le site les affiche dans l'ordre des horaires) : utilisez « Trier par horaire ».");
+  lineupErrors.forEach((m, i) => add(`lineup-error-${i}`, "lineup", "Line-up", "error", m));
+  lineupProblems.forEach((m, i) => add(`lineup-${i}`, "lineup", "Line-up", "warning", m));
+  if (!lineupErrors.length && !lineupProblems.length && ev.lineup.length) add("lineup", "lineup", "Line-up", "ok", `${ev.lineup.length} passage(s) cohérent(s).`);
 
   // Traductions manquantes
   if (db) {
@@ -288,10 +320,23 @@ export function eventChecks(db, ev) {
       for (const lang of ["de", "en"]) {
         for (const text of texts) if (!db.get("SELECT 1 FROM translations WHERE source = ? AND lang = ?", text, lang)) missing[lang]++;
       }
-      if (missing.de || missing.en) warnings.push(`Traductions manquantes : ${missing.de} en allemand, ${missing.en} en anglais (le texte français s'affiche à la place).`);
+      add("translations", "traductions", "Traductions", missing.de || missing.en ? "warning" : "ok",
+        missing.de || missing.en ? `Traductions manquantes : ${missing.de} en allemand, ${missing.en} en anglais (le texte français s'affiche à la place).` : `${texts.length} texte(s) traduit(s) en allemand et en anglais.`);
     }
   }
-  return { errors, warnings };
+  return items;
+}
+
+/**
+ * { errors, warnings } : les erreurs bloquent la publication, les avertissements la signalent.
+ * Contrôle aussi la cohérence du line-up (horaires hors de la soirée, chevauchements…).
+ */
+export function eventChecks(db, ev) {
+  const items = eventCheckItems(db, ev);
+  return {
+    errors: items.filter((i) => i.level === "error").map((i) => i.message),
+    warnings: items.filter((i) => i.level === "warning").map((i) => i.message)
+  };
 }
 
 /** Textes de la fiche traduits par le site (mêmes règles que tools/validate.mjs). */

@@ -560,7 +560,7 @@ describe("migration 005 sur une base existante", () => {
       db.run("INSERT INTO lineup_slots (event_id, position, start_time) VALUES (1, 0, '21:00')");
       db.run("INSERT INTO lineup_slot_artists (slot_id, artist_id, position) VALUES (1, 1, 0)");
       const before = db.get("SELECT * FROM events WHERE id = 1");
-      assert.deepEqual(db.migrate(), ["005_programmations.sql"]);
+      assert.deepEqual(db.migrate(), listMigrations().filter((n) => n >= "005"));
       const { generation, ...after } = db.get("SELECT * FROM events WHERE id = 1");
       assert.deepEqual(after, { ...before }, "la soirée n'est pas modifiée par la migration (seul le numéro de génération est ajouté)");
       assert.ok(generation);
@@ -611,8 +611,10 @@ describe("statut de mise en ligne réel (mode push, dépôt distant temporaire)"
       assert.equal(git(remote, "rev-parse", "main"), git(siteDir, "rev-parse", "HEAD"), "commit envoyé sur le dépôt distant");
       const sent = (await editor.get(`/api/schedule/${op.id}`)).data;
       assert.equal(sent.status, "published");
-      assert.equal(sent.statusLabel, "Envoyée sur GitHub");
-      assert.match(sent.availability, /non vérifiée/);
+      // Déploiement pas encore confirmé par GitHub (suivi : deploy-tracker) : jamais présenté comme en ligne.
+      assert.equal(sent.statusLabel, "Envoyée, déploiement en cours");
+      assert.equal(sent.deployStatus, "waiting");
+      assert.match(sent.availability, /en attente du déploiement/);
       assert.equal(sent.publicationCommit, git(siteDir, "rev-parse", "HEAD"));
     } finally {
       await cms.close();
@@ -641,7 +643,7 @@ describe("retour arrière de la migration 005", () => {
       db.run("INSERT INTO team_members (slug, name, role, position, created_at, updated_at) VALUES ('lou', 'Lou', 'Com', 0, ?, ?)", t, t);
       const backup = await createBackup(config, db, "avant-mise-a-jour");
       // Mise à jour (migration 005) et utilisation.
-      assert.deepEqual(db.migrate(), ["005_programmations.sql"]);
+      assert.deepEqual(db.migrate(), listMigrations().filter((n) => n >= "005"));
       db.run("UPDATE team_members SET bio = 'saisi après la mise à jour' WHERE id = 1");
       db.close();
       // Retour arrière : restauration de la sauvegarde (avec l'ancien code, donc sans migrer).
@@ -654,7 +656,7 @@ describe("retour arrière de la migration 005", () => {
       assert.ok(!db.get("SELECT 1 FROM sqlite_master WHERE name = 'scheduled_changes'"));
       assert.equal(db.get("SELECT bio FROM team_members WHERE id = 1").bio, "");
       // Nouvelle mise à jour plus tard : la migration se réapplique proprement.
-      assert.deepEqual(db.migrate(), ["005_programmations.sql"]);
+      assert.deepEqual(db.migrate(), listMigrations().filter((n) => n >= "005"));
       assert.ok(db.get("SELECT generation FROM team_members WHERE id = 1").generation);
       db.close();
     } finally {

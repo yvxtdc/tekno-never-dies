@@ -51,7 +51,11 @@ la copie de travail. Relisez avec `git diff`, puis committez vous-même. Pour vo
 | Importer des photos | **Médiathèque** (glisser-déposer) ou directement depuis un champ image. Renseignez le **texte alternatif**. |
 | Publier un album | **Galerie photo → Nouvel album**, ajouter les photos, cocher « publié », puis le lier à la soirée (champ « Album de la galerie »). |
 | Traduire | **Traductions** (ou section Traductions d'une soirée) : allemand et anglais. Sans traduction, le français s'affiche. |
-| Mettre le site à jour | **Mise en ligne** : liste ce qui a changé, lance la régénération et la validation complète, affiche le journal. |
+| Mettre le site à jour | **Mise en ligne** : liste ce qui a changé, lance la régénération et la validation complète, affiche le journal, puis **suit le déploiement GitHub Pages** du commit envoyé (« Déployé sur le site », « Déploiement échoué »…). |
+| Savoir si une soirée est prête | Fiche → **Vérifier avant publication** (erreurs bloquantes, avertissements, contrôles impossibles) et carte **Suivi de la soirée** ; vue d'ensemble : **Suivi des soirées**. Voir [supervision.md](supervision.md). |
+| Clôturer une soirée passée | Carte **Suivi de la soirée** : photos, album, participants, DJ Contest, relecture de l'archive. |
+| Savoir si tout fonctionne | **Santé du CMS** (planificateur, mise en ligne, déploiement ; serveur, base et sauvegardes pour les administrateurs). |
+| Voir la fréquentation | **Statistiques** (GoatCounter : visites, pages, soirées, clics billetterie / agenda / itinéraire / partage). Voir [statistiques.md](statistiques.md). |
 | Revenir en arrière | Carte **Historique** (soirée, artiste, lieu) : comparer les versions, restaurer (nouvelle version, rien n'est effacé). |
 
 Statuts d'une soirée : **Brouillon** (invisible), **Programmé**, **Publié**, **Annulé** (visible avec
@@ -96,6 +100,7 @@ sont remplacées par la médiathèque et la galerie du CMS. `js/data/site.js`, l
 | `npm run cms:admin -- publish [--force]` | Mise en ligne depuis la ligne de commande. |
 | `npm run cms:admin -- backup [--label …]` | Sauvegarde de la base. |
 | `npm run cms:admin -- restore <fichier> --yes` | Restauration (serveur arrêté). |
+| `npm run cms:admin -- verify-backup [--name …]` | Teste la dernière sauvegarde sur une copie temporaire (base en service non modifiée) ; résultat au tableau de santé. |
 | `npm run cms:admin -- status` | État de la base, de la configuration et des modifications en attente. |
 | `npm test` | Tests automatisés du CMS (node:test). |
 | `npm run validate` | Validation du site public (inchangée). |
@@ -121,13 +126,18 @@ Voir [`cms/.env.example`](../../cms/.env.example), commenté. Principales variab
 | `CMS_SESSION_IDLE_MINUTES`, `CMS_SESSION_MAX_HOURS` | `120`, `12` | Expiration des sessions. |
 | `CMS_MAX_UPLOAD_MB` | `20` | Taille maximale d'une image. |
 | `CMS_BACKUP_EVERY_HOURS`, `CMS_BACKUP_KEEP` | `24`, `30` | Sauvegardes automatiques et rotation. |
+| `CMS_DEPLOY_TRACKING`, `CMS_GITHUB_REPO`, `CMS_GITHUB_WORKFLOW`, `CMS_GITHUB_TOKEN` | `1`, déduit du dépôt distant, `deploy-pages.yml`, vide | Suivi du déploiement GitHub Pages (API en lecture ; jeton facultatif, lecture seule). [supervision.md](supervision.md) |
+| `CMS_GOATCOUNTER_TOKEN`, `CMS_GOATCOUNTER_URL`, `CMS_STATS_SINCE` | vide | Onglet Statistiques (jeton GoatCounter en lecture, côté serveur). [statistiques.md](statistiques.md) |
+| `CMS_EXTERNAL_BACKUP_MAX_HOURS` | `36` | Âge maximal attendu du rapport de `cms/deploy/backup-media.sh`. |
 
 ## 7. Tests
 
 ```sh
 npm test            # 100+ tests : authentification, permissions, CRUD, validation, line-up,
                     # médias, export identique, mise en ligne (fichiers, commit, push), aperçu, sauvegardes,
-                    # programmations (schedule.test.mjs : conflits, dépendances, reprise, heure d'été…)
+                    # programmations (schedule.test.mjs : conflits, dépendances, reprise, heure d'été…),
+                    # déploiements et santé (supervision.test.mjs), vérification et suivi des soirées
+                    # (checklist.test.mjs), statistiques (stats.test.mjs) : GitHub et GoatCounter simulés
 npm run validate    # site public
 ```
 
