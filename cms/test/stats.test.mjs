@@ -93,6 +93,7 @@ describe("statistiques GoatCounter", { timeout: 60e3 }, () => {
     assert.equal(res.pages[0].path, "/");
     const mine = res.events.find((e) => e.id === ev.id);
     assert.equal(mine.views, 40);
+    assert.equal(mine.date, ev.date, "date de la soirée (affichage), sans incidence sur les chiffres");
     assert.deepEqual(mine.interactions, { "Billetterie": 9, "Ajout à l'agenda": 4, "Itinéraire": 0, "Partage": 0, "DJ Contest": 0 });
     assert.deepEqual(res.unattributed.map((u) => [u.name, u.reason]), [["Billetterie · Doublon", "ancien format par titre, titre porté par 2 soirées"]]);
     assert.equal(mine.legacyClicks, 13, "clics de l'ancien format (titre unique) comptés et signalés");
