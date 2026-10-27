@@ -95,13 +95,20 @@ réparé, migré ni supprimé depuis ce tableau.
 Une sauvegarde locale (même disque) et une sauvegarde externe ne protègent pas des mêmes risques. La
 destination est un support monté (installation actuelle : disque G-RAID de l'hôte Proxmox, **même
 serveur, donc pas une sauvegarde hors site**) ou une autre machine (rsync par SSH) : voir
-[exploitation.md](exploitation.md) § 4. `cms/deploy/backup-media.sh` fait deux choses distinctes :
-1. **l'envoi** : `rsync` de `backups/` et `media/originals/` vers la destination ;
+[exploitation.md](exploitation.md) § 4. `cms/deploy/backup-media.sh` fait trois choses, dans cet ordre :
+1. **l'envoi** : `rsync` des 60 sauvegardes locales les plus récentes de la base (`backups/`) et de
+   tout `media/originals/` vers la destination ;
 2. **la vérification de la copie**, juste après :
-   `rsync -a --checksum --dry-run --itemize-changes` compare chaque fichier local à sa copie par somme
+   `rsync -a --checksum --dry-run --itemize-changes` compare chaque fichier envoyé à sa copie par somme
    de contrôle, sans rien transférer. Un fichier absent ou différent dans la destination est compté
-   comme une différence. Les fichiers présents seulement dans la destination (anciennes sauvegardes,
-   la copie n'efface rien) ne comptent pas.
+   comme une différence. Les fichiers présents seulement dans la destination ne comptent pas ;
+3. **la rétention**, seulement si la vérification a réussi : dans `backups/` de la destination, seules
+   les 60 sauvegardes de la base les plus récentes sont conservées (environ deux mois au rythme d'une
+   par jour : [exploitation.md § 4](exploitation.md#4-sauvegardes) ; fichiers ordinaires nommés
+   `cms-AAAAMMJJ-HHMMSS[-étiquette].sqlite` ; jamais `originals/`, un autre fichier, un lien, ni une
+   sauvegarde envoyée par cette exécution). Elle n'a lieu que pour une destination locale (chemin
+   absolu) et est refusée si `backups/` est un lien ou se trouve dans les données du CMS ou le site.
+   La rotation locale (`CMS_BACKUP_KEEP`) n'est pas modifiée.
 
 Il écrit un compte rendu dans `CMS_DATA_DIR/status/backup-externe.json`, sans la destination ni aucun
 identifiant. Il contient :
@@ -110,15 +117,22 @@ identifiant. Il contient :
 - `verified` : `true` (copie identique), `false` (différences, ou destination injoignable lors de la
   vérification) ou `null` (non vérifié) ;
 - le nombre de fichiers comparés et de différences ;
-- le **nom** de la dernière sauvegarde de la base.
+- le **nom** de la dernière sauvegarde de la base ;
+- `retention` (`applied`, `unverified`, `not-local`, `refused`, `pending` : étape non atteinte),
+  `retentionLimit`, `remoteBackups` (sauvegardes de la base restant dans la destination) et
+  `deletedBackups` (supprimées par cette exécution).
 
-`TND_BACKUP_VERIFY=0` désactive la vérification (par exemple pour une destination qui ne la permet pas).
+`TND_BACKUP_VERIFY=0` désactive la vérification (par exemple pour une destination qui ne la permet pas)
+et, par conséquent, la rétention. `TND_BACKUP_KEEP_REMOTE` change la limite de 60 (entier ≥ 1) ; c'est
+une variable d'environnement **du script**, pas de `cms/.env` : elle doit être transmise par ce qui lance
+le script (en production, `tnd-cms-backup-safe.sh`, qui ne la transmet pas : la limite est 60).
 
-Le tableau de santé affiche deux lignes :
+Le tableau de santé affiche deux lignes, plus une troisième pour les comptes rendus avec rétention :
 
 | Ligne | Normal | Avertissement / erreur / inconnu |
 |---|---|---|
 | Sauvegarde externe : envoi | « Terminé il y a … » | pas de compte rendu (inconnu, « Non configurée ou jamais exécutée ») ; échec (erreur, avec l'étape) ; plus ancien que `CMS_EXTERNAL_BACKUP_MAX_HOURS` (36 h par défaut ; avertissement, erreur au-delà du double) |
+| Sauvegarde externe : rétention | « N sauvegarde(s) conservée(s) » et nombre de suppressions | refusée (avertissement : rien supprimé, accumulation) ; non appliquée faute de vérification (avertissement) ; destination sur une autre machine (« Non applicable ») ; absente pour un compte rendu d'une version du script sans rétention |
 | Sauvegarde externe : contenu de la copie | « Vérifié il y a … » (N fichiers identiques) | différences ou destination injoignable (erreur) ; compte rendu incohérent, « vérifié » avec des différences (erreur) ; aucun fichier comparé (avertissement) ; vérification désactivée, ou compte rendu d'une version du script sans vérification (avertissement « Non vérifié ») ; vérification ancienne (avertissement) |
 
 Ce que « vérifié » garantit, et ce qu'il ne garantit pas :

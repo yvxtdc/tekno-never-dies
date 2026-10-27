@@ -59,7 +59,7 @@ Cinq catégories, à ne pas confondre :
 | 1 | Service applicatif `tnd-cms` | LXC : `/etc/systemd/system/tnd-cms.service` | **A** | identique au modèle `cms/deploy/tnd-cms.service` : même SHA-256 (`6a8c0dec5830283f34b012e448ab789caf61227d5264436e16831ba5bd1c0fa4`) pour la copie installée, la copie du site déployé et le dépôt ; `cmp` sans différence ; `FragmentPath=/etc/systemd/system/tnd-cms.service`, aucun `DropInPaths`, dossier `tnd-cms.service.d/` vide |
 | 1 | Code du CMS, site, outils | LXC : `/srv/tnd-cms/site` | **B** | sources versionnées, mais **version déployée non identifiée** : `git rev-parse --is-inside-work-tree` n'y a pas reconnu de dépôt Git exploitable lors du relevé (§ 2.2) |
 | 1 | `update-cms` | LXC : lien `/usr/local/bin/update-cms` → `/srv/tnd-cms/site/cms/deploy/update-cms.sh` | **B** (script) ; lien **C, relevé** | `command -v update-cms` n'a rien renvoyé dans l'environnement du relevé : utiliser le chemin absolu (§ 10 B.4) |
-| 1 | Copie externe (rsync, vérification, rapport) | LXC : `cms/deploy/backup-media.sh` | **B** | fait partie du site déployé (version non identifiée, § 2.2) ; lancé avec succès par la production |
+| 1 | Copie externe (rsync, vérification, rétention, rapport) | LXC : `cms/deploy/backup-media.sh` | **B** | fait partie du site déployé (version non identifiée, § 2.2) ; lancé avec succès par la production |
 | 2 | Script de sauvegarde quotidien | hôte : `/usr/local/sbin/tnd-cms-backup-safe.sh` | **A** | SHA-256 de production = source du dépôt (§ 2.1) ; `root:root 750` (relevé) |
 | 3 | `tnd-cms-backup.service`, `.timer` | hôte : `/etc/systemd/system/` | **A** | SHA-256 de production = sources (§ 2.1) ; `root:root 644`, activés (relevé) |
 | 4 | Test de restauration : script, service, minuteur | hôte : `/usr/local/sbin/`, `/etc/systemd/system/` | **A** | SHA-256 de production = sources (§ 2.1) ; installés par `pct pull` ; test réel réussi |
@@ -205,8 +205,17 @@ Variables transmises à la sauvegarde :
 | Variable | Valeur | Rôle |
 |---|---|---|
 | `CMS_DATA_DIR` | `/srv/tnd-cms/data` | données du CMS (prioritaire sur `cms/.env`) |
-| `TND_BACKUP_DEST` | `/mnt/tnd-backups` | destination rsync : `backups/` et `originals/` y sont copiés |
-| `TND_BACKUP_VERIFY` | `1` | vérification de la copie par somme de contrôle (rapport `backup-externe.json`) |
+| `TND_BACKUP_DEST` | `/mnt/tnd-backups` | destination rsync : les 60 sauvegardes locales les plus récentes (`backups/`) et `originals/` y sont copiés |
+| `TND_BACKUP_VERIFY` | `1` | vérification de la copie par somme de contrôle (rapport `backup-externe.json`) ; condition de la rétention |
+| `TND_BACKUP_KEEP_REMOTE` | non transmise (ni par l'unité, ni par le script de l'hôte ; `cms/.env` n'est pas lu pour elle) : **60**, défaut du script | sauvegardes de la base conservées dans `/mnt/tnd-backups/backups/` après une copie vérifiée ; les plus anciennes sont supprimées |
+
+Rétention : depuis la version de `backup-media.sh` qui l'introduit, la copie du G-RAID garde au plus les
+60 sauvegardes de la base les plus récentes (environ deux mois au rythme d'une par jour, voir
+[exploitation.md § 4](exploitation.md#4-sauvegardes)) ; `originals/` n'est jamais élagué. Le script de
+l'hôte n'a pas eu à changer : la limite par défaut s'applique. Pour une autre limite, il faudrait
+l'ajouter à la ligne `env` de `tnd-cms-backup-safe.sh` (modification du script versionné, puis
+réinstallation et nouvelles empreintes, § 2.1). Les sauvegardes locales (`/srv/tnd-cms/data/backups`)
+restent régies par `CMS_BACKUP_KEEP`. Détail : [supervision.md](supervision.md#sauvegarde-externe).
 
 Comportements à connaître (constatés à la lecture du script, **non modifiés**) :
 - un échec d'une vérification de l'hôte n'apparaît que dans le journal systemd : le rapport
@@ -463,6 +472,7 @@ reporter ici ou versionner dans `cms/deploy/`) :
 | Contenu de `cloudflared-update.service` et de `cloudflared-update.timer` | seuls les noms, l'état et les dates sont relevés | § 4 |
 | Tunnel côté Cloudflare (nom, routes, règles Access) | hors du conteneur | § 8 |
 | `cloudflared` ailleurs sur l'hôte | l'absence du `PATH` de `root` ne prouve pas l'absence | § 2 |
+| Fréquence réelle des sauvegardes de la base (`CMS_BACKUP_EVERY_HOURS`, `CMS_BACKUP_KEEP`, nombre par jour et par étiquette) | le code donne une par jour en régime normal ([exploitation.md § 4](exploitation.md#4-sauvegardes)) ; la durée couverte par les 60 copies du G-RAID en dépend | § 4.1 |
 
 **1. Sur l'hôte** (`root@yHomeLab:~#`, **sans** `pct enter`) :
 
@@ -489,6 +499,9 @@ ls -ld /srv/tnd-cms/site/.git
 systemctl cat cloudflared-update.service cloudflared-update.timer
 ls -l /etc/apt/sources.list.d/ /usr/share/keyrings/ 2>/dev/null | grep -i cloudflare
 echo "$PATH"; command -v update-cms
+grep -E '^(CMS_BACKUP_EVERY_HOURS|CMS_BACKUP_KEEP)=' /srv/tnd-cms/site/cms/.env   # ces deux réglages seulement, non secrets
+ls -1 /srv/tnd-cms/data/backups | sed -nE 's/^cms-[0-9]{8}-[0-9]{6}-?([a-z0-9-]*)\.sqlite$/\1/p' | sort | uniq -c
+ls -1 /mnt/tnd-backups/backups | sed -nE 's/^cms-([0-9]{8})-.*\.sqlite$/\1/p' | sort | uniq -c | tail -n 20   # sauvegardes par jour (lecture seule)
 ```
 
 Ne **jamais** afficher `/etc/cloudflared/token` ni aucun fichier d'identifiants.
@@ -676,7 +689,8 @@ les fichiers de `cms/deploy/proxmox/` modifiés sont ensuite réinstallés sur l
 
 **Sauvegarde quotidienne**
 - [ ] `systemctl start tnd-cms-backup.service` puis `journalctl -u tnd-cms-backup.service -n 50 --no-pager` : réussite.
-- [ ] Santé du CMS : « Sauvegarde externe : envoi » et « contenu de la copie : vérifié » récents.
+- [ ] Santé du CMS : « Sauvegarde externe : envoi » et « contenu de la copie : vérifié » récents ; « rétention » : au plus 60 sauvegarde(s) conservée(s).
+- [ ] `pct exec 126 -- sh -c 'ls -1 /mnt/tnd-backups/backups | grep -cE "^cms-[0-9]{8}-[0-9]{6}(-[a-z0-9-]+)?\.sqlite$"'` : 60 au plus.
 
 **Test de restauration**
 - [ ] `systemctl start tnd-cms-restore-test.service` : réussite (`journalctl -u tnd-cms-restore-test.service -n 80 --no-pager`).
