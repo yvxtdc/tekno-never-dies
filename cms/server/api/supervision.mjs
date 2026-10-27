@@ -12,7 +12,7 @@ import { verifyBackupRestore } from "../services/backup.mjs";
 import { prepublicationReport } from "../services/event-checklist.mjs";
 import { eventLifecycle, lifecycleOverview, setTask } from "../services/lifecycle.mjs";
 import { getEvent } from "../services/events.mjs";
-import { getStats } from "../services/stats.mjs";
+import { getStats, getAudience, getPageRefs } from "../services/stats.mjs";
 import { SITE } from "../../../js/data/site.js";
 
 export function registerSupervisionRoutes(router, { config, db, publisher }) {
@@ -57,5 +57,8 @@ export function registerSupervisionRoutes(router, { config, db, publisher }) {
   router.get("/api/lifecycle", (ctx) => lifecycleOverview(db, config, { filter: ctx.query.get("filter") || "" }), { perm: "content.read" });
 
   /* ---------- Statistiques (GoatCounter, lecture ; jeton côté serveur uniquement) ---------- */
-  router.get("/api/stats", (ctx) => getStats(db, config, { period: ctx.query.get("period") || "30", start: ctx.query.get("start"), end: ctx.query.get("end") }), { perm: "content.read" });
+  const statsQuery = (ctx) => ({ period: ctx.query.get("period") || "30", start: ctx.query.get("start"), end: ctx.query.get("end") });
+  router.get("/api/stats", (ctx) => getStats(db, config, statsQuery(ctx)), { perm: "content.read" });
+  router.get("/api/stats/audience", (ctx) => getAudience(config, statsQuery(ctx)), { perm: "content.read" });
+  router.get("/api/stats/page-refs", (ctx) => getPageRefs(config, { ...statsQuery(ctx), pathId: ctx.query.get("path") }), { perm: "content.read" });
 }

@@ -223,6 +223,85 @@ describe("statistiques GoatCounter", { timeout: 60e3 }, () => {
     assert.equal(res.events.find((e) => e.id === ev.id).views, 40, "la ligne renvoyée en double (path_id 3) est ignorée");
     assert.ok(calls.some((c) => c.params.getAll("exclude_paths").length === 6), "les pages déjà reçues sont exclues de la page suivante");
   });
+
+  test("moments des visites : heures et jours de la semaine d'après le détail de GoatCounter, jamais des zéros inventés", async () => {
+    api = (u) => working(u);
+    let res = (await editor.get("/api/stats?period=7")).data;
+    assert.equal(res.rhythm.hours, null, "détail horaire absent : indisponible, pas 24 zéros");
+    // Détail horaire fourni : toutes les visites à 21 h.
+    const hourly = (n) => Array.from({ length: 24 }, (_, i) => (i === 21 ? n : 0));
+    api = async (u) => {
+      const r = working(u);
+      if (!u.pathname.endsWith("stats/hits")) return r;
+      const body = await r.json();
+      for (const h of body.hits) for (const st of h.stats) st.hourly = hourly(st.daily);
+      return json(200, body);
+    };
+    clearStatsCache();
+    res = (await editor.get("/api/stats?period=7")).data;
+    assert.equal(res.rhythm.hours.reduce((a, b) => a + b, 0), 100, "pages seulement (40 + 20 + 40), sans les clics");
+    assert.equal(res.rhythm.hours[21], 100);
+    const days = res.rhythm.weekdays.reduce((n, w) => n + w.days, 0);
+    const total = res.rhythm.weekdays.reduce((n, w) => n + w.total, 0);
+    assert.equal(days, 6, "7 jours moins la journée en cours");
+    assert.equal(total, 40, "la journée en cours (60 visites) est exclue des moyennes");
+  });
+
+  test("évolution page par page : seulement si la période précédente était comptée ; page absente = 0, liste tronquée = inconnu", async () => {
+    api = (u) => working(u);
+    let res = (await editor.get("/api/stats?period=7")).data;
+    assert.equal(res.pagesComparison.available, true);
+    assert.equal(res.pages.find((p) => p.path === "/").previous, 60);
+    assert.equal(res.pages.find((p) => p.path === "/").pathId, 1, "identifiant GoatCounter pour la provenance de la page");
+    // Période précédente : une seule page.
+    api = (u) => (u.pathname.endsWith("stats/hits") && u.searchParams.get("start") < day(-8) ? json(200, { more: false, hits: [{ path_id: 1, path: "/", event: false, count: 5, stats: [] }] }) : working(u));
+    clearStatsCache();
+    res = (await editor.get("/api/stats?period=7")).data;
+    assert.equal(res.pages.find((p) => p.path === "/").previous, 5);
+    assert.equal(res.pages.find((p) => p.path === "/evenement-ice-boiler-v9-2030.html").previous, 0, "absente d'une liste complète : vraiment 0");
+    api = (u) => (u.pathname.endsWith("stats/hits") && u.searchParams.get("start") < day(-8) ? json(200, { more: true, hits: [{ path_id: 1, path: "/", event: false, count: 5, stats: [] }] }) : working(u));
+    clearStatsCache();
+    res = (await editor.get("/api/stats?period=7")).data;
+    assert.equal(res.pages.find((p) => p.path === "/evenement-ice-boiler-v9-2030.html").previous, null, "liste tronquée : inconnu, pas 0");
+    api = (u) => working(u, { firstDay: day(-10) });
+    clearStatsCache();
+    res = (await editor.get("/api/stats?period=30")).data;
+    assert.equal(res.pagesComparison.available, false);
+    assert.equal(res.pages[0].previous, undefined);
+  });
+
+  test("provenance d'une page et caractéristiques des visiteurs : lues telles quelles, échec isolé, jeton jamais renvoyé", async () => {
+    api = (u) => {
+      const p = u.pathname.replace("/api/v0/", "");
+      if (p === "stats/hits/3") return json(200, { more: false, refs: [{ name: "l.instagram.com", count: 7, ref_scheme: "h" }, { name: "", count: 3 }, { name: "teknoneverdies.fr/evenements.html", count: 2, ref_scheme: "h" }] });
+      if (p === "stats/sizes") return json(200, { more: false, stats: [{ id: "phone", name: "Phones", count: 8 }] });
+      if (p === "stats/locations") return json(500, {});
+      if (p.startsWith("stats/") && ["systems", "browsers", "languages", "campaigns"].includes(p.slice(6))) return json(200, { more: false, stats: [] });
+      return working(u);
+    };
+    const refs = await editor.get("/api/stats/page-refs?path=3&period=7");
+    assert.equal(refs.status, 200);
+    assert.deepEqual(refs.data.refs.map((r) => [r.name, r.count, r.direct, r.internal]), [["l.instagram.com", 7, false, false], ["(accès direct ou inconnu)", 3, true, false], ["teknoneverdies.fr/evenements.html", 2, false, true]]);
+    const call = calls.find((c) => c.path.endsWith("/stats/hits/3"));
+    assert.equal(call.auth, `Bearer ${TOKEN}`);
+    assert.ok(call.params.get("start") && call.params.get("end"), "même période que la page");
+    assert.equal((await editor.get("/api/stats/page-refs?path=abc&period=7")).status, 400);
+    assert.equal((await editor.get("/api/stats/page-refs?path=-2&period=7")).status, 400);
+
+    const aud = await editor.get("/api/stats/audience?period=7");
+    assert.equal(aud.status, 200);
+    assert.deepEqual(aud.data.dims.sizes, { items: [{ id: "phone", name: "Phones", count: 8 }], more: false });
+    assert.deepEqual(aud.data.dims.campaigns, { items: [], more: false }, "aucune campagne : liste vide réelle");
+    assert.equal(aud.data.dims.locations, null, "échec : indisponible, pas une liste vide");
+    assert.match(aud.data.errors.locations, /réponse 500/);
+    assert.ok(!JSON.stringify(aud.data).includes(TOKEN) && !JSON.stringify(refs.data).includes(TOKEN));
+
+    const before = calls.length;
+    const admin = await plain.login("admin");
+    assert.equal((await admin.get("/api/stats/audience?period=7")).data.configured, false);
+    assert.equal((await admin.get("/api/stats/page-refs?path=3&period=7")).data.configured, false);
+    assert.equal(calls.length, before, "sans jeton : aucun appel");
+  });
 });
 
 describe("statistiques : rattachement des clics et des pages à la bonne soirée", () => {

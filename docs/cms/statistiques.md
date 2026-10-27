@@ -35,7 +35,10 @@ réponses ne contiennent que des totaux agrégés : aucun visiteur, aucune adres
 |---|---|
 | Visites des pages, interactions suivies | `/api/v0/stats/total` (total moins interactions ; interactions = « événements » GoatCounter) |
 | Visites par jour (graphique, table jour par jour) | `/api/v0/stats/hits` (pages seulement) |
-| Pages les plus consultées | `/api/v0/stats/hits` |
+| Pages les plus consultées, évolution de chaque page | `/api/v0/stats/hits` (période et période précédente) |
+| Provenance d'une page ou d'une fiche soirée (à la demande) | `/api/v0/stats/hits/<page>` |
+| Moments des visites : par heure, par jour de la semaine | détail horaire et quotidien de `/api/v0/stats/hits` (pages seulement) |
+| Visiteurs : appareils, systèmes, navigateurs, pays, langues, campagnes `utm` | `/api/v0/stats/sizes`, `systems`, `browsers`, `locations`, `languages`, `campaigns` |
 | Soirées : visites de la fiche, clics par type | pages `/evenement-<adresse>.html` ; clics « Billetterie · <adresse> », « Ajouter à l'agenda · … », « Itinéraire · … », « Partager · … », « DJ Contest · … » (voir ci-dessous) |
 | Provenance des visites | `/api/v0/stats/toprefs` |
 | Comparaison avec la période précédente | même durée, juste avant |
@@ -43,6 +46,12 @@ réponses ne contiennent que des totaux agrégés : aucun visiteur, aucune adres
 Les périodes disponibles sont les 7, 30 ou 90 derniers jours, ou une période choisie (366 jours au
 plus), découpées en jours à l'heure de Paris. Les unités sont celles de GoatCounter : le CMS reprend
 ses compteurs sans les recalculer.
+
+« Nombres / Parts (%) » change seulement l'affichage des classements (choix retenu par le navigateur).
+Base des parts, comme dans GoatCounter : total des visites de pages pour les pages ; ensemble des
+provenances (ou des valeurs de la dimension) reçues pour la provenance et les visiteurs ; ensemble des
+clics suivis pour les autres clics. Si GoatCounter n'a pas tout renvoyé (plus de 100 lignes), aucune
+part n'est affichée plutôt qu'une part fausse.
 
 ## Fiabilité
 
@@ -82,6 +91,17 @@ ses compteurs sans les recalculer.
 - **Historique.** Les clics ne sont comptés que depuis leur mise en place sur le site : rien n'est
   reconstitué. Pour une soirée publiée dans le CMS après l'import initial, la date de publication est
   indiquée.
+- **Moments des visites.** Les heures sont celles du fuseau horaire réglé dans le compte GoatCounter
+  (à régler sur Europe/Paris, comme les jours de la période). Sans détail horaire dans la réponse, la
+  section est « indisponible », jamais 24 zéros. Les jours de la semaine sont des moyennes par jour
+  compté (une période de 30 jours n'a pas autant de lundis que de mardis), sans la journée en cours
+  ni les jours d'avant le comptage.
+- **Évolution page par page.** Seulement si la comparaison est possible. Une page absente d'une
+  période précédente complète vaut 0 (« nouveau ») ; si cette liste a été tronquée, l'évolution est
+  inconnue et n'est pas affichée.
+- **Visiteurs.** GoatCounter compte ces dimensions par jour UTC : aux bords de la période, leur total
+  peut différer de quelques visites des visites de pages. « depuis le site » marque la navigation
+  d'une page à l'autre du site (référent `teknoneverdies.fr`), pas une source extérieure.
 - **Pas de doublon côté site.** Chaque clic suivi passe par un seul écouteur (`js/partials.js`) ou un
   seul bouton (`js/pages/evenement.js`). Côté CMS, une page renvoyée deux fois par la pagination de
   GoatCounter n'est comptée qu'une fois.
