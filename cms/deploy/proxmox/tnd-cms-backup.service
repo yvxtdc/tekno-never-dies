@@ -1,0 +1,12 @@
+[Unit]
+Description=Sauvegarde du CMS Tekno Never Dies vers le G-RAID
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/tnd-cms-backup-safe.sh --run
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+TimeoutStartSec=2h
+UMask=0077

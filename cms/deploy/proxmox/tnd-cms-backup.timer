@@ -1,0 +1,10 @@
+[Unit]
+Description=Sauvegarde quotidienne du CMS Tekno Never Dies
+
+[Timer]
+OnCalendar=*-*-* 06:00:00
+Persistent=true
+Unit=tnd-cms-backup.service
+
+[Install]
+WantedBy=timers.target

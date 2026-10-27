@@ -6,6 +6,7 @@ sans toucher au code. Le site public reste statique (GitHub Pages) : le CMS rég
 
 - Pourquoi cette architecture : [architecture.md](architecture.md)
 - Production, sécurité, sauvegardes : [exploitation.md](exploitation.md)
+- Infrastructure Proxmox (hôte, conteneur, G-RAID, inventaire, reconstruction) : [proxmox.md](proxmox.md)
 
 ## 1. Prérequis
 
