@@ -111,6 +111,8 @@ export function verifyBackupRestore(config, db, name = null) {
   return result;
 }
 
+const RETENTION_STATES = ["applied", "unverified", "not-local", "refused", "pending"];
+
 /** Fichier d'état écrit par cms/deploy/backup-media.sh (sauvegarde externe : support monté ou autre machine). */
 export const externalStatusFile = (config) => path.join(config.dataDir, "status", "backup-externe.json");
 
@@ -118,7 +120,8 @@ export const externalStatusFile = (config) => path.join(config.dataDir, "status"
  * Dernier rapport de la sauvegarde externe, ou null (script jamais exécuté, ou version sans rapport).
  * commandOk : envoi terminé sans erreur ; verified : copie vérifiée identique (true), différences
  * ou destination injoignable à la vérification (false), non vérifié (null : vérification désactivée, ou rapport
- * d'une version du script sans vérification). Jamais de chemin ni d'identifiant.
+ * d'une version du script sans vérification) ; retention : rétention des sauvegardes de la base dans la
+ * destination (applied, unverified, not-local, refused, pending, ou null). Jamais de chemin ni d'identifiant.
  */
 export function externalBackupStatus(config) {
   const file = externalStatusFile(config);
@@ -136,9 +139,15 @@ export function externalBackupStatus(config) {
       verified: data.verified === true ? true : data.verified === false ? false : null,
       verifiedFiles: count(data.verifiedFiles),
       differences: count(data.differences),
-      latestBackup: /^cms-\d{8}-\d{6}(-[a-z0-9-]+)?\.sqlite$/.test(data.latestBackup || "") ? data.latestBackup : null
+      latestBackup: /^cms-\d{8}-\d{6}(-[a-z0-9-]+)?\.sqlite$/.test(data.latestBackup || "") ? data.latestBackup : null,
+      // Rétention des sauvegardes de la base dans la destination (null : rapport d'une version du
+      // script sans rétention).
+      retention: RETENTION_STATES.includes(data.retention) ? data.retention : null,
+      retentionLimit: count(data.retentionLimit),
+      remoteBackups: count(data.remoteBackups),
+      deletedBackups: count(data.deletedBackups)
     };
   } catch {
-    return { finishedAt: "", ok: false, step: "", message: "Rapport illisible.", commandOk: false, verified: null, verifiedFiles: null, differences: null, latestBackup: null };
+    return { finishedAt: "", ok: false, step: "", message: "Rapport illisible.", commandOk: false, verified: null, verifiedFiles: null, differences: null, latestBackup: null, retention: null, retentionLimit: null, remoteBackups: null, deletedBackups: null };
   }
 }

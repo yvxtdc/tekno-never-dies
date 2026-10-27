@@ -165,6 +165,13 @@ function backupSection(db, config) {
     else if (ext.verified === false) items.push({ id: "external-verify", label: "Sauvegarde externe : contenu de la copie", level: "error", value: ext.differences ? `${ext.differences} différence(s)` : "Vérification impossible", message: ext.differences ? "Des fichiers sont absents ou différents dans la copie externe : relancez la sauvegarde et contrôlez l'espace libre du support." : `Le support de sauvegarde (disque monté ou machine distante) n'a pas répondu lors de la vérification. ${ext.message}` });
     else items.push({ id: "external-verify", label: "Sauvegarde externe : contenu de la copie", level: "warning", value: "Non vérifié", message: "Le script a terminé l'envoi sans vérifier la copie externe (vérification désactivée, ou ancienne version du script) : une copie incomplète passerait inaperçue." });
   }
+  // Rétention dans la destination (rapports récents seulement) : appliquée après une copie vérifiée.
+  const r = ext?.retention;
+  const limit = ext?.retentionLimit ?? "?";
+  if (r === "applied") items.push({ id: "external-retention", label: "Sauvegarde externe : rétention", level: "ok", value: `${ext.remoteBackups ?? "?"} sauvegarde(s) conservée(s)`, message: `Limite : les ${limit} plus récentes de la base ; ${ext.deletedBackups ?? 0} ancienne(s) supprimée(s) lors de la dernière sauvegarde. Les images originales ne sont jamais supprimées.` });
+  else if (r === "refused") items.push({ id: "external-retention", label: "Sauvegarde externe : rétention", level: "warning", value: "Refusée", message: "Copie vérifiée, mais dossier de destination hors périmètre (lien, ou dans les données du CMS ou le site) : rien n'a été supprimé, les sauvegardes s'accumulent." });
+  else if (r === "unverified") items.push({ id: "external-retention", label: "Sauvegarde externe : rétention", level: "warning", value: "Non appliquée", message: "Copie non vérifiée : aucune ancienne sauvegarde n'est supprimée tant que la vérification est désactivée." });
+  else if (r === "not-local") items.push({ id: "external-retention", label: "Sauvegarde externe : rétention", level: "info", value: "Non applicable", message: "Destination sur une autre machine : les anciennes sauvegardes n'y sont pas supprimées par le CMS." });
   const originals = `${config.mediaDir}/originals`;
   items.push({ id: "originals", label: "Originaux des images", level: fs.existsSync(originals) ? "ok" : "unknown", value: fs.existsSync(originals) ? `${fs.readdirSync(originals).length} fichier(s)` : "Dossier absent", message: fs.existsSync(originals) ? "" : "Aucune image importée, ou dossier introuvable." });
   const test = fromJson(db.get("SELECT value FROM settings WHERE key = 'backup.restoreTest'")?.value, null);
