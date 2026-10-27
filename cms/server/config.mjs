@@ -83,8 +83,11 @@ export function loadConfig(overrides = {}) {
     goatcounterToken: env.CMS_GOATCOUNTER_TOKEN || "",
     // Début du comptage (AAAA-MM-JJ) : pas de comparaison avec une période antérieure.
     statsSince: env.CMS_STATS_SINCE || "",
-    // Sauvegarde hors serveur (cms/deploy/backup-media.sh) : âge maximal attendu, en heures.
+    // Sauvegarde externe (cms/deploy/backup-media.sh) : âge maximal attendu, en heures.
     externalBackupMaxHours: int(env.CMS_EXTERNAL_BACKUP_MAX_HOURS, 36, 1),
+    // Test de restauration de la sauvegarde externe (cms/bin/restore-test.mjs, hebdomadaire) : âge maximal
+    // attendu de son dernier rapport, en heures (8 jours par défaut).
+    restoreTestMaxHours: int(env.CMS_RESTORE_TEST_MAX_HOURS, 192, 1),
     timezone: "Europe/Paris"
   });
 }

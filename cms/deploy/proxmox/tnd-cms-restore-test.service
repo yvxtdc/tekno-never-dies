@@ -1,0 +1,37 @@
+# Test de restauration de la sauvegarde externe du CMS — sur l'HÔTE Proxmox. À copier dans
+# /etc/systemd/system/, avec tnd-cms-restore-test.timer (procédure : docs/cms/exploitation.md, § 4).
+# Lancé par le minuteur, ou à la main : systemctl start tnd-cms-restore-test.service
+# Journal : journalctl -u tnd-cms-restore-test.service
+[Unit]
+Description=CMS Tekno Never Dies : test de restauration de la sauvegarde externe
+After=local-fs.target pve-guests.service tnd-cms-backup.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/tnd-cms-restore-test.sh
+# Réglages explicites (valeurs de l'installation ; le script n'utilise rien d'autre).
+Environment=TND_GRAID_MOUNT=/mnt/yPlexLib
+Environment=TND_GRAID_UUID=f5b884b5-a8c9-45f2-8275-3bfe71bb5a95
+Environment=TND_BACKUP_TARGET=/mnt/yPlexLib/sauvegardes/tnd-cms
+Environment=TND_CTID=126
+Environment=TND_CT_MOUNT=/mnt/tnd-backups
+Environment=TND_CT_SITE=/srv/tnd-cms/site
+Environment=TND_CT_DATA=/srv/tnd-cms/data
+Environment=TND_CT_USER=tnd-cms
+Environment=TND_CT_TMP=/var/tmp
+Environment=TND_BACKUP_UNIT=tnd-cms-backup.service
+# Délais emboîtés : attente de la sauvegarde (1 h max) + du conteneur (10 min max) + test (30 min max,
+# appliqué par le test lui-même dans le conteneur) < délai du service (2 h).
+Environment=TND_WAIT_BACKUP_SECONDS=3600
+Environment=TND_WAIT_CT_SECONDS=600
+Environment=TND_RESTORE_TIMEOUT_SECONDS=1800
+TimeoutStartSec=2h
+# Arrêt (délai dépassé ou systemctl stop) : SIGTERM au seul script, qui arrête le test dans le conteneur
+# et attend son nettoyage (30 s) ; SIGKILL de tout le reste après TimeoutStopSec.
+KillMode=mixed
+Environment=TND_STOP_GRACE_SECONDS=30
+TimeoutStopSec=60
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+SyslogIdentifier=tnd-cms-restore-test

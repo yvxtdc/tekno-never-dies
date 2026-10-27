@@ -193,7 +193,7 @@ describe("tableau de santé", { timeout: 60e3 }, () => {
     const forEditor = (await editor.get("/api/health")).data;
     assert.deepEqual(forEditor.sections.map((s) => s.id), ["scheduler", "publication"]);
     const forAdmin = (await admin.get("/api/health")).data;
-    assert.deepEqual(forAdmin.sections.map((s) => s.id), ["server", "scheduler", "publication", "backups"]);
+    assert.deepEqual(forAdmin.sections.map((s) => s.id), ["server", "scheduler", "publication", "backups", "restore"]);
     for (const data of [forEditor, forAdmin]) assert.ok(!JSON.stringify(data).includes(cms.dataDir), "aucun chemin du serveur");
     assert.equal((await editor.post("/api/health/restore-test", {})).status, 403);
     assert.equal((await editor.post("/api/health/integrity", {})).status, 403);
