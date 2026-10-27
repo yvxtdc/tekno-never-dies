@@ -2,8 +2,9 @@ import { test, describe, before, after } from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
-import { startCms, testImage, eventInput } from "./helpers.mjs";
-import { sniffType, cleanFileName, exportPath } from "../server/services/media.mjs";
+import crypto from "node:crypto";
+import { startCms, testImage, eventInput, tempDir } from "./helpers.mjs";
+import { sniffType, cleanFileName, exportPath, registerRepoImage, createUpload, syncRepoMedia, describeRepoMediaSync } from "../server/services/media.mjs";
 
 describe("médiathèque", () => {
   let cms, admin, editor;
@@ -98,5 +99,63 @@ describe("médiathèque", () => {
     assert.ok((await editor.get("/api/media?q=dancefloor")).data.items.some((x) => x.id === m.id));
     assert.ok((await editor.get("/api/media?usage=unused")).data.items.some((x) => x.id === m.id));
     assert.ok(!(await editor.get("/api/media?usage=noalt")).data.items.some((x) => x.id === m.id));
+  });
+});
+
+describe("images du dépôt modifiées dans Git : resynchronisation des métadonnées", () => {
+  let cms, site;
+  const sha = (buf) => crypto.createHash("sha256").update(buf).digest("hex");
+  before(async () => {
+    site = tempDir("tnd-site-sync-");
+    fs.mkdirSync(path.join(site, "assets/img"), { recursive: true });
+    cms = await startCms({ siteDir: site });
+  });
+  after(async () => {
+    await cms.close();
+    fs.rmSync(site, { recursive: true, force: true });
+  });
+  const row = (id) => cms.db.get("SELECT * FROM media WHERE id = ?", id);
+
+  test("empreinte, taille, format et dimensions remis à jour ; version augmentée ; rien d'autre touché", async () => {
+    const write = async (name, options) => fs.writeFileSync(path.join(site, "assets/img", name), await testImage(options));
+    // Comme josephine.webp : un PNG 1080×1350 nommé .webp, réencodé ensuite en vrai WebP 720×900.
+    await write("photo.webp", { width: 1080, height: 1350, format: "png" });
+    await write("soiree.webp", { width: 800, height: 450, format: "jpeg" });
+    await write("intacte.webp", { width: 720, height: 900, format: "webp" });
+    await write("disparue.webp", { width: 720, height: 900, format: "webp" });
+    const reg = async (name) => (await registerRepoImage(cms.config, cms.db, `assets/img/${name}`)).id;
+    const ids = { photo: await reg("photo.webp"), soiree: await reg("soiree.webp"), intacte: await reg("intacte.webp"), disparue: await reg("disparue.webp") };
+    const upload = (await createUpload(cms.config, cms.db, await testImage({ format: "jpeg" }), "importee.jpg", null)).media;
+    // Chemin hors du site : refusé avant toute lecture.
+    const outside = cms.db.run("INSERT INTO media (uid, storage, repo_path, original_name, mime, size, sha256, created_at, updated_at) VALUES ('zz0000000001', 'repo', '../hors-site.webp', 'x.webp', 'image/webp', 1, 'x', ?, ?)", new Date().toISOString(), new Date().toISOString()).lastInsertRowid;
+    const before = Object.fromEntries(Object.entries({ ...ids, upload: upload.id, outside }).map(([k, id]) => [k, row(id)]));
+    // Miniature de l'administration en cache pour l'image qui va changer.
+    const cache = path.join(cms.config.mediaDir, "cache", `${before.photo.uid}-v1-thumb_admin.webp`);
+    fs.mkdirSync(path.dirname(cache), { recursive: true });
+    fs.writeFileSync(cache, "ancienne miniature");
+
+    // Modifications faites dans Git.
+    await write("photo.webp", { width: 720, height: 900, format: "webp" });
+    await write("soiree.webp", { width: 800, height: 450, format: "webp" });
+    fs.rmSync(path.join(site, "assets/img/disparue.webp"));
+
+    const r = await syncRepoMedia(cms.config, cms.db);
+    assert.equal(r.checked, 5);
+    assert.deepEqual(r.updated.map((u) => u.id).sort(), [ids.photo, ids.soiree].sort());
+    assert.deepEqual(r.problems.map((p) => p.id).sort(), [ids.disparue, Number(outside)].sort());
+    const photoNow = row(ids.photo);
+    const file = fs.readFileSync(path.join(site, "assets/img/photo.webp"));
+    assert.deepEqual([photoNow.width, photoNow.height, photoNow.mime, photoNow.size, photoNow.sha256, photoNow.version], [720, 900, "image/webp", file.length, sha(file), 2]);
+    assert.deepEqual([row(ids.soiree).mime, row(ids.soiree).width, row(ids.soiree).version], ["image/webp", 800, 2]);
+    assert.ok(!fs.existsSync(cache), "ancienne miniature purgée");
+    for (const k of ["intacte", "disparue", "upload", "outside"]) assert.deepEqual(row(before[k].id), before[k], `${k} inchangé`);
+    // Inchangé pour le reste de la fiche : texte alternatif, chemin, identifiant.
+    assert.deepEqual([photoNow.uid, photoNow.repo_path, photoNow.alt], [before.photo.uid, before.photo.repo_path, before.photo.alt]);
+    const text = describeRepoMediaSync(r);
+    assert.match(text, /assets\/img\/photo\.webp \(\d+ → \d+ octets, 1080×1350 → 720×900, image\/png → image\/webp\)/);
+    assert.match(text, /assets\/img\/soiree\.webp \(\d+ → \d+ octets, image\/jpeg → image\/webp\)/);
+    // Seconde exécution : rien à faire.
+    assert.equal((await syncRepoMedia(cms.config, cms.db)).updated.length, 0);
+    assert.equal(row(ids.photo).version, 2);
   });
 });

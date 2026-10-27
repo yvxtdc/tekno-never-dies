@@ -172,7 +172,7 @@ l'affiche dans sa propre section.
 | Contrôles de cohérence | « Réussis » | en échec, non exécutés |
 | Médias du dépôt | fichiers présents / attendus, références valides | référence cassée, fichier absent ou chemin refusé |
 | Originaux téléversés | récupérés et vérifiés / attendus | original absent du support ou différent de son empreinte |
-| Avertissements | (absente) | sauvegarde ancienne, image du dépôt modifiée depuis son enregistrement, pas d'administrateur actif… |
+| Avertissements | (absente) | sauvegarde ancienne, image du dépôt modifiée depuis son enregistrement (métadonnées resynchronisées par le CMS à son démarrage et à chaque mise en ligne : disparaît après la sauvegarde et le test suivants), pas d'administrateur actif… |
 | Dernier test réussi | date et sauvegarde (conservées après un échec) | « Aucun » (inconnu) |
 
 Un échec constaté sur l'hôte avant le test (disque absent, UUID ou marqueur faux, montage incorrect)

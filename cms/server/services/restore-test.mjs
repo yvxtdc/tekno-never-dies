@@ -669,7 +669,7 @@ export async function runRestoreTest(options, { signal = null, log = () => {}, n
         }
       }
     }
-    if (r.changed) warn("repo-media", `${r.changed} image(s) du dépôt modifiée(s) depuis leur enregistrement dans le CMS (empreinte différente) : versions du dépôt Git, présentes et lisibles.`);
+    if (r.changed) warn("repo-media", `${r.changed} image(s) du dépôt modifiée(s) dans Git depuis leur enregistrement dans le CMS (empreinte différente dans la sauvegarde) : fichiers présents et lisibles. Le CMS remet ces métadonnées à jour à son démarrage et à chaque mise en ligne ; l'avertissement disparaît au test suivant une sauvegarde prise après cette mise à jour.`);
     if (r.missing || r.invalidPaths) return fail("repo-media", `${r.missing + r.invalidPaths} fichier(s) du dépôt manquant(s) ou refusé(s) sur ${r.files} : ${problems.slice(0, 5).join(", ")}${problems.length > 5 ? "…" : ""}.`);
     pass("repo-media", r.files ? `${r.verified} fichier(s) présents et lisibles dans le site déployé (${r.media} média(s)).` : "Aucune image du dépôt référencée.");
   }

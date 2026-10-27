@@ -7,6 +7,8 @@ import { loadConfig } from "./config.mjs";
 import { openDatabase } from "./db/index.mjs";
 import { createApp, createLogger } from "./app.mjs";
 import { startScheduler } from "./publish/scheduler.mjs";
+import { syncRepoMedia, describeRepoMediaSync } from "./services/media.mjs";
+import { audit } from "./services/audit.mjs";
 
 const config = loadConfig();
 const log = createLogger(config.logLevel);
@@ -17,6 +19,16 @@ if (applied.length) log.info(`Migrations appliquées : ${applied.join(", ")}`);
 if (!db.get("SELECT 1 FROM users WHERE role = 'admin' AND active = 1")) {
   log.warn("Aucun administrateur : créez le premier compte avec  npm run cms:admin -- create-user --email … --name … --role admin");
 }
+
+// Images du dépôt modifiées dans Git depuis leur enregistrement (code récupéré par update-cms) : métadonnées
+// remises à jour, sans bloquer le démarrage.
+syncRepoMedia(config, db).then((r) => {
+  if (r.updated.length) {
+    log.info(`Images du dépôt : métadonnées mises à jour (${r.updated.length}) : ${describeRepoMediaSync(r)}`);
+    audit(db, null, "media.sync", "media", null, `${r.updated.length} image(s) du dépôt : ${describeRepoMediaSync(r)}`);
+  }
+  if (r.problems.length) log.warn(`Images du dépôt non vérifiables : ${r.problems.map((p) => `${p.repoPath} (${p.problem})`).join(", ")}`);
+}).catch((error) => log.error("Images du dépôt : resynchronisation impossible", error));
 
 const { handler, publisher } = createApp({ config, db, log });
 const server = http.createServer({ requestTimeout: 120e3, headersTimeout: 30e3 }, handler);

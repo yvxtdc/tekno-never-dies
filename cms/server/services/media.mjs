@@ -228,6 +228,64 @@ export async function registerRepoImage(config, db, repoPath, { alt = "", varian
   return getMediaRow(db, Number(lastInsertRowid));
 }
 
+/**
+ * Images du dépôt modifiées dans Git après leur enregistrement (réencodage, recadrage…) : la base garde
+ * sinon l'ancienne empreinte, la taille, le format et les dimensions (exportées pour la galerie). Remet
+ * ces métadonnées à jour depuis le fichier réel ; la version augmente (nouvelles miniatures de
+ * l'administration, cache purgé). Ne touche jamais aux médias importés (storage = 'upload'), ni à une fiche
+ * dont le fichier est absent, hors du site ou illisible (listée, laissée telle quelle). Lancée au démarrage
+ * du CMS et à chaque mise en ligne ; sans effet si rien n'a changé.
+ */
+export async function syncRepoMedia(config, db) {
+  const result = { checked: 0, updated: [], problems: [] };
+  for (const media of db.all("SELECT * FROM media WHERE storage = 'repo' ORDER BY id")) {
+    result.checked++;
+    let buffer;
+    try {
+      const file = sourceFile(config, media);
+      if (!fs.lstatSync(file).isFile()) throw new Error("pas un fichier");
+      buffer = fs.readFileSync(file);
+    } catch {
+      result.problems.push({ id: media.id, repoPath: media.repo_path, problem: "fichier absent, hors du site ou illisible" });
+      continue;
+    }
+    const sha256 = crypto.createHash("sha256").update(buffer).digest("hex");
+    if (sha256 === media.sha256) continue;
+    let meta;
+    try {
+      meta = await sharp(buffer, { limitInputPixels: MAX_PIXELS }).metadata();
+      if (!meta.width || !meta.height) throw new Error("dimensions illisibles");
+    } catch {
+      result.problems.push({ id: media.id, repoPath: media.repo_path, problem: "image illisible" });
+      continue;
+    }
+    const after = { size: buffer.length, width: meta.width, height: meta.height, mime: sniffType(buffer)?.mime || media.mime };
+    // Garde : la fiche n'a pas changé entre la lecture et l'écriture.
+    const { changes } = db.run(
+      "UPDATE media SET size = ?, width = ?, height = ?, mime = ?, sha256 = ?, version = version + 1, updated_at = ? WHERE id = ? AND sha256 IS ?",
+      after.size, after.width, after.height, after.mime, sha256, now(), media.id, media.sha256
+    );
+    if (!changes) continue;
+    purgeCache(config, media.uid);
+    result.updated.push({
+      id: media.id,
+      repoPath: media.repo_path,
+      before: { size: media.size, width: media.width, height: media.height, mime: media.mime },
+      after
+    });
+  }
+  return result;
+}
+
+/** Résumé lisible d'une resynchronisation (journal d'activité, journal de mise en ligne). */
+export function describeRepoMediaSync({ updated }) {
+  return updated.map((u) => {
+    const dims = u.before.width !== u.after.width || u.before.height !== u.after.height ? `, ${u.before.width}×${u.before.height} → ${u.after.width}×${u.after.height}` : "";
+    const mime = u.before.mime !== u.after.mime ? `, ${u.before.mime} → ${u.after.mime}` : "";
+    return `${u.repoPath} (${u.before.size} → ${u.after.size} octets${dims}${mime})`;
+  }).join(" ; ");
+}
+
 export const mediaVariants = (media) => fromJson(media.variants, {});
 
 /** Où ce média est-il utilisé ? [{ type, id, label, role }] */

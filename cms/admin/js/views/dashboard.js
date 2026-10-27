@@ -11,7 +11,7 @@ const ACTIONS = {
   "event.create": "a créé la soirée", "event.update": "a modifié la soirée", "event.publish": "a publié", "event.schedule": "a programmé",
   "event.cancel": "a annulé", "event.unpublish": "a dépublié", "event.archive": "a archivé", "event.restore": "a restauré", "event.duplicate": "a dupliqué",
   "event.delete": "a supprimé la soirée", "artist.create": "a ajouté l'artiste", "artist.update": "a modifié l'artiste", "artist.merge": "a fusionné",
-  "venue.create": "a ajouté le lieu", "venue.update": "a modifié le lieu", "media.upload": "a importé", "media.replace": "a remplacé l'image",
+  "venue.create": "a ajouté le lieu", "venue.update": "a modifié le lieu", "media.upload": "a importé", "media.replace": "a remplacé l'image", "media.sync": "a mis à jour les métadonnées des images du dépôt :",
   "media.delete": "a supprimé l'image", "site.publish": "a mis le site en ligne", "site.publish.failed": "mise en ligne échouée :",
   "faq.create": "a ajouté la question", "faq.update": "a modifié la question", "team.update": "a modifié la fiche équipe de",
   "album.photos": "a modifié l'album", "translation.update": "a traduit", "user.create": "a créé le compte", "backup.create": "a sauvegardé la base",
