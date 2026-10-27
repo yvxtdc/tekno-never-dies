@@ -146,7 +146,7 @@ export function attribute(hits, events) {
   const byTitle = new Map();
   for (const ev of events) for (const title of new Set([ev.title, ...(ev.pastTitles || [])])) byTitle.set(title, [...(byTitle.get(title) || []), ev]);
   const perEvent = new Map(events.map((ev) => [ev.id, {
-    id: ev.id, title: ev.title, slug: ev.slug, date: ev.date ?? null, firstPublishedAt: ev.firstPublishedAt, views: 0, legacyClicks: 0,
+    id: ev.id, title: ev.title, slug: ev.slug, date: ev.date ?? null, firstPublishedAt: ev.firstPublishedAt, views: 0, legacyClicks: 0, pathId: null,
     interactions: Object.fromEntries(Object.values(EVENT_INTERACTIONS).map((k) => [k, 0]))
   }]));
   const pages = [];
@@ -167,8 +167,14 @@ export function attribute(hits, events) {
     if (!h.event) {
       const m = String(h.path).match(/^\/evenement-([a-z0-9-]+)\.html$/);
       const ev = m ? bySlug.get(m[1]) : null;
-      if (ev) perEvent.get(ev.id).views += countFor(h, ev, sinceOf(ev, "slug", m[1]));
-      pages.push({ path: h.path, title: h.title || "", count: h.count, eventId: ev?.id ?? null });
+      if (ev) {
+        const row = perEvent.get(ev.id);
+        const n = countFor(h, ev, sinceOf(ev, "slug", m[1]));
+        // Fiche (adresse actuelle ou ancienne) la plus vue : celle dont la provenance est proposée.
+        if (n > (row.pathViews || 0)) Object.assign(row, { pathId: h.path_id, pathViews: n });
+        row.views += n;
+      }
+      pages.push({ path: h.path, title: h.title || "", count: h.count, pathId: h.path_id, eventId: ev?.id ?? null });
       continue;
     }
     const [category, ...rest] = String(h.path).split(" · ");
@@ -199,7 +205,7 @@ export function attribute(hits, events) {
   }
   return {
     pages: pages.sort((a, b) => b.count - a.count),
-    events: [...perEvent.values()],
+    events: [...perEvent.values()].map(({ pathViews, ...e }) => e),
     siteInteractions: [...siteInteractions.entries()].map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count),
     unattributed
   };
@@ -210,6 +216,32 @@ function series(hits, from, days) {
   const map = new Map(Array.from({ length: days }, (_, i) => [addDays(from, i), 0]));
   for (const h of hits) if (!h.event) for (const s of h.stats || []) if (map.has(s.day)) map.set(s.day, map.get(s.day) + (s.daily || 0));
   return [...map.entries()].map(([day, count]) => ({ day, count }));
+}
+
+const SITE_HOST = SITE.url ? new URL(SITE.url).host : "";
+
+/**
+ * Moments des visites (pages seulement), d'après le détail horaire de GoatCounter, dans le fuseau du compte
+ * GoatCounter (Europe/Paris attendu) :
+ *  - hours : visites par heure (0 à 23) sur la période ; null si le détail horaire manque (jamais des zéros) ;
+ *  - weekdays : par jour de la semaine (lundi = 0), total et nombre de jours comptés, pour une moyenne juste
+ *    (une période de 30 jours n'a pas autant de lundis que de mardis) ; jours avant le début du comptage
+ *    et journée en cours exclus.
+ */
+function rhythm(hits, daily, { since, today }) {
+  const pages = hits.filter((h) => !h.event);
+  const stats = pages.flatMap((h) => h.stats || []);
+  const hours = stats.length && stats.every((s) => Array.isArray(s.hourly) && s.hourly.length === 24)
+    ? stats.reduce((acc, s) => acc.map((n, i) => n + (s.hourly[i] || 0)), Array(24).fill(0))
+    : null;
+  const weekdays = Array.from({ length: 7 }, () => ({ total: 0, days: 0 }));
+  for (const d of daily) {
+    if ((since && d.day < since) || d.day >= today) continue;
+    const w = (new Date(`${d.day}T12:00:00Z`).getUTCDay() + 6) % 7;
+    weekdays[w].total += d.count;
+    weekdays[w].days += 1;
+  }
+  return { hours, weekdays };
 }
 
 /**
@@ -246,9 +278,9 @@ export async function getStats(db, config, query = {}) {
   const current = await settle(() => totals(config, range.from, range.to));
   const hits = await settle(() => allHits(config, range.from, range.to));
   const refs = await settle(async () => {
-    const data = await gc(config, "stats/toprefs", { start: parisMidnight(range.from), end: parisMidnight(addDays(range.to, 1)), limit: 10 });
+    const data = await gc(config, "stats/toprefs", { start: parisMidnight(range.from), end: parisMidnight(addDays(range.to, 1)), limit: 100 });
     if (!Array.isArray(data?.stats)) throw new StatsError("GoatCounter : réponse inattendue.");
-    return data.stats.map((s) => ({ name: s.name || "(accès direct ou inconnu)", count: s.count }));
+    return { items: data.stats.map(refItem), more: Boolean(data.more) };
   });
   const since = await settle(() => countingSince(config));
   let comparison = { available: false, reason: "" };
@@ -258,19 +290,31 @@ export async function getStats(db, config, query = {}) {
     const previous = await settle(() => totals(config, range.previous.from, range.previous.to));
     comparison = previous.error ? { available: false, reason: previous.error } : { available: true, previous: previous.value, range: range.previous };
   }
+  // Pages de la période précédente : évolution page par page, seulement si la comparaison est possible.
+  let previousPages = null;
+  if (comparison.available && hits.value) {
+    const prev = await settle(() => allHits(config, range.previous.from, range.previous.to));
+    previousPages = prev.error ? { error: prev.error } : { counts: new Map(prev.value.hits.filter((h) => !h.event).map((h) => [h.path, h.count])), truncated: prev.value.truncated };
+  }
   const attributed = hits.value ? attribute(hits.value.hits, events) : null;
+  const daily = hits.value ? series(hits.value.hits, range.from, range.days) : null;
+  // Page absente d'une période précédente complète : 0 réel ; liste tronquée : inconnu (null).
+  const previousOf = (path) => (!previousPages?.counts ? undefined : previousPages.counts.get(path) ?? (previousPages.truncated ? null : 0));
   const data = {
     ...base,
     fetchedAt: new Date().toISOString(),
     countingSince: since.value ?? null,
     totals: current.value ?? null,
-    series: hits.value ? series(hits.value.hits, range.from, range.days) : null,
-    pages: attributed ? attributed.pages.slice(0, 15) : null,
+    series: daily,
+    rhythm: hits.value ? rhythm(hits.value.hits, daily, { since: since.value ?? null, today: parisToday() }) : null,
+    pages: attributed ? attributed.pages.slice(0, 30).map((p) => ({ ...p, previous: previousOf(p.path) })) : null,
+    pagesComparison: previousPages?.error ? { available: false, reason: previousPages.error } : { available: Boolean(previousPages) },
     events: attributed ? attributed.events.filter((e) => e.views || Object.values(e.interactions).some(Boolean)).sort((a, b) => b.views - a.views) : null,
     siteInteractions: attributed?.siteInteractions ?? null,
     unattributed: attributed?.unattributed ?? null,
     truncated: Boolean(hits.value?.truncated),
-    refs: refs.value ?? null,
+    refs: refs.value?.items ?? null,
+    refsMore: Boolean(refs.value?.more),
     comparison,
     errors: Object.fromEntries(Object.entries({ totals: current.error, hits: hits.error, refs: refs.error }).filter(([, v]) => v))
   };
@@ -279,6 +323,67 @@ export async function getStats(db, config, query = {}) {
   // Panne : dernière réponse complète de cette période, signalée comme telle (jamais des zéros).
   if (failed && cached) return { ...cached.data, stale: true, staleReason: Object.values(data.errors)[0] };
   return data;
+}
+
+/** Provenance : nom tel que GoatCounter le donne ; navigation depuis le site lui-même signalée. */
+function refItem(s) {
+  const name = s.name || "";
+  return { name: name || "(accès direct ou inconnu)", count: s.count, direct: !name, internal: Boolean(SITE_HOST && (name === SITE_HOST || name.startsWith(`${SITE_HOST}/`))) };
+}
+
+/** Caractéristiques des visiteurs lues dans GoatCounter, telles quelles (aucun calcul). */
+export const AUDIENCE = ["sizes", "systems", "browsers", "locations", "languages", "campaigns"];
+
+async function cachedRead(config, key, read) {
+  const cached = cache.get(key);
+  if (cached && Date.now() - cached.at < TTL) return cached.data;
+  const data = await read();
+  const failed = data.errors && Object.keys(data.errors).length;
+  if (!failed) cache.set(key, { at: Date.now(), data });
+  if (failed && cached) return { ...cached.data, stale: true, staleReason: Object.values(data.errors)[0] };
+  return data;
+}
+
+/**
+ * Appareils (taille d'écran), systèmes, navigateurs, pays, langues, campagnes : une section par dimension,
+ * null avec son motif si la lecture échoue. GoatCounter compte ces dimensions par jour UTC : à un jour près
+ * aux bords de la période, leur total peut différer légèrement des visites de pages.
+ */
+export async function getAudience(config, query = {}) {
+  const settings = statsSettings(config);
+  const range = resolvePeriod(query);
+  if (!settings.configured) return { configured: false, range };
+  return cachedRead(config, JSON.stringify(["audience", range.from, range.to]), async () => {
+    const dims = {};
+    const errors = {};
+    for (const dim of AUDIENCE) {
+      const r = await settle(async () => {
+        const data = await gc(config, `stats/${dim}`, { start: parisMidnight(range.from), end: parisMidnight(addDays(range.to, 1)), limit: 100 });
+        if (!Array.isArray(data?.stats)) throw new StatsError("GoatCounter : réponse inattendue.");
+        return { items: data.stats.map((s) => ({ id: String(s.id ?? ""), name: s.name || "", count: s.count })), more: Boolean(data.more) };
+      });
+      dims[dim] = r.value ?? null;
+      if (r.error) errors[dim] = r.error;
+    }
+    return { configured: true, range, fetchedAt: new Date().toISOString(), dims, errors };
+  });
+}
+
+/** Provenance des visites d'une page (identifiant GoatCounter de la page). */
+export async function getPageRefs(config, query = {}) {
+  const pathId = Number(query.pathId);
+  if (!Number.isInteger(pathId) || pathId <= 0) throw badRequest("Page inconnue.");
+  const settings = statsSettings(config);
+  const range = resolvePeriod(query);
+  if (!settings.configured) return { configured: false, range };
+  return cachedRead(config, JSON.stringify(["refs", pathId, range.from, range.to]), async () => {
+    const r = await settle(async () => {
+      const data = await gc(config, `stats/hits/${pathId}`, { start: parisMidnight(range.from), end: parisMidnight(addDays(range.to, 1)), limit: 100 });
+      if (!Array.isArray(data?.refs)) throw new StatsError("GoatCounter : réponse inattendue.");
+      return { items: data.refs.map(refItem), more: Boolean(data.more) };
+    });
+    return { configured: true, range, pathId, refs: r.value?.items ?? null, more: Boolean(r.value?.more), errors: r.error ? { refs: r.error } : {} };
+  });
 }
 
 /** Vide le cache (tests). */
