@@ -9,7 +9,8 @@ Les soirées, line-ups, artistes, lieux, images, galerie, FAQ, équipe et traduc
 une **interface d'administration privée** (`cms/`), qui régénère ensuite le site statique :
 voir [docs/cms/README.md](docs/cms/README.md) (installation, utilisation, commandes),
 [docs/cms/architecture.md](docs/cms/architecture.md) (choix techniques) et
-[docs/cms/exploitation.md](docs/cms/exploitation.md) (mise en production, sécurité, sauvegardes).
+[docs/cms/exploitation.md](docs/cms/exploitation.md) (mise en production, sécurité, sauvegardes) et
+[docs/cms/proxmox.md](docs/cms/proxmox.md) (infrastructure de production, reconstruction).
 
 ```sh
 npm install && npm run cms:admin -- import

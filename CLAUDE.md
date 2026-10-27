@@ -13,6 +13,15 @@ Documentation de référence, à lire avant de toucher au domaine concerné (ne 
 programmées : représentation, conflits, dépendances, états), `docs/cms/supervision.md` (déploiement GitHub Pages,
 santé, vérification avant publication, suivi des soirées), `docs/cms/statistiques.md` (GoatCounter). Le code prime
 sur une doc qui le contredit.
+**Infrastructure de production** (hôte Proxmox, LXC 126, G-RAID, montages, UID, unités systemd, horaires,
+reconstruction, contrôles) : référence unique `docs/cms/proxmox.md`. Les scripts et unités de l'hôte (sauvegarde
+quotidienne, test de restauration) sont versionnés dans `cms/deploy/proxmox/` (correspondance avec les chemins
+installés : § 2.1) ; ceux de la sauvegarde sont des copies exactes de la production : ne pas les « améliorer » sans
+demande. Ils contiennent des valeurs propres à cette installation (UUID, CT 126, chemins : § 10.0). Ce qui reste
+inconnu (§ 9 : version du site déployée, pare-feu de niveau supérieur, modèle du LXC, mise à jour de `cloudflared`…)
+ne se réécrit jamais de mémoire : le relever, le relire sans secret, puis le reporter ou le versionner. Aucune valeur de
+secret (`cms/.env`, `/etc/cloudflared/token`, clés) n'entre dans Git, même dans ce document. Toute modification
+d'infrastructure met à jour ce document.
 `A-COMPLETER.md` est une liste de travail interne : ne pas la traiter comme des tâches à faire spontanément.
 
 ## 1. Stack et architecture
