@@ -146,7 +146,7 @@ export function attribute(hits, events) {
   const byTitle = new Map();
   for (const ev of events) for (const title of new Set([ev.title, ...(ev.pastTitles || [])])) byTitle.set(title, [...(byTitle.get(title) || []), ev]);
   const perEvent = new Map(events.map((ev) => [ev.id, {
-    id: ev.id, title: ev.title, slug: ev.slug, firstPublishedAt: ev.firstPublishedAt, views: 0, legacyClicks: 0,
+    id: ev.id, title: ev.title, slug: ev.slug, date: ev.date ?? null, firstPublishedAt: ev.firstPublishedAt, views: 0, legacyClicks: 0,
     interactions: Object.fromEntries(Object.values(EVENT_INTERACTIONS).map((k) => [k, 0]))
   }]));
   const pages = [];
@@ -231,11 +231,11 @@ export async function getStats(db, config, query = {}) {
   // Titres passés : ceux de l'historique de CETTE soirée (même génération), pour les clics de l'ancien format.
   // Noms portés par chaque soirée et date à laquelle elle les a pris (event_names, tenue par la base) :
   // un nom ne compte pour une soirée qu'à partir de cette date ; sans date, tout son historique.
-  const events = db.all("SELECT id, title, slug, first_published_at FROM events").map((e) => {
+  const events = db.all("SELECT id, title, slug, date, first_published_at FROM events").map((e) => {
     const names = db.all("SELECT kind, value, since FROM event_names WHERE event_id = ?", e.id);
     const since = Object.fromEntries(names.map((n) => [`${n.kind}:${n.value}`, n.since ? parisToday(new Date(n.since)) : null]));
     return {
-      id: e.id, title: e.title, slug: e.slug,
+      id: e.id, title: e.title, slug: e.slug, date: e.date,
       firstPublishedAt: e.first_published_at && Date.parse(e.first_published_at) > importedAt + 5 * 60e3 ? e.first_published_at : null,
       redirects: db.all("SELECT old_slug FROM event_redirects WHERE event_id = ?", e.id).map((r) => r.old_slug),
       pastTitles: names.filter((n) => n.kind === "title").map((n) => n.value),

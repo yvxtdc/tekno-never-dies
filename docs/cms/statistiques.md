@@ -49,6 +49,8 @@ ses compteurs sans les recalculer.
 - **Indisponible n'est pas zéro.** Une section dont la lecture échoue est affichée « Indisponible »
   avec le motif : délai dépassé (10 s), jeton refusé, limite d'appels (4 par seconde), réponse
   inattendue. Dans une réponse réussie, une page ou un clic absent vaut réellement 0.
+  Les jours antérieurs au premier jour compté sont grisés « pas encore compté » dans le graphique,
+  pas dessinés comme des jours sans visite.
 - **Cache et panne.** Le cache dure 10 minutes. Si GoatCounter ne répond pas, la dernière réponse
   complète de la période est affichée et signalée comme ancienne. Aucune consultation n'est bloquée.
 - **Comparaison.** Elle n'est faite que si GoatCounter comptait déjà au début de la période
