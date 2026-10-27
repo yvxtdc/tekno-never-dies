@@ -28,7 +28,7 @@ import { now, fromJson } from "../db/index.mjs";
 import { conflict } from "../http/errors.mjs";
 import { buildSiteData } from "../export/site-data.mjs";
 import { renderModules, MANAGED_MODULES } from "../export/modules.mjs";
-import { variantFile } from "../services/media.mjs";
+import { variantFile, syncRepoMedia, describeRepoMediaSync } from "../services/media.mjs";
 import { audit } from "../services/audit.mjs";
 import { appliedIds, markPublished, notePublishFailure } from "../services/schedule.mjs";
 import { deploymentView } from "./deploy-tracker.mjs";
@@ -329,6 +329,15 @@ export class Publisher {
           throw Object.assign(new Error(`Fichiers modifiés hors du CMS depuis la dernière mise en ligne : ${drift.join(", ")}. Reportez ces changements dans le CMS (ou demandez à un administrateur de forcer la mise en ligne, ce qui les remplacera).`), { drift });
         }
         if (drift.length) step(`Fichiers modifiés hors du CMS remplacés (mise en ligne forcée) : ${drift.join(", ")}.`);
+
+        // Images du dépôt modifiées dans Git (récupérées ci-dessus, ou par update-cms) : empreinte, taille,
+        // format et dimensions remis à jour avant l'export (dimensions de la galerie).
+        const repoSync = await syncRepoMedia(config, db);
+        if (repoSync.updated.length) {
+          step(`Images du dépôt modifiées dans Git, métadonnées mises à jour : ${describeRepoMediaSync(repoSync)}.`);
+          audit(db, { user, ip }, "media.sync", "media", null, `${repoSync.updated.length} image(s) du dépôt : ${describeRepoMediaSync(repoSync)}`);
+        }
+        if (repoSync.problems.length) step(`Images du dépôt non vérifiables (métadonnées inchangées) : ${repoSync.problems.map((p) => `${p.repoPath} (${p.problem})`).join(", ")}.`);
 
         setStage("export");
         step("Export des contenus publiés…");

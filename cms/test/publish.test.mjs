@@ -141,6 +141,34 @@ describe("mise en ligne : modes fichiers et push", { timeout: 300e3 }, () => {
     fs.rmSync(siteDir, { recursive: true, force: true });
   });
 
+  test("image du dépôt modifiée dans Git : métadonnées mises à jour à la mise en ligne, journal d'activité", async () => {
+    const siteDir = copySite();
+    const cms = await startCms({ importContent: true, siteDir, env: { CMS_PUBLISH_MODE: "files" } });
+    try {
+      const media = cms.db.get("SELECT m.* FROM media m JOIN team_members t ON t.photo_media_id = m.id WHERE m.storage = 'repo' ORDER BY m.id LIMIT 1");
+      assert.ok(media, "une photo d'équipe du dépôt");
+      const file = path.join(siteDir, media.repo_path);
+      // Réencodage (comme « images allégées ») : même image, autre fichier.
+      const sharp = (await import("sharp")).default;
+      fs.writeFileSync(file, await sharp(fs.readFileSync(file)).webp({ quality: 40 }).toBuffer());
+      const editor = await cms.login("editor");
+      const res = await editor.post("/api/publications", {});
+      assert.equal(res.data.status, "success", res.data.log);
+      assert.match(res.data.log, new RegExp(`Images du dépôt modifiées dans Git, métadonnées mises à jour : ${media.repo_path.replace(/[.]/g, "\\.")}`));
+      const now = cms.db.get("SELECT * FROM media WHERE id = ?", media.id);
+      assert.equal(now.size, fs.statSync(file).size);
+      assert.equal(now.version, media.version + 1);
+      assert.ok(cms.db.get("SELECT 1 FROM audit_log WHERE action = 'media.sync' AND summary LIKE ?", `%${media.repo_path}%`), "journal d'activité");
+      // Mise en ligne suivante : plus rien à resynchroniser.
+      const again = await editor.post("/api/publications", {});
+      assert.equal(again.data.status, "success", again.data.log);
+      assert.doesNotMatch(again.data.log, /métadonnées mises à jour/);
+    } finally {
+      await cms.close();
+      fs.rmSync(siteDir, { recursive: true, force: true });
+    }
+  });
+
   test("mode push : le commit arrive sur le dépôt distant ; une branche distante divergente bloque", async () => {
     const remote = tempDir("tnd-remote-");
     execFileSync("git", ["init", "-q", "--bare", "-b", "main", remote]);
