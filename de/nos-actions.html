@@ -25,26 +25,26 @@
     })();
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Unsere Aktionen — Tekno Never Dies</title>
-  <meta name="description" content="Die Aktionen von Tekno Never Dies: Events, Technik und Projektbegleitung." />
+  <title>Das Soundsystem — Tekno Never Dies</title>
+  <meta name="description" content="Das Soundsystem von Tekno Never Dies: das Material, das Team, das es aufbaut und einstellt, und die DJs, die es zum Leben erwecken." />
   <meta name="theme-color" content="#4226b6" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Tekno Never Dies" />
   <meta property="og:locale" content="de_DE" />
   <meta property="og:locale:alternate" content="fr_FR" />
   <meta property="og:locale:alternate" content="en_GB" />
-  <meta property="og:title" content="Unsere Aktionen — Tekno Never Dies" />
-  <meta property="og:description" content="Die Aktionen von Tekno Never Dies: Events, Technik und Projektbegleitung." />
+  <meta property="og:title" content="Das Soundsystem — Tekno Never Dies" />
+  <meta property="og:description" content="Das Soundsystem von Tekno Never Dies: das Material, das Team, das es aufbaut und einstellt, und die DJs, die es zum Leben erwecken." />
   <meta property="og:url" content="https://teknoneverdies.fr/de/nos-actions.html" />
-  <meta property="og:image" content="https://teknoneverdies.fr/assets/img/og-image.jpg" />
+  <meta property="og:image" content="https://teknoneverdies.fr/assets/img/sound-system/og-sound-system.jpg" />
   <meta property="og:image:type" content="image/jpeg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Logo Tekno Never Dies Sound System auf einem Partyfoto" />
+  <meta property="og:image:alt" content="Das aufgebaute Soundsystem von Tekno Never Dies: zwei Boxentürme und ein hängendes DJ-Booth" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Unsere Aktionen — Tekno Never Dies" />
-  <meta name="twitter:description" content="Die Aktionen von Tekno Never Dies: Events, Technik und Projektbegleitung." />
-  <meta name="twitter:image" content="https://teknoneverdies.fr/assets/img/og-image.jpg" />
+  <meta name="twitter:title" content="Das Soundsystem — Tekno Never Dies" />
+  <meta name="twitter:description" content="Das Soundsystem von Tekno Never Dies: das Material, das Team, das es aufbaut und einstellt, und die DJs, die es zum Leben erwecken." />
+  <meta name="twitter:image" content="https://teknoneverdies.fr/assets/img/sound-system/og-sound-system.jpg" />
   <link rel="canonical" href="https://teknoneverdies.fr/de/nos-actions.html" />
   <link rel="icon" type="image/png" href="assets/img/favicon.png" />
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png" />
@@ -54,6 +54,7 @@
   <link rel="preload" href="assets/fonts/montserrat-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="css/style.css?v=2" />
   <link rel="stylesheet" href="css/pages.css" />
+  <link rel="stylesheet" href="css/components/sound-system.css" />
   <script type="module" src="js/partials.js"></script>
 </head>
 <body data-page="association">
@@ -109,22 +110,284 @@
 </nav>
 <!-- /partial:header -->
 
-  <main id="main">
-    <section class="page-head container">
-      <h1><span class="l1">Unsere</span> <span class="l2">Aktionen</span></h1>
-      <img class="decor decor-r decor--float" src="assets/img/decor/squiggle.webp" alt="" aria-hidden="true" />
-      <p>Vier Schwerpunkte, um die Projekte des Vereins lebendig zu machen.</p>
+  <!-- Page « Sound System » (lien « Notre sound system » de l'accueil). Styles : css/components/sound-system.css ;
+       révélations au défilement, comparateur photo / dessin, artistes et prochaine soirée : js/pages/sound-system.js.
+       Le dessin du rig (.ss-trace) est relevé sur la photo assets/img/sound-system/rig.webp (mêmes coordonnées,
+       viewBox 1500 × 1520) : si la photo change, le dessin ne tombe plus juste.
+       Photos de la salle (Fig. 02, Fig. 03, comparateur) : versions monochromes *-mono.webp (noir et blanc froid,
+       la salle s'efface derrière la structure). Conservés : originaux (montage, regie, rig) et étalonnage *-etalonne. -->
+  <main id="main" class="ss">
+    <!-- 1. Entrée : la vraie photo du rig, son dessin qui s'allume par-dessus, le titre à cheval -->
+    <section class="ss-hero" aria-labelledby="ss-title">
+      <figure class="ss-hero__media">
+        <img src="assets/img/sound-system/rig.webp" srcset="assets/img/sound-system/rig-800.webp 800w, assets/img/sound-system/rig.webp 1500w" sizes="100vw" width="1500" height="1520" alt="Das Soundsystem in einer Halle aufgebaut: auf jeder Seite ein Boxenturm, eine Alu-Traverse und in der Mitte ein hängendes, rundes DJ-Booth" fetchpriority="high" decoding="async" />
+        <svg class="ss-trace ss-draw" viewBox="0 0 1500 1520" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+          <g class="ss-trace__truss">
+            <path pathLength="1" d="M0 352L352 626M0 424L338 644"/>
+            <path pathLength="1" d="M1500 266L1100 602M1500 330L1118 622"/>
+            <path pathLength="1" d="M352 626L1100 602M346 646L1110 628"/>
+            <path pathLength="1" d="M40 384L1390 364M40 442L1390 428"/>
+            <path pathLength="1" d="M682 0L688 196M742 0L744 196M705 452L700 612M757 452L752 610"/>
+            <path pathLength="1" d="M346 646L300 1122M382 646L336 1122"/>
+            <path pathLength="1" d="M1096 630L1162 1106M1134 630L1196 1106"/>
+          </g>
+          <g class="ss-trace__ring">
+            <ellipse pathLength="1" cx="735" cy="400" rx="367" ry="202"/>
+            <ellipse pathLength="1" cx="742" cy="418" rx="305" ry="146"/>
+          </g>
+          <path class="ss-trace__straps" pathLength="1" d="M474 382L490 1290M548 536L588 1078M885 540L895 1050M998 372L1040 1256"/>
+          <g class="ss-trace__booth">
+            <ellipse pathLength="1" cx="745" cy="1085" rx="310" ry="70"/>
+            <ellipse pathLength="1" cx="745" cy="1245" rx="302" ry="76"/>
+            <path pathLength="1" d="M435 1090L443 1245M1055 1085L1047 1245M560 1046H990V1122H560Z"/>
+          </g>
+          <path class="ss-trace__screen" pathLength="1" d="M608 655H858V742H608Z"/>
+          <g class="ss-trace__stack">
+            <path pathLength="1" d="M192 602L290 604L288 695L186 693ZM150 695L308 697L306 778L143 776ZM110 778L322 780L318 870L100 868ZM95 870L316 872L306 965L84 963ZM66 965L282 967L272 1070L52 1068ZM50 1070L272 1072L262 1185L36 1183Z"/>
+            <path pathLength="1" d="M1178 570H1278V665H1178ZM1172 658L1322 660L1324 750L1172 748ZM1168 740L1350 742L1356 833L1174 831ZM1180 833L1385 835L1394 928L1188 926ZM1195 928L1412 930L1424 1040L1205 1038ZM1220 1040L1445 1042L1452 1138L1228 1136Z"/>
+            <path pathLength="1" d="M205 712Q212 738 205 764M245 712Q238 738 245 764M1212 676Q1219 704 1212 734M1256 676Q1249 704 1256 734"/>
+          </g>
+          <g class="ss-trace__lights">
+            <circle cx="446" cy="548" r="22"/><circle cx="720" cy="372" r="22"/><circle cx="1030" cy="540" r="22"/><circle cx="735" cy="482" r="15"/>
+            <circle cx="22" cy="472" r="14"/><circle cx="150" cy="552" r="14"/><circle cx="1435" cy="440" r="14"/><circle cx="1306" cy="527" r="14"/><circle cx="1222" cy="580" r="14"/>
+          </g>
+        </svg>
+        <figcaption class="ss-fig"><span class="ss-fig__num" translate="no">Fig. 01</span> <span>Das hängende Booth zwischen den beiden Boxentürmen.</span></figcaption>
+      </figure>
+      <p class="ss-hero__side" aria-hidden="true" translate="no">Tekno Never Dies — Sound System — Lauterbourg</p>
+      <div class="ss-hero__content">
+        <p class="eyebrow ss-hero__kicker"><span>Das Soundsystem</span> <span class="ss-dot" aria-hidden="true"></span> <span translate="no">TND6TEM</span></p>
+        <h1 id="ss-title" class="ss-hero__title">
+          <span class="ss-hero__line">Boxen.</span>
+          <span class="ss-hero__line ss-hero__line--grad">Talent.</span>
+        </h1>
+        <div class="ss-hero__text">
+          <p class="ss-hero__lead">Und Sound, der verbindet.</p>
+          <p>Unser Soundsystem, das sind Material, ein Team und DJs: alles, was es braucht, damit aus einem leeren Saal ein Dancefloor wird.</p>
+        </div>
+      </div>
+      <a class="ss-hero__scroll" href="#ss-manifeste"><span>Hinter die Kulissen</span> <i aria-hidden="true"></i></a>
     </section>
-    <section class="container content-grid">
-      <article class="info-card"><h2>Organisieren</h2><p>Wir planen und organisieren Events und kümmern uns um Programm, Technik, Logistik und Empfang.</p></article>
-      <article class="info-card"><h2>Beschallen</h2><p>Mit unserem Equipment bauen wir Setups, die zu ganz unterschiedlichen Eventformaten passen.</p></article>
-      <article class="info-card"><h2>Begleiten</h2><p>Wir prüfen gerne Anfragen von Vereinen, Kollektiven oder Veranstaltern, die eine technische Lösung suchen.</p></article>
-      <article class="info-card"><h2>Weitergeben</h2><p>Der Verein lebt auch vom Wissensaustausch und vom gemeinsamen Lernen rund um Veranstaltungstechnik.</p></article>
+
+    <!-- 2. Manifeste : ce qui se passe avant la première note -->
+    <section class="ss-manifest" id="ss-manifeste" aria-labelledby="ss-manifest-title">
+      <img class="decor decor-r decor--float ss-manifest__decor" src="assets/img/decor/star-outline.webp" alt="" aria-hidden="true" />
+      <div class="ss-wrap ss-manifest__grid">
+        <div class="ss-manifest__text" data-reveal>
+          <p class="ss-kicker"><span class="ss-kicker__num">01</span> <span>Vor dem ersten Ton</span></p>
+          <h2 id="ss-manifest-title" class="ss-h2">Hinter jedem Bass stecken Stunden Arbeit<span class="ss-period">.</span></h2>
+          <p>Vor dem ersten Ton gibt es einen leeren Saal. Wir laden das Material aus, stellen die Traverse auf, hängen Licht und Booth auf und verkabeln jede Box. Dann hören wir, stellen ein und fangen von vorne an, bis der Sound den ganzen Raum füllt.</p>
+          <p class="ss-manifest__punch">Nichts davon geht allein: Ein Soundsystem ist vor allem ein Team.</p>
+        </div>
+        <div class="ss-manifest__media">
+          <figure class="ss-photo ss-photo--montage" data-reveal>
+            <img src="assets/img/sound-system/montage-mono.webp" srcset="assets/img/sound-system/montage-mono-800.webp 800w, assets/img/sound-system/montage-mono.webp 1400w" sizes="(max-width:900px) 100vw, 58vw" width="1400" height="1096" loading="lazy" decoding="async" alt="Der leere Saal mit aufgebauter Alu-Traverse und hängendem rundem Booth, bevor der Sound installiert wird" />
+            <figcaption class="ss-fig"><span class="ss-fig__num" translate="no">Fig. 02</span> <span>Die Traverse steht, das Booth wartet noch auf seine Decks.</span></figcaption>
+          </figure>
+          <figure class="ss-photo ss-photo--regie" data-reveal>
+            <img src="assets/img/sound-system/regie-mono.webp" srcset="assets/img/sound-system/regie-mono-640.webp 640w, assets/img/sound-system/regie-mono.webp 1000w" sizes="(max-width:900px) 80vw, 30vw" width="1000" height="768" loading="lazy" decoding="async" alt="Blick vom Lichtpult: Software-Bildschirm im Vordergrund, eingeschaltete Scheinwerfer an der Traverse" />
+            <figcaption class="ss-fig"><span class="ss-fig__num" translate="no">Fig. 03</span> <span>Vom Pult aus: erste Lichteinstellungen, der Saal noch leer.</span></figcaption>
+          </figure>
+        </div>
+      </div>
+      <p class="ss-verbs" data-reveal>
+        <span>Laden.</span>
+        <span>Aufbauen.</span>
+        <span>Verkabeln.</span>
+        <span>Einstellen.</span>
+        <span class="ss-verbs__hot">Hören.</span>
+        <span>Wiederholen.</span>
+      </p>
     </section>
-    <section class="container cta-panel">
-      <h2>Ein Projekt?</h2>
-      <p>Beschreib uns dein Event, Datum, Ort und deinen Bedarf.</p>
-      <a class="btn btn-cyan" href="de/contact.html?type=evenement">Über mein Projekt sprechen</a>
+
+    <!-- 3. Le matériel en dessin : comparateur photo / trait et anatomie d'un stack (croquis d'après photo) -->
+    <section class="ss-plan" aria-labelledby="ss-plan-title">
+      <div class="ss-wrap">
+        <header class="ss-plan__head" data-reveal>
+          <p class="ss-kicker"><span class="ss-kicker__num">02</span> <span>Das Material</span></p>
+          <h2 id="ss-plan-title" class="ss-h2">Die Soundwall, Strich für Strich<span class="ss-period">.</span></h2>
+          <p>Unsere Boxentürme, die Traverse und das hängende Booth, nach einem Foto unseres Aufbaus nachgezeichnet. Zieh den Regler, um vom Foto zur Zeichnung zu wechseln.</p>
+        </header>
+
+        <div class="ss-plan__grid">
+          <figure class="ss-compare" data-reveal>
+            <div class="ss-compare__stage">
+              <img class="ss-compare__photo" src="assets/img/sound-system/rig-mono-800.webp" srcset="assets/img/sound-system/rig-mono-800.webp 800w, assets/img/sound-system/rig-mono.webp 1500w" sizes="(max-width:900px) 100vw, 58vw" width="1500" height="1520" loading="lazy" decoding="async" alt="" />
+              <svg class="ss-trace ss-trace--plan ss-draw" viewBox="0 0 1500 1520" aria-hidden="true" focusable="false">
+            <g class="ss-trace__truss">
+              <path pathLength="1" d="M0 352L352 626M0 424L338 644"/>
+              <path pathLength="1" d="M1500 266L1100 602M1500 330L1118 622"/>
+              <path pathLength="1" d="M352 626L1100 602M346 646L1110 628"/>
+              <path pathLength="1" d="M40 384L1390 364M40 442L1390 428"/>
+              <path pathLength="1" d="M682 0L688 196M742 0L744 196M705 452L700 612M757 452L752 610"/>
+              <path pathLength="1" d="M346 646L300 1122M382 646L336 1122"/>
+              <path pathLength="1" d="M1096 630L1162 1106M1134 630L1196 1106"/>
+            </g>
+            <g class="ss-trace__ring">
+              <ellipse pathLength="1" cx="735" cy="400" rx="367" ry="202"/>
+              <ellipse pathLength="1" cx="742" cy="418" rx="305" ry="146"/>
+            </g>
+            <path class="ss-trace__straps" pathLength="1" d="M474 382L490 1290M548 536L588 1078M885 540L895 1050M998 372L1040 1256"/>
+            <g class="ss-trace__booth">
+              <ellipse pathLength="1" cx="745" cy="1085" rx="310" ry="70"/>
+              <ellipse pathLength="1" cx="745" cy="1245" rx="302" ry="76"/>
+              <path pathLength="1" d="M435 1090L443 1245M1055 1085L1047 1245M560 1046H990V1122H560Z"/>
+            </g>
+            <path class="ss-trace__screen" pathLength="1" d="M608 655H858V742H608Z"/>
+            <g class="ss-trace__stack">
+              <path pathLength="1" d="M192 602L290 604L288 695L186 693ZM150 695L308 697L306 778L143 776ZM110 778L322 780L318 870L100 868ZM95 870L316 872L306 965L84 963ZM66 965L282 967L272 1070L52 1068ZM50 1070L272 1072L262 1185L36 1183Z"/>
+              <path pathLength="1" d="M1178 570H1278V665H1178ZM1172 658L1322 660L1324 750L1172 748ZM1168 740L1350 742L1356 833L1174 831ZM1180 833L1385 835L1394 928L1188 926ZM1195 928L1412 930L1424 1040L1205 1038ZM1220 1040L1445 1042L1452 1138L1228 1136Z"/>
+              <path pathLength="1" d="M205 712Q212 738 205 764M245 712Q238 738 245 764M1212 676Q1219 704 1212 734M1256 676Q1249 704 1256 734"/>
+            </g>
+            <g class="ss-trace__lights">
+              <circle cx="446" cy="548" r="22"/><circle cx="720" cy="372" r="22"/><circle cx="1030" cy="540" r="22"/><circle cx="735" cy="482" r="15"/>
+              <circle cx="22" cy="472" r="14"/><circle cx="150" cy="552" r="14"/><circle cx="1435" cy="440" r="14"/><circle cx="1306" cy="527" r="14"/><circle cx="1222" cy="580" r="14"/>
+            </g>
+              </svg>
+              <span class="ss-compare__tag ss-compare__tag--photo" aria-hidden="true">Foto</span>
+              <span class="ss-compare__tag ss-compare__tag--trait" aria-hidden="true">Zeichnung</span>
+              <span class="ss-compare__handle" aria-hidden="true"></span>
+              <span class="ss-pin" style="--x:49%;--y:13%" aria-hidden="true">1</span>
+              <span class="ss-pin" style="--x:29%;--y:77%" aria-hidden="true">2</span>
+              <span class="ss-pin" style="--x:12.5%;--y:57%" aria-hidden="true">3</span>
+              <span class="ss-pin" style="--x:49%;--y:46%" aria-hidden="true">4</span>
+              <span class="ss-pin" style="--x:77%;--y:63%" aria-hidden="true">5</span>
+              <span class="ss-pin" style="--x:69%;--y:35.5%" aria-hidden="true">6</span>
+            </div>
+            <!-- Affiché par js/pages/sound-system.js : sans JavaScript, la photo et le dessin restent partagés à moitié -->
+            <label class="ss-compare__control" hidden>
+              <span>Foto</span>
+              <input class="ss-compare__range" type="range" min="0" max="100" value="50" aria-label="Foto und Zeichnung vergleichen" />
+              <span>Zeichnung</span>
+            </label>
+            <figcaption>
+              <ol class="ss-legend">
+                <li>Die Kreistraverse, in der Mitte der Konstruktion aufgehängt.</li>
+                <li>Das DJ-Booth, mit Gurten an der Traverse aufgehängt.</li>
+                <li>Zwei Türme aus je sechs Modulen, einer auf jeder Seite.</li>
+                <li>Die Leinwand über dem Booth.</li>
+                <li>Die Alu-Traverse, die alles andere trägt.</li>
+                <li>Moving Heads und Scheinwerfer, an den Traversen befestigt.</li>
+              </ol>
+            </figcaption>
+          </figure>
+
+          <figure class="ss-stack" data-reveal>
+            <h3 class="ss-stack__title">Anatomie eines Boxenturms</h3>
+            <svg class="ss-stack__svg ss-draw" viewBox="0 0 400 660" aria-hidden="true" focusable="false">
+            <path class="ss-stack__body" pathLength="1" d="M116 54H224V146H116ZM87 146H253V228H87ZM59 228H281V320H59ZM58 320H282V414H58ZM53 414H287V518H53ZM50 518H290V630H50Z"/>
+            <path class="ss-stack__detail" pathLength="1" d="M128 66H212V114H128ZM132 74H208M132 82H208M132 90H208M132 98H208M132 106H208M97 156H243V218H97ZM150 158Q161 187 150 216M190 158Q179 187 190 216M71 240H269V308H71ZM70 332H270V402H70ZM66 428H274V504H66ZM63 532H277V616H63ZM98 470h36v8h-36zM206 470h36v8h-36zM96 580h36v8h-36zM208 580h36v8h-36z"/>
+            <path class="ss-stack__detail" pathLength="1" d="M150 30H190V54H150ZM158 30V22H182V30"/>
+            <g class="ss-stack__studs"><circle cx="61" cy="420" r="1.8"/><circle cx="61" cy="512" r="1.8"/><circle cx="77" cy="420" r="1.8"/><circle cx="77" cy="512" r="1.8"/><circle cx="93" cy="420" r="1.8"/><circle cx="93" cy="512" r="1.8"/><circle cx="109" cy="420" r="1.8"/><circle cx="109" cy="512" r="1.8"/><circle cx="125" cy="420" r="1.8"/><circle cx="125" cy="512" r="1.8"/><circle cx="141" cy="420" r="1.8"/><circle cx="141" cy="512" r="1.8"/><circle cx="157" cy="420" r="1.8"/><circle cx="157" cy="512" r="1.8"/><circle cx="173" cy="420" r="1.8"/><circle cx="173" cy="512" r="1.8"/><circle cx="189" cy="420" r="1.8"/><circle cx="189" cy="512" r="1.8"/><circle cx="205" cy="420" r="1.8"/><circle cx="205" cy="512" r="1.8"/><circle cx="221" cy="420" r="1.8"/><circle cx="221" cy="512" r="1.8"/><circle cx="237" cy="420" r="1.8"/><circle cx="237" cy="512" r="1.8"/><circle cx="253" cy="420" r="1.8"/><circle cx="253" cy="512" r="1.8"/><circle cx="269" cy="420" r="1.8"/><circle cx="269" cy="512" r="1.8"/><circle cx="285" cy="420" r="1.8"/><circle cx="285" cy="512" r="1.8"/><circle cx="59" cy="434" r="1.8"/><circle cx="281" cy="434" r="1.8"/><circle cx="59" cy="450" r="1.8"/><circle cx="281" cy="450" r="1.8"/><circle cx="59" cy="466" r="1.8"/><circle cx="281" cy="466" r="1.8"/><circle cx="59" cy="482" r="1.8"/><circle cx="281" cy="482" r="1.8"/><circle cx="59" cy="498" r="1.8"/><circle cx="281" cy="498" r="1.8"/><circle cx="58" cy="524" r="1.8"/><circle cx="58" cy="624" r="1.8"/><circle cx="74" cy="524" r="1.8"/><circle cx="74" cy="624" r="1.8"/><circle cx="90" cy="524" r="1.8"/><circle cx="90" cy="624" r="1.8"/><circle cx="106" cy="524" r="1.8"/><circle cx="106" cy="624" r="1.8"/><circle cx="122" cy="524" r="1.8"/><circle cx="122" cy="624" r="1.8"/><circle cx="138" cy="524" r="1.8"/><circle cx="138" cy="624" r="1.8"/><circle cx="154" cy="524" r="1.8"/><circle cx="154" cy="624" r="1.8"/><circle cx="170" cy="524" r="1.8"/><circle cx="170" cy="624" r="1.8"/><circle cx="186" cy="524" r="1.8"/><circle cx="186" cy="624" r="1.8"/><circle cx="202" cy="524" r="1.8"/><circle cx="202" cy="624" r="1.8"/><circle cx="218" cy="524" r="1.8"/><circle cx="218" cy="624" r="1.8"/><circle cx="234" cy="524" r="1.8"/><circle cx="234" cy="624" r="1.8"/><circle cx="250" cy="524" r="1.8"/><circle cx="250" cy="624" r="1.8"/><circle cx="266" cy="524" r="1.8"/><circle cx="266" cy="624" r="1.8"/><circle cx="282" cy="524" r="1.8"/><circle cx="282" cy="624" r="1.8"/><circle cx="56" cy="538" r="1.8"/><circle cx="284" cy="538" r="1.8"/><circle cx="56" cy="554" r="1.8"/><circle cx="284" cy="554" r="1.8"/><circle cx="56" cy="570" r="1.8"/><circle cx="284" cy="570" r="1.8"/><circle cx="56" cy="586" r="1.8"/><circle cx="284" cy="586" r="1.8"/><circle cx="56" cy="602" r="1.8"/><circle cx="284" cy="602" r="1.8"/></g>
+            <path class="ss-stack__floor" pathLength="1" d="M14 630H326M20 630l-10 12M44 630l-10 12M68 630l-10 12M92 630l-10 12M116 630l-10 12M140 630l-10 12M164 630l-10 12M188 630l-10 12M212 630l-10 12M236 630l-10 12M260 630l-10 12M284 630l-10 12M308 630l-10 12"/>
+            <g class="ss-stack__leaders"><path d="M230 100H352"/><circle cx="230" cy="100" r="3"/><text x="360" y="106">01</text><path d="M259 187H352"/><circle cx="259" cy="187" r="3"/><text x="360" y="193">02</text><path d="M287 274H352"/><circle cx="287" cy="274" r="3"/><text x="360" y="280">03</text><path d="M288 367H352"/><circle cx="288" cy="367" r="3"/><text x="360" y="373">04</text><path d="M293 466H352"/><circle cx="293" cy="466" r="3"/><text x="360" y="472">05</text><path d="M296 574H352"/><circle cx="296" cy="574" r="3"/><text x="360" y="580">06</text></g>
+            <path class="ss-stack__dim" pathLength="1" d="M24 54V630M18 54H30M18 630H30"/>
+            </svg>
+            <figcaption>
+              <ul class="ss-stack__legend">
+                <li><b>01</b> <span>Ein kleines Modul oben, mit einem Scheinwerfer darauf.</span></li>
+                <li><b>02</b> <span>Ein Modul mit senkrechten Lamellen.</span></li>
+                <li><b>03 · 04</b> <span>Zwei große Boxen übereinander.</span></li>
+                <li><b>05 · 06</b> <span>Zwei beschlagene Sockel, die breitesten, die alles tragen.</span></li>
+              </ul>
+              <p class="ss-note">Skizze nach Foto, nicht maßstabsgetreu: Der Aufbau kann sich von Abend zu Abend ändern.</p>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. L'équipe : planche contact en noir et blanc, sur fond clair (rupture volontaire avec le reste de la page) -->
+    <section class="ss-crew" aria-labelledby="ss-crew-title">
+      <div class="ss-wrap ss-crew__grid">
+        <div class="ss-crew__text" data-reveal>
+          <p class="ss-kicker"><span class="ss-kicker__num">03</span> <span>Das Team</span></p>
+          <h2 id="ss-crew-title" class="ss-h2">Ein Sound, ein Team<span class="ss-period">.</span></h2>
+          <p>Ein Soundsystem aufzubauen ist Teamarbeit: Freiwillige, die tragen, aufhängen, verkabeln und einstellen, Abend für Abend. Auch das ist der Verein.</p>
+          <ol class="ss-roles">
+            <li><h3>Organisieren</h3><p>Wir planen und organisieren Events und kümmern uns um Programm, Technik, Logistik und Empfang.</p></li>
+            <li><h3>Beschallen</h3><p>Mit unserem Equipment bauen wir Setups, die zu ganz unterschiedlichen Eventformaten passen.</p></li>
+            <li><h3>Begleiten</h3><p>Wir prüfen gerne Anfragen von Vereinen, Kollektiven oder Veranstaltern, die eine technische Lösung suchen.</p></li>
+            <li><h3>Weitergeben</h3><p>Der Verein lebt auch vom Wissensaustausch und vom gemeinsamen Lernen rund um Veranstaltungstechnik.</p></li>
+          </ol>
+        </div>
+        <div class="ss-sheet">
+          <figure class="ss-frame ss-frame--tall" data-reveal>
+            <img src="assets/img/sound-system/booth-contre-plongee.webp" srcset="assets/img/sound-system/booth-contre-plongee-700.webp 700w, assets/img/sound-system/booth-contre-plongee.webp 1100w" sizes="(max-width:640px) 92vw, (max-width:1023px) 46vw, 28vw" width="1100" height="1467" loading="lazy" decoding="async" alt="Das runde Booth von unten, mit Gurten an der Kreistraverse aufgehängt" />
+            <figcaption class="ss-fig"><span class="ss-fig__num" translate="no">Fig. 04</span> <span>Das Booth, mit Gurten an der Kreistraverse aufgehängt.</span></figcaption>
+          </figure>
+          <figure class="ss-frame ss-frame--drop" data-reveal>
+            <span class="ss-frame__inner">
+              <img src="assets/img/sound-system/booth-vue-haute.webp" srcset="assets/img/sound-system/booth-vue-haute-640.webp 640w, assets/img/sound-system/booth-vue-haute.webp 1000w" sizes="(max-width:640px) 92vw, (max-width:1023px) 46vw, 24vw" width="1000" height="1333" loading="lazy" decoding="async" alt="Blick von der Traverse hinunter auf das Booth, seine Decks und die leere Tanzfläche" />
+              <!-- Annotation au crayon gras : entoure les platines (position relevée sur la photo) -->
+              <svg class="ss-mark" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                <path d="M47 66C49 61 62 60 73 62C79 63 79 70 74 73C64 77 50 76 46 72C43 69 46 65 52 63"/>
+                <path d="M30 50C36 54 40 58 44 64M44 64L38 62M44 64L43 58"/>
+              </svg>
+              <span class="ss-mark__label" aria-hidden="true">Decks</span>
+            </span>
+            <figcaption class="ss-fig"><span class="ss-fig__num" translate="no">Fig. 05</span> <span>Von oben: Die Decks stehen, die Tanzfläche wartet.</span></figcaption>
+          </figure>
+          <figure class="ss-frame ss-frame--wide" data-reveal>
+            <img src="assets/img/sound-system/banniere.webp" srcset="assets/img/sound-system/banniere-800.webp 800w, assets/img/sound-system/banniere.webp 1400w" sizes="(max-width:1023px) 92vw, 52vw" width="1400" height="1050" loading="lazy" decoding="async" alt="Zwei Teammitglieder hängen das große Tekno-Never-Dies-Sound-System-Banner auf" />
+            <figcaption class="ss-fig"><span class="ss-fig__num" translate="no">Fig. 06</span> <span>Auch das Banner aufzuhängen gehört zum Aufbau.</span></figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. La musique : les DJs les plus présents sur nos line-ups (js/data/events.js, via js/components/artists.js) -->
+    <section class="ss-artists" aria-labelledby="ss-artists-title">
+      <img class="decor decor-l decor--float ss-artists__decor" src="assets/img/decor/star-pair.webp" alt="" aria-hidden="true" />
+      <div class="ss-wrap ss-artists__grid">
+        <div class="ss-artists__media">
+          <figure class="ss-photo ss-photo--booth" data-reveal>
+            <img src="assets/img/sound-system/booth-lumiere.webp" srcset="assets/img/sound-system/booth-lumiere-700.webp 700w, assets/img/sound-system/booth-lumiere.webp 1100w" sizes="(max-width:900px) 100vw, 40vw" width="1100" height="1467" loading="lazy" decoding="async" alt="Ein DJ spielt im hängenden Booth unter violettem Licht" />
+            <figcaption class="ss-fig"><span class="ss-fig__num" translate="no">Fig. 07</span> <span>Das hängende Booth im vollen Licht.</span></figcaption>
+          </figure>
+          <figure class="ss-polaroid" data-reveal>
+            <img src="assets/img/sound-system/platines.webp" width="800" height="600" loading="lazy" decoding="async" alt="Ein DJ hinter Pioneer-DJ-Decks, ein Glas in der Hand" />
+            <figcaption>Hinter den Decks.</figcaption>
+          </figure>
+        </div>
+        <div class="ss-artists__text">
+          <div data-reveal>
+            <p class="ss-kicker"><span class="ss-kicker__num">04</span> <span>Die Musik</span></p>
+            <h2 id="ss-artists-title" class="ss-h2">Am Ende der Kabel: DJs<span class="ss-period">.</span></h2>
+            <p>Das Material macht allein gar nichts: Erst die DJs geben ihm eine Stimme. Hier sind die, die wir auf unseren Partys am häufigsten gehört haben.</p>
+          </div>
+          <!-- Rempli par js/pages/sound-system.js ; sans JavaScript, seul le lien vers la page Artistes reste -->
+          <ol class="ss-roster" id="ss-roster" role="list"></ol>
+          <a class="ss-more" href="de/artistes.html"><span>Alle Artists</span> <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18M14 5l7 7-7 7"/></svg></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Conclusion : le son en situation, puis où nous retrouver -->
+    <section class="ss-finale" aria-labelledby="ss-finale-title">
+      <figure class="ss-finale__media">
+        <img src="assets/img/sound-system/b2b.webp" srcset="assets/img/sound-system/b2b-700.webp 700w, assets/img/sound-system/b2b.webp 1200w" sizes="100vw" width="1200" height="1600" loading="lazy" decoding="async" alt="Zwei DJs spielen zusammen auf der Bühne, neben dem TND-Logo und einem Graffiti" />
+        <figcaption class="ss-fig"><span class="ss-fig__num" translate="no">Fig. 08</span> <span>Mitten im Set, unter dem TND-Logo.</span></figcaption>
+      </figure>
+      <div class="ss-wrap ss-finale__inner">
+        <p class="ss-kicker" data-reveal><span class="ss-kicker__num">05</span> <span>Auf dem Dancefloor</span></p>
+        <h2 id="ss-finale-title" class="ss-finale__title" data-reveal>
+          <span>Der Sound</span>
+          <span class="ss-finale__grad">erlebt man live.</span>
+        </h2>
+        <p class="ss-finale__lead" data-reveal>Am besten lernst du unser Soundsystem kennen, wenn du es dir anhörst.</p>
+        <!-- Prochaine soirée à venir (js/pages/sound-system.js) : masquée s'il n'y en a pas -->
+        <p class="ss-next" id="ss-next" hidden></p>
+        <div class="ss-finale__actions" data-reveal>
+          <a class="btn btn-solid" href="de/evenements.html">Zu den Events</a>
+          <a class="btn btn-hero-line" href="de/galerie.html">Die Galerie</a>
+        </div>
+        <div class="ss-project" data-reveal>
+          <h3>Ein Projekt?</h3>
+          <p>Beschreib uns dein Event, Datum, Ort und deinen Bedarf.</p>
+          <a class="btn btn-cyan" href="de/contact.html?type=evenement">Über mein Projekt sprechen</a>
+        </div>
+      </div>
     </section>
   </main>
 
@@ -176,5 +439,6 @@
   </div>
 </footer>
 <!-- /partial:footer -->
+  <script type="module" src="js/pages/sound-system.js"></script>
 </body>
 </html>
