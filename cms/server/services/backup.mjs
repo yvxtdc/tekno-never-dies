@@ -111,13 +111,13 @@ export function verifyBackupRestore(config, db, name = null) {
   return result;
 }
 
-/** Fichier d'état écrit par cms/deploy/backup-media.sh (sauvegarde hors serveur). */
+/** Fichier d'état écrit par cms/deploy/backup-media.sh (sauvegarde externe : support monté ou autre machine). */
 export const externalStatusFile = (config) => path.join(config.dataDir, "status", "backup-externe.json");
 
 /**
- * Dernier rapport de la sauvegarde hors serveur, ou null (script jamais exécuté, ou version sans rapport).
- * commandOk : envoi terminé sans erreur ; verified : contenu distant vérifié identique (true), différences
- * ou machine injoignable à la vérification (false), non vérifié (null : vérification désactivée, ou rapport
+ * Dernier rapport de la sauvegarde externe, ou null (script jamais exécuté, ou version sans rapport).
+ * commandOk : envoi terminé sans erreur ; verified : copie vérifiée identique (true), différences
+ * ou destination injoignable à la vérification (false), non vérifié (null : vérification désactivée, ou rapport
  * d'une version du script sans vérification). Jamais de chemin ni d'identifiant.
  */
 export function externalBackupStatus(config) {

@@ -59,7 +59,10 @@ sur une doc qui le contredit.
   les confirmations manuelles en base (`event_tasks`). Santé (`services/health.mjs`) et statistiques
   (`services/stats.mjs`, GoatCounter) : calculs côté serveur, appels externes via `runtime.fetch` (simulé dans
   les tests, jamais d'appel réel), jetons (`CMS_GITHUB_TOKEN`, `CMS_GOATCOUNTER_TOKEN`) jamais renvoyés au navigateur.
-  Une donnée indisponible n'est jamais affichée comme saine ni comme zéro. Un clic lié à une soirée se compte avec
+  Une donnée indisponible n'est jamais affichée comme saine ni comme zéro. Test de restauration de la sauvegarde
+  externe : `cms/bin/restore-test.mjs` + `services/restore-test.mjs` (dans le conteneur ; n'ouvre jamais la base
+  active, n'écrit que son dossier temporaire et `status/restore-test.json`, lu par `health.mjs`), lancé chaque
+  semaine par les fichiers de l'hôte `cms/deploy/proxmox/` (installés à la main : `exploitation.md` § 4). Un clic lié à une soirée se compte avec
   `trackEvent(catégorie, ev)` (`js/pages/helpers.js`, nom « Catégorie · <adresse> ») : jamais par le titre. Une
   adresse (actuelle ou ancienne) n'appartient qu'à une soirée (déclencheurs de la migration 006) ; `event_names`
   date chaque adresse et titre portés (statistiques) : ne pas contourner ces déclencheurs.
@@ -202,6 +205,10 @@ Agissent sur une base du CMS (jamais sans demande explicite, après avoir vérif
 - `npm run cms` (serveur ; migrations au démarrage, sauvegardes automatiques, planificateur qui applique les
   programmations arrivées à échéance et peut mettre en ligne) et `npm run cms:admin -- <commande>` (`migrate`, `import`, `create-user`,
   `reset-password`, `backup`, `restore`, `verify-backup`, et même `status`, `verify`, `list-users`).
+
+`node cms/bin/restore-test.mjs` lit le support de sauvegarde externe et écrit le rapport dans `CMS_DATA_DIR/status/` :
+seulement avec des variables explicites et des dossiers temporaires en développement (jamais contre la production
+sans demande).
 
 Peuvent publier : `npm run cms:admin -- publish` et la mise en ligne depuis l'interface. Selon
 `CMS_PUBLISH_MODE`, elles écrivent les fichiers, commitent, ou commitent **et poussent sur `main`** (production).

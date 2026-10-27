@@ -5,13 +5,15 @@
  *
  * Calcul rapide, sans appel externe ni opération lourde : l'intégrité de la base est contrôlée par le
  * planificateur (toutes les 6 h) ou à la demande, le déploiement par le suivi des déploiements.
- * Visibilité : les éditeurs voient le planificateur et la mise en ligne ; serveur, base et sauvegardes
- * sont réservés aux administrateurs. Aucun chemin, identifiant ou secret n'est renvoyé.
+ * Visibilité : les éditeurs voient le planificateur et la mise en ligne ; serveur, base, sauvegardes et
+ * test de restauration de la sauvegarde externe sont réservés aux administrateurs. Aucun chemin,
+ * identifiant ou secret n'est renvoyé.
  */
 import fs from "node:fs";
 import { runtime } from "../runtime.mjs";
 import { listMigrations } from "../db/migrate.mjs";
 import { listBackups, externalBackupStatus } from "./backup.mjs";
+import { readRestoreReport } from "./restore-test.mjs";
 import { deploymentView } from "../publish/deploy-tracker.mjs";
 import { CHANGE_STATUSES } from "./schedule.mjs";
 import { fromJson } from "../db/index.mjs";
@@ -140,34 +142,87 @@ function backupSection(db, config) {
   if (every === 0) items.push({ id: "auto", label: "Sauvegardes automatiques", level: "warning", value: "Désactivées", message: "CMS_BACKUP_EVERY_HOURS=0." });
   const failure = runtime.scheduler.lastBackupError;
   if (failure) items.push({ id: "auto-error", label: "Dernière sauvegarde automatique", level: "error", value: `Échec ${ago(failure.at)}`, message: failure.message });
-  // Deux informations distinctes : l'envoi (commande terminée sans erreur) et la vérification du
-  // contenu distant (comparaison par somme de contrôle faite par le script). Seule la seconde, récente,
+  // Copie externe (cms/deploy/backup-media.sh : disque monté, actuellement le G-RAID de l'hôte, ou machine
+  // distante). Deux informations distinctes : l'envoi (commande terminée sans erreur) et la vérification
+  // du contenu copié (comparaison par somme de contrôle faite par le script). Seule la seconde, récente,
   // est « normale ».
   const ext = externalBackupStatus(config);
   const age = ext?.finishedAt ? hours(ext.finishedAt) : Infinity;
   const stale = age > config.externalBackupMaxHours;
   const when = ext?.finishedAt ? ago(ext.finishedAt) : "à une date inconnue";
   if (!ext) {
-    items.push({ id: "external", label: "Sauvegarde hors serveur : envoi", level: "unknown", value: "Non configurée ou jamais exécutée", message: "Aucun rapport de cms/deploy/backup-media.sh : sans copie sur une autre machine, une panne du serveur ferait perdre la base et les images (docs/cms/exploitation.md, § 4)." });
-    items.push({ id: "external-verify", label: "Sauvegarde hors serveur : contenu distant", level: "unknown", value: "Non vérifié", message: "" });
+    items.push({ id: "external", label: "Sauvegarde externe : envoi", level: "unknown", value: "Non configurée ou jamais exécutée", message: "Aucun rapport de cms/deploy/backup-media.sh : sans copie sur un autre support, une panne du disque du CMS ferait perdre la base et les images (docs/cms/exploitation.md, § 4)." });
+    items.push({ id: "external-verify", label: "Sauvegarde externe : contenu de la copie", level: "unknown", value: "Non vérifié", message: "" });
   } else {
     items.push(ext.commandOk
-      ? { id: "external", label: "Sauvegarde hors serveur : envoi", level: stale ? (age > config.externalBackupMaxHours * 2 ? "error" : "warning") : "ok", value: `Terminé ${when}`, message: stale ? `Pas d'envoi réussi depuis plus de ${config.externalBackupMaxHours} h : la tâche planifiée tourne-t-elle ?` : `Commande d'envoi terminée sans erreur${ext.latestBackup ? ` (dernière sauvegarde de la base : ${ext.latestBackup})` : ""}.` }
-      : { id: "external", label: "Sauvegarde hors serveur : envoi", level: "error", value: `Échec ${when}`, message: `${ext.step ? `Étape « ${ext.step} » : ` : ""}${ext.message}` });
-    if (!ext.commandOk) items.push({ id: "external-verify", label: "Sauvegarde hors serveur : contenu distant", level: "unknown", value: "Non vérifié", message: "L'envoi a échoué : rien à vérifier." });
+      ? { id: "external", label: "Sauvegarde externe : envoi", level: stale ? (age > config.externalBackupMaxHours * 2 ? "error" : "warning") : "ok", value: `Terminé ${when}`, message: stale ? `Pas d'envoi réussi depuis plus de ${config.externalBackupMaxHours} h : la tâche planifiée tourne-t-elle ?` : `Commande d'envoi terminée sans erreur${ext.latestBackup ? ` (dernière sauvegarde de la base : ${ext.latestBackup})` : ""}.` }
+      : { id: "external", label: "Sauvegarde externe : envoi", level: "error", value: `Échec ${when}`, message: `${ext.step ? `Étape « ${ext.step} » : ` : ""}${ext.message}` });
+    if (!ext.commandOk) items.push({ id: "external-verify", label: "Sauvegarde externe : contenu de la copie", level: "unknown", value: "Non vérifié", message: "L'envoi a échoué : rien à vérifier." });
     // Rapport incohérent (vérifié mais avec des différences) ou vérification sans aucun fichier : jamais vert.
-    else if (ext.verified === true && ext.differences) items.push({ id: "external-verify", label: "Sauvegarde hors serveur : contenu distant", level: "error", value: `${ext.differences} différence(s)`, message: "Rapport incohérent (vérifié, mais avec des différences) : relancez la sauvegarde." });
-    else if (ext.verified === true && !ext.verifiedFiles) items.push({ id: "external-verify", label: "Sauvegarde hors serveur : contenu distant", level: "warning", value: "Aucun fichier comparé", message: "La vérification n'a comparé aucun fichier : vérifiez que la sauvegarde de la base et les images sont bien dans le dossier des données." });
-    else if (ext.verified === true) items.push({ id: "external-verify", label: "Sauvegarde hors serveur : contenu distant", level: stale ? "warning" : "ok", value: `Vérifié ${when}`, message: `${ext.verifiedFiles ?? "?"} fichier(s) comparé(s) par somme de contrôle avec la machine de sauvegarde : identiques.${stale ? " Vérification ancienne." : ""}` });
-    else if (ext.verified === false) items.push({ id: "external-verify", label: "Sauvegarde hors serveur : contenu distant", level: "error", value: ext.differences ? `${ext.differences} différence(s)` : "Vérification impossible", message: ext.differences ? "Des fichiers sont absents ou différents sur la machine de sauvegarde : relancez la sauvegarde et contrôlez l'espace disque distant." : `La machine de sauvegarde n'a pas répondu lors de la vérification. ${ext.message}` });
-    else items.push({ id: "external-verify", label: "Sauvegarde hors serveur : contenu distant", level: "warning", value: "Non vérifié", message: "Le script a terminé l'envoi sans vérifier la copie distante (vérification désactivée, ou ancienne version du script) : une copie incomplète passerait inaperçue." });
+    else if (ext.verified === true && ext.differences) items.push({ id: "external-verify", label: "Sauvegarde externe : contenu de la copie", level: "error", value: `${ext.differences} différence(s)`, message: "Rapport incohérent (vérifié, mais avec des différences) : relancez la sauvegarde." });
+    else if (ext.verified === true && !ext.verifiedFiles) items.push({ id: "external-verify", label: "Sauvegarde externe : contenu de la copie", level: "warning", value: "Aucun fichier comparé", message: "La vérification n'a comparé aucun fichier : vérifiez que la sauvegarde de la base et les images sont bien dans le dossier des données." });
+    else if (ext.verified === true) items.push({ id: "external-verify", label: "Sauvegarde externe : contenu de la copie", level: stale ? "warning" : "ok", value: `Vérifié ${when}`, message: `${ext.verifiedFiles ?? "?"} fichier(s) comparé(s) par somme de contrôle avec la copie externe : identiques.${stale ? " Vérification ancienne." : ""}` });
+    else if (ext.verified === false) items.push({ id: "external-verify", label: "Sauvegarde externe : contenu de la copie", level: "error", value: ext.differences ? `${ext.differences} différence(s)` : "Vérification impossible", message: ext.differences ? "Des fichiers sont absents ou différents dans la copie externe : relancez la sauvegarde et contrôlez l'espace libre du support." : `Le support de sauvegarde (disque monté ou machine distante) n'a pas répondu lors de la vérification. ${ext.message}` });
+    else items.push({ id: "external-verify", label: "Sauvegarde externe : contenu de la copie", level: "warning", value: "Non vérifié", message: "Le script a terminé l'envoi sans vérifier la copie externe (vérification désactivée, ou ancienne version du script) : une copie incomplète passerait inaperçue." });
   }
   const originals = `${config.mediaDir}/originals`;
   items.push({ id: "originals", label: "Originaux des images", level: fs.existsSync(originals) ? "ok" : "unknown", value: fs.existsSync(originals) ? `${fs.readdirSync(originals).length} fichier(s)` : "Dossier absent", message: fs.existsSync(originals) ? "" : "Aucune image importée, ou dossier introuvable." });
   const test = fromJson(db.get("SELECT value FROM settings WHERE key = 'backup.restoreTest'")?.value, null);
-  if (!test) items.push({ id: "restore-test", label: "Test de restauration", level: "unknown", value: "Jamais effectué", message: "« Tester la restauration » contrôle la dernière sauvegarde sur une copie, sans toucher à la base." });
-  else items.push({ id: "restore-test", label: "Test de restauration", level: !test.ok ? "error" : hours(test.at) > 24 * 90 ? "warning" : "ok", value: `${test.ok ? "Réussi" : "Échec"} ${ago(test.at)}`, message: `${test.backup || ""} ${test.detail}`.trim() });
+  if (!test) items.push({ id: "restore-test", label: "Test de restauration (copie locale)", level: "unknown", value: "Jamais effectué", message: "« Tester la restauration » contrôle la dernière sauvegarde locale sur une copie, sans toucher à la base." });
+  else items.push({ id: "restore-test", label: "Test de restauration (copie locale)", level: !test.ok ? "error" : hours(test.at) > 24 * 90 ? "warning" : "ok", value: `${test.ok ? "Réussi" : "Échec"} ${ago(test.at)}`, message: `${test.backup || ""} ${test.detail}`.trim() });
   return { id: "backups", title: "Sauvegardes", items };
+}
+
+const duration = (ms) => (ms === null ? "durée inconnue" : ms < 60e3 ? `${Math.max(1, Math.round(ms / 1000))} s` : `${Math.floor(ms / 60e3)} min ${Math.round((ms % 60e3) / 1000)} s`);
+
+/**
+ * Test de restauration de la sauvegarde externe : lecture du dernier rapport de cms/bin/restore-test.mjs
+ * (aucun test lancé ici). Absent, illisible ou incohérent : inconnu ; réussi mais ancien : avertissement,
+ * puis erreur au-delà du double de CMS_RESTORE_TEST_MAX_HOURS.
+ */
+function restoreSection(config) {
+  const items = [];
+  const report = readRestoreReport(config.dataDir);
+  if (!report) {
+    items.push({ id: "restore-status", label: "Dernier test", level: "unknown", value: "Jamais exécuté", message: "Aucun rapport de cms/bin/restore-test.mjs : le test hebdomadaire (minuteur sur l'hôte Proxmox) n'a pas encore tourné, ou n'a pas pu écrire son rapport. Voir docs/cms/exploitation.md, § 4." });
+    return { id: "restore", title: "Test de restauration de la sauvegarde externe", items };
+  }
+  if (report.invalid) {
+    items.push({ id: "restore-status", label: "Dernier test", level: "unknown", value: "Résultat inconnu", message: `${report.reason} Relancez le test (docs/cms/exploitation.md, § 4).` });
+    return { id: "restore", title: "Test de restauration de la sauvegarde externe", items };
+  }
+  const max = config.restoreTestMaxHours;
+  const age = hours(report.finishedAt);
+  const checkLevel = (...ids) => worst(ids.map((id) => {
+    const c = report.checks.find((x) => x.id === id);
+    return !c ? "unknown" : c.status === "ok" ? "ok" : c.status === "failed" ? "error" : "unknown";
+  }));
+  const messages = (...ids) => report.checks.filter((c) => ids.includes(c.id) && c.message).map((c) => c.message).join("\n");
+  if (report.ok) {
+    const level = age > max * 2 ? "error" : age > max ? "warning" : "ok";
+    items.push({ id: "restore-status", label: "Dernier test", level, value: `Réussi ${ago(report.finishedAt)}`, message: level === "ok" ? "Tous les contrôles obligatoires ont été exécutés et ont réussi." : `Résultat ancien (plus de ${Math.round(max / 24)} jours) : le minuteur hebdomadaire tourne-t-il ? Voir le journal de tnd-cms-restore-test sur l'hôte.` });
+  } else {
+    items.push({ id: "restore-status", label: "Dernier test", level: "error", value: `Échec ${ago(report.finishedAt)}`, message: report.errors.map((e) => `${report.checks.find((c) => c.id === e.check)?.label || "Test"} : ${e.message}`).join("\n") || "Au moins un contrôle obligatoire n'a pas réussi." });
+  }
+  items.push({ id: "restore-date", label: "Date et durée", level: items[0].level === "ok" ? "ok" : "info", value: report.finishedAt, dateValue: true, message: `Durée : ${duration(report.durationMs)}.` });
+  if (report.checks.some((c) => c.id === "host")) return { id: "restore", title: "Test de restauration de la sauvegarde externe", items: [...items, lastSuccess(report)] };
+  items.push({ id: "restore-backup", label: "Sauvegarde externe testée", level: checkLevel("source", "backup", "space", "copy"), value: report.backup?.name || "Aucune", message: messages("source", "backup", "space", "copy") });
+  const sq = report.sqlite;
+  items.push({ id: "restore-sqlite", label: "Base SQLite restaurée", level: checkLevel("sqlite", "foreign-keys", "structure"), value: sq.integrity === "ok" ? `Intègre${sq.tables !== null ? ` · ${sq.tables} tables` : ""}` : sq.integrity === "failed" ? "Intégrité en échec" : "Non contrôlée", message: messages("sqlite", "foreign-keys", "structure") });
+  items.push({ id: "restore-consistency", label: "Contrôles de cohérence", level: checkLevel("consistency"), value: report.consistency.ok === true ? "Réussis" : report.consistency.ok === false ? "En échec" : "Non exécutés", message: messages("consistency") });
+  const m = report.media;
+  const n = (v) => (v === null ? "?" : v);
+  items.push({ id: "restore-media", label: "Médias du dépôt", level: checkLevel("media-references", "repo-media"), value: `${n(m.repo.verified)}/${n(m.repo.files)} fichier(s) présent(s)`, message: [messages("media-references", "repo-media"), m.missingTotal ? `${m.missingTotal} référence(s) cassée(s) ou fichier(s) absent(s) au total.` : ""].filter(Boolean).join("\n") });
+  items.push({ id: "restore-originals", label: "Originaux téléversés", level: checkLevel("upload-originals"), value: `${n(m.uploads.verified)}/${n(m.uploads.expected)} récupéré(s) et vérifié(s)`, message: messages("upload-originals") });
+  if (report.warnings.length) items.push({ id: "restore-warnings", label: "Avertissements", level: "warning", value: `${report.warnings.length} point(s)`, message: report.warnings.join("\n") });
+  items.push(lastSuccess(report));
+  return { id: "restore", title: "Test de restauration de la sauvegarde externe", items };
+}
+
+function lastSuccess(report) {
+  return report.lastSuccessAt
+    ? { id: "restore-last-success", label: "Dernier test réussi", level: report.ok ? "ok" : "info", value: report.lastSuccessAt, dateValue: true, message: report.lastSuccessBackup ? `Sauvegarde ${report.lastSuccessBackup}.` : "" }
+    : { id: "restore-last-success", label: "Dernier test réussi", level: "unknown", value: "Aucun", message: "Aucun test réussi enregistré." };
 }
 
 /** Rapport de santé ; full : sections réservées aux administrateurs incluses. */
@@ -176,7 +231,7 @@ export function healthReport(db, config, { full = false, publisher = null, siteU
     ...(full ? [serverSection(db, config)] : []),
     schedulerSection(db, config),
     publicationSection(db, config, { publisher, siteUrl }),
-    ...(full ? [backupSection(db, config)] : [])
+    ...(full ? [backupSection(db, config), restoreSection(config)] : [])
   ].map((s) => ({ ...s, level: worst(s.items.map((i) => i.level)) }));
   return { generatedAt: new Date().toISOString(), level: worst(sections.map((s) => s.level)), sections, full };
 }

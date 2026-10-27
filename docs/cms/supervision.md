@@ -84,27 +84,30 @@ cause et, si besoin, la marche à suivre, avec un lien vers le détail.
 | Serveur et base | démarrage du processus, base disponible, intégrité (`PRAGMA quick_check`, lecture seule, toutes les 6 h ou « Contrôler maintenant »), migrations en attente, erreurs des dernières 24 h (messages sans pile ni chemin), espace disque, dossiers de données | administrateurs |
 | Programmations | planificateur actif et dernière vérification (erreur s'il ne tourne plus depuis 3 min), prochaine échéance, programmations en retard, en conflit, bloquées ou en échec, nouvelles tentatives, appliquées mais pas mises en ligne | tous |
 | Mise en ligne et déploiement | mise en ligne trop longue, dernier résultat et étape d'un échec, dernière validation (erreurs et points « à compléter »), état du déploiement, fichiers modifiés hors du CMS | tous |
-| Sauvegardes | âge de la dernière sauvegarde locale (avertissement au-delà de 1,5 fois la fréquence, erreur au-delà de 3 fois), échec de la sauvegarde automatique, sauvegarde hors serveur, originaux des images, test de restauration | administrateurs |
+| Sauvegardes | âge de la dernière sauvegarde locale (avertissement au-delà de 1,5 fois la fréquence, erreur au-delà de 3 fois), échec de la sauvegarde automatique, sauvegarde externe, originaux des images, test de restauration de la copie locale | administrateurs |
+| Test de restauration de la sauvegarde externe | dernier rapport de `cms/bin/restore-test.mjs` : statut, date et durée, sauvegarde testée, SQLite, cohérence, médias, originaux, avertissements, dernier test réussi | administrateurs |
 
 Le calcul ne fait ni appel externe ni opération lourde : il ne bloque pas l'administration. Rien n'est
 réparé, migré ni supprimé depuis ce tableau.
 
-### Sauvegarde hors serveur
+### Sauvegarde externe
 
-Une sauvegarde locale (même disque) et une sauvegarde hors serveur ne protègent pas des mêmes risques.
-`cms/deploy/backup-media.sh` fait deux choses distinctes :
-1. **l'envoi** : `rsync` de `backups/` et `media/originals/` vers la machine de sauvegarde ;
-2. **la vérification du résultat distant**, juste après :
-   `rsync -a --checksum --dry-run --itemize-changes` compare chaque fichier local à sa copie distante par
-   somme de contrôle, sans rien transférer. Un fichier absent ou différent sur la machine de sauvegarde
-   est compté comme une différence. Les fichiers présents seulement sur la machine distante (anciennes
-   sauvegardes, la copie n'efface rien) ne comptent pas.
+Une sauvegarde locale (même disque) et une sauvegarde externe ne protègent pas des mêmes risques. La
+destination est un support monté (installation actuelle : disque G-RAID de l'hôte Proxmox, **même
+serveur, donc pas une sauvegarde hors site**) ou une autre machine (rsync par SSH) : voir
+[exploitation.md](exploitation.md) § 4. `cms/deploy/backup-media.sh` fait deux choses distinctes :
+1. **l'envoi** : `rsync` de `backups/` et `media/originals/` vers la destination ;
+2. **la vérification de la copie**, juste après :
+   `rsync -a --checksum --dry-run --itemize-changes` compare chaque fichier local à sa copie par somme
+   de contrôle, sans rien transférer. Un fichier absent ou différent dans la destination est compté
+   comme une différence. Les fichiers présents seulement dans la destination (anciennes sauvegardes,
+   la copie n'efface rien) ne comptent pas.
 
 Il écrit un compte rendu dans `CMS_DATA_DIR/status/backup-externe.json`, sans la destination ni aucun
 identifiant. Il contient :
 - la date, la réussite et l'étape en échec ;
 - `commandOk` : envoi terminé sans erreur ;
-- `verified` : `true` (copie identique), `false` (différences, ou machine injoignable lors de la
+- `verified` : `true` (copie identique), `false` (différences, ou destination injoignable lors de la
   vérification) ou `null` (non vérifié) ;
 - le nombre de fichiers comparés et de différences ;
 - le **nom** de la dernière sauvegarde de la base.
@@ -115,22 +118,20 @@ Le tableau de santé affiche deux lignes :
 
 | Ligne | Normal | Avertissement / erreur / inconnu |
 |---|---|---|
-| Sauvegarde hors serveur : envoi | « Terminé il y a … » | pas de compte rendu (inconnu, « Non configurée ou jamais exécutée ») ; échec (erreur, avec l'étape) ; plus ancien que `CMS_EXTERNAL_BACKUP_MAX_HOURS` (36 h par défaut ; avertissement, erreur au-delà du double) |
-| Sauvegarde hors serveur : contenu distant | « Vérifié il y a … » (N fichiers identiques) | différences ou machine injoignable (erreur) ; compte rendu incohérent, « vérifié » avec des différences (erreur) ; aucun fichier comparé (avertissement) ; vérification désactivée, ou compte rendu d'une version du script sans vérification (avertissement « Non vérifié ») ; vérification ancienne (avertissement) |
+| Sauvegarde externe : envoi | « Terminé il y a … » | pas de compte rendu (inconnu, « Non configurée ou jamais exécutée ») ; échec (erreur, avec l'étape) ; plus ancien que `CMS_EXTERNAL_BACKUP_MAX_HOURS` (36 h par défaut ; avertissement, erreur au-delà du double) |
+| Sauvegarde externe : contenu de la copie | « Vérifié il y a … » (N fichiers identiques) | différences ou destination injoignable (erreur) ; compte rendu incohérent, « vérifié » avec des différences (erreur) ; aucun fichier comparé (avertissement) ; vérification désactivée, ou compte rendu d'une version du script sans vérification (avertissement « Non vérifié ») ; vérification ancienne (avertissement) |
 
 Ce que « vérifié » garantit, et ce qu'il ne garantit pas :
-- au moment de la sauvegarde, chaque fichier sauvegardé existait sur la machine distante avec un
-  contenu identique, constaté par rsync lui-même ;
-- le CMS n'a aucun accès à la machine distante : il lit le compte rendu du script, il ne la contacte
-  pas ;
-- une perte survenue ensuite sur la machine distante n'est pas détectée avant la vérification
-  suivante ;
-- seul un essai de restauration à partir de la copie distante prouve qu'elle est utilisable (voir
-  [exploitation.md](exploitation.md) § 5). « Tester la restauration » contrôle la copie **locale**.
+- au moment de la sauvegarde, chaque fichier sauvegardé existait dans la destination avec un contenu
+  identique, constaté par rsync lui-même ;
+- le CMS n'accède pas à la destination : il lit le compte rendu du script ;
+- une perte survenue ensuite dans la destination n'est pas détectée avant la vérification suivante ;
+- seul un essai de restauration à partir de la copie externe prouve qu'elle est utilisable : c'est le
+  rôle du test hebdomadaire ci-dessous. « Tester la restauration » contrôle la copie **locale**.
 
 Le script lit maintenant `CMS_DATA_DIR` dans l'environnement avant `cms/.env`, comme le CMS.
 
-### Test de restauration
+### Test de restauration de la copie locale
 
 **Tester la restauration** (administrateurs) ou `npm run cms:admin -- verify-backup` procède ainsi :
 1. copie la dernière sauvegarde dans un dossier temporaire ;
@@ -139,6 +140,30 @@ Le script lit maintenant `CMS_DATA_DIR` dans l'environnement avant `cms/.env`, c
 
 La base en service et les sauvegardes ne sont jamais modifiées. Ce test ne remplace pas un exercice
 de restauration complet du serveur (voir [exploitation.md](exploitation.md) § 5).
+
+### Test de restauration de la sauvegarde externe
+
+Test hebdomadaire de la copie du disque de sauvegarde externe (G-RAID), lancé par un minuteur de l'hôte
+Proxmox : fonctionnement, contrôles, rapport, installation et diagnostic dans
+[exploitation.md](exploitation.md) § 4. Le CMS ne lance jamais ce test : il lit le dernier rapport
+(`CMS_DATA_DIR/status/restore-test.json`, `readRestoreReport` de `services/restore-test.mjs`) et
+l'affiche dans sa propre section.
+
+| Ligne | Normal | Avertissement / erreur / inconnu |
+|---|---|---|
+| Dernier test | « Réussi il y a … », tous les contrôles obligatoires exécutés et réussis | jamais exécuté, rapport illisible, d'un autre format ou incohérent (inconnu) ; échec (erreur, avec chaque contrôle en échec et son message) ; réussite plus ancienne que `CMS_RESTORE_TEST_MAX_HOURS` (192 h = 8 jours par défaut ; avertissement, erreur au-delà du double) |
+| Date et durée | date du dernier test, durée | — |
+| Sauvegarde externe testée | nom du fichier (support, sélection, espace, copie réussis) | contrôle en échec (erreur) ou non exécuté (inconnu) |
+| Base SQLite restaurée | « Intègre · N tables » (intégrité, clés étrangères, structure) | intégrité en échec, violations, structure incomplète |
+| Contrôles de cohérence | « Réussis » | en échec, non exécutés |
+| Médias du dépôt | fichiers présents / attendus, références valides | référence cassée, fichier absent ou chemin refusé |
+| Originaux téléversés | récupérés et vérifiés / attendus | original absent du support ou différent de son empreinte |
+| Avertissements | (absente) | sauvegarde ancienne, image du dépôt modifiée depuis son enregistrement, pas d'administrateur actif… |
+| Dernier test réussi | date et sauvegarde (conservées après un échec) | « Aucun » (inconnu) |
+
+Un échec constaté sur l'hôte avant le test (disque absent, UUID ou marqueur faux, montage incorrect)
+apparaît comme un échec, avec seulement les lignes « Dernier test », « Date et durée » et « Dernier test
+réussi » : aucun contrôle n'est présenté comme fait.
 
 ## 3. Vérifier avant publication (fiche d'une soirée)
 

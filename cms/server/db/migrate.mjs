@@ -8,6 +8,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), "migrations");
+/** Dossier des migrations (lecture seule : test de restauration, qui en déduit le schéma attendu). */
+export const MIGRATIONS_DIR = DIR;
 
 export function listMigrations() {
   return fs.readdirSync(DIR).filter((f) => /^\d{3}_[\w-]+\.sql$/.test(f)).sort();

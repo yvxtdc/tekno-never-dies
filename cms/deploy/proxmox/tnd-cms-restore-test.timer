@@ -1,0 +1,15 @@
+# Minuteur du test de restauration — sur l'HÔTE Proxmox, indépendant de tnd-cms-backup.timer (qui n'est
+# ni modifié ni nécessaire ici). Chaque dimanche à 06 h 30, heure locale de l'hôte, après la sauvegarde
+# quotidienne de 06 h 00. Persistent=true : une exécution manquée (hôte éteint) est rattrapée au
+# démarrage suivant. Activation : systemctl enable --now tnd-cms-restore-test.timer
+[Unit]
+Description=CMS Tekno Never Dies : test de restauration hebdomadaire (dimanche 06:30)
+
+[Timer]
+OnCalendar=Sun *-*-* 06:30:00
+Persistent=true
+AccuracySec=1min
+Unit=tnd-cms-restore-test.service
+
+[Install]
+WantedBy=timers.target

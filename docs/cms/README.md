@@ -101,6 +101,7 @@ sont remplacées par la médiathèque et la galerie du CMS. `js/data/site.js`, l
 | `npm run cms:admin -- backup [--label …]` | Sauvegarde de la base. |
 | `npm run cms:admin -- restore <fichier> --yes` | Restauration (serveur arrêté). |
 | `npm run cms:admin -- verify-backup [--name …]` | Teste la dernière sauvegarde sur une copie temporaire (base en service non modifiée) ; résultat au tableau de santé. |
+| `node cms/bin/restore-test.mjs [--backup …]` | Test de restauration de la sauvegarde **externe** (support monté, variables explicites, n'ouvre pas la base) ; lancé chaque semaine depuis l'hôte Proxmox. [exploitation.md](exploitation.md) § 4 |
 | `npm run cms:admin -- status` | État de la base, de la configuration et des modifications en attente. |
 | `npm test` | Tests automatisés du CMS (node:test). |
 | `npm run validate` | Validation du site public (inchangée). |
@@ -129,6 +130,7 @@ Voir [`cms/.env.example`](../../cms/.env.example), commenté. Principales variab
 | `CMS_DEPLOY_TRACKING`, `CMS_GITHUB_REPO`, `CMS_GITHUB_WORKFLOW`, `CMS_GITHUB_TOKEN` | `1`, déduit du dépôt distant, `deploy-pages.yml`, vide | Suivi du déploiement GitHub Pages (API en lecture ; jeton facultatif, lecture seule). [supervision.md](supervision.md) |
 | `CMS_GOATCOUNTER_TOKEN`, `CMS_GOATCOUNTER_URL`, `CMS_STATS_SINCE` | vide | Onglet Statistiques (jeton GoatCounter en lecture, côté serveur). [statistiques.md](statistiques.md) |
 | `CMS_EXTERNAL_BACKUP_MAX_HOURS` | `36` | Âge maximal attendu du rapport de `cms/deploy/backup-media.sh`. |
+| `CMS_RESTORE_TEST_MAX_HOURS` | `192` | Âge maximal attendu du rapport du test de restauration de la sauvegarde externe. |
 
 ## 7. Tests
 
