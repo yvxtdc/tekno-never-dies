@@ -1127,6 +1127,15 @@ a.ss-roster__name:focus-visible{
   /* Le polaroid passe sous la légende, à droite : posé sur la photo, il en cachait un tiers ;
      au coin bas, il recouvrirait la légende, sur toute la largeur ici */
   .ss-polaroid{position:relative;right:auto;bottom:auto;margin:14px 0 0 auto}
+  /* Mieux, si cqi est connu : le polaroid chevauche le bas de la photo, son coin haut gauche vers
+     le milieu du support des platines (≈ 55 % × 73 % de la photo), sans cacher le DJ ni les
+     platines. Positions en cqi (largeur du bloc) : la photo en occupe 86 %, au ratio 1100 / 1467.
+     La légende de la photo passe à sa gauche, numéro au-dessus du texte. */
+  @supports (top:1cqi){
+    .ss-artists__media{container-type:inline-size;padding-bottom:6cqi}
+    .ss-polaroid{position:absolute;top:83.7cqi;left:47.3cqi;width:52%;margin:0}
+    .ss-photo--booth .ss-fig{flex-direction:column;gap:2px;max-width:42%}
+  }
 }
 
 @media (max-width:760px){
@@ -1182,5 +1191,6 @@ a.ss-roster__name:focus-visible{
   .ss-frame--drop{width:80%;margin:0 0 0 auto}
   .ss-photo--regie{width:78%}
   .ss-polaroid{width:58%}
+  @supports (top:1cqi){.ss-polaroid{width:52%}}
   .ss-pin{width:22px;height:22px;font-size:.68rem}
 }
