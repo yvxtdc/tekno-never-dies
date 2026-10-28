@@ -620,9 +620,17 @@ button.team-card{
 /* Pas la place de part et d'autre de la fiche : elle prend toute la hauteur disponible (hauteur fixe),
    et une barre en bas réunit les flèches (à gauche) et le compteur (à droite), toujours au même endroit. */
 @media (max-width: 1099px){
-  .team-modal{ --gutter: clamp(12px, 3vw, 32px); }
+  /* Marges portées aux zones de sécurité (encoche, barre d'accueil des iPhone : viewport-fit=cover) */
+  .team-modal{
+    --gutter: clamp(12px, 3vw, 32px);
+    --gutter-top: max(var(--gutter), env(safe-area-inset-top, 0px));
+    --gutter-right: max(var(--gutter), env(safe-area-inset-right, 0px));
+    --gutter-bottom: max(var(--gutter), env(safe-area-inset-bottom, 0px));
+    --gutter-left: max(var(--gutter), env(safe-area-inset-left, 0px));
+    padding: var(--gutter-top) var(--gutter-right) var(--gutter-bottom) var(--gutter-left);
+  }
 
-  .team-modal-card{ height: calc(100dvh - 2 * var(--gutter)); }
+  .team-modal-card{ height: calc(100dvh - var(--gutter-top) - var(--gutter-bottom)); }
 
   .team-modal-scroll{ padding-bottom: 84px; }
 
@@ -640,14 +648,14 @@ button.team-card{
 
   .team-modal-step{
     top: auto;
-    bottom: calc(var(--gutter) + 13px);
+    bottom: calc(var(--gutter-bottom) + 13px);
     width: 46px;
     height: 46px;
     transform: none;
   }
 
-  .team-modal-step--prev{ left: calc(var(--gutter) + 18px); }
-  .team-modal-step--next{ left: calc(var(--gutter) + 18px + 46px + 12px); right: auto; }
+  .team-modal-step--prev{ left: calc(var(--gutter-left) + 18px); }
+  .team-modal-step--next{ left: calc(var(--gutter-left) + 18px + 46px + 12px); right: auto; }
 
   .team-modal-count{ right: 22px; bottom: 25px; }
 }
@@ -668,7 +676,7 @@ button.team-card{
 
   .team-modal-card{ border-radius: 22px; }
 
-  .team-modal-scroll{ grid-template-columns: 1fr; gap: 18px; padding: 18px 18px 84px; }
+  .team-modal-scroll{ grid-template-columns: 1fr; gap: 14px; padding: 14px 18px 84px; }
 
   /* Photo plus étroite : le bouton Fermer garde son coin ; l'objet chromé passe en bas à gauche */
   .team-modal-media{ width: min(56%, 240px); justify-self: center; margin-top: 8px; }
@@ -678,13 +686,54 @@ button.team-card{
   .team-modal-decor,
   .team-modal-decor[data-type]{ top: auto; right: auto; bottom: -8%; left: -16%; transform: rotate(6deg); }
 
+  /* La photo prend la hauteur que le texte laisse libre (entre --photo-min et --photo-max, format 4:5
+     conservé) : la fiche tient sans défilement dès que possible ; sinon, c'est la fiche entière,
+     presque plein écran, qui défile. */
+  @supports (width: 1cqh){
+    .team-modal-scroll{
+      --photo-min: 140px;
+      --photo-max: min(60vw, 300px);
+      grid-template-rows: minmax(var(--photo-min), var(--photo-max)) auto;
+      align-content: start;
+    }
+
+    .team-modal-media{
+      --photo-w: min(100cqw, 80cqh);
+      container-type: size;
+      width: auto;
+      place-self: stretch;
+      margin-top: 0;
+    }
+
+    .team-modal-photo{ width: var(--photo-w); margin-inline: auto; }
+
+    .team-modal-decor,
+    .team-modal-decor[data-type]{ left: calc(50% - var(--photo-w) * .66); width: calc(var(--photo-w) * .34); }
+    .team-modal-decor[data-type="cocktails"]{ width: calc(var(--photo-w) * .44); }
+    .team-modal-decor[data-type="thorn"],
+    .team-modal-decor[data-type="star-pair"]{ width: calc(var(--photo-w) * .42); }
+  }
+
   .team-modal-body{ padding: 0; }
 
-  .team-modal-kicker{ margin-right: 0; gap: .4em .5em; font-size: .7rem; letter-spacing: .12em; }
+  .team-modal-kicker{ margin: 0 0 10px; gap: .4em .5em; font-size: .7rem; letter-spacing: .12em; }
 
   .team-modal-kicker > span + span::before{ width: 14px; margin-right: .5em; }
 
   .team-modal-body h3{ margin-right: 0; }
+
+  /* Rythme vertical resserré (tailles de texte inchangées) pour laisser la place à la photo */
+  .team-modal-role{ margin-top: 10px; }
+
+  .team-modal-bio{ margin-top: 12px; line-height: 1.6; }
+
+  .team-modal-label{ margin: 18px 0 8px; }
+
+  .team-modal-tags{ gap: 6px; }
+
+  .team-modal-mission{ padding: 5px 12px 5px 5px; gap: 10px; }
+
+  .team-modal-mission .team-mission{ --size: 34px; }
 
   .team-modal-extra{ grid-template-columns: 1fr; }
 
