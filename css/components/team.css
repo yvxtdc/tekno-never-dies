@@ -676,43 +676,24 @@ button.team-card{
 
   .team-modal-card{ border-radius: 22px; }
 
-  .team-modal-scroll{ grid-template-columns: 1fr; gap: 14px; padding: 14px 18px 84px; }
+  .team-modal-scroll{ grid-template-columns: 1fr; gap: 14px; padding: 14px 18px 76px; }
 
   /* Photo plus étroite : le bouton Fermer garde son coin ; l'objet chromé passe en bas à gauche */
   .team-modal-media{ width: min(56%, 240px); justify-self: center; margin-top: 8px; }
 
-  .team-modal-close{ top: 10px; right: 10px; width: 40px; height: 40px; }
+  .team-modal-close{ top: 10px; right: 10px; }
 
   .team-modal-decor,
   .team-modal-decor[data-type]{ top: auto; right: auto; bottom: -8%; left: -16%; transform: rotate(6deg); }
 
-  /* La photo prend la hauteur que le texte laisse libre (entre --photo-min et --photo-max, format 4:5
-     conservé) : la fiche tient sans défilement dès que possible ; sinon, c'est la fiche entière,
-     presque plein écran, qui défile. */
-  @supports (width: 1cqh){
-    .team-modal-scroll{
-      --photo-min: 140px;
-      --photo-max: min(60vw, 300px);
-      grid-template-rows: minmax(var(--photo-min), var(--photo-max)) auto;
-      align-content: start;
-    }
+  /* Barre du bas plus fine (boutons de 44 px) */
+  .team-modal-card::before{ height: 64px; }
 
-    .team-modal-media{
-      --photo-w: min(100cqw, 80cqh);
-      container-type: size;
-      width: auto;
-      place-self: stretch;
-      margin-top: 0;
-    }
+  .team-modal-step{ bottom: calc(var(--gutter-bottom) + 10px); width: 44px; height: 44px; }
 
-    .team-modal-photo{ width: var(--photo-w); margin-inline: auto; }
+  .team-modal-step--next{ left: calc(var(--gutter-left) + 18px + 44px + 12px); }
 
-    .team-modal-decor,
-    .team-modal-decor[data-type]{ left: calc(50% - var(--photo-w) * .66); width: calc(var(--photo-w) * .34); }
-    .team-modal-decor[data-type="cocktails"]{ width: calc(var(--photo-w) * .44); }
-    .team-modal-decor[data-type="thorn"],
-    .team-modal-decor[data-type="star-pair"]{ width: calc(var(--photo-w) * .42); }
-  }
+  .team-modal-count{ bottom: 21px; }
 
   .team-modal-body{ padding: 0; }
 
@@ -738,4 +719,66 @@ button.team-card{
   .team-modal-extra{ grid-template-columns: 1fr; }
 
   .team-modal-extra div + div{ box-shadow: 0 -1px 0 var(--line); }
+
+  /* Grande photo au centre, surtitre (TND6TEM — pôle) à la verticale dans la colonne libre à sa gauche,
+     objet chromé en bas à droite. La photo prend la hauteur que le texte laisse libre, entre
+     --photo-min et --photo-max (format 4:5) ; une fiche plus longue défile en entier. */
+  @supports (width: 1cqh){
+    .team-modal-scroll{
+      --photo-min: 210px;
+      --photo-max: min(68vw, 300px);
+      grid-template-rows: minmax(var(--photo-min), var(--photo-max));
+      align-content: start;
+      row-gap: 0;
+    }
+
+    .team-modal-media{
+      --photo-w: min(100cqw, 80cqh);
+      grid-area: 1 / 1;
+      container-type: size;
+      width: auto;
+      place-self: stretch;
+      margin-top: 0;
+    }
+
+    /* Plaque dimensionnée par sa largeur (les % se rapporteraient à toute la colonne) */
+    .team-modal-photo{
+      width: var(--photo-w);
+      height: calc(var(--photo-w) * 1.25);
+      padding: calc(var(--photo-w) * .044);
+      margin-inline: auto;
+    }
+
+    .team-modal-decor,
+    .team-modal-decor[data-type]{
+      left: auto;
+      right: calc(50% - var(--photo-w) * .66);
+      width: calc(var(--photo-w) * .34);
+      transform: rotate(-6deg);
+    }
+    .team-modal-decor[data-type="cocktails"]{ width: calc(var(--photo-w) * .44); }
+    .team-modal-decor[data-type="thorn"],
+    .team-modal-decor[data-type="star-pair"]{ width: calc(var(--photo-w) * .42); }
+
+    /* Les éléments du texte rejoignent la grille de la fiche */
+    .team-modal-body{ display: contents; }
+
+    .team-modal-kicker{
+      grid-area: 1 / 1;
+      place-self: stretch start;
+      z-index: 1;
+      margin: 0;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+    }
+
+    .team-modal-kicker > span + span::before{ width: 2px; height: 14px; margin: 0; margin-inline-end: .5em; }
+
+    .team-modal-body h3{ margin-top: 16px; }
+
+    @media (prefers-reduced-motion: no-preference){
+      .team-modal-card.is-swapping .team-modal-body > :not(.team-modal-kicker){ animation: team-modal-swap .26s ease both; }
+      .team-modal-card.is-swapping .team-modal-kicker{ animation: team-modal-fade .26s ease both; }
+    }
+  }
 }
