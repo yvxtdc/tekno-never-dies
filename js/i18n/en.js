@@ -336,8 +336,6 @@ const PAGES = {
   "Le matériel": "The gear",
   "Le mur de son, trait pour trait<span class=\"ss-period\">.</span>": "The wall of sound, line by line<span class=\"ss-period\">.</span>",
   "Nos stacks, la structure et le booth suspendu, redessinés d'après une photo de notre installation. Fais glisser le curseur pour passer de la photo au dessin.": "Our stacks, the truss and the suspended booth, redrawn from a photo of our setup. Drag the slider to switch from the photo to the drawing.",
-  "Photo": "Photo",
-  "Trait": "Drawing",
   "Comparer la photo et le dessin": "Compare the photo and the drawing",
   "Le pont circulaire, accroché au centre de la structure.": "The circular truss, hung in the middle of the structure.",
   "Le booth DJ, suspendu au pont par des sangles.": "The DJ booth, hanging from the truss on straps.",
