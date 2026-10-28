@@ -104,6 +104,15 @@
 
 .contact-info a:hover{text-decoration:underline}
 
+/* Pictogrammes des coordonnées : même dessin que les icônes du pied de page (trait 1,8, coins
+   arrondis), à la place des émojis (rendu variable selon le système, absent sans police emoji).
+   Emprise proche de l'émoji suivi d'une espace. */
+.contact-info__icon{
+  width:1.15em;height:1.15em;margin-right:.3em;vertical-align:-.2em;
+  fill:none;stroke:var(--lav);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
+}
+.contact-info__icon .social-dot{fill:var(--lav);stroke:none}
+
 .form-note{font-size:.85rem;color:var(--muted);margin-top:.6em}
 
 /* ---------- 6. Galerie ---------- */
