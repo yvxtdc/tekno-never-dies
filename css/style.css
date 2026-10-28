@@ -1785,6 +1785,22 @@ main{position:relative;overflow-x:clip}
 
 @media (max-width:900px){
   .home-grid{grid-auto-rows:minmax(350px,48vw)}
+
+  /* Taille du titre plafonnée par la largeur utile de la carte (cqi) : le mot le plus long doit
+     tenir entier (« COMMENCENT » ≈ 7,8 em, « WEITERGEGEBEN » ≈ 9,35 em), avec une marge car Safari
+     dessine un peu plus large. Le dégradé (background-clip:text) n'est peint que dans la boîte
+     du titre : une lettre qui en dépasse disparaît. Sans cqi, la règle est ignorée. */
+  .home-card__body{container-type:inline-size}
+  .home-card h2{max-width:none;font-size:min(clamp(2.3rem,4.2vw,4.9rem),12cqi)}
+  .home-card h2:lang(de){font-size:min(clamp(2.3rem,4.2vw,4.9rem),10cqi)}
+  /* 2e ligne équilibrée : « qu'on garde / en images. » plutôt qu'un mot isolé */
+  .home-card h2 span{text-wrap:balance}
+
+  /* Bouton sous « 01 · ÉVÉNEMENTS » : en bas à droite, il la recouvrait dès que la carte est étroite */
+  .home-card__link{position:static;order:3;margin-top:14px;align-self:flex-start}
+
+  .home-card:hover .home-card__link,
+  .home-card:focus-visible .home-card__link{transform:none}
 }
 
 @media (max-width:640px){
@@ -1792,12 +1808,10 @@ main{position:relative;overflow-x:clip}
 
   .home-card{min-height:0;height:100%}
 
-  .home-card h2{font-size:clamp(2.4rem,11vw,3.6rem)}
-
-  .home-card__link{position:static;order:3;margin-top:14px;align-self:flex-start}
-
-  .home-card:hover .home-card__link,
-  .home-card:focus-visible .home-card__link{transform:none}
+  /* Une colonne : même principe qu'au-dessus (≤ 900 px), sur toute la largeur de la carte.
+     11vw reste pour les navigateurs sans cqi. */
+  .home-card h2{font-size:clamp(2.4rem,11vw,3.6rem);font-size:clamp(1.6rem,12cqi,3.6rem)}
+  .home-card h2:lang(de){font-size:clamp(1.6rem,10cqi,3.6rem)}
 
   .hero--home .decor-thorn{width:190px;right:-52px;top:10%;opacity:.7}
 

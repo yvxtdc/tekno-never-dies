@@ -1126,17 +1126,20 @@ a.ss-roster__name:focus-visible{
   .ss-manifest__text,
   .ss-manifest__media{grid-column:1/-1}
   .ss-manifest__media{padding-bottom:0}
-  /* La photo de la régie passe sous la grande, décalée à droite et en chevauchement */
+  /* La photo de la régie passe sous la grande, décalée à droite. Sans chevauchement : elle
+     recouvrirait la légende de la grande photo, placée juste dessous. */
   .ss-photo--regie{
     position:relative;
     right:auto;
     width:68%;
-    margin:-14% 0 0 auto
+    margin:clamp(18px,4vw,32px) 0 0 auto
   }
+  .ss-photo--montage .ss-fig{max-width:none}
   .ss-artists__grid{grid-template-columns:minmax(0,1fr)}
   /* Le polaroid remonte sur la photo : la légende de celle-ci reste lisible en entier */
   .ss-artists__media{max-width:560px;padding-bottom:0}
-  .ss-photo--booth .ss-fig{max-width:none}
+  /* Légende sous le cadre décalé de 18 px (::before), qui sinon la barre */
+  .ss-photo--booth .ss-fig{max-width:none;margin-top:30px}
   .ss-polaroid{top:36%;bottom:auto}
 }
 
@@ -1175,6 +1178,8 @@ a.ss-roster__name:focus-visible{
 @media (max-width:640px){
   .ss-project{grid-template-columns:minmax(0,1fr)}
   .ss-roster__item{grid-template-columns:2rem minmax(0,1fr)}
+  /* Sous ~350 px, un nom d'un seul mot (« BLACKCHILLS ») ne tiendrait plus et serait coupé */
+  .ss-roster__name{font-size:clamp(1.2rem,6.6vw,1.45rem)}
   .ss-roster__meta{grid-column:2;align-items:flex-start;flex-direction:row;flex-wrap:wrap;gap:0 10px;text-align:left}
 }
 @media (max-width:640px) and (hover:none){
