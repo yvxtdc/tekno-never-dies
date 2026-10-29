@@ -37,7 +37,7 @@ export const EVENTS = [
       }
     ],
     "flyer": "assets/img/events/flyer-ice-boiler-v2-2026.webp",
-    "cover": "",
+    "cover": "assets/img/gallery/2025/ice-boiler/photo-106.webp",
     "genres": [
       "Trance",
       "Groovy",
