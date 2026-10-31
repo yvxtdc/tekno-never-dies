@@ -1,3 +1,10 @@
+/**
+ * Fiche d'une soirée : construit tout le contenu visible de #event-detail depuis js/data/events.js.
+ * Les fiches evenement-<slug>.html sont des copies du modèle evenement.html générées par
+ * tools/event-pages.mjs (tools/lib/event-page.mjs) : titre, aperçus sociaux et JSON-LD y sont écrits en
+ * dur pour les robots, le slug sur <body data-slug>. Ce script réécrit titre et description dans la langue
+ * de la page et construit le reste (line-up, billets, plan, DJ Contest). L'aperçu du CMS sert la même page.
+ */
 import { EVENTS, EVENT_REDIRECTS } from "../data/events.js";
 import { splitB2B, artistsOf, artistUrl, artistPhoto, slotStyle, visibleLineup } from "../components/artists.js";
 import { photoCreditFor } from "../components/photo-credit.js";
@@ -56,6 +63,8 @@ const artistName = (name, contest = false) =>
     })
     .join("");
 
+// Ordre chronologique des passages dans la nuit : une heure antérieure au début de la soirée est le
+// lendemain (+24 h : « 1h00 » après « 22h00 »). Passages sans horaire à la fin, dans l'ordre de saisie.
 const orderedLineup = (lineup = [], eventStart = "") => {
   const start = timeToMinutes(eventStart) ?? 0;
   return lineup

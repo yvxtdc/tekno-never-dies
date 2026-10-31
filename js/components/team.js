@@ -1,3 +1,11 @@
+/**
+ * Équipe de la page Association (association.html, qui charge ce module directement) : cartes des
+ * membres construites depuis js/data/equipe.js, carrousel infini (défilement automatique, glisser à la
+ * souris ou au doigt) et fiche détaillée en fenêtre (#team-modal). Mise en scène des cartes :
+ * team-composition.js ; objets chromés : chrome.js ; styles : css/components/team.css.
+ * Contrairement aux autres modules de js/components/, celui-ci agit dès son chargement (DOM requis) :
+ * il n'est importé ni par les outils Node ni par le CMS.
+ */
 import { TEAM } from '../data/equipe.js';
 import { t } from '../i18n/i18n.js';
 import { track as trackClick } from '../pages/helpers.js';
@@ -223,6 +231,8 @@ function cycleWidth() {
    NORMALISATION DU DÉFILEMENT
 ========================================================= */
 
+// La piste contient chaque carte deux fois : le décalage est ramené dans ]-cycle, 0]. Revenir d'un
+// cycle entier ne se voit pas, la copie affichée étant identique à l'original.
 function normalize() {
   const width = cycleWidth();
 
@@ -268,6 +278,7 @@ function animate(now) {
     !dragging &&
     !reducedMotion
   ) {
+    // Vitesse : 0,035 px par milliseconde (35 px/s), indépendante de la fréquence d'affichage.
     offset -= dt * 0.035;
 
     normalize();

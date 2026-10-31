@@ -1,3 +1,10 @@
+/*
+ * Informations générales du site : adresse publique, contact, agenda, statistiques, identité légale.
+ * Fichier SOURCE, modifié à la main : contrairement aux autres modules de js/data/, le CMS ne le génère pas.
+ * Lu par les pages, les outils (tools/), le CMS (aperçu, statistiques, supervision) et npm run validate.
+ * Plusieurs de ces valeurs sont aussi écrites en dur ailleurs (CSP des pages, footer, mentions légales,
+ * CNAME, robots.txt) : README, « Où modifier quoi » et « Mise en ligne ».
+ */
 const ADDRESS = {
   street: "5 avenue Georges Clemenceau",
   postalCode: "67630",
@@ -28,6 +35,8 @@ export const SITE = {
   },
   // Statistiques de visite (GoatCounter, sans cookie). Tableau de bord : https://teknoneverdies.goatcounter.com
   // Vide = pas de comptage. Si cette adresse change, la mettre aussi dans la CSP de chaque page.
+  // L'aperçu du CMS (cms/server/preview/preview.mjs) vide cette valeur en réécrivant le texte du fichier :
+  // garder le nom de la propriété suivi d'une chaîne entre guillemets doubles.
   goatcounter: "https://teknoneverdies.goatcounter.com/count",
   official: {
     legalName: "TEKNO NEVER DIES",

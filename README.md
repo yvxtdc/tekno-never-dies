@@ -49,6 +49,7 @@ calendar/                         Agenda .ics généré (ne pas modifier à la m
 tools/                            Scripts Node (validation, header/footer, photos, agenda)
 cms/                              CMS : serveur Node (API, SQLite, mise en ligne), interface d'administration, tests
 docs/cms/                         Documentation du CMS
+docs/ARCHITECTURE.md              Architecture technique et couplages entre fichiers (reprise du code)
 vendor/three/                     Three.js
 ```
 

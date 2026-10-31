@@ -9,6 +9,14 @@ let current = null; // { dispose, isDirty }
 let renderInto = null;
 let notFoundView = null;
 
+/**
+ * Déclare une page. Les routes sont essayées dans l'ordre de déclaration (app.js déclare
+ * « /admin/events/new » avant « /admin/events/:id »).
+ * @param {string} pattern chemin avec paramètres « :nom » ; barre oblique finale facultative
+ * @param {(ctx: { params: object, query: URLSearchParams, path: string }, container: HTMLElement) => any} view
+ *   remplit container (souvent après un chargement asynchrone) et peut renvoyer { isDirty, dispose } :
+ *   isDirty() déclenche la confirmation avant de quitter, dispose() est appelé avant la page suivante.
+ */
 export function route(pattern, view) {
   const keys = [];
   const regex = new RegExp(`^${pattern.replace(/:(\w+)/g, (_, k) => (keys.push(k), "([^/]+)"))}/?$`);
@@ -27,6 +35,7 @@ export function start(container, { notFound }) {
     navigate(url.pathname + url.search + url.hash);
   });
   window.addEventListener("popstate", async () => {
+    // L'adresse a déjà changé (bouton Précédent) : en cas de refus, celle de la page en cours est remise.
     if (current?.isDirty?.() && !(await confirmLeave())) {
       history.pushState(null, "", current.path);
       return;
@@ -67,6 +76,8 @@ async function render(path) {
     if (!m) continue;
     const params = Object.fromEntries(r.keys.map((k, i) => [k, decodeURIComponent(m[i + 1])]));
     const ctx = { params, query: url.searchParams, path: url.pathname + url.search };
+    // Créé avant la vue : setDirtyChecker, appelé pendant son rendu, s'y rattache. Si l'utilisateur a
+    // changé de page pendant le chargement, le résultat de l'ancienne vue est ignoré.
     current = { path: ctx.path };
     const result = await r.view(ctx, renderInto);
     if (current?.path === ctx.path) Object.assign(current, result || {});

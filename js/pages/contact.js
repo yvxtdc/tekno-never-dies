@@ -1,3 +1,6 @@
+// Formulaire de contact (contact.html). Le site étant statique, les messages partent vers Formspree
+// (adresse dans l'attribut action du formulaire, autorisée par connect-src et form-action de la CSP).
+// Sans JavaScript, le formulaire s'envoie normalement ; avec, il part en arrière-plan.
 import { lang, t } from "../i18n/i18n.js";
 import { SITE } from "../data/site.js";
 

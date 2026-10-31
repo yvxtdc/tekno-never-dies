@@ -1,3 +1,17 @@
+/*
+ * Feuille commune à toutes les pages : polices, charte (variables de :root), base, boutons, header,
+ * menu plein écran, footer et accueil. Pages intérieures : css/pages.css ; css/components/*.css ne sont
+ * chargés que par certaines pages (voir leurs <link>).
+ *
+ * Conventions :
+ *  - couleurs, polices et marges : variables de :root (section 2), à réutiliser plutôt que des valeurs en dur ;
+ *  - noms de classes en bloc__élément--variante (event-hero__inner, team-pill--name) ;
+ *  - états posés par JavaScript : is-* (is-open, is-scrolled, is-live, is-active…) et has-* : renommer
+ *    une telle classe oblige à modifier le script qui la pose ;
+ *  - de nombreuses classes n'apparaissent que dans les gabarits des scripts (js/pages/, js/components/) :
+ *    chercher aussi dans js/ avant de supprimer une règle qui semble inutilisée.
+ * Les commentaires sont retirés à la publication (minification esbuild, .github/workflows/deploy-pages.yml).
+ */
 @font-face{font-family:"Archivo Black";font-weight:400;font-style:normal;font-display:swap;src:url("../assets/fonts/archivo-black-latin-400-normal.woff2") format("woff2")}
 
 @font-face{font-family:"Montserrat";font-weight:400;font-style:normal;font-display:swap;src:url("../assets/fonts/montserrat-latin-400-normal.woff2") format("woff2")}

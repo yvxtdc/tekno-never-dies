@@ -17,6 +17,13 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * Requête JSON vers l'API du CMS (cookie de session, jeton CSRF pour toute méthode autre que GET).
+ * @returns {Promise<any>} corps JSON décodé, ou null si la réponse est vide
+ * @throws {ApiError} status 0 si le serveur est injoignable ; 422 : `fields` (erreurs par champ) ;
+ *   401 : le gestionnaire de setUnauthorizedHandler est appelé d'abord (sauf connexion et lecture de la
+ *   session, qui gèrent elles-mêmes le cas). Une AbortError (signal) est relancée telle quelle.
+ */
 export async function api(method, url, body, { signal } = {}) {
   const headers = { Accept: "application/json" };
   if (method !== "GET") headers["X-CSRF-Token"] = csrf;

@@ -30,7 +30,11 @@ const blank = () => ({
   seoTitle: "", seoDescription: "", notes: "", lineup: [], redirects: [], checks: { errors: [], warnings: [] }
 });
 
-/** Données envoyées à l'API (sans les objets d'affichage). */
+/**
+ * Données envoyées à l'API (sans les objets d'affichage). L'API remplace la fiche entière
+ * (services/events.mjs, updateEvent) : un champ de la fiche oublié ici serait vidé à chaque
+ * enregistrement. Sert aussi à détecter les modifications non enregistrées (comparaison JSON).
+ */
 const payload = (m) => ({
   version: m.version,
   title: m.title, slug: m.slug, date: m.date, datePrecision: m.datePrecision, startTime: m.startTime || "", endTime: m.endTime || "", doorsTime: m.doorsTime || "",

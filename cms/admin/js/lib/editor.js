@@ -6,7 +6,20 @@ import { h, append } from "./dom.js";
 import { setDirtyChecker, navigate } from "./router.js";
 import { toast, errorMessage, showFieldErrors, busy, confirm } from "./ui.js";
 
-/** onSubmit : action de la touche Entrée / Ctrl+S à la place de l'enregistrement (mode préparation d'une programmation). */
+/**
+ * Formulaire lié à un modèle. `model` est modifié en place par bind() ; l'état « modifié » compare
+ * toPayload(model) à la dernière version enregistrée (sérialisée en JSON).
+ * @param {object} options
+ * @param {object} options.model copie de travail de la fiche (structuredClone de la réponse de l'API)
+ * @param {(model: object) => object} [options.toPayload] corps envoyé à l'API ; seul ce qu'il contient compte comme modification
+ * @param {(payload: object) => Promise<object>} options.onSave enregistre et renvoie la fiche ; `mergedFields`
+ *   non vide (fusion avec une modification concurrente, réponse du serveur) recharge la page
+ * @param {Function|null} [options.onSubmit] action de la touche Entrée / Ctrl+S à la place de l'enregistrement
+ *   (mode préparation d'une programmation)
+ * @returns {{ form, errors, bar, bind, touch, isDirty, save, saveBtn, markSaved }} la vue place `errors` et
+ *   `bar` dans `form` ; bind(clé, champ, transformation?) relie un champ au modèle ; touch() met à jour la barre
+ *   après une modification faite hors d'un champ lié (média, liste…) ; la vue renvoie `{ isDirty }` au routeur.
+ */
 export function createEditor({ model, toPayload = (m) => m, onSave, onSubmit = null, savedLabel = "Tout est enregistré", newLabel = "Nouvelle fiche", isNew = false }) {
   let saved = JSON.stringify(toPayload(model));
   const isDirty = () => JSON.stringify(toPayload(model)) !== saved;

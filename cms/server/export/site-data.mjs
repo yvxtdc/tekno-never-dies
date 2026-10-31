@@ -67,6 +67,9 @@ export function buildSiteData(db, { mode = "public", includeEventIds = [], inclu
       if (media?.alt) photo.alt = media.alt;
       return photo;
     });
+    // Format de js/data/events.js : les champs facultatifs vides sont omis, pas exportés vides. L'aller-retour
+    // import → export (verifyRoundtrip, cms/test/export.test.mjs) compare ces valeurs ; un champ ajouté ici
+    // doit aussi être relu par export/import-repo.mjs.
     const ev = {
       slug: e.slug,
       title: e.title,
@@ -194,6 +197,8 @@ export function buildSiteData(db, { mode = "public", includeEventIds = [], inclu
   const translations = { de: {}, en: {} };
   for (const t of db.all("SELECT source, lang, text FROM translations ORDER BY source")) {
     if (!exportedTexts.has(t.source)) continue;
+    // Texte enrichi (réponses de FAQ) : sur le site, un paragraphe avec liens ou gras a pour clé son HTML
+    // (js/i18n/i18n.js) ; la source et la traduction sont donc converties comme à l'export de la FAQ.
     if (rich.has(t.source)) translations[t.lang][norm(richTextToHtml(t.source))] = richTextToHtml(t.text);
     else translations[t.lang][t.source] = t.text;
   }

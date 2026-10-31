@@ -304,7 +304,11 @@ export function predictedBanner({ predicted, replaceId, exitHref }) {
       h("a", { class: "btn btn--sm btn--ghost", href: exitHref }, "Revenir à la fiche actuelle")));
 }
 
-/** Charge l'état prévu d'une fiche (à une date, ou à la date d'une programmation à modifier). */
+/**
+ * Charge l'état prévu d'une fiche (à une date, ou à la date d'une programmation à modifier).
+ * null sans ?at= ni ?change= dans l'adresse : la vue affiche alors la fiche actuelle. Sinon, la réponse
+ * de /api/schedule/predict (entity : fiche à afficher, basis, skipped…) et replaceId (programmation remplacée).
+ */
 export async function loadPredicted(type, id, query) {
   const changeId = Number(query.get("change")) || null;
   let at = query.get("at");
