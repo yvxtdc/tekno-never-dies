@@ -40,7 +40,10 @@ function wrap(raw) {
     all: (sql, ...params) => prepare(sql).all(...norm(params)),
     run: (sql, ...params) => prepare(sql).run(...norm(params)),
     exec: (sql) => raw.exec(sql),
-    /** Exécute fn dans une transaction (SAVEPOINT si déjà dans une transaction). */
+    /**
+     * Exécute fn dans une transaction (SAVEPOINT si déjà dans une transaction). fn doit être
+     * synchrone : avec une fonction async, la transaction serait validée dès son premier await.
+     */
     tx(fn) {
       const name = `sp${depth}`;
       raw.exec(depth === 0 ? "BEGIN IMMEDIATE" : `SAVEPOINT ${name}`);

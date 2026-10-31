@@ -9,6 +9,9 @@ import * as THREE from "three";
  * dans config.js (objets `shapes`).
  */
 export function buildStarGeometry(o){
+  // Coût : chaque point intérieur de la grille (≈ 25 500 sur rings × nTheta) mesure sa distance aux
+  // HI / 2 segments du contour (étape 4), soit ≈ 18 millions de calculs par forme, faits une fois au
+  // chargement de l'accueil. Augmenter ces trois valeurs retarde l'apparition des étoiles.
   const HI = 1440;                       // échantillonnage fin du contour
   const nTheta = 360, rings = 72, ringPow = 2;
   const TAU = Math.PI * 2;

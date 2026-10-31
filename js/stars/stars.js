@@ -8,8 +8,12 @@ import { buildEnvironment } from "./environment.js";
  * lisse, ne sort jamais de l'écran et ne se répète pas avant très longtemps.
  * Les phases de départ sont tirées au hasard à chaque chargement de la page.
  *
- * startStars(canvas, config) renvoie { renderer, scene, tick(dt) } ou null si
- * WebGL n'est pas disponible.
+ * startStars(canvas, config) démarre l'animation et renvoie { renderer, scene, camera,
+ * stars, tick(dt), startAnimation, stopAnimation } (pause quand le hero sort de l'écran :
+ * js/pages/accueil.js), ou null si WebGL n'est pas disponible.
+ *
+ * « three » est résolu par l'importmap d'index.html (vendor/three/) : les modules de
+ * js/stars/ ne se chargent que sur l'accueil.
  */
 export function startStars(canvas, cfg) {
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;

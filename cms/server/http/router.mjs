@@ -4,6 +4,21 @@ export class Router {
     this.routes = [];
   }
 
+  /**
+   * Déclare une route de l'API ; les contrôles sont appliqués par handleApi (app.mjs) avant l'appel.
+   * Un paramètre dont le nom finit par « id » n'accepte que des chiffres et arrive en nombre.
+   * @param {string} method
+   * @param {string} pattern ex. "/api/events/:id/duplicate"
+   * @param {(ctx: object) => any} handler reçoit ctx (req, res, url, query, params, config, db, log,
+   *   publisher, session, user, ip, requestId, actor) ; sa valeur de retour est envoyée en JSON
+   *   (204 si undefined), sauf s'il a déjà répondu lui-même (fichier, flux).
+   * @param {object} [options]
+   * @param {string} [options.perm] permission exigée (auth/permissions.mjs). Sans elle, la route est
+   *   ouverte à tout compte connecté.
+   * @param {boolean} [options.public] ni session ni jeton CSRF exigés (connexion) ; l'origine reste contrôlée
+   * @param {boolean} [options.allowPasswordChange] permise avec un mot de passe temporaire à changer
+   * @param {number} [options.status] statut HTTP de la réponse (200 par défaut, 201 pour une création)
+   */
   add(method, pattern, handler, options = {}) {
     const keys = [];
     const source = pattern

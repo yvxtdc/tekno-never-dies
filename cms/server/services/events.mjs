@@ -528,7 +528,12 @@ export function createEvent(db, input, user, { origin = "manual" } = {}) {
   });
 }
 
-/** options : origine de la version (saisie, programmation, restauration) et programmation associée. */
+/**
+ * options : origine de la version (saisie, programmation, restauration) et programmation associée.
+ * L'entrée est la fiche complète : un champ simple absent n'est pas conservé (valeur par défaut, le plus
+ * souvent vide ; refusé s'il est obligatoire), alors que `photos` et `lineup` absents restent inchangés.
+ * `version` est obligatoire (409 `stale` si elle ne correspond plus).
+ */
 export function updateEvent(db, id, input, user, { origin = "manual", changeId = null } = {}) {
   return db.tx(() => {
     const current = getEventRow(db, id);

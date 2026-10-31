@@ -3,7 +3,11 @@ import { ARTISTS, ARTIST_STYLES } from "../data/artistes.js";
 import { ARTIST_PHOTOS } from "../data/artistes-photos.js";
 import { safeUrl } from "../pages/helpers.js";
 
-/** "Dann Octa" -> "dannocta" : majuscules, espaces et ponctuation ne comptent pas. */
+/**
+ * "Dann Octa" -> "dannocta" : majuscules, espaces et ponctuation ne comptent pas.
+ * Même règle dans cms/server/services/slug.mjs, qui calcule les clés de js/data/artistes-photos.js :
+ * changer les deux ensemble, sinon les photos du line-up ne sont plus retrouvées.
+ */
 export const artistKey = (name) => name.toLowerCase().replace(/[^a-z0-9]/g, "");
 
 const byKey = new Map(Object.entries(ARTISTS).map(([name, url]) => [artistKey(name), { name, url }]));

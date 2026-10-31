@@ -119,6 +119,12 @@ export function createVenue(db, input, user) {
   return getVenue(db, id);
 }
 
+/**
+ * Même contrat pour artistes, FAQ et équipe : l'entrée est la fiche complète, envoyée par le formulaire
+ * ou reconstruite par une programmation (TARGETS, schedule-targets.mjs) ; un champ absent n'est pas
+ * conservé mais prend sa valeur par défaut, le plus souvent vide.
+ * `version` facultative : fournie, elle doit correspondre (409 `stale`), sinon rien n'est contrôlé.
+ */
 export function updateVenue(db, id, input, user, { origin = "manual", changeId = null } = {}) {
   const current = db.get("SELECT * FROM venues WHERE id = ?", id);
   if (!current) throw notFound("Lieu introuvable.");

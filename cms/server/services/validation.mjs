@@ -40,6 +40,13 @@ export function normalizeUrl(value, { httpsOnly = false } = {}) {
   }
 }
 
+/**
+ * Utilisation : `const v = new Validator(input)`, une lecture par champ (`v.text("title", { required: true })`),
+ * puis `v.throwIfErrors()` (erreur 422 avec les messages par champ) avant d'utiliser les valeurs.
+ * Une lecture invalide n'interrompt rien : elle enregistre le premier message du champ et renvoie undefined
+ * (ou [] pour les listes). Un champ absent de l'entrée renvoie sa valeur par défaut, sans erreur s'il
+ * n'est pas obligatoire : le service qui appelle décide si l'absence vaut « inchangé » ou « vide ».
+ */
 export class Validator {
   constructor(input) {
     this.input = input && typeof input === "object" ? input : {};

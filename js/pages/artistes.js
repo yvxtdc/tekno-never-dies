@@ -5,7 +5,8 @@ import { collectArtists, artistUrl, artistPhoto, artistStyle, instagramHandle } 
 
 /* ---------- Tous les artistes passés par une soirée TND ----------
    Rien à saisir : la liste est construite à partir des line-ups de js/data/events.js.
-   Photos et liens Instagram : js/data/artistes.js et npm run artistes. */
+   Photos, liens Instagram et styles : fiches Artistes du CMS (exportées dans js/data/artistes.js et
+   artistes-photos.js), retrouvées par le nom (artistKey, js/components/artists.js). */
 
 const list = collectArtists(EVENTS);
 

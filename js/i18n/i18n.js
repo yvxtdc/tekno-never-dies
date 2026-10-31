@@ -190,6 +190,8 @@ function startTranslation() {
 
   // Tout ce que les scripts ajoutent ou modifient ensuite est traduit au passage.
   const observer = new MutationObserver((records) => {
+    // Débranché pendant le traitement : les remplacements faits ici ne doivent pas se redéclencher
+    // eux-mêmes (boucle). Rebranché à la fin par observe().
     observer.disconnect();
     for (const r of records) {
       if (r.type === "attributes") {

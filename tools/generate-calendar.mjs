@@ -1,3 +1,14 @@
+// Agenda des soirées : calendar/events.ics, généré depuis js/data/events.js (npm run calendar ; lancé aussi
+// par la mise en ligne du CMS). Le contenu de chaque soirée vient de js/components/event-ics.js, partagé
+// avec le bouton « Ajouter à l'agenda » ; la définition du fuseau horaire, de js/pages/ics.js.
+//
+//   node tools/generate-calendar.mjs           (re)génère l'agenda
+//   node tools/generate-calendar.mjs --check   vérifie seulement qu'il est à jour (validate, déploiement)
+//
+// Les agendas abonnés reconnaissent une soirée à son UID (« <slug>@<CALENDAR_DOMAIN> ») et une
+// modification à son numéro SEQUENCE. calendar/.event-state.json, versionné, garde pour chaque soirée
+// l'empreinte de son contenu et ce numéro : ne pas le supprimer. Un nouveau slug donne un nouvel UID,
+// vu par les abonnés comme un autre événement. Soirées dont seul le mois est connu : absentes de l'agenda.
 import fs from "node:fs/promises";
 import path from "node:path";
 import crypto from "node:crypto";
@@ -24,6 +35,9 @@ const STATE_FILE = path.join(CALENDAR_DIR, ".event-state.json");
 
 const CALENDAR_NAME = "Tekno Never Dies";
 const CALENDAR_DESCRIPTION = "Événements officiels Tekno Never Dies";
+// Partie fixe de l'UID des soirées, et non l'adresse du site : la changer (même pour l'aligner sur le
+// vrai domaine) ferait voir chaque soirée comme un nouvel événement par les agendas qui l'ont déjà.
+// Même valeur écrite dans js/pages/ics.js (bouton « Ajouter à l'agenda ») : les deux doivent rester égales.
 const CALENDAR_DOMAIN = "tekno-never-dies.fr";
 
 const DEFAULT_TIMEZONE = "Europe/Paris";
