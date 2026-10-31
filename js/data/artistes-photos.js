@@ -14,7 +14,7 @@ export const ARTIST_PHOTOS = {
   "meinos": "assets/img/artistes/meinos.webp",
   "mogli": "assets/img/artistes/mogli.webp",
   "rayy": "assets/img/artistes/rayy.webp",
-  "redfox": "assets/img/artistes/redfox.webp",
+  "redfox": "assets/img/cms/redfox-3194fed752e2-v1-square.webp",
   "svengerber": "assets/img/artistes/svengerber.webp",
   "tbr": "assets/img/artistes/tbr.webp",
   "tnb": "assets/img/artistes/tnb.webp",
