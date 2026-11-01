@@ -362,6 +362,13 @@ export class Publisher {
         }
         let removed = 0;
         const wanted = new Set([...data.files.keys()].map((p) => path.basename(p)));
+        // Médias du dépôt situés dans assets/img/cms : un site importé alors que le CMS était déjà en
+        // service contient des variantes exportées, enregistrées à l'import comme images du dépôt
+        // (storage = 'repo'). Elles ne passent pas par data.files mais leur fichier EST l'image : ne
+        // jamais le retirer (sinon la page qui l'utilise pointe vers un fichier absent).
+        for (const { repo_path: repoPath } of db.all("SELECT repo_path FROM media WHERE storage = 'repo' AND repo_path LIKE ?", `${CMS_MEDIA_DIR}/%`)) {
+          wanted.add(path.basename(repoPath));
+        }
         for (const name of fs.readdirSync(mediaDir)) {
           if (!wanted.has(name) && /-[0-9a-f]{12}-v\d+(-[a-z]+)?\.(webp|jpg)$/.test(name)) {
             fs.rmSync(path.join(mediaDir, name));

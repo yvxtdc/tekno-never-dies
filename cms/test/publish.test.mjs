@@ -240,3 +240,53 @@ describe("mise en ligne : modes fichiers et push", { timeout: 300e3 }, () => {
     fs.rmSync(siteDir, { recursive: true, force: true });
   });
 });
+
+describe("mise en ligne d'un site déjà publié par le CMS (images dans assets/img/cms)", { timeout: 300e3 }, () => {
+  // Cas réel : on reconstruit une base en important un dépôt alors que le CMS était déjà en service
+  // (reprise, test d'import). Les photos téléversées y sont déjà exportées dans assets/img/cms ; l'import
+  // les enregistre comme images du dépôt. La mise en ligne ne doit pas les retirer.
+  const exported = "assets/img/cms/valk-0123456789ab-v1-square.webp";
+  const orphan = "assets/img/cms/orpheline-abcdefabcdef-v1-square.webp";
+  let siteDir, cms, editor;
+  before(async () => {
+    siteDir = copySite({ git: true });
+    fs.mkdirSync(path.join(siteDir, "assets/img/cms"), { recursive: true });
+    fs.writeFileSync(path.join(siteDir, exported), await testImage({ width: 320, height: 320, format: "webp" }));
+    const photos = path.join(siteDir, "js/data/artistes-photos.js");
+    const source = fs.readFileSync(photos, "utf8");
+    const updated = source.replace(/("valk":\s*)"[^"]*"/, `$1"${exported}"`);
+    assert.notEqual(updated, source, "la photo de Valk est bien redirigée vers assets/img/cms");
+    fs.writeFileSync(photos, updated);
+    git(siteDir, "add", "-A");
+    git(siteDir, "commit", "-q", "-m", "photo déjà exportée par le CMS");
+    cms = await startCms({ importContent: true, siteDir, env: { CMS_PUBLISH_MODE: "commit" } });
+    editor = await cms.login("editor");
+  });
+  after(async () => {
+    await cms.close();
+    fs.rmSync(siteDir, { recursive: true, force: true });
+  });
+
+  test("l'image exportée est conservée : rien ne change, aucun commit ; l'aperçu la sert", async () => {
+    const head = git(siteDir, "rev-parse", "HEAD");
+    const res = await editor.post("/api/publications", {});
+    assert.equal(res.data.status, "success", res.data.log);
+    assert.match(res.data.summary, /Aucun changement/);
+    assert.ok(fs.existsSync(path.join(siteDir, exported)), "l'image est toujours là");
+    assert.equal(git(siteDir, "rev-parse", "HEAD"), head);
+    assert.equal(git(siteDir, "status", "--porcelain"), "", "rien n'est modifié");
+    const preview = await editor.get(`/preview/site/${exported}`);
+    assert.equal(preview.status, 200);
+  });
+
+  test("un fichier orphelin au format du CMS est toujours retiré", async () => {
+    fs.writeFileSync(path.join(siteDir, orphan), await testImage({ width: 320, height: 320, format: "webp" }));
+    git(siteDir, "add", "-A");
+    git(siteDir, "commit", "-q", "-m", "fichier orphelin");
+    const res = await editor.post("/api/publications", {});
+    assert.equal(res.data.status, "success", res.data.log);
+    assert.ok(!fs.existsSync(path.join(siteDir, orphan)), "l'orphelin est retiré");
+    assert.ok(fs.existsSync(path.join(siteDir, exported)), "l'image utilisée reste");
+    assert.equal((await editor.get(`/preview/site/${orphan}`)).status, 404);
+  });
+});

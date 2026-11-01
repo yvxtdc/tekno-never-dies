@@ -71,7 +71,9 @@ enregistrées demande confirmation.
 ## 4. Ce que fait « Mettre en ligne »
 
 1. Exporte les contenus publiés dans `js/data/*.js` et `js/i18n/contenus-*.js` (même format qu'avant)
-   et copie les images importées, optimisées en WebP, dans `assets/img/cms/`.
+   et copie les images importées, optimisées en WebP, dans `assets/img/cms/`. Les variantes qui ne servent
+   plus y sont retirées ; une image du dépôt déjà présente dans ce dossier (base reconstruite en
+   important un site que le CMS publiait déjà) est conservée, puisque c'est elle que le site affiche.
 2. Lance les outils existants : `event-pages` (fiches et images d'aperçu), `generate-calendar`
    (agenda), `maps` (plans des nouveaux lieux, si `CMS_RUN_MAPS=1`), `langues` (pages `de/`, `en/`,
    sitemap), puis `validate`.
