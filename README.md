@@ -38,6 +38,7 @@ partials/header.html, footer.html  Header et footer communs (voir « Header et f
 css/style.css                     Charte, composants, menu plein écran, accueil
 css/pages.css                     Pages intérieures (événements, galerie, formulaire, légal…)
 css/components/team.css            Page association (équipe)
+css/components/artistes.css        Page Artistes (roster mis en page comme un magazine ; photos de scène dans assets/img/roster/)
 js/partials.js                    Menu, page active, en-tête au défilement, JSON-LD (toutes les pages)
 js/pages/*.js                     Un script par page (événements, galerie, FAQ, contact…)
 js/components/                    Modules partagés par plusieurs pages (artistes, équipe, données structurées des soirées)

@@ -54,6 +54,7 @@
   <link rel="preload" href="assets/fonts/montserrat-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="css/style.css?v=2" />
   <link rel="stylesheet" href="css/pages.css" />
+  <link rel="stylesheet" href="css/components/artistes.css" />
   <script type="module" src="js/partials.js"></script>
 </head>
 <body data-page="evenements">
@@ -109,19 +110,98 @@
 </nav>
 <!-- /partial:header -->
 
-  <main id="main">
-    <section class="page-head container">
-      <a class="event-back artists-back" href="de/evenements.html"><span aria-hidden="true">←</span> Zurück zu den Events</a>
-      <h1><span class="l2">Künstler</span></h1>
-      <img class="decor decor-r decor--float" src="assets/img/decor/star-lavender.webp" alt="" aria-hidden="true" />
-      <p>Die DJs, die unsere Partys zum Beben gebracht haben. Klick auf einen Namen, um ihnen auf Instagram zu folgen.</p>
+  <main id="main" class="ar">
+    <!-- 1. Couverture : le titre en bandeau de magazine, la photo de scène passe devant les lettres, le sommaire des DJ -->
+    <section class="ar-cover" aria-labelledby="ar-title">
+      <div class="ar-wrap ar-cover__grid">
+        <a class="ar-cover__back" href="de/evenements.html"><span aria-hidden="true">←</span> Zurück zu den Events</a>
+        <h1 class="ar-cover__title" id="ar-title">Künstler</h1>
+        <figure class="ar-cover__main ar-marks">
+          <img src="assets/img/roster/scene-faisceau.webp" srcset="assets/img/roster/scene-faisceau-640.webp 640w, assets/img/roster/scene-faisceau.webp 1080w" sizes="(max-width:759px) 92vw, 44vw" width="1080" height="1080" alt="Eine DJ an den Decks unter einem blauen Lichtstrahl, darüber das beleuchtete Tekno-Never-Dies-Logo" fetchpriority="high" decoding="async" />
+          <figcaption translate="no">ICE BOILER v1 · 22.11.2025</figcaption>
+        </figure>
+        <figure class="ar-cover__inset">
+          <img src="assets/img/roster/scene-masque-420.webp" srcset="assets/img/roster/scene-masque-420.webp 420w, assets/img/roster/scene-masque.webp 720w" sizes="(max-width:759px) 40vw, 17vw" width="420" height="420" alt="Ein maskierter DJ mit Cap und Krawatte über das Mischpult gebeugt, in Schwarz-Weiß" decoding="async" />
+        </figure>
+        <svg class="ar-stamp" viewBox="0 0 200 200" aria-hidden="true" focusable="false" translate="no">
+          <defs><path id="ar-stamp-ring" d="M100 100m-74 0a74 74 0 1 1 148 0a74 74 0 1 1-148 0"/></defs>
+          <circle cx="100" cy="100" r="96" class="ar-stamp__disc"/>
+          <circle cx="100" cy="100" r="52" class="ar-stamp__inner"/>
+          <text class="ar-stamp__text"><textPath href="#ar-stamp-ring" textLength="462">TEKNO NEVER DIES ✦ ROSTER ✦ BEHIND THE DECKS ✦</textPath></text>
+          <path class="ar-stamp__star" d="M100 66l7.6 23.4L132 100l-24.4 10.6L100 134l-7.6-23.4L68 100l24.4-10.6z"/>
+        </svg>
+        <div class="ar-cover__lines">
+          <p class="ar-cover__tagline"><span>Sie tragen</span> <span>die Nacht.</span></p>
+          <p class="ar-cover__lede">Die DJs, die unsere Partys zum Beben gebracht haben: ihre Gesichter, ihre Welten, ihr Sound.</p>
+          <nav class="ar-index" aria-labelledby="ar-index-title">
+            <p class="ar-index__title" id="ar-index-title">Inhalt</p>
+            <div class="ar-index__faces" id="ar-index"></div>
+          </nav>
+        </div>
+        <figure class="ar-cover__inset ar-cover__inset--crowd">
+          <img src="assets/img/roster/scene-platines-420.webp" srcset="assets/img/roster/scene-platines-420.webp 420w, assets/img/roster/scene-platines.webp 640w" sizes="(max-width:1023px) 30vw, 22vw" width="420" height="315" alt="Ein DJ an den Decks, Kopfhörer um den Hals, die Hände am Mischpult, in Schwarz-Weiß" loading="lazy" decoding="async" />
+        </figure>
+      </div>
     </section>
-    <section class="container artists-section">
-      <ul id="artists" class="artists-grid" role="list"></ul>
-      <div class="cta-panel">
-        <h2>Du legst auf?</h2>
-        <p>Schick uns ein Set oder stell dich vor: Wir suchen immer neue Gesichter für unsere Partys und DJ-Contests.</p>
-        <a class="btn btn-cyan" href="de/contact.html?type=dj">Set vorschlagen</a>
+
+    <!-- 02. Le roster : en-tête discret, puis les compositions de magazine (js/pages/artistes.js) -->
+    <section class="ar-roster" aria-labelledby="ar-roster-title">
+      <div class="ar-wrap ar-roster__head">
+        <h2 class="ar-roster__title" id="ar-roster-title"><span class="ar-chap" aria-hidden="true">02</span> <span>Das Roster</span></h2>
+        <p class="ar-roster__text">Alle DJs, die bei uns an den Decks standen, vom treuesten bis zum neuesten.</p>
+      </div>
+      <div class="ar-wrap ar-pages" id="artists"></div>
+    </section>
+
+    <!-- 03. Dossier photo : planche contact d'une soirée, sans légende nominative -->
+    <figure class="ar-sheet" aria-labelledby="ar-sheet-title">
+      <div class="ar-wrap">
+        <figcaption class="ar-sheet__head">
+          <span class="ar-sheet__kicker"><span class="ar-chap" aria-hidden="true">03</span> <span>Kontaktabzug</span></span>
+          <span class="ar-sheet__title" id="ar-sheet-title">Hinter den Decks</span>
+          <span class="ar-sheet__meta"><span translate="no">ICE BOILER v1 · 22.11.2025 ·</span> <a href="de/galerie.html#ice-boiler">Das ganze Album in der Galerie <span aria-hidden="true">→</span></a></span>
+        </figcaption>
+        <div class="ar-sheet__frames">
+          <div class="ar-sheet__frame ar-sheet__frame--a"><img src="assets/img/roster/scene-rouge-480.webp" srcset="assets/img/roster/scene-rouge-480.webp 480w, assets/img/roster/scene-rouge.webp 760w" sizes="(max-width:759px) 50vw, 33vw" width="480" height="600" alt="Zwei DJs back to back in rotem Licht, einer über die Decks gebeugt" loading="lazy" decoding="async" /><span class="ar-sheet__no" aria-hidden="true">12A</span>
+            <span class="ar-sheet__tag" aria-hidden="true" translate="no">B2B</span>
+            <svg class="ar-sheet__pick" viewBox="0 0 200 200" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path pathLength="1" d="M28 104C22 52 74 18 118 22c44 4 70 42 62 86-8 46-58 74-102 64C42 164 18 132 24 96c3-18 14-34 30-44"/></svg>
+          </div>
+          <div class="ar-sheet__frame ar-sheet__frame--b"><img src="assets/img/roster/scene-mains-560.webp" srcset="assets/img/roster/scene-mains-560.webp 560w, assets/img/roster/scene-mains.webp 960w" sizes="(max-width:759px) 50vw, 42vw" width="560" height="420" alt="Nahaufnahme der Hände eines DJs an den Reglern des Mischpults" loading="lazy" decoding="async" /><span class="ar-sheet__no" aria-hidden="true">13A</span></div>
+          <div class="ar-sheet__frame ar-sheet__frame--c"><img src="assets/img/roster/scene-bras-480.webp" srcset="assets/img/roster/scene-bras-480.webp 480w, assets/img/roster/scene-bras.webp 760w" sizes="(max-width:759px) 50vw, 25vw" width="480" height="600" alt="Eine DJ reißt hinter den Decks beide Arme hoch, die Kopfhörer um den Hals" loading="lazy" decoding="async" /><span class="ar-sheet__no" aria-hidden="true">16A</span></div>
+          <div class="ar-sheet__frame ar-sheet__frame--d"><img src="assets/img/roster/scene-duo-560.webp" srcset="assets/img/roster/scene-duo-560.webp 560w, assets/img/roster/scene-duo.webp 900w" sizes="(max-width:759px) 100vw, 25vw" width="560" height="373" alt="Zwei DJs nebeneinander an den Decks, in Schwarz-Weiß" loading="lazy" decoding="async" /><span class="ar-sheet__no" aria-hidden="true">14A</span></div>
+          <div class="ar-sheet__frame ar-sheet__frame--e"><img src="assets/img/roster/scene-profil-480.webp" srcset="assets/img/roster/scene-profil-480.webp 480w, assets/img/roster/scene-profil.webp 760w" sizes="(max-width:759px) 100vw, 17vw" width="480" height="600" alt="Ein DJ im Profil an den Decks, in Schwarz-Weiß, hinter ihm ein Lichtstrahl" loading="lazy" decoding="async" /><span class="ar-sheet__no" aria-hidden="true">15A</span></div>
+        </div>
+      </div>
+    </figure>
+
+    <!-- Suite du roster, après la planche contact -->
+    <section class="ar-roster ar-roster--suite" aria-label="Das Roster" hidden>
+      <div class="ar-wrap ar-pages" id="artists-more"></div>
+    </section>
+
+    <!-- 04. Conclusion : le dancefloor referme le numéro -->
+    <section class="ar-outro" aria-labelledby="ar-outro-title">
+      <div class="ar-outro__media">
+        <img src="assets/img/roster/dancefloor-800.webp" srcset="assets/img/roster/dancefloor-800.webp 800w, assets/img/roster/dancefloor.webp 1536w" sizes="100vw" width="800" height="573" alt="Der Dancefloor in rotem Licht, über den Decks das beleuchtete Tekno-Never-Dies-Logo" loading="lazy" decoding="async" />
+      </div>
+      <div class="ar-wrap ar-outro__inner">
+        <div class="ar-outro__lead">
+          <h2 class="ar-outro__title" id="ar-outro-title"><span>Verschiedene Welten.</span> <span>Eine Energie.</span></h2>
+          <p class="ar-outro__text">Trance, Hard Techno, Schranz oder Bouncy: auf demselben Soundsystem, vor demselben Publikum, für dieselbe Nacht.</p>
+        </div>
+        <nav class="ar-outro__next" aria-labelledby="ar-outro-next">
+          <p class="ar-outro__kicker" id="ar-outro-next"><span class="ar-chap" aria-hidden="true">04</span> <span>Weiterlesen</span></p>
+          <ul class="ar-outro__links" role="list">
+            <li><a href="de/evenements.html"><span>Die nächsten Partys</span> <span class="ar-outro__no" aria-hidden="true">→</span></a></li>
+            <li><a href="de/nos-actions.html"><span>Das Soundsystem</span> <span class="ar-outro__no" aria-hidden="true">→</span></a></li>
+            <li><a href="de/galerie.html"><span>Die Galerie</span> <span class="ar-outro__no" aria-hidden="true">→</span></a></li>
+          </ul>
+        </nav>
+        <div class="ar-call">
+          <h2 class="ar-call__title">Du legst auf?</h2>
+          <p>Schick uns ein Set oder stell dich vor: Wir suchen immer neue Gesichter für unsere Partys und DJ-Contests.</p>
+          <a class="btn ar-call__btn" href="de/contact.html?type=dj">Set vorschlagen</a>
+        </div>
       </div>
     </section>
   </main>
