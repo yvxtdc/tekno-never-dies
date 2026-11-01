@@ -410,22 +410,47 @@ main.ar ~ .site-footer{margin-top:0;background:#07051a;border-top-color:rgba(149
 .ar-face{
   --slide:clamp(56px,9%,140px);   /* largeur du disque qui dépasse */
   --ring-x:78%;                   /* centre de l'usure : là où le disque repose dans la pochette */
+  --lbl:var(--pink);              /* couleur de l'étiquette du disque, par face */
+  --lbl-ink:#fff;
   position:relative;
   isolation:isolate
 }
 .ar-face--left{--ring-x:22%}
+.ar-face--c1{--lbl:var(--cyan);--lbl-ink:#07051a}
+.ar-face--c2{--lbl:var(--lav);--lbl-ink:#07051a}
+.ar-face--c3{--lbl:var(--violet);--lbl-ink:#fff}
 .ar-face .ar-page{width:calc(100% - var(--slide))}
 .ar-face--left .ar-page{margin-left:auto}
+/* Matière du panneau : carton imprimé mat. Tout reste dans le fond et les pseudo-éléments du panneau
+   (aucun filtre sur le conteneur : textes, photos et disques ne sont pas touchés), à très faible
+   intensité : la texture se sent plus qu'elle ne se voit.
+   - marbrure lente du carton (assets/img/roster/carton.svg : bruit basse fréquence, étiré sans répétition) ;
+   - encre de la face (couleur de l'étiquette du disque) déposée de façon un peu inégale ;
+   - grain d'impression à deux échelles (::before) pour casser la répétition ;
+   - bords du carton : filet clair, arête haute éclairée, arête basse dans l'ombre. */
 .ar-face .ar-page{
-  background:
+  --rings:
     radial-gradient(circle 380px at var(--ring-x) 46%,transparent 0 361px,rgba(255,255,255,.06) 366px,transparent 375px),
-    radial-gradient(circle 300px at var(--ring-x) 46%,transparent 0 290px,rgba(255,255,255,.025) 293px,transparent 298px),
+    radial-gradient(circle 300px at var(--ring-x) 46%,transparent 0 290px,rgba(255,255,255,.025) 293px,transparent 298px);
+  border-radius:3px;
+  background:
+    var(--rings),
+    radial-gradient(75% 60% at 6% 0%,color-mix(in srgb,var(--lbl) 6%,transparent),transparent 72%),
+    radial-gradient(60% 55% at 98% 100%,color-mix(in srgb,var(--lbl) 4%,transparent),transparent 70%),
+    url("../../assets/img/roster/carton.svg") 0 0/100% 100% no-repeat, /* étirée sur tout le panneau : aucun raccord de tuile */
     radial-gradient(120% 90% at 50% 50%,transparent 70%,rgba(193,177,255,.035) 100%),
-    #0b0910;
+    #0e0b15;
   box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,.05),
-    inset 0 0 70px rgba(0,0,0,.55),
+    inset 0 0 0 1px rgba(255,255,255,.065),
+    inset 0 1px 0 rgba(255,255,255,.09),
+    inset 0 -2px 0 rgba(0,0,0,.45),
+    inset 0 0 70px rgba(0,0,0,.5),
     0 30px 70px rgba(0,0,0,.5)
+}
+.ar-face .ar-page::before{
+  background:var(--ar-grain) 0 0/160px 160px,var(--ar-grain) 47px 83px/248px 248px;
+  opacity:.085;
+  border-radius:inherit
 }
 /* ouverture de la pochette : le bord par où sort le disque est souligné */
 .ar-face--right .ar-page{border-right:2px solid rgba(193,177,255,.22)}
@@ -439,23 +464,35 @@ main.ar ~ .site-footer{margin-top:0;background:#07051a;border-top-color:rgba(149
   aspect-ratio:1;
   border-radius:50%;
   background:
-    radial-gradient(circle,#0b0910 0 1.2%,var(--pink) 1.4% 15%,#08070c 15.3% 16%,transparent 16.2%),
-    conic-gradient(from 20deg,transparent 0 6%,rgba(255,255,255,.16) 11%,transparent 17% 55%,rgba(193,177,255,.12) 61%,transparent 67%),
-    radial-gradient(circle,transparent 0 47%,rgba(255,255,255,.08) 47.4% 48.4%,transparent 48.8% 61%,rgba(255,255,255,.07) 61.4% 62.2%,transparent 62.6% 76%,rgba(255,255,255,.06) 76.4% 77%,transparent 77.4%),
-    repeating-radial-gradient(circle,#0a0910 0 2px,#1d1a29 2px 3px,#0a0910 3px 4.5px);
-  /* tranche lavande, bord lisse du disque, ombre portée */
-  box-shadow:inset 0 0 0 2px rgba(193,177,255,.4),inset 0 0 0 10px #0b0a11,inset 0 0 0 11px rgba(255,255,255,.08),0 24px 60px rgba(0,0,0,.6);
+    /* deux reflets opposés : la signature du vinyle sous la lumière */
+    conic-gradient(from 25deg,transparent 0 3%,rgba(255,255,255,.2) 8%,transparent 14% 50%,rgba(193,177,255,.17) 58%,transparent 64%),
+    /* plages entre les morceaux */
+    radial-gradient(circle,transparent 0 46.6%,rgba(255,255,255,.1) 47% 47.8%,transparent 48.2% 60.6%,rgba(255,255,255,.09) 61% 61.7%,transparent 62.1% 75.6%,rgba(255,255,255,.08) 76% 76.6%,transparent 77%),
+    repeating-radial-gradient(circle,#0b0a12 0 1.5px,#22202e 1.5px 2.4px,#0b0a12 2.4px 3.6px);
+  /* bord lisse, tranche lavande, ombre portée */
+  box-shadow:inset 0 0 0 1.5px rgba(193,177,255,.45),inset 0 0 0 9px #0c0b12,inset 0 0 0 10px rgba(255,255,255,.1),0 24px 60px rgba(0,0,0,.6);
   transition:translate 1.2s var(--ar-ease)
 }
 .ar-face--left .ar-face__disc{right:auto;left:0}
-.ar-face:nth-child(4n+3) .ar-face__disc{background:
-    radial-gradient(circle,#0b0910 0 1.2%,var(--cyan) 1.4% 15%,#08070c 15.3% 16%,transparent 16.2%),
-    conic-gradient(from 200deg,transparent 0 6%,rgba(255,255,255,.16) 11%,transparent 17% 55%,rgba(193,177,255,.12) 61%,transparent 67%),
-    radial-gradient(circle,transparent 0 47%,rgba(255,255,255,.08) 47.4% 48.4%,transparent 48.8% 61%,rgba(255,255,255,.07) 61.4% 62.2%,transparent 62.6% 76%,rgba(255,255,255,.06) 76.4% 77%,transparent 77.4%),
-    repeating-radial-gradient(circle,#0a0910 0 2px,#1d1a29 2px 3px,#0a0910 3px 4.5px)}
+.ar-face__label{
+  position:absolute;
+  inset:33%;
+  width:34%;
+  height:34%;
+  overflow:visible;
+  transition:rotate 1.6s var(--ar-ease)
+}
+.ar-face__paper{fill:var(--lbl)}
+.ar-face__ring{fill:none;stroke:var(--lbl-ink);stroke-width:.5;opacity:.45}
+.ar-face__label text{fill:var(--lbl-ink);font-family:var(--text);font-weight:800}
+.ar-face__arc{font-size:7.4px;letter-spacing:.14em}
+.ar-face__label .ar-face__letter{font-family:var(--display);font-weight:400;font-size:26px}
+.ar-face__rpm{font-size:6px;letter-spacing:.2em;opacity:.8}
+.ar-face__hole{fill:#07051a;stroke:rgba(255,255,255,.35);stroke-width:.6}
 /* le disque sort de sa pochette quand la page arrive à l'écran */
 .ar-anim .ar-face--right:not(.is-in) .ar-face__disc{translate:calc(var(--slide) * -1) 0}
 .ar-anim .ar-face--left:not(.is-in) .ar-face__disc{translate:var(--slide) 0}
+.ar-anim .ar-face:not(.is-in) .ar-face__label{rotate:-120deg}
 
 /* ---------- Fiche (commune) ---------- */
 .ar-entry{
@@ -481,7 +518,7 @@ main.ar ~ .site-footer{margin-top:0;background:#07051a;border-top-color:rgba(149
   pointer-events:none;
   transition:opacity .5s ease
 }
-.ar-entry__frame img{
+.ar-entry__frame > img{
   display:block;
   width:100%;
   height:auto;
@@ -576,7 +613,6 @@ main.ar ~ .site-footer{margin-top:0;background:#07051a;border-top-color:rgba(149
 /* taille calculée sur la seule colonne du texte (la photo occupe le reste) */
 .ar-entry--side .ar-entry__name{grid-column:2;grid-row:1;margin-bottom:8px;font-size:min(var(--fs),calc((100cqi - var(--photo-col) - 26px) / (var(--len) * .82)))}
 .ar-entry--side .ar-entry__cap{grid-column:2;grid-row:2}
-.ar-entry--side .ar-entry__dot{top:6px;left:6px;width:22px;height:22px;font-size:.58rem;box-shadow:0 0 0 3px rgba(182,38,154,.35)}
 
 /* ---------- Page « trio » : trois artistes à égalité ---------- */
 .ar-page--trio .ar-page__body{
@@ -593,24 +629,18 @@ main.ar ~ .site-footer{margin-top:0;background:#07051a;border-top-color:rgba(149
 /* Fiche sans photo : le nom et la légende seuls */
 .ar-entry--nophoto .ar-entry__name{margin-top:0}
 
-/* ---------- Vocabulaire graphique : la pochette de disque annotée ----------
-   Dérivé des annotations de la page Sound System (crayon gras rose, étiquette inclinée « Platines »,
-   pastilles numérotées, relevés au trait), appliqué à l'objet musical de l'artiste : le portrait est
-   une pochette, un vinyle dessiné en sort, une pastille numérote le disque, une étiquette annote le
-   style. Tout est décoratif (aria-hidden) : les informations restent dans la légende. */
+/* ---------- La collection : chaque artiste a sa pochette de disque ----------
+   Le portrait est la face avant d'une pochette 12" imprimée (.ar-cv), composée pour l'artiste ; le disque
+   (.ar-vinyl, même texture que les grands disques des faces) en sort. Signature commune de la collection :
+   badge et nom du collectif, numéro du roster sur un aplat, nom en capitales d'affiche, grain d'impression,
+   carton avec épaisseur et ombre. Compositions (js/pages/artistes.js, COVERS) : affiche, bande, verticale,
+   ronde, contour, trame, logo. Les tailles de texte suivent la largeur de la pochette (cqw : unité physique, juste aussi pour le nom vertical). Décor
+   aria-hidden : le nom, le style et les liens restent dans la fiche. */
+.ar-entry__photo{position:relative}
 .ar-entry__photo.has-vinyl{isolation:isolate}
 .ar-entry__frame{z-index:1}
-/* usure circulaire de la pochette (« ring wear »), à peine visible */
-.ar-entry__photo.has-vinyl .ar-entry__frame::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  z-index:2;
-  background:radial-gradient(circle at 50% 50%,transparent 0 42%,rgba(255,255,255,.13) 42.6%,transparent 44.5%,transparent 46%,rgba(255,255,255,.07) 46.6%,transparent 48%);
-  mix-blend-mode:screen;
-  pointer-events:none
-}
 
+/* le disque */
 .ar-vinyl{
   --vx:0%;
   --vy:0%;
@@ -619,49 +649,131 @@ main.ar ~ .site-footer{margin-top:0;background:#07051a;border-top-color:rgba(149
   left:3%;
   z-index:0;
   width:94%;
-  height:auto;
   aspect-ratio:1;
-  overflow:visible;
+  border-radius:50%;
   translate:var(--vx) var(--vy);
-  filter:drop-shadow(0 14px 28px rgba(0,0,0,.6));
-  transition:translate 1.1s var(--ar-ease) .2s,rotate .9s var(--ar-ease)
+  background:
+    conic-gradient(from 25deg,transparent 0 3%,rgba(255,255,255,.2) 8%,transparent 14% 50%,rgba(193,177,255,.17) 58%,transparent 64%),
+    radial-gradient(circle,transparent 0 46.6%,rgba(255,255,255,.1) 47% 47.8%,transparent 48.2% 60.6%,rgba(255,255,255,.09) 61% 61.7%,transparent 62.1% 75.6%,rgba(255,255,255,.08) 76% 76.6%,transparent 77%),
+    repeating-radial-gradient(circle,#0b0a12 0 1.5px,#22202e 1.5px 2.4px,#0b0a12 2.4px 3.6px);
+  box-shadow:inset 0 0 0 1.5px rgba(193,177,255,.45),inset 0 0 0 4px #0c0b12,inset 0 0 0 5px rgba(255,255,255,.1),0 14px 30px rgba(0,0,0,.6);
+  transition:translate 1.1s var(--ar-ease) .2s
 }
 .ar-vinyl--diag{--vx:30%;--vy:-20%}
 .ar-vinyl--top{--vy:-36%}
 .ar-vinyl--diag-left{--vx:-30%;--vy:-20%}
-.ar-vinyl__disc{fill:#0a0910;stroke:rgba(193,177,255,.28);stroke-width:1}
-.ar-vinyl__grooves circle{fill:none;stroke:rgba(255,255,255,.1);stroke-width:.8}
-.ar-vinyl__sheen{fill:none;stroke:rgba(255,255,255,.26);stroke-width:3;stroke-linecap:round}
-.ar-vinyl__label{fill:var(--pink)}
-.ar-look--mono .ar-vinyl__label{fill:#e9e4f2}
-.ar-look--cold .ar-vinyl__label{fill:var(--cyan)}
-.ar-look--color .ar-vinyl__label{fill:var(--pink)}
-.ar-look--magenta .ar-vinyl__label{fill:var(--violet)}
-.ar-vinyl__text{fill:#fff;font-family:var(--text);font-size:7.2px;font-weight:700;letter-spacing:.06em}
-.ar-look--mono .ar-vinyl__text{fill:var(--ar-black)}
-.ar-vinyl__hole{fill:var(--ar-black)}
+.ar-entry--lead .ar-vinyl--diag{--vx:54%;--vy:-6%}       /* artiste principal : le disque sort assez pour montrer son étiquette */
+.ar-entry--lead .ar-vinyl--diag-left{--vx:-54%;--vy:-6%}
+.ar-vinyl__label{position:absolute;inset:33%;width:34%;height:34%;overflow:visible;transition:rotate .9s var(--ar-ease)}
+.ar-vinyl__paper{fill:var(--acc,var(--pink))}
+.ar-vinyl__ring{fill:none;stroke:#fff;stroke-width:.5;opacity:.4}
+.ar-vinyl__text{fill:#fff;font-family:var(--text);font-size:7px;font-weight:800;letter-spacing:.08em}
+.ar-vinyl__hole{fill:#07051a;stroke:rgba(255,255,255,.35);stroke-width:.6}
 /* bras de platine, relevé au trait comme les dessins du Sound System */
-.ar-vinyl__arm{fill:none;stroke:var(--ar-lav-2);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.ar-vinyl__arm{position:absolute;inset:0;width:100%;height:100%;overflow:visible;fill:none;stroke:var(--ar-lav-2);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 .ar-vinyl__arm circle{fill:var(--pink);stroke:rgba(182,38,154,.35);stroke-width:6}
 
-/* pastille numérotée (comme les repères du Sound System), collée sur la pochette */
-.ar-entry__dot{
-  position:absolute;
-  top:10px;
-  left:10px;
-  z-index:4;
-  display:grid;
-  place-items:center;
-  width:30px;
-  height:30px;
-  border-radius:50%;
-  background:var(--pink);
-  box-shadow:0 0 0 4px rgba(182,38,154,.35);
-  color:#fff;
-  font-size:.66rem;
-  font-weight:700;
-  letter-spacing:.04em
+/* la pochette : carton imprimé, épaisseur, ombre */
+.ar-cv{
+  container-type:inline-size;
+  aspect-ratio:1;
+  border-radius:2px;
+  background:#0d0a1c;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.1),
+    3px 3px 0 #05030f,
+    3px 3px 0 1px rgba(193,177,255,.14),
+    0 22px 46px rgba(0,0,0,.6)
 }
+.ar-cv > img{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto}
+.ar-cv::before{ /* vernis mat : un reflet très léger, le bas un peu plus sombre */
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:4;
+  background:linear-gradient(128deg,rgba(255,255,255,.1),transparent 28%,transparent 72%,rgba(0,0,0,.22));
+  pointer-events:none
+}
+.ar-cv__print{
+  position:absolute;
+  inset:0;
+  z-index:2;
+  display:flex;
+  flex-direction:column;
+  padding:6cqw;
+  color:#fff;
+  pointer-events:none
+}
+.ar-cv__print::after{ /* grain d'impression sur les encres */
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  background:var(--ar-grain);
+  opacity:.3;
+  mix-blend-mode:overlay
+}
+.ar-cv__top{position:relative;display:flex;align-items:center;gap:2.4cqw;font-size:max(5px,3.1cqw);font-weight:800;letter-spacing:.22em;line-height:1;text-transform:uppercase}
+.ar-cv__logo{width:max(14px,9cqw);height:auto;border-radius:50%}
+.ar-cv__no{margin-left:auto;padding:.4em .55em;background:var(--acc);letter-spacing:.12em}
+.ar-cv__name{
+  position:relative;
+  display:flex;
+  flex-wrap:wrap;
+  column-gap:.24em;
+  margin-top:auto;
+  font-family:var(--display);
+  font-size:min(17cqw,calc(88cqw / (var(--word) * .8)));
+  line-height:.86;
+  letter-spacing:-.02em;
+  text-transform:uppercase
+}
+.ar-cv__styles{position:relative;margin-top:2.6cqw;font-size:max(5px,3cqw);font-weight:700;letter-spacing:.2em;line-height:1.3;text-transform:uppercase}
+@container (max-width:200px){ /* petites pochettes : badge, numéro et nom seuls */
+  .ar-cv__brand,
+  .ar-cv__styles{display:none}
+  .ar-cv__print{padding:7cqw}
+  .ar-cv__no{font-size:max(6px,7cqw)}
+}
+
+/* affiche : photo pleine page, cadre fin imprimé, nom en bas */
+.ar-cv--affiche .ar-cv__print{inset:4.5cqw;padding:4.5cqw;box-shadow:inset 0 0 0 1px rgba(255,255,255,.6);background:linear-gradient(transparent 40%,rgba(7,5,26,.85))}
+/* bande : photo en haut, aplat de couleur en bas qui porte le nom */
+.ar-cv--bande{background:var(--acc)}
+.ar-cv--bande > img{height:62%;border-bottom:1.4cqw solid #07051a}
+.ar-cv--bande .ar-cv__top{text-shadow:0 1px 6px rgba(0,0,0,.6)}
+.ar-cv--bande .ar-cv__no{background:#07051a}
+.ar-cv--bande .ar-cv__name{font-size:min(13cqw,calc(88cqw / (var(--word) * .8)))}
+/* verticale : aplat sombre, photo en colonne, nom vertical sur la gauche */
+.ar-cv--verticale{background:#120b2a}
+.ar-cv--verticale > img{left:30%;width:70%}
+.ar-cv--verticale .ar-cv__print::before{content:"";position:absolute;top:0;bottom:0;left:30%;width:1.6cqw;background:var(--acc)}
+.ar-cv--verticale .ar-cv__name{position:absolute;left:5cqw;bottom:6cqw;flex-wrap:nowrap;writing-mode:vertical-rl;rotate:180deg;font-size:min(21cqw,calc(82cqw / (var(--len) * .8)))}
+.ar-cv--verticale .ar-cv__styles{margin-top:auto;margin-left:28cqw;text-shadow:0 1px 6px rgba(0,0,0,.7)}
+/* ronde : photo découpée en rond, sillons concentriques imprimés sur l'aplat */
+.ar-cv--ronde{background:
+    radial-gradient(circle 31cqw at 50% 44%,transparent 0 28cqw,#07051a 28cqw 29.4cqw,transparent 29.4cqw),
+    repeating-radial-gradient(circle at 50% 44%,transparent 0 1.8cqw,rgba(7,5,26,.28) 1.8cqw 2.2cqw),
+    color-mix(in srgb,var(--acc) 78%,#07051a)}
+.ar-cv--ronde > img{clip-path:circle(28% at 50% 44%)}
+.ar-cv--ronde .ar-cv__name{flex-wrap:nowrap;justify-content:center;font-size:min(12cqw,calc(86cqw / (var(--len) * .8)))}
+.ar-cv--ronde .ar-cv__styles{text-align:center;margin-top:1.6cqw}
+/* contour : photo pleine page, nom géant au trait */
+.ar-cv--contour .ar-cv__print{background:linear-gradient(rgba(7,5,26,.3),rgba(7,5,26,.55))}
+.ar-cv--contour .ar-cv__name{margin:auto 0;color:transparent;-webkit-text-stroke:max(1px,.4cqw) #fff;font-size:min(30cqw,calc(90cqw / (var(--word) * .8)))}
+.ar-cv--contour .ar-cv__styles{align-self:flex-start;margin:0;padding:.5em .7em;background:var(--acc)}
+/* trame : photo tramée comme une affiche photocopiée, nom sur bandeaux roses */
+.ar-cv--trame .ar-cv__print{background:radial-gradient(circle,rgba(7,5,26,.55) 0 32%,transparent 38%) 0 0/1.7cqw 1.7cqw}
+.ar-cv--trame .ar-cv__name{flex-direction:column;align-items:flex-start;row-gap:1.4cqw;margin-top:7cqw}
+.ar-cv--trame .ar-cv__name span{padding:.08em .16em 0;background:var(--pink);rotate:-3deg}
+.ar-cv--trame .ar-cv__styles{align-self:flex-start;margin-top:auto;padding:.5em .7em;background:#07051a}
+.ar-cv--trame .ar-cv__brand{padding:.4em .6em;background:#07051a}
+/* logo : visuel graphique entier sur fond noir */
+.ar-cv--logo{background:#000}
+.ar-cv--logo > img{inset:18%;width:64%;height:64%;object-fit:contain}
+.ar-cv--logo .ar-cv__name{justify-content:center;font-size:min(10cqw,calc(86cqw / (var(--word) * .8)))}
+.ar-cv--logo .ar-cv__styles{text-align:center}
+
 /* étiquette au crayon : le style annoté sur la photo, avec sa flèche tracée à la main */
 .ar-entry__tag{
   position:absolute;
@@ -714,7 +826,7 @@ main.ar ~ .site-footer{margin-top:0;background:#07051a;border-top-color:rgba(149
 }
 
 @media (hover:hover){
-  .ar-entry:hover .ar-vinyl{rotate:24deg}
+  .ar-entry:hover .ar-vinyl__label{rotate:60deg}
 }
 
 /* Fiche sans photo : le nom et la légende seuls */
@@ -722,15 +834,15 @@ main.ar ~ .site-footer{margin-top:0;background:#07051a;border-top-color:rgba(149
 .ar-entry--nophoto .ar-entry__cap{margin-bottom:0}
 
 /* Rendus photo (choisis par artiste dans js/pages/artistes.js) */
-.ar-look--mono .ar-entry__frame img{filter:grayscale(1) contrast(1.16) brightness(.94)}
-.ar-look--cold .ar-entry__frame img{filter:saturate(.68) contrast(1.08) brightness(.94) hue-rotate(-6deg)}
+.ar-look--mono .ar-entry__frame > img{filter:grayscale(1) contrast(1.16) brightness(.94)}
+.ar-look--cold .ar-entry__frame > img{filter:saturate(.68) contrast(1.08) brightness(.94) hue-rotate(-6deg)}
 .ar-look--cold .ar-entry__frame::after{
   background:var(--ar-grain),linear-gradient(160deg,rgba(38,154,182,.42),rgba(66,38,182,.34));
   opacity:.5;
   mix-blend-mode:soft-light
 }
-.ar-look--color .ar-entry__frame img{filter:saturate(1.04) contrast(1.06)}
-.ar-look--magenta .ar-entry__frame img{filter:grayscale(1) contrast(1.22) brightness(.92)}
+.ar-look--color .ar-entry__frame > img{filter:saturate(1.04) contrast(1.06)}
+.ar-look--magenta .ar-entry__frame > img{filter:grayscale(1) contrast(1.22) brightness(.92)}
 .ar-look--magenta .ar-entry__frame::after{background:var(--pink);opacity:.62;mix-blend-mode:color}
 .ar-look--logo{--ratio:1} /* visuel graphique : jamais recadré */
 .ar-look--logo .ar-entry__frame{background:#000}
@@ -738,10 +850,10 @@ main.ar ~ .site-footer{margin-top:0;background:#07051a;border-top-color:rgba(149
 
 /* Survol (souris seulement) : le tirage se redresse, la photo reprend un peu de couleur */
 @media (hover:hover){
-  .ar-entry:hover .ar-entry__frame img{transform:scale(1.03)}
-  .ar-look--mono:hover .ar-entry__frame img{filter:grayscale(.25) contrast(1.08)}
+  .ar-entry:hover .ar-entry__frame > img{transform:scale(1.03)}
+  .ar-look--mono:hover .ar-entry__frame > img{filter:grayscale(.25) contrast(1.08)}
   .ar-look--magenta:hover .ar-entry__frame::after{opacity:.28}
-  .ar-look--cold:hover .ar-entry__frame img{filter:saturate(.95) contrast(1.05)}
+  .ar-look--cold:hover .ar-entry__frame > img{filter:saturate(.95) contrast(1.05)}
 }
 
 .ar-entry.is-target .ar-entry__frame{animation:ar-flash 1.4s ease}
@@ -990,6 +1102,8 @@ main.ar ~ .site-footer{margin-top:0;background:#07051a;border-top-color:rgba(149
   .ar-entry--lead .ar-entry__photo{width:min(84%,22rem)}
   .ar-page--lead.is-mirror .ar-entry--lead .ar-entry__photo{margin-left:0}
   .ar-vinyl--diag-left{--vx:30%} /* la page miroir repasse à gauche : le disque sort à droite */
+  .ar-entry--lead .ar-vinyl--diag,
+  .ar-entry--lead .ar-vinyl--diag-left{--vx:40%;--vy:-8%}
   .ar-entry--lead .ar-entry__cap{columns:1}
   .ar-entry--side{--photo-col:6rem}
   /* trio : une liste, comme celle des pages « lead » */
@@ -1028,10 +1142,7 @@ main.ar ~ .site-footer{margin-top:0;background:#07051a;border-top-color:rgba(149
   .ar-face--left .ar-face__disc{left:8%;right:auto}
   .ar-anim .ar-face--right:not(.is-in) .ar-face__disc,
   .ar-anim .ar-face--left:not(.is-in) .ar-face__disc{translate:0 44px}
-  .ar-face .ar-page{background:
-    radial-gradient(circle 190px at 50% 0,transparent 0 178px,rgba(255,255,255,.045) 181px,transparent 186px),
-    radial-gradient(120% 90% at 50% 50%,transparent 70%,rgba(193,177,255,.035) 100%),
-    #0b0910}
+  .ar-face .ar-page{--rings:radial-gradient(circle 190px at 50% 0,transparent 0 178px,rgba(255,255,255,.045) 181px,transparent 186px),linear-gradient(transparent,transparent)}
   .ar-page::after{inset:6px}
   .ar-page--lead .ar-page__body{grid-template-columns:minmax(0,1fr)}
   .ar-page--lead .ar-entry--lead,
@@ -1054,6 +1165,8 @@ main.ar ~ .site-footer{margin-top:0;background:#07051a;border-top-color:rgba(149
   .ar-vinyl--diag,
   .ar-vinyl--top{--vx:20%;--vy:-14%}
   .ar-vinyl--diag-left{--vx:-20%;--vy:-14%}
+  .ar-entry--lead .ar-vinyl--diag{--vx:30%;--vy:-12%}
+  .ar-entry--lead .ar-vinyl--diag-left{--vx:-30%;--vy:-12%}
   .ar-entry__tag{left:-4px}
   .ar-page--lead.is-mirror .ar-entry__tag{right:-4px}
 
@@ -1074,13 +1187,14 @@ main.ar ~ .site-footer{margin-top:0;background:#07051a;border-top-color:rgba(149
 @media (prefers-reduced-motion:reduce){
   .ar-entry,
   .ar-entry__photo,
-  .ar-entry__frame img,
+  .ar-entry__frame > img,
   .ar-entry__frame::after,
   .ar-index__list a,
   .ar-index__disc,
   .ar-outro__links a,
   .ar-vinyl,
-  .ar-face__disc{transition:none}
+  .ar-face__disc,
+  .ar-face__label{transition:none}
   .ar-entry.is-target .ar-entry__frame{animation:none;box-shadow:0 0 0 4px var(--pink-text)}
   .ar-index__list a:hover,
   .ar-index__list a:focus-visible,

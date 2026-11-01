@@ -72,28 +72,62 @@ function paginate(artists) {
   });
 }
 
-/* ---------- Vocabulaire graphique : la pochette de disque annotée ----------
-   Le portrait (carré) devient une pochette d'où sort un vinyle dessiné ; une pastille numérotée et une
-   étiquette rose « au crayon » reprennent les annotations de la page Sound System (« Platines »), mais
-   appliquées au disque de l'artiste. Tout est décoratif (aria-hidden) : le nom, le style et les liens
-   restent dans la légende. */
+/* ---------- La collection : chaque artiste a sa pochette de disque ----------
+   Le portrait devient la face avant d'une pochette 12" imprimée, dessinée pour l'artiste ; le disque en
+   sort. Toutes les pochettes appartiennent à la même collection (signature commune : badge et nom du
+   collectif, numéro du roster, grain d'impression, palette du site) mais chacune a sa composition :
+   - affiche : photo pleine page, cadre fin, nom en bas ;
+   - bande : photo en haut, aplat de couleur en bas qui porte le nom ;
+   - verticale : aplat sombre, photo en colonne, nom vertical sur la tranche gauche ;
+   - ronde : photo découpée en rond dans un aplat aux sillons concentriques ;
+   - contour : photo pleine page, nom géant au trait ;
+   - trame : photo tramée façon affiche photocopiée, nom sur bandeaux roses ;
+   - logo : visuel graphique entier sur fond noir.
+   Un artiste absent de COVERS (nouvelle fiche du CMS) reçoit une composition par défaut, en alternance.
+   Aucune référence commerciale, aucun titre inventé : seulement le nom, le numéro et les styles.
+   Le disque garde la texture des faces (sillons, reflets) ; l'artiste principal de chaque
+   page reçoit l'annotation du Sound System (étiquette au crayon, flèche, bras de platine). Tout le décor est
+   aria-hidden : le nom, le style et les liens restent dans la fiche. */
+const COVERS = {
+  dannocta: "affiche", leander: "bande", blackchills: "ronde", meinos: "contour", mogli: "verticale",
+  redfox: "trame", svengerber: "bande", tnb: "ronde", valk: "affiche", d0molly: "logo",
+  jakobee: "trame", kscmd: "verticale", rayy: "contour", vs: "bande"
+};
+const CYCLE = ["affiche", "bande", "verticale", "ronde", "contour", "trame"];
+const ACCENTS = ["pink", "lav", "cyan", "violet"]; // couleur d'aplat et d'étiquette, en alternance
+const coverOf = (name, i) => COVERS[artistKey(name)] || CYCLE[i % CYCLE.length];
+
 const VINYL = { lead: "diag", "lead~": "diag-left", side: "diag", trio: "top" };
 const ANNOTATED = new Set(["lead", "lead~"]); // étiquette + flèche au crayon, bras de platine
 
 function vinyl(artist, i, side, withArm) {
   const id = `ar-vl-${artistKey(artist.name)}`;
-  const grooves = [92, 86, 80, 73, 66, 58, 50, 43].map((r) => `<circle cx="100" cy="100" r="${r}"/>`).join("");
   return `
-    <svg class="ar-vinyl ar-vinyl--${side}" viewBox="0 0 200 200" aria-hidden="true" focusable="false" translate="no">
-      <defs><path id="${id}" d="M100 100m-25 0a25 25 0 1 1 50 0a25 25 0 1 1-50 0"/></defs>
-      <circle class="ar-vinyl__disc" cx="100" cy="100" r="98"/>
-      <g class="ar-vinyl__grooves">${grooves}</g>
-      <path class="ar-vinyl__sheen" d="M38 52A80 80 0 0 1 96 21"/>
-      <circle class="ar-vinyl__label" cx="100" cy="100" r="34"/>
-      <text class="ar-vinyl__text"><textPath href="#${id}" textLength="150">${esc(artist.name.toUpperCase())} · N°${pad(i + 1)}</textPath></text>
-      <circle class="ar-vinyl__hole" cx="100" cy="100" r="3.2"/>
-      ${withArm ? `<g class="ar-vinyl__arm"><circle cx="186" cy="18" r="9"/><path pathLength="1" d="M186 18L150 92L128 104"/><path pathLength="1" d="M122 98l12 12-6 6-12-12z"/></g>` : ""}
-    </svg>`;
+    <span class="ar-vinyl ar-vinyl--${side}" aria-hidden="true">
+      <svg class="ar-vinyl__label" viewBox="0 0 100 100" focusable="false" translate="no">
+        <defs><path id="${id}" d="M50 50m-36 0a36 36 0 1 1 72 0a36 36 0 1 1-72 0"/></defs>
+        <circle class="ar-vinyl__paper" cx="50" cy="50" r="49"/>
+        <circle class="ar-vinyl__ring" cx="50" cy="50" r="44"/>
+        <text class="ar-vinyl__text"><textPath href="#${id}" textLength="222">${esc(artist.name.toUpperCase())} · N°${pad(i + 1)} · TND ·</textPath></text>
+        <circle class="ar-vinyl__hole" cx="50" cy="50" r="4"/>
+      </svg>
+      ${withArm ? `<svg class="ar-vinyl__arm" viewBox="0 0 200 200" focusable="false"><circle cx="186" cy="18" r="9"/><path pathLength="1" d="M186 18L150 92L128 104"/><path pathLength="1" d="M122 98l12 12-6 6-12-12z"/></svg>` : ""}
+    </span>`;
+}
+
+/** Face avant de la pochette : la photo et l'impression par-dessus (décor, aria-hidden). */
+function cover(artist, i, photo, styles) {
+  const kind = coverOf(artist.name, i);
+  const words = artist.name.split(/\s+/);
+  const longest = Math.max(...words.map((w) => w.length), 3);
+  return `<span class="ar-entry__frame ar-cv ar-cv--${kind}" style="--word:${longest}">
+          <img src="${esc(photo)}" alt="${esc(t("Portrait de {name}", { name: artist.name }))}" width="320" height="320" loading="lazy" decoding="async" />
+          <span class="ar-cv__print" aria-hidden="true" translate="no">
+            <span class="ar-cv__top"><img class="ar-cv__logo" src="assets/img/badge-white.webp" alt="" width="499" height="499" loading="lazy" decoding="async" /><span class="ar-cv__brand">Tekno Never Dies</span><span class="ar-cv__no">N°${pad(i + 1)}</span></span>
+            <span class="ar-cv__name">${words.map((w) => `<span>${esc(w)}</span>`).join(" ")}</span>
+            ${styles.length ? `<span class="ar-cv__styles">${styles.map(esc).join(" · ")}</span>` : ""}
+          </span>
+        </span>`;
 }
 
 function entry(artist, i, role) {
@@ -107,11 +141,10 @@ function entry(artist, i, role) {
   const layout = role.replace("~", "");
   return `
     <article class="ar-entry ar-entry--${layout} ar-look--${lookOf(artist.name, i)}${photo ? "" : " ar-entry--nophoto"}" id="${anchor(artist.name)}"
-        aria-labelledby="${anchor(artist.name)}-nom" style="--len:${Math.max(artist.name.length, 3)}">
-      ${photo ? `<figure class="ar-entry__photo ar-marks${side ? " has-vinyl" : ""}">
+        aria-labelledby="${anchor(artist.name)}-nom" style="--len:${Math.max(artist.name.length, 3)};--acc:var(--${ACCENTS[i % ACCENTS.length]})">
+      ${photo ? `<figure class="ar-entry__photo${side ? " has-vinyl" : ""}">
         ${side ? vinyl(artist, i, side, ANNOTATED.has(role)) : ""}
-        <span class="ar-entry__frame"><img src="${esc(photo)}" alt="${esc(t("Portrait de {name}", { name: artist.name }))}" width="320" height="320" loading="lazy" decoding="async" /></span>
-        <span class="ar-entry__dot" aria-hidden="true">${pad(i + 1)}</span>
+        ${cover(artist, i, photo, styles)}
         ${tag ? `<span class="ar-entry__tag" aria-hidden="true" translate="no">${esc(tag)}</span>
         <svg class="ar-entry__arrow" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path pathLength="1" d="M8 10C30 6 52 18 62 40C68 54 70 66 72 80M72 80L62 72M72 80L78 68"/></svg>` : ""}
       </figure>` : ""}
@@ -130,16 +163,34 @@ function entry(artist, i, role) {
     </article>`;
 }
 
+/* Disque d'une face : sillons en CSS (.ar-face__disc), étiquette imprimée en SVG (nom du collectif
+   en arc, lettre de la face, vitesse, trou central). */
+function sleeveDisc(face) {
+  const id = `ar-fd-${face.toLowerCase()}`;
+  return `<div class="ar-face__disc" aria-hidden="true">
+      <svg class="ar-face__label" viewBox="0 0 100 100" focusable="false" translate="no">
+        <defs><path id="${id}" d="M50 50m-37 0a37 37 0 1 1 74 0a37 37 0 1 1-74 0"/></defs>
+        <circle class="ar-face__paper" cx="50" cy="50" r="49"/>
+        <circle class="ar-face__ring" cx="50" cy="50" r="45"/>
+        <text class="ar-face__arc"><textPath href="#${id}" textLength="228">TEKNO NEVER DIES · TND6TEM ·</textPath></text>
+        <text class="ar-face__letter" x="50" y="44" text-anchor="middle">${esc(face)}</text>
+        <text class="ar-face__rpm" x="50" y="68" text-anchor="middle">33⅓ RPM</text>
+        <circle class="ar-face__hole" cx="50" cy="50" r="3.2"/>
+      </svg>
+    </div>`;
+}
+
 /* ---------- Roster : les pages avant la planche contact, puis après ---------- */
 function page({ kind, mirror, face, artists }) {
   const first = artists[0][1] + 1, last = artists[artists.length - 1][1] + 1;
   const roleOf = (k) => (kind === "trio" ? "trio" : k === 0 ? (mirror ? "lead~" : "lead") : "side");
   const items = artists.map(([a, i], k) => entry(a, i, roleOf(k)));
-  // La page est la pochette : son disque en sort d'un côté, en alternance (A, C à droite ; B, D à gauche).
-  const out = (face.charCodeAt(0) - 65) % 2 ? "left" : "right";
+  // La page est la pochette : son disque en sort d'un côté, en alternance (A, C à droite ; B, D à gauche) ;
+  // l'étiquette du grand disque change de couleur à chaque face (rose, cyan, lavande, violet).
+  const p = face.charCodeAt(0) - 65;
   return `
-    <div class="ar-face ar-face--${out}">
-    <div class="ar-face__disc" aria-hidden="true"></div>
+    <div class="ar-face ar-face--${p % 2 ? "left" : "right"} ar-face--c${p % 4}">
+    ${sleeveDisc(face)}
     <section class="ar-page ar-page--${kind}${mirror ? " is-mirror" : ""}" aria-labelledby="ar-face-${face.toLowerCase()}" style="--n:${artists.length}">
       <header class="ar-page__head">
         <p class="ar-page__kicker"><span class="ar-chap" aria-hidden="true">02</span> <span>${esc(tr("Le roster"))}</span></p>
