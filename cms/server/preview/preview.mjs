@@ -103,10 +103,14 @@ export async function servePreview(req, res, { config, db, subPath, includeEvent
   // Images importées dans le CMS (variantes optimisées).
   if (rel.startsWith("assets/img/cms/")) {
     const entry = data.files.get(rel);
-    if (!entry) throw notFound();
-    const file = await variantFile(config, entry.media, entry.variant);
-    if (serveFile(req, res, file, { headers: HEADERS, cache: "no-store" })) return;
-    throw notFound();
+    if (entry) {
+      const file = await variantFile(config, entry.media, entry.variant);
+      if (serveFile(req, res, file, { headers: HEADERS, cache: "no-store" })) return;
+      throw notFound();
+    }
+    // Image du dépôt enregistrée telle quelle dans ce dossier (site importé alors que le CMS était en
+    // service) : servie depuis le site comme les autres fichiers ; sinon, rien à servir.
+    if (!db.get("SELECT 1 FROM media WHERE storage = 'repo' AND repo_path = ?", rel)) throw notFound();
   }
 
   // Fiche d'une soirée (ou ancienne adresse), rendue avec le modèle du site.
