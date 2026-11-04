@@ -58,9 +58,8 @@ export const EVENTS = [
     ],
     "lineup": [
       {
-        "name": "DJ Contest",
-        "time": "21h00 – 22h00",
-        "contest": true
+        "name": "T.B.R",
+        "time": "21h00 – 22h00"
       },
       {
         "name": "Mogli",
@@ -79,9 +78,6 @@ export const EVENTS = [
         "time": "2h30 – 4h00"
       }
     ],
-    "contest": {
-      "deadline": "2026-11-04"
-    },
     "about": {
       "kicker": "2ᵉ édition · L'hiver selon TND",
       "title": "Froid dehors, brûlant dedans.",
