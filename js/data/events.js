@@ -22,7 +22,8 @@ export const EVENTS = [
       },
       {
         "label": "Regular",
-        "price": 13
+        "price": 13,
+        "status": "soldout"
       },
       {
         "label": "Late",
