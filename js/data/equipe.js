@@ -19,7 +19,47 @@ export const TEAM = [
       "Rôle": "Président de l'association",
       "Pôle": "Organisation"
     },
-    "bio": "Yannis assure l’organisation générale, la supervision, la gestion et la coordination de l’association."
+    "bio": "Yannis assure l’organisation générale, la supervision, la gestion et la coordination de l’association.",
+    "layout": {
+      "photo": {
+        "position": "50% 30%"
+      },
+      "groups": [
+        {
+          "items": [
+            "name",
+            "role",
+            "missions"
+          ],
+          "x": 50,
+          "y": 93.6,
+          "align": "center",
+          "valign": "bottom"
+        }
+      ],
+      "colors": {
+        "name": "violet",
+        "role": "cyan",
+        "missions": "cyan"
+      },
+      "objects": [
+        {
+          "id": "etincelle-jointure",
+          "type": "sparkle",
+          "options": {
+            "points": 8
+          },
+          "anchor": "end",
+          "x": 0,
+          "y": 21,
+          "size": 44,
+          "rotate": 0,
+          "flip": false,
+          "layer": "front",
+          "hideMobile": false
+        }
+      ]
+    }
   },
   {
     "slug": "jonathan-axel",
@@ -36,7 +76,39 @@ export const TEAM = [
       "Rôle": "Gestion, installation et entretien de la sonorisation et des lumières",
       "Pôle": "Technique"
     },
-    "bio": "Jonathan et Axel gèrent l’installation, les réglages, les tests et l’entretien du son et des lumières."
+    "bio": "Jonathan et Axel gèrent l’installation, les réglages, les tests et l’entretien du son et des lumières.",
+    "layout": {
+      "photo": {
+        "position": "50% 45%"
+      },
+      "groups": [
+        {
+          "items": [
+            "name"
+          ],
+          "x": 93,
+          "y": 7.6,
+          "align": "end",
+          "valign": "top"
+        },
+        {
+          "items": [
+            "role",
+            "missions"
+          ],
+          "x": 50,
+          "y": 93.6,
+          "align": "center",
+          "valign": "bottom"
+        }
+      ],
+      "colors": {
+        "name": "cyan",
+        "role": "violet",
+        "missions": "violet"
+      },
+      "objects": []
+    }
   },
   {
     "slug": "estebane",
@@ -52,7 +124,47 @@ export const TEAM = [
       "Rôle": "Montage, installation et appui polyvalent",
       "Pôle": "Événementiel"
     },
-    "bio": "Estebane apporte son aide au montage, à l’installation et aux tâches polyvalentes des événements."
+    "bio": "Estebane apporte son aide au montage, à l’installation et aux tâches polyvalentes des événements.",
+    "layout": {
+      "photo": {
+        "position": "50% 30%"
+      },
+      "groups": [
+        {
+          "items": [
+            "name",
+            "role",
+            "missions"
+          ],
+          "x": 50,
+          "y": 93.6,
+          "align": "center",
+          "valign": "bottom"
+        }
+      ],
+      "colors": {
+        "name": "violet",
+        "role": "cyan",
+        "missions": "cyan"
+      },
+      "objects": [
+        {
+          "id": "eclair",
+          "type": "bolt",
+          "options": {
+            "tint": "violet"
+          },
+          "anchor": "card",
+          "x": 22,
+          "y": 50,
+          "size": 22,
+          "rotate": 10,
+          "flip": false,
+          "layer": "front",
+          "hideMobile": false
+        }
+      ]
+    }
   },
   {
     "slug": "ricky",
@@ -68,7 +180,52 @@ export const TEAM = [
       "Rôle": "Gestion des stocks et organisation du bar",
       "Pôle": "Événementiel"
     },
-    "bio": "Ricky prend en charge l’organisation du bar et la gestion des stocks."
+    "bio": "Ricky prend en charge l’organisation du bar et la gestion des stocks.",
+    "layout": {
+      "photo": {
+        "position": "50% 40%"
+      },
+      "groups": [
+        {
+          "items": [
+            "name"
+          ],
+          "x": 93,
+          "y": 7.6,
+          "align": "end",
+          "valign": "top"
+        },
+        {
+          "items": [
+            "role",
+            "missions"
+          ],
+          "x": 93,
+          "y": 93.6,
+          "align": "end",
+          "valign": "bottom"
+        }
+      ],
+      "colors": {
+        "name": "cyan",
+        "role": "violet",
+        "missions": "violet"
+      },
+      "objects": [
+        {
+          "id": "verres",
+          "type": "cocktails",
+          "anchor": "card",
+          "x": 80,
+          "y": 51,
+          "size": 44,
+          "rotate": 0,
+          "flip": false,
+          "layer": "front",
+          "hideMobile": false
+        }
+      ]
+    }
   },
   {
     "slug": "celeste-yelena",
@@ -85,7 +242,55 @@ export const TEAM = [
       "Rôle": "Communication, réseaux sociaux et création de contenus",
       "Pôle": "Communication"
     },
-    "bio": "Céleste et Yelena s’occupent de la communication, des contenus, de la stratégie et de l’image de l’association."
+    "bio": "Céleste et Yelena s’occupent de la communication, des contenus, de la stratégie et de l’image de l’association.",
+    "layout": {
+      "photo": {
+        "position": "50% 55%"
+      },
+      "groups": [
+        {
+          "items": [
+            "name"
+          ],
+          "x": 7,
+          "y": 7.6,
+          "align": "start",
+          "valign": "top"
+        },
+        {
+          "items": [
+            "role",
+            "missions"
+          ],
+          "x": 50,
+          "y": 93.6,
+          "align": "center",
+          "valign": "bottom"
+        }
+      ],
+      "colors": {
+        "name": "violet",
+        "role": "cyan",
+        "missions": "cyan"
+      },
+      "objects": [
+        {
+          "id": "planete",
+          "type": "planet",
+          "options": {
+            "tint": "violet"
+          },
+          "anchor": "card",
+          "x": 85,
+          "y": 15,
+          "size": 26,
+          "rotate": 4,
+          "flip": false,
+          "layer": "front",
+          "hideMobile": false
+        }
+      ]
+    }
   },
   {
     "slug": "remi",
@@ -101,7 +306,39 @@ export const TEAM = [
       "Rôle": "Montage, démontage et organisation du bar",
       "Pôle": "Événementiel"
     },
-    "bio": "Rémi participe au montage et au démontage ainsi qu’à l’organisation du bar."
+    "bio": "Rémi participe au montage et au démontage ainsi qu’à l’organisation du bar.",
+    "layout": {
+      "photo": {
+        "position": "50% 45%"
+      },
+      "groups": [
+        {
+          "items": [
+            "name",
+            "role"
+          ],
+          "x": 50,
+          "y": 7.6,
+          "align": "center",
+          "valign": "top"
+        },
+        {
+          "items": [
+            "missions"
+          ],
+          "x": 50,
+          "y": 93.6,
+          "align": "center",
+          "valign": "bottom"
+        }
+      ],
+      "colors": {
+        "name": "cyan",
+        "role": "violet",
+        "missions": "violet"
+      },
+      "objects": []
+    }
   },
   {
     "slug": "elena-yanniv",
@@ -117,7 +354,52 @@ export const TEAM = [
       "Rôle": "Bons commerciaux, entrée et billetterie",
       "Pôle": "Événementiel"
     },
-    "bio": "Elena et Yanniv donnent un coup de main à l’entrée et à la billetterie."
+    "bio": "Elena et Yanniv donnent un coup de main à l’entrée et à la billetterie.",
+    "layout": {
+      "photo": {
+        "position": "50% 45%"
+      },
+      "groups": [
+        {
+          "items": [
+            "name"
+          ],
+          "x": 7,
+          "y": 7.6,
+          "align": "start",
+          "valign": "top"
+        },
+        {
+          "items": [
+            "role",
+            "missions"
+          ],
+          "x": 50,
+          "y": 93.6,
+          "align": "center",
+          "valign": "bottom"
+        }
+      ],
+      "colors": {
+        "name": "violet",
+        "role": "cyan",
+        "missions": "violet"
+      },
+      "objects": [
+        {
+          "id": "paire-etoiles",
+          "type": "star-pair",
+          "anchor": "card",
+          "x": 86,
+          "y": 33,
+          "size": 26,
+          "rotate": -8,
+          "flip": false,
+          "layer": "front",
+          "hideMobile": false
+        }
+      ]
+    }
   },
   {
     "slug": "noah",
@@ -133,7 +415,52 @@ export const TEAM = [
       "Rôle": "Graffitis et créations visuelles",
       "Pôle": "Création"
     },
-    "bio": "Noah contribue bénévolement aux graffitis et aux créations visuelles."
+    "bio": "Noah contribue bénévolement aux graffitis et aux créations visuelles.",
+    "layout": {
+      "photo": {
+        "position": "50% 40%"
+      },
+      "groups": [
+        {
+          "items": [
+            "name"
+          ],
+          "x": 93,
+          "y": 7.6,
+          "align": "end",
+          "valign": "top"
+        },
+        {
+          "items": [
+            "role",
+            "missions"
+          ],
+          "x": 7,
+          "y": 93.6,
+          "align": "start",
+          "valign": "bottom"
+        }
+      ],
+      "colors": {
+        "name": "cyan",
+        "role": "violet",
+        "missions": "violet"
+      },
+      "objects": [
+        {
+          "id": "epine-jointure",
+          "type": "thorn",
+          "anchor": "end",
+          "x": 3,
+          "y": 99,
+          "size": 42,
+          "rotate": 32,
+          "flip": false,
+          "layer": "between",
+          "hideMobile": false
+        }
+      ]
+    }
   },
   {
     "slug": "josephine",
@@ -148,6 +475,38 @@ export const TEAM = [
       "Rôle": "Bénévole",
       "Pôle": "Événementiel"
     },
-    "bio": "Joséphine donne un coup de main bénévole lors des événements."
+    "bio": "Joséphine donne un coup de main bénévole lors des événements.",
+    "layout": {
+      "photo": {
+        "position": "50% 50%"
+      },
+      "groups": [
+        {
+          "items": [
+            "name",
+            "role"
+          ],
+          "x": 93,
+          "y": 7.6,
+          "align": "end",
+          "valign": "top"
+        },
+        {
+          "items": [
+            "missions"
+          ],
+          "x": 50,
+          "y": 93.6,
+          "align": "center",
+          "valign": "bottom"
+        }
+      ],
+      "colors": {
+        "name": "cyan",
+        "role": "violet",
+        "missions": "violet"
+      },
+      "objects": []
+    }
   }
 ];
