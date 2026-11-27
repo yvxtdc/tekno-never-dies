@@ -15,6 +15,7 @@ import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { parse, attr, textContent, descendants, find, innerHTML } from "./lib/html.mjs";
 import { SKIP, ATTRS, norm, hasLetters, isHeadMeta, isMixed } from "./lib/i18n-rules.mjs";
+import { loadInfos, withInfoTokens } from "./lib/infos.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -44,10 +45,12 @@ function collect(el, keys) {
 export async function missingTranslations() {
   const dicts = {};
   for (const lang of ["de", "en"]) dicts[lang] = (await import(pathToFileURL(path.join(ROOT, "js/i18n", `${lang}.js`)).href)).default;
+  const infos = await loadInfos(ROOT);
   const result = { de: new Map(), en: new Map() };
   const pages = fs.readdirSync(ROOT).filter((f) => f.endsWith(".html") && !/^evenement-.+\.html$/.test(f)).sort();
   for (const page of pages) {
-    const doc = parse(fs.readFileSync(path.join(ROOT, page), "utf8"));
+    // Clés sans les infos de l'association (comme tools/langues.mjs)
+    const doc = withInfoTokens(parse(fs.readFileSync(path.join(ROOT, page), "utf8")), infos);
     const head = find(doc, (el) => el.name === "HEAD");
     const body = find(doc, (el) => el.name === "BODY");
     const keys = new Set();
@@ -58,7 +61,8 @@ export async function missingTranslations() {
     }
     if (body) collect(body, keys);
     for (const lang of ["de", "en"]) {
-      const missing = [...keys].filter((key) => key && hasLetters(key) && !(key in dicts[lang]));
+      // Un repère seul ({info:email}) n'a rien à traduire
+      const missing = [...keys].filter((key) => key && hasLetters(key.replace(/\{info:\w+\}/g, "")) && !(key in dicts[lang]));
       if (missing.length) result[lang].set(page, missing);
     }
   }

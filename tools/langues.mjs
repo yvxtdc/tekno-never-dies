@@ -18,6 +18,7 @@ import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { parse, serialize, attr, setAttr, descendants, find, innerHTML } from "./lib/html.mjs";
 import { SKIP, ATTRS, norm, isHeadMeta, isMixed } from "./lib/i18n-rules.mjs";
+import { loadInfos, withInfoTokens, fillInfoTokens } from "./lib/infos.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const check = process.argv.includes("--check");
@@ -31,6 +32,8 @@ const { EVENTS } = await load("js/data/events.js");
 const { eventPreview } = await load("js/components/event-preview.js");
 const dicts = {};
 for (const lang of LANGS) dicts[lang] = (await load(`js/i18n/${lang}.js`)).default;
+// Infos de l'association (data-info) : clés de traduction sans les valeurs, valeurs remises après
+const infos = await loadInfos(ROOT);
 
 // 404.html : GitHub Pages ne sert que celle de la racine
 const pages = fs.readdirSync(ROOT).filter((f) => f.endsWith(".html") && f !== "404.html").sort();
@@ -84,7 +87,7 @@ function eventMeta(file, lang) {
 
 function translatePage(file, lang) {
   const html = fs.readFileSync(path.join(ROOT, file), "utf8");
-  const doc = parse(html);
+  const doc = withInfoTokens(parse(html), infos);
   const dict = dicts[lang];
   const root = find(doc, (el) => el.name === "HTML");
   const head = find(doc, (el) => el.name === "HEAD");
@@ -117,6 +120,8 @@ function translatePage(file, lang) {
   }
 
   translate(body, dict);
+  // Valeurs des infos, traduites quand elles sont du texte français (fonction, adresse de l'hébergeur)
+  fillInfoTokens(doc, (name) => (infos.TRANSLATABLE_INFO.has(name) ? dict[norm(infos.values[name])] ?? infos.values[name] : infos.values[name]));
   for (const a of descendants(body).filter((el) => el.name === "A")) {
     const href = attr(a, "href");
     if (href) setAttr(a, "href", localizeLink(href, lang));

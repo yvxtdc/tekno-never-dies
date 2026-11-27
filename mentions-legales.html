@@ -97,13 +97,13 @@
   <!-- Colonne de droite (ordinateur uniquement) : prochaine soirée remplie par js/partials.js -->
   <aside class="tnd-menu-side" aria-label="Prochaine soirée">
     <div class="tnd-next" hidden></div>
-    <a class="tnd-menu-insta" href="https://www.instagram.com/tnd6tem/" target="_blank" rel="noopener noreferrer">
+    <a class="tnd-menu-insta" href="https://www.instagram.com/tnd6tem/" data-info="href=instagram" target="_blank" rel="noopener noreferrer">
       <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" class="social-dot"/></svg>
       Instagram <span aria-hidden="true">↗</span>
     </a>
   </aside>
   <div class="tnd-menu-bottom">
-    <p class="tnd-menu-foot">Tekno Never Dies, Lauterbourg<br><a href="mailto:tnd6tem@gmail.com">tnd6tem@gmail.com</a></p>
+    <p class="tnd-menu-foot">Tekno Never Dies, Lauterbourg<br><a href="mailto:tnd6tem@gmail.com" data-info="href=emailHref text=email">tnd6tem@gmail.com</a></p>
   </div>
 </nav>
 <!-- /partial:header -->
@@ -116,13 +116,13 @@
     <section class="container legal-content">
       <!-- À FAIRE (interne) : ajouter le numéro RNA (W…) sous le SIRET dès qu'il est communiqué. -->
       <h2>Éditeur du site</h2>
-      <p><strong>TEKNO NEVER DIES (TND, également connu sous TND6TEM)</strong><br>Association déclarée<br>Siège : 5 avenue Georges Clemenceau, 67630 Lauterbourg, France<br>SIREN : 939 301 768<br>SIRET : 939 301 768 00015<br>Activité : arts du spectacle vivant (code APE 90.01Z)</p>
+      <p><strong>TEKNO NEVER DIES (TND, également connu sous TND6TEM)</strong><br>Association déclarée<br>Siège : <span data-info="text=address">5 avenue Georges Clemenceau, 67630 Lauterbourg</span>, France<br>SIREN : 939 301 768<br>SIRET : 939 301 768 00015<br>Activité : arts du spectacle vivant (code APE 90.01Z)</p>
       <h2>Responsable de publication</h2>
-      <p>Yannis Metzinger, président de l’association et responsable de publication.</p>
+      <p><span data-info="text=publisherName">Yannis Metzinger</span>, <span data-info="text=publisherRole">président de l’association</span> et responsable de publication.</p>
       <h2>Hébergement</h2>
-      <p>GitHub, Inc. — GitHub Pages<br>88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis<br><a href="https://github.com/" target="_blank" rel="noopener noreferrer">github.com</a></p>
+      <p><span data-info="text=hostName">GitHub, Inc. — GitHub Pages</span><br><span data-info="text=hostAddress">88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis</span><br><a href="https://github.com/" target="_blank" rel="noopener noreferrer" data-info="href=hostUrl text=hostLabel">github.com</a></p>
       <h2>Contact</h2>
-      <p><a href="mailto:tnd6tem@gmail.com">tnd6tem@gmail.com</a><br><a href="tel:+33781878223">+33 7 81 87 82 23</a></p>
+      <p><a href="mailto:tnd6tem@gmail.com" data-info="href=emailHref text=email">tnd6tem@gmail.com</a><br><a href="tel:+33781878223" data-info="href=phoneHref text=phone">+33 7 81 87 82 23</a></p>
       <h2>Propriété intellectuelle</h2>
       <p>Les contenus (textes, photographies, logos et créations graphiques) sont protégés et demeurent la propriété de leurs auteurs ou ayants droit. Toute réutilisation doit respecter les droits applicables et obtenir les autorisations nécessaires. Les crédits et autorisations des contenus médias sont à vérifier avec l’association.</p>
       <h2>Liens et informations</h2>
@@ -155,10 +155,11 @@
       </nav>
 
       <div class="site-footer__actions">
-        <a class="site-footer__icon" href="mailto:tnd6tem@gmail.com" aria-label="Écrire à tnd6tem@gmail.com" title="tnd6tem@gmail.com">
+        <a class="site-footer__icon" href="mailto:tnd6tem@gmail.com" title="tnd6tem@gmail.com" data-info="href=emailHref title=email">
           <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg>
+          <span class="sr-only">Écrire à <span data-info="text=email">tnd6tem@gmail.com</span></span>
         </a>
-        <a class="site-footer__icon" href="https://www.instagram.com/tnd6tem/" target="_blank" rel="noopener noreferrer" aria-label="Instagram Tekno Never Dies" title="@tnd6tem">
+        <a class="site-footer__icon" href="https://www.instagram.com/tnd6tem/" target="_blank" rel="noopener noreferrer" aria-label="Instagram Tekno Never Dies" title="@tnd6tem" data-info="href=instagram title=instagramHandle">
           <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" class="social-dot"/></svg>
         </a>
         <a class="site-footer__icon site-footer__top" href="#main" aria-label="Haut de page" title="Haut de page">

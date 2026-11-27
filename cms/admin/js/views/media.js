@@ -6,7 +6,7 @@ import { dropzone, uploadFiles } from "../lib/widgets.js";
 import { fileSize, formatDateTime } from "../lib/format.js";
 import { can } from "../lib/session.js";
 
-const USAGE_LINKS = { event: "/admin/events/", artist: "/admin/artists/", team: "/admin/team#", album: "/admin/gallery/" };
+const USAGE_LINKS = { event: "/admin/events/", artist: "/admin/artists/", team: "/admin/team#", album: "/admin/gallery/", timeline: "/admin/histoire#" };
 
 export async function mediaView(ctx, main) {
   document.title = "Médiathèque — Administration TND";

@@ -75,7 +75,7 @@ export const HOST_FAILURES = {
 /** Références aux médias : mêmes colonnes que mediaUsage (services/media.mjs). */
 const MEDIA_REFERENCES = [
   ["events", "flyer_media_id"], ["events", "cover_media_id"], ["event_photos", "media_id"],
-  ["artists", "photo_media_id"], ["team_members", "photo_media_id"], ["gallery_photos", "media_id"]
+  ["artists", "photo_media_id"], ["team_members", "photo_media_id"], ["gallery_photos", "media_id"], ["history_items", "media_id"]
 ];
 /** Colonnes JSON lues par l'export (export/site-data.mjs) : un JSON invalide ferait échouer la mise en ligne. */
 const JSON_COLUMNS = [

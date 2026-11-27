@@ -9,7 +9,7 @@ Ce document explique **pourquoi** le CMS est construit ainsi. Pour l'installer e
 |---|---|
 | Technologies | Site 100 % statique : HTML, CSS et JavaScript natif (modules ES), aucun framework ni build. Three.js en copie locale pour l'accueil. |
 | Hébergement | GitHub Pages (domaine `teknoneverdies.fr`), déployé par `.github/workflows/deploy-pages.yml` à chaque push sur `main` : validation, copie des fichiers publics, minification. **Aucun code serveur possible.** |
-| Contenus | Modules JavaScript dans `js/data/` : `events.js` (soirées), `artistes.js` (liens Instagram, styles), `artistes-photos.js`, `faq.js`, `equipe.js`, `galerie.js`, `site.js`. Les pages les importent et construisent le contenu dans le navigateur. |
+| Contenus | Modules JavaScript dans `js/data/` : `events.js` (soirées), `artistes.js` (liens Instagram, styles), `artistes-photos.js`, `faq.js`, `equipe.js`, `galerie.js`, `histoire.js` (« Notre histoire »), `association.js` (infos de l'association), `site.js`. Les pages les importent et construisent le contenu dans le navigateur. |
 | Génération | Scripts Node dans `tools/` : fiches `evenement-<slug>.html` (titre, aperçus sociaux, JSON-LD écrits en dur pour les robots), agenda `calendar/events.ics`, images d'aperçu 1200×630, plans OpenStreetMap, pages `de/` et `en/` traduites, `sitemap.xml`, validation complète (`npm run validate`). |
 | Langues | Pages françaises + copies `de/` et `en/` générées depuis des dictionnaires `js/i18n/de.js` et `en.js` dont la clé est le **texte français exact**. Les textes des données sont traduits dans le navigateur avec les mêmes dictionnaires. |
 | Line-up | Chaque passage est un texte libre (`"Leander B2B Sven Gerber"`, horaire `"22h00 – 23h30"`). Les liens Instagram, styles et photos sont retrouvés par une clé normalisée du nom (`"dannocta"`). |
@@ -127,6 +127,18 @@ chaque soirée, datés : statistiques)   — voir supervision.md, statistiques.m
   `team.css`, servis par la liste fermée `SHARED_SITE` de `server/app.mjs`) ; le résultat est enregistré
   avec la fiche du membre. Les réglages faits auparavant dans le code ont été repris par la migration 007
   (pour la même photo seulement) ; le code ne les contient plus : la base est la seule source.
+- **Infos de l'association** (`site_info`, une ligne, migration 008) : e-mail, téléphone, Instagram, siège,
+  responsable de publication, hébergeur ; modifiables par les administrateurs seulement (`settings.manage`).
+  Exportées dans `js/data/association.js`, lu par `js/data/site.js`. Dans les pages, chaque valeur est un
+  élément marqué `data-info` (format : `js/components/association-info.js`) que `tools/sync-infos.mjs`
+  réécrit à la mise en ligne (première étape de génération) ; d'où les pages de la racine et `partials/`
+  dans `MANAGED_PATHS`. Les clés de traduction remplacent les valeurs par `{info:nom}`
+  (`tools/lib/infos.mjs`, utilisé par `langues` et `traductions`) : changer une valeur ne casse aucune
+  traduction. La fonction du responsable et l'adresse de l'hébergeur sont traduites dans **Traductions**.
+- **Notre histoire** (`history_items`, migration 009) : étapes clés (date et précision jour / mois / année,
+  titre, texte, illustration : étincelles, logo, ou photo de la médiathèque). Exportées dans
+  `js/data/histoire.js` (publiées seulement, par date) ; `js/pages/association.js` les intercale par année
+  avec les chapitres des soirées. Titre et texte traduits dans **Traductions**.
 
 ## 5. Correspondance avec le site public
 

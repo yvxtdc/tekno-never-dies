@@ -40,6 +40,9 @@ export const MANAGED_PATHS = [
   "assets/img/events/og",
   "assets/img/maps",
   "evenement-*.html",
+  // Infos de l'association (tools/sync-infos.mjs) : valeurs marquées data-info des pages et des partials
+  "*.html",
+  "partials",
   "de",
   "en",
   "calendar",
@@ -399,6 +402,7 @@ export class Publisher {
         this.rememberHashes();
 
         const tools = [
+          ["tools/sync-infos.mjs", "Infos de l'association dans les pages"],
           ["tools/event-pages.mjs", "Fiches des soirées et images d'aperçu"],
           ["tools/generate-calendar.mjs", "Agenda .ics"],
           ...(config.runMaps ? [["tools/maps.mjs", "Plans des lieux (OpenStreetMap)"]] : []),

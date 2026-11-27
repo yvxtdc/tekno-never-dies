@@ -129,6 +129,11 @@
   width:clamp(120px,12vw,160px);aspect-ratio:1;border-radius:50%;transform:rotate(-8deg);
   box-shadow:0 0 0 6px rgba(149,106,255,.22),0 20px 50px rgba(0,0,0,.5);
 }
+/* Étape clé illustrée d'une photo (CMS, « Notre histoire ») : même cadre que les affiches */
+.asso-chapter__visual--photo img{
+  width:clamp(120px,12vw,160px);aspect-ratio:4 / 5;object-fit:cover;border-radius:10px;
+  border:1px solid rgba(255,255,255,.22);background:var(--card);box-shadow:0 18px 40px rgba(0,0,0,.5);transform:rotate(-4deg);
+}
 /* Affiches en éventail ; la prochaine soirée porte une étiquette « À venir » */
 .asso-chapter__visual--flyers{padding-left:6px}
 .asso-flyer{
@@ -174,6 +179,7 @@
   .asso-chapter__visual{grid-area:visual;justify-content:flex-end;height:auto;min-height:0;margin:0}
   .asso-chapter__visual--decor img{width:clamp(70px,20vw,100px)}
   .asso-chapter__visual--badge img{width:clamp(72px,20vw,104px)}
+  .asso-chapter__visual--photo img{width:clamp(72px,20vw,104px)}
   .asso-flyer{width:clamp(72px,19vw,100px)}
   .asso-flyer + .asso-flyer{margin-left:calc(clamp(72px,19vw,100px) * -.28)}
   .asso-chapter__text{grid-area:text;margin-top:14px}

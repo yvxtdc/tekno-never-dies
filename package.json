@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "npx --yes serve .",
-    "partials": "node tools/sync-partials.mjs && node tools/langues.mjs",
+    "partials": "node tools/sync-infos.mjs && node tools/sync-partials.mjs && node tools/langues.mjs",
     "validate": "node tools/validate.mjs",
     "calendar": "node tools/generate-calendar.mjs && node tools/event-pages.mjs && node tools/langues.mjs",
     "photos": "node tools/photos.mjs",

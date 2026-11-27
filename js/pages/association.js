@@ -1,11 +1,13 @@
 // Page association : tout ce qui dépend des soirées vient de js/data, pour rester juste quand une soirée
 // est ajoutée dans le CMS.
-//   - « De l'idée au dancefloor » : les débuts (2023, 2024) sont écrits dans association.html ; ici
-//     s'ajoute un chapitre par année de soirées, illustré par leurs affiches.
+//   - « De l'idée au dancefloor » : les étapes clés saisies dans le CMS (« Notre histoire »,
+//     js/data/histoire.js) et un chapitre par année de soirées, illustré par leurs affiches, par année
+//     (à année égale, l'étape clé d'abord).
 //   - Qui sommes-nous : les chiffres (équipe, DJ, soirées) et, sur la photo, le public de chaque soirée
 //     passée en vumètres.
 import { EVENTS } from "../data/events.js";
 import { TEAM } from "../data/equipe.js";
+import { HISTORY } from "../data/histoire.js";
 import { eventStatus, esc, eventPath } from "./helpers.js";
 import { collectArtists } from "../components/artists.js";
 import { eventStats } from "../components/event-stats.js";
@@ -19,11 +21,34 @@ const town = (ev) => (ev.place || "").split(",").at(-1).trim();
 const dayMonth = (ev) => new Intl.DateTimeFormat(locale, ev.datePrecision === "month" ? { month: "long", timeZone: "UTC" } : { day: "numeric", month: "long", timeZone: "UTC" })
   .format(new Date(`${ev.date}T12:00:00Z`));
 
+/* ---------- Étapes clés (CMS) ---------- */
+// Illustration : étincelles, logo de l'association, ou photo de la médiathèque
+const VISUALS = { decor: "assets/img/decor/sparkles-lavender.webp", badge: "assets/img/badge-white.webp" };
+const DATE_FORMATS = { day: { day: "numeric", month: "long", year: "numeric" }, month: { month: "long", year: "numeric" }, year: { year: "numeric" } };
+function milestone(it) {
+  const precision = DATE_FORMATS[it.datePrecision] ? it.datePrecision : "day";
+  const label = new Intl.DateTimeFormat(locale, { ...DATE_FORMATS[precision], timeZone: "UTC" }).format(new Date(`${it.date}T12:00:00Z`));
+  const datetime = precision === "year" ? it.date.slice(0, 4) : precision === "month" ? it.date.slice(0, 7) : it.date;
+  const visual = it.visual === "photo" && it.image ? "photo" : VISUALS[it.visual] ? it.visual : "decor";
+  return `
+      <li class="asso-chapter">
+        <span class="asso-chapter__year" aria-hidden="true">${esc(it.date.slice(0, 4))}</span>
+        <div class="asso-chapter__visual asso-chapter__visual--${visual}">
+          <img src="${esc(visual === "photo" ? it.image : VISUALS[visual])}" alt="" loading="lazy" decoding="async" />
+        </div>
+        <div class="asso-chapter__text">
+          <time datetime="${esc(datetime)}">${esc(label)}</time>
+          <h3>${esc(tr(it.title))}</h3>
+          ${it.text ? `<p>${esc(tr(it.text))}</p>` : ""}
+        </div>
+      </li>`;
+}
+
 /* ---------- Un chapitre par année de soirées ---------- */
 const chapters = document.getElementById("asso-chapters");
 if (chapters) {
   const years = [...new Set(events.map((ev) => ev.date.slice(0, 4)))];
-  chapters.insertAdjacentHTML("beforeend", years.map((year, i) => {
+  const eventChapters = years.map((year, i) => {
     const list = events.filter((ev) => ev.date.startsWith(year));
     const title = i === 0 ? "Les premières soirées" : list.every(isNext) ? "La suite" : "La série continue";
     return `
@@ -43,7 +68,13 @@ if (chapters) {
           </ul>
         </div>
       </li>`;
-  }).join(""));
+  });
+  // Par année ; à année égale, les étapes clés (par date) avant le chapitre des soirées
+  const all = [
+    ...HISTORY.map((it) => ({ key: `${it.date.slice(0, 4)}-0-${it.date}`, html: milestone(it) })),
+    ...years.map((year, i) => ({ key: `${year}-1`, html: eventChapters[i] }))
+  ].sort((a, b) => a.key.localeCompare(b.key));
+  chapters.insertAdjacentHTML("beforeend", all.map((c) => c.html).join(""));
   chapters.style.setProperty("--chapters", chapters.children.length);
   // Rang de chaque chapitre : son point sur le fil en prend la couleur (association.css)
   [...chapters.children].forEach((chapter, i) => chapter.style.setProperty("--i", i));

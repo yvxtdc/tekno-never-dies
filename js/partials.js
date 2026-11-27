@@ -55,7 +55,7 @@ function initSeo() {
     url: SITE.url,
     logo: new URL("assets/img/badge-white.webp", SITE.url).href,
     email: SITE.email,
-    sameAs: ["https://www.instagram.com/tnd6tem/"],
+    sameAs: [SITE.instagram],
     address: {
       "@type": "PostalAddress",
       ...(address.street ? { streetAddress: address.street } : {}),

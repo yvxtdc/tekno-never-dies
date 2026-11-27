@@ -68,7 +68,7 @@ slug sur `<body data-slug>`.
 aucun accès à `document`, `window` ou `localStorage` au chargement (dans une fonction appelée plus tard,
 c'est permis). Sont concernés `js/data/*`, `js/pages/helpers.js`, `js/pages/ics.js`, `js/i18n/i18n.js`
 (garde `hasDom`) et, dans `js/components/`, `event-schema`, `event-preview`, `event-ics`, `artists`,
-`mission-icons`, `team-composition`, `team-layout`, `team-card` (rendu d'une carte de l'équipe, partagé avec
+`mission-icons`, `association-info`, `team-composition`, `team-layout`, `team-card` (rendu d'une carte de l'équipe, partagé avec
 l'éditeur du CMS : DOM seulement à l'appel), ainsi que `tickets` et `chrome` qu'ils importent. Pour savoir si un
 module est concerné : chercher son nom (et celui des modules qui l'importent) dans `tools/` et `cms/`.
 `js/components/team.js` fait exception : il agit dès son chargement et n'est importé que par

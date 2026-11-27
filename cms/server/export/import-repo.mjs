@@ -20,6 +20,8 @@ import { venuePlace } from "../services/venues.mjs";
 import { newSlotUid } from "../services/events.mjs";
 import { buildSiteData } from "./site-data.mjs";
 import { parseLayout } from "../../../js/components/team-layout.js";
+import { importInfo } from "../services/site-info.mjs";
+import { importTimeline } from "../services/timeline.mjs";
 import { MANAGED_MODULES, renderModules } from "./modules.mjs";
 
 const NOT_AN_ARTIST = /^(dj contest|guest|tba|surprise)/i;
@@ -47,6 +49,10 @@ export async function importFromRepo(db, config, { log = () => {} } = {}) {
   const { FAQ = [] } = (await load(siteDir, "js/data/faq.js")) || {};
   const { TEAM = [] } = (await load(siteDir, "js/data/equipe.js")) || {};
   const { GALLERY = [] } = (await load(siteDir, "js/data/galerie.js")) || {};
+  // Infos de l'association : absentes d'un dépôt plus ancien, les valeurs de départ de la migration 008 restent
+  const { ASSOCIATION = null } = (await load(siteDir, "js/data/association.js")) || {};
+  // Notre histoire : absente d'un dépôt plus ancien, les étapes de départ de la migration 009 restent
+  const { HISTORY = null } = (await load(siteDir, "js/data/histoire.js")) || {};
   const dicts = {
     de: (await load(siteDir, "js/i18n/de.js"))?.default || {},
     en: (await load(siteDir, "js/i18n/en.js"))?.default || {}
@@ -75,6 +81,7 @@ export async function importFromRepo(db, config, { log = () => {} } = {}) {
   }
   for (const p of Object.values(ARTIST_PHOTOS)) await media(p);
   for (const m of TEAM) await media(m.photo);
+  for (const it of HISTORY || []) await media(it.image);
   for (const year of GALLERY) {
     for (const album of year.events) {
       for (const p of album.photos) await media(p.src, { variants: { thumb: p.thumb, ...(p.full ? { full: p.full } : {}) } });
@@ -234,8 +241,14 @@ export async function importFromRepo(db, config, { log = () => {} } = {}) {
       );
     });
 
+    /* ---------- Infos de l'association, Notre histoire ---------- */
+    if (ASSOCIATION) importInfo(db, ASSOCIATION);
+    if (HISTORY) importTimeline(db, HISTORY, mediaIds);
+
     /* ---------- Traductions des contenus ---------- */
     const sources = [
+      ...(ASSOCIATION ? [ASSOCIATION.publisher.role, ASSOCIATION.host.address].map((s) => [s, false]) : []),
+      ...(HISTORY || []).flatMap((it) => [it.title, it.text]).map((s) => [s, false]),
       ...EVENTS.flatMap((e) => [e.description, e.price, e.age, ...(e.tickets || []).flatMap((x) => [x.label, x.note]), ...(e.practical || []), e.contest?.text, e.about?.kicker, e.about?.title, e.about?.text, ...(e.about?.photos || []).map((p) => p.caption)].map((s) => [s, false])),
       ...FAQ.flatMap((f) => [[f.q, false], [f.a, true]]),
       ...TEAM.flatMap((m) => [m.role, m.bio, ...(m.tags || []), ...Object.entries(m.extra || {}).flat()].map((s) => [s, false]))
@@ -308,6 +321,8 @@ export async function verifyRoundtrip(db, config) {
   await compare("js/data/faq.js", "FAQ", data.FAQ);
   await compare("js/data/equipe.js", "TEAM", data.TEAM);
   await compare("js/data/galerie.js", "GALLERY", data.GALLERY);
+  await compare("js/data/association.js", "ASSOCIATION", data.ASSOCIATION);
+  await compare("js/data/histoire.js", "HISTORY", data.HISTORY);
   // Traductions : chaque traduction exportée doit être identique à celle des dictionnaires actuels.
   for (const lang of ["de", "en"]) {
     const dict = (await load(siteDir, `js/i18n/${lang}.js`))?.default || {};

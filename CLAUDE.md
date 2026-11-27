@@ -89,7 +89,9 @@ Avant de modifier un fichier, déterminer s'il est **source**, **exporté par le
 | Plans des lieux | `venue` des soirées + `tools/maps.mjs` | `assets/img/maps/` |
 | Pages DE / EN, sitemap | pages FR + `js/i18n/de.js`, `en.js` + `tools/langues.mjs` | `de/`, `en/`, `sitemap.xml` |
 | Header / footer | `partials/header.html`, `footer.html` | blocs `<!-- partial:… -->` de chaque page |
-| Infos du site (URL, agenda, contacts, stats) | `js/data/site.js` (code) | — (adresse aussi dans CSP, footer, mentions : `validate` contrôle) |
+| Infos du site (URL, agenda, stats, identité légale) | `js/data/site.js` (code) | — (URL aussi dans CSP : `validate` contrôle) |
+| Coordonnées (e-mail, téléphone, Instagram, siège), responsable de publication, hébergeur | CMS → **Infos de l'association** | `js/data/association.js` ; valeurs marquées `data-info` des pages et partials (`tools/sync-infos.mjs`, jamais à la main) |
+| Frise « Notre histoire » (étapes clés) | CMS → **Notre histoire** | `js/data/histoire.js` |
 | Pages institutionnelles, textes d'interface, CSS, JS | le code (HTML/CSS/JS) | — |
 
 Liste exacte des chemins gérés par la mise en ligne : `MANAGED_PATHS` (`publisher.mjs`) et `MANAGED_MODULES`

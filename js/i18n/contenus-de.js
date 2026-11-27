@@ -11,6 +11,8 @@ export default {
   "21 juin 2025 · Wissembourg": "21. Juni 2025 · Weißenburg",
   "250 participant·es": "250 Teilnehmende",
   "2ᵉ édition · L'hiver selon TND": "2. Ausgabe · Der Winter nach TND",
+  "88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis": "88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA",
+  "Après une année à réunir l'équipe et le matériel, TND devient officiellement une association.": "Nach einem Jahr, in dem Team und Equipment zusammenkamen, wird TND offiziell ein Verein.",
   "Artiste bénévole": "Ehrenamtlicher Künstler",
   "Bons commerciaux": "Gutscheine",
   "Bons commerciaux, entrée et billetterie": "Gutscheine, Eingang und Ticketing",
@@ -58,6 +60,8 @@ export default {
   "ICE BOILER revient pour une deuxième édition, cette fois dans la salle polyvalente de Munchhausen. Le principe ne change pas : une nuit d'hiver qui démarre en douceur et monte en pression jusqu'à 4h. Nouveauté de cette édition, la techno s'ouvre aux sons trance, groovy et bouncy.": "ICE BOILER kommt zur zweiten Ausgabe zurück, diesmal in die Mehrzweckhalle von Munchhausen. Das Prinzip bleibt: eine Winternacht, die sanft beginnt und bis 4 Uhr immer mehr Druck aufbaut. Neu in dieser Ausgabe: Die Techno öffnet sich für Trance-, Groovy- und Bouncy-Sounds.",
   "Jonathan et Axel gèrent l’installation, les réglages, les tests et l’entretien du son et des lumières.": "Jonathan und Axel kümmern sich um Aufbau, Einstellung, Tests und Wartung von Ton und Licht.",
   "Joséphine donne un coup de main bénévole lors des événements.": "Joséphine hilft ehrenamtlich bei den Events.",
+  "L'association est créée": "Der Verein wird gegründet",
+  "L'idée naît": "Die Idee entsteht",
   "La Fête de la musique, version techno.": "Die Fête de la Musique, Techno-Version.",
   "La fiche est mise à jour dès que possible. Pour une information urgente, consulte notre compte <a href=\"https://www.instagram.com/tnd6tem/\" target=\"_blank\" rel=\"noopener noreferrer\">Instagram @tnd6tem</a> ou écris-nous depuis la page <a href=\"contact.html\">Contact</a>.": "Die Eventseite wird so schnell wie möglich aktualisiert. Für dringende Infos schau auf unser <a href=\"https://www.instagram.com/tnd6tem/\" target=\"_blank\" rel=\"noopener noreferrer\">Instagram @tnd6tem</a> oder schreib uns über die Seite <a href=\"contact.html\">Kontakt</a>.",
   "La musique est forte. Lors de la plupart de nos soirées, des bouchons d'oreilles sont distribués à l'entrée, et tu peux en demander gratuitement à tout moment pendant la soirée. Fais aussi des pauses loin des enceintes et bois de l'eau régulièrement.": "Die Musik ist laut. Bei den meisten unserer Partys werden am Eingang Ohrstöpsel verteilt, und du kannst jederzeit kostenlos welche verlangen. Mach auch Pausen weg von den Boxen und trink regelmäßig Wasser.",
@@ -126,7 +130,9 @@ export default {
   "Tout tourne autour du drop.": "Alles dreht sich um den Drop.",
   "Un souci, un malaise, quelqu'un qui te met mal à l'aise ? Viens voir un membre de l'équipe : on est là pour t'aider.": "Ein Problem, dir geht es nicht gut, jemand ist dir unangenehm? Sprich ein Mitglied des Teams an: Wir sind für dich da.",
   "Une fiche est publiée sur la page <a href=\"evenements.html\">Événements</a> dès que la date, le lieu et les informations essentielles sont confirmés.": "Eine Eventseite wird unter <a href=\"evenements.html\">Events</a> veröffentlicht, sobald Datum, Ort und die wichtigsten Infos feststehen.",
+  "Une passion commune, et l'envie d'organiser nos propres soirées.": "Eine gemeinsame Leidenschaft und der Wunsch, eigene Partys zu organisieren.",
   "Yannis assure l’organisation générale, la supervision, la gestion et la coordination de l’association.": "Yannis kümmert sich um die allgemeine Organisation, Leitung, Verwaltung und Koordination des Vereins.",
+  "président de l’association": "Präsident des Vereins",
   "À partir de quel âge peut-on venir ?": "Ab welchem Alter darf man kommen?",
   "Événementiel": "Events"
 };
