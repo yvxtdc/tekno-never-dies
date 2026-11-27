@@ -244,20 +244,21 @@ function cocktailsSvg() {
 }
 
 /**
- * Catalogue des objets chromés : type -> { family, svg(options) | src, ratio }.
+ * Catalogue des objets chromés : type -> { label, family, svg(options) | src, ratio }.
+ *   label  : nom lisible (historique du CMS, choix des objets)
  *   family : silhouette (deux objets de la même famille ne se suivent pas, voir team-composition.js)
  *   svg    : dessin (options : { tint: "silver" | "violet" }, et points: 4 | 8 pour « sparkle »)
  *   src    : image détourée existante ; ratio : hauteur / largeur (réserve la place avant chargement)
  */
 export const CHROME_OBJECTS = {
-  sparkle: { family: "etoile", svg: ({ points = 8, tint = "silver" } = {}) => sparkleSvg({ ...SPARKLE[points === 4 ? 4 : 8], tint }) },
-  bolt: { family: "eclair", svg: ({ tint = "violet" } = {}) => bevelSvg({ points: BOLT, bevel: 0.22, viewBox: "14 0 82 140", ratio: 140 / 82, tint }) },
-  planet: { family: "planete", svg: ({ tint = "violet" } = {}) => planetSvg({ tint }) },
-  cocktails: { family: "verre", svg: () => cocktailsSvg() },
-  "star-pair": { family: "etoile", src: "assets/img/decor/star-pair.webp", ratio: 297 / 400 },
-  "star-outline": { family: "etoile", src: "assets/img/decor/star-outline.webp", ratio: 298 / 400 },
-  thorn: { family: "epine", src: "assets/img/decor/thorn.webp", ratio: 221 / 400 },
-  chain: { family: "chaine", src: "assets/img/decor/chain.webp", ratio: 389 / 400 }
+  sparkle: { label: "étincelle", family: "etoile", svg: ({ points = 8, tint = "silver" } = {}) => sparkleSvg({ ...SPARKLE[points === 4 ? 4 : 8], tint }) },
+  bolt: { label: "éclair", family: "eclair", svg: ({ tint = "violet" } = {}) => bevelSvg({ points: BOLT, bevel: 0.22, viewBox: "14 0 82 140", ratio: 140 / 82, tint }) },
+  planet: { label: "planète", family: "planete", svg: ({ tint = "violet" } = {}) => planetSvg({ tint }) },
+  cocktails: { label: "verres", family: "verre", svg: () => cocktailsSvg() },
+  "star-pair": { label: "paire d'étoiles", family: "etoile", src: "assets/img/decor/star-pair.webp", ratio: 297 / 400 },
+  "star-outline": { label: "étoile en contour", family: "etoile", src: "assets/img/decor/star-outline.webp", ratio: 298 / 400 },
+  thorn: { label: "épine", family: "epine", src: "assets/img/decor/thorn.webp", ratio: 221 / 400 },
+  chain: { label: "chaîne", family: "chaine", src: "assets/img/decor/chain.webp", ratio: 389 / 400 }
 };
 
 /** Balisage d'un objet dessiné, ou null si le type est une image (ou inconnu). */

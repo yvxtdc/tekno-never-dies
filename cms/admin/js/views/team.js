@@ -50,7 +50,7 @@ export async function teamView(ctx, main) {
   /** predicted : état prévu à une date (le dialogue sert alors seulement à programmer). */
   const edit = (member, predicted = null) => {
     const isNew = !member;
-    const m = member ? structuredClone(member) : { name: "", role: "", photo: null, photoMediaId: null, tags: [], extra: [{ label: "Pôle", value: "" }], bio: "", published: true };
+    const m = member ? structuredClone(member) : { name: "", role: "", photo: null, photoMediaId: null, tags: [], extra: [{ label: "Pôle", value: "" }], bio: "", layout: null, published: true };
     const name = input({ value: m.name, maxlength: 80 });
     const role = input({ value: m.role, maxlength: 100 });
     const bio = textarea({ value: m.bio, rows: 3, maxlength: 600 });
@@ -71,7 +71,8 @@ export async function teamView(ctx, main) {
     // Les détails ne sont pas des adresses web : champ « valeur » en texte libre.
     form.querySelectorAll('input[type="url"]').forEach((el) => { el.type = "text"; el.placeholder = "Valeur"; });
     const ok = h("button", { type: "button", class: "btn btn--primary", hidden: Boolean(predicted) }, isNew ? "Ajouter" : "Enregistrer");
-    const formData = () => ({ version: m.version, name: name.value, role: role.value, photoMediaId: m.photoMediaId, tags: m.tags, extra: m.extra, bio: bio.value, published: published.input.checked });
+    // Mise en page de la carte : renvoyée telle quelle (pas encore modifiable ici ; null = par défaut).
+    const formData = () => ({ version: m.version, name: name.value, role: role.value, photoMediaId: m.photoMediaId, tags: m.tags, extra: m.extra, bio: bio.value, layout: m.layout ?? null, published: published.input.checked });
     const reload = async () => {
       [members, scheduled] = await Promise.all([get("/api/team"), scheduledCounts("team")]);
       renderList();

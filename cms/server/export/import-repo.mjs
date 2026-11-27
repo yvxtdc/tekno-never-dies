@@ -19,6 +19,7 @@ import { htmlToRichText, richTextToHtml } from "../services/richtext.mjs";
 import { venuePlace } from "../services/venues.mjs";
 import { newSlotUid } from "../services/events.mjs";
 import { buildSiteData } from "./site-data.mjs";
+import { parseLayout } from "../../../js/components/team-layout.js";
 import { MANAGED_MODULES, renderModules } from "./modules.mjs";
 
 const NOT_AN_ARTIST = /^(dj contest|guest|tba|surprise)/i;
@@ -218,11 +219,18 @@ export async function importFromRepo(db, config, { log = () => {} } = {}) {
 
     /* ---------- Équipe ---------- */
     TEAM.forEach((m, i) => {
+      // Mise en page de la carte (absente = par défaut) ; invalide : ignorée, signalée
+      let layout = null;
+      if (m.layout) {
+        const parsed = parseLayout(m.layout);
+        if (parsed.errors.length) warnings.push(`Équipe « ${m.name} » : mise en page invalide, ignorée (${parsed.errors.join(" ; ")}).`);
+        else layout = JSON.stringify(parsed.layout);
+      }
       db.run(
-        `INSERT INTO team_members (slug, name, role, photo_media_id, tags, extra, bio, position, demo, published, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)`,
+        `INSERT INTO team_members (slug, name, role, photo_media_id, tags, extra, bio, layout, position, demo, published, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)`,
         uniqueSlug(db, "team_members", m.slug || m.name), m.name, m.role || "", mediaIds.get(m.photo) ?? null, JSON.stringify(m.tags || []),
-        JSON.stringify(Object.entries(m.extra || {})), m.bio || "", i, m.demo ? 1 : 0, t, t
+        JSON.stringify(Object.entries(m.extra || {})), m.bio || "", layout, i, m.demo ? 1 : 0, t, t
       );
     });
 

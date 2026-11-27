@@ -261,7 +261,7 @@ describe("migration 006 sur une base existante", () => {
       db.run("INSERT INTO publications (status, trigger, mode, started_at, finished_at, summary) VALUES ('failed', 'manual', 'push', ?, ?, 'échec')", t, t);
       db.run("INSERT INTO publications (status, trigger, mode, started_at, finished_at, summary) VALUES ('success', 'manual', 'files', ?, ?, 'ok')", t, t);
       const before = db.get("SELECT * FROM events WHERE id = 1");
-      assert.deepEqual(db.migrate(), ["006_supervision.sql"]);
+      assert.deepEqual(db.migrate(), listMigrations().filter((n) => n >= "006"));
       assert.deepEqual(db.get("SELECT * FROM events WHERE id = 1"), before);
       assert.deepEqual(db.all("SELECT status, deploy_status FROM publications ORDER BY id").map((r) => [r.status, r.deploy_status]), [["success", "unknown"], ["failed", null], ["success", "not_sent"]]);
       assert.equal(db.get("SELECT COUNT(*) AS n FROM event_tasks").n, 0);

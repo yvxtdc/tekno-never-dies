@@ -1,10 +1,15 @@
-/** Équipe de l'association (page « L'association ») : fiches membres ordonnées. */
+/**
+ * Équipe de l'association (page « L'association ») : fiches membres ordonnées, et mise en page de leur
+ * carte (layout : format et contrôle dans js/components/team-layout.js, partagé avec le site ; null =
+ * mise en page par défaut).
+ */
 import { now, fromJson } from "../db/index.mjs";
 import { notFound, conflict } from "../http/errors.mjs";
 import { Validator, cleanText } from "./validation.mjs";
 import { uniqueSlug } from "./slug.mjs";
 import { saveRevision } from "./audit.mjs";
 import { serializeMedia } from "./media.mjs";
+import { parseLayout } from "../../../js/components/team-layout.js";
 
 const serialize = (db, r) => ({
   id: r.id,
@@ -16,6 +21,7 @@ const serialize = (db, r) => ({
   tags: fromJson(r.tags, []),
   extra: fromJson(r.extra, []).map(([label, value]) => ({ label, value })),
   bio: r.bio,
+  layout: fromJson(r.layout, null),
   position: r.position,
   demo: Boolean(r.demo),
   published: Boolean(r.published),
@@ -53,6 +59,12 @@ function validate(db, input) {
     if (extra.length > 6) v.error("extra", "6 détails maximum.");
   }
   if (data.photo_media_id && !db.get("SELECT id FROM media WHERE id = ?", data.photo_media_id)) v.error("photoMediaId", "Photo introuvable.");
+  // Mise en page : absente = inchangée (undefined), null = par défaut, sinon contrôlée et normalisée.
+  if (v.has("layout") && input.layout !== null) {
+    const { layout, errors } = parseLayout(input.layout);
+    if (errors.length) v.error("layout", `Mise en page invalide : ${errors.slice(0, 3).join(" ; ")}.`);
+    else data.layout = JSON.stringify(layout);
+  } else if (v.has("layout")) data.layout = null;
   v.throwIfErrors();
   data.extra = extra;
   return data;
@@ -63,9 +75,9 @@ export function createMember(db, input, user) {
   const t = now();
   const position = (db.get("SELECT MAX(position) AS p FROM team_members").p ?? -1) + 1;
   const { lastInsertRowid } = db.run(
-    "INSERT INTO team_members (slug, name, role, photo_media_id, tags, extra, bio, position, published, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    "INSERT INTO team_members (slug, name, role, photo_media_id, tags, extra, bio, layout, position, published, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
     uniqueSlug(db, "team_members", data.slug || data.name), data.name, data.role, data.photo_media_id, JSON.stringify(data.tags),
-    JSON.stringify(data.extra), data.bio, position, data.published, t, t
+    JSON.stringify(data.extra), data.bio, data.layout ?? null, position, data.published, t, t
   );
   const member = getMember(db, Number(lastInsertRowid));
   saveRevision(db, "team", member.id, 1, member, user?.id);
@@ -79,8 +91,9 @@ export function updateMember(db, id, input, user, { origin = "manual", changeId 
   const data = validate(db, input);
   const slug = data.slug && data.slug !== current.slug ? uniqueSlug(db, "team_members", data.slug, id) : current.slug;
   db.run(
-    "UPDATE team_members SET slug = ?, name = ?, role = ?, photo_media_id = ?, tags = ?, extra = ?, bio = ?, published = ?, version = version + 1, updated_at = ? WHERE id = ?",
-    slug, data.name, data.role, data.photo_media_id, JSON.stringify(data.tags), JSON.stringify(data.extra), data.bio, data.published, now(), id
+    "UPDATE team_members SET slug = ?, name = ?, role = ?, photo_media_id = ?, tags = ?, extra = ?, bio = ?, layout = ?, published = ?, version = version + 1, updated_at = ? WHERE id = ?",
+    slug, data.name, data.role, data.photo_media_id, JSON.stringify(data.tags), JSON.stringify(data.extra), data.bio,
+    data.layout === undefined ? current.layout : data.layout, data.published, now(), id
   );
   const member = getMember(db, id);
   saveRevision(db, "team", id, member.version, member, user?.id, { origin, changeId });

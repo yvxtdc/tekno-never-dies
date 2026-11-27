@@ -156,7 +156,10 @@ export function buildSiteData(db, { mode = "public", includeEventIds = [], inclu
     photo: ref(m.photo_media_id, "portrait"),
     tags: fromJson(m.tags, []),
     extra: Object.fromEntries(fromJson(m.extra, [])),
-    bio: m.bio
+    bio: m.bio,
+    // Mise en page de la carte (js/components/team-layout.js) ; absente = mise en page par défaut.
+    // Relue par export/import-repo.mjs (aller-retour identique).
+    ...(m.layout ? { layout: fromJson(m.layout, null) } : {})
   }));
 
   /* ---------- Galerie ---------- */

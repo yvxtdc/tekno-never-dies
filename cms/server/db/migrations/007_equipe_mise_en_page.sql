@@ -1,0 +1,29 @@
+-- Mise en page des cartes de l'équipe (page « L'association ») : groupes de pastilles (nom, rôle,
+-- missions), couleurs, objets chromés et cadrage de la photo, saisis dans le CMS au lieu du code.
+-- Format et contrôle : js/components/team-layout.js (services/team.mjs) ; exportée dans js/data/equipe.js
+-- (clé « layout »). NULL = mise en page par défaut du site.
+ALTER TABLE team_members ADD COLUMN layout TEXT CHECK (layout IS NULL OR json_valid(layout));
+
+-- Reprise des réglages faits à la main dans js/components/team-composition.js (LEGACY_COMPOSITION),
+-- convertis à l'identique (legacyLayout, contrôlé par cms/test/team-layout.test.mjs). Comme sur le site,
+-- un réglage ne vaut que pour la photo pour laquelle il a été fait : membre absent ou photo changée
+-- depuis = rien n'est repris (mise en page par défaut). La version des fiches n'est pas changée :
+-- un formulaire ouvert ou une programmation en attente ne sont pas mis en conflit.
+UPDATE team_members SET layout = '{"photo":{"position":"50% 30%"},"groups":[{"items":["name","role","missions"],"x":50,"y":93.6,"align":"center","valign":"bottom"}],"colors":{"name":"violet","role":"cyan","missions":"cyan"},"objects":[{"id":"etincelle-jointure","type":"sparkle","options":{"points":8},"anchor":"end","x":0,"y":21,"size":44,"rotate":0,"flip":false,"layer":"front","hideMobile":false}]}'
+  WHERE slug = 'yannis' AND layout IS NULL AND photo_media_id IN (SELECT id FROM media WHERE storage = 'repo' AND repo_path = 'assets/img/equipe/yannis.webp');
+UPDATE team_members SET layout = '{"photo":{"position":"50% 45%"},"groups":[{"items":["name"],"x":93,"y":7.6,"align":"end","valign":"top"},{"items":["role","missions"],"x":50,"y":93.6,"align":"center","valign":"bottom"}],"colors":{"name":"cyan","role":"violet","missions":"violet"},"objects":[]}'
+  WHERE slug = 'jonathan-axel' AND layout IS NULL AND photo_media_id IN (SELECT id FROM media WHERE storage = 'repo' AND repo_path = 'assets/img/equipe/jonathan-axel.webp');
+UPDATE team_members SET layout = '{"photo":{"position":"50% 30%"},"groups":[{"items":["name","role","missions"],"x":50,"y":93.6,"align":"center","valign":"bottom"}],"colors":{"name":"violet","role":"cyan","missions":"cyan"},"objects":[{"id":"eclair","type":"bolt","options":{"tint":"violet"},"anchor":"card","x":22,"y":50,"size":22,"rotate":10,"flip":false,"layer":"front","hideMobile":false}]}'
+  WHERE slug = 'estebane' AND layout IS NULL AND photo_media_id IN (SELECT id FROM media WHERE storage = 'repo' AND repo_path = 'assets/img/equipe/estebane.webp');
+UPDATE team_members SET layout = '{"photo":{"position":"50% 40%"},"groups":[{"items":["name"],"x":93,"y":7.6,"align":"end","valign":"top"},{"items":["role","missions"],"x":93,"y":93.6,"align":"end","valign":"bottom"}],"colors":{"name":"cyan","role":"violet","missions":"violet"},"objects":[{"id":"verres","type":"cocktails","anchor":"card","x":80,"y":51,"size":44,"rotate":0,"flip":false,"layer":"front","hideMobile":false}]}'
+  WHERE slug = 'ricky' AND layout IS NULL AND photo_media_id IN (SELECT id FROM media WHERE storage = 'repo' AND repo_path = 'assets/img/equipe/ricky.webp');
+UPDATE team_members SET layout = '{"photo":{"position":"50% 55%"},"groups":[{"items":["name"],"x":7,"y":7.6,"align":"start","valign":"top"},{"items":["role","missions"],"x":50,"y":93.6,"align":"center","valign":"bottom"}],"colors":{"name":"violet","role":"cyan","missions":"cyan"},"objects":[{"id":"planete","type":"planet","options":{"tint":"violet"},"anchor":"card","x":85,"y":15,"size":26,"rotate":4,"flip":false,"layer":"front","hideMobile":false}]}'
+  WHERE slug = 'celeste-yelena' AND layout IS NULL AND photo_media_id IN (SELECT id FROM media WHERE storage = 'repo' AND repo_path = 'assets/img/equipe/celeste-yelena.webp');
+UPDATE team_members SET layout = '{"photo":{"position":"50% 45%"},"groups":[{"items":["name","role"],"x":50,"y":7.6,"align":"center","valign":"top"},{"items":["missions"],"x":50,"y":93.6,"align":"center","valign":"bottom"}],"colors":{"name":"cyan","role":"violet","missions":"violet"},"objects":[]}'
+  WHERE slug = 'remi' AND layout IS NULL AND photo_media_id IN (SELECT id FROM media WHERE storage = 'repo' AND repo_path = 'assets/img/equipe/remi.webp');
+UPDATE team_members SET layout = '{"photo":{"position":"50% 45%"},"groups":[{"items":["name"],"x":7,"y":7.6,"align":"start","valign":"top"},{"items":["role","missions"],"x":50,"y":93.6,"align":"center","valign":"bottom"}],"colors":{"name":"violet","role":"cyan","missions":"violet"},"objects":[{"id":"paire-etoiles","type":"star-pair","anchor":"card","x":86,"y":33,"size":26,"rotate":-8,"flip":false,"layer":"front","hideMobile":false}]}'
+  WHERE slug = 'elena-yanniv' AND layout IS NULL AND photo_media_id IN (SELECT id FROM media WHERE storage = 'repo' AND repo_path = 'assets/img/equipe/elena-yanniv.webp');
+UPDATE team_members SET layout = '{"photo":{"position":"50% 40%"},"groups":[{"items":["name"],"x":93,"y":7.6,"align":"end","valign":"top"},{"items":["role","missions"],"x":7,"y":93.6,"align":"start","valign":"bottom"}],"colors":{"name":"cyan","role":"violet","missions":"violet"},"objects":[{"id":"epine-jointure","type":"thorn","anchor":"end","x":3,"y":99,"size":42,"rotate":32,"flip":false,"layer":"between","hideMobile":false}]}'
+  WHERE slug = 'noah' AND layout IS NULL AND photo_media_id IN (SELECT id FROM media WHERE storage = 'repo' AND repo_path = 'assets/img/equipe/noah.webp');
+UPDATE team_members SET layout = '{"photo":{"position":"50% 50%"},"groups":[{"items":["name","role"],"x":93,"y":7.6,"align":"end","valign":"top"},{"items":["missions"],"x":50,"y":93.6,"align":"center","valign":"bottom"}],"colors":{"name":"cyan","role":"violet","missions":"violet"},"objects":[]}'
+  WHERE slug = 'josephine' AND layout IS NULL AND photo_media_id IN (SELECT id FROM media WHERE storage = 'repo' AND repo_path = 'assets/img/equipe/josephine.webp');
