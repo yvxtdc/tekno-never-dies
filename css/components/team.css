@@ -249,10 +249,6 @@ button.team-card{
 
 .team-decor--flip .team-decor__shape{ transform: scaleX(-1); }
 
-/* Contrôle ?composition (team-composition-check.js) : les formes deviennent testables au pointeur */
-.team-checking .team-decor svg *,
-.team-checking .team-decor img{ pointer-events: auto; }
-
 /* ---------- Survol (souris) / focus clavier ----------
    Seule la carte se soulève ; sa couche (z-index 1) ne change pas et les objets restent en place. */
 .team-card:focus-visible{ transform: translateY(-4px); }

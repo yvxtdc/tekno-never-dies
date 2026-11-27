@@ -13,9 +13,16 @@ import { buildSiteData } from "../server/export/site-data.mjs";
 import { verifyRoundtrip } from "../server/export/import-repo.mjs";
 import { showValue } from "../server/services/schedule-targets.mjs";
 import { parseLayout, normalizeLayout, defaultLayout, groupWidth, layoutSummary, addObject, removeObject, moveItem, MAX_OBJECTS } from "../../js/components/team-layout.js";
-import { LEGACY_COMPOSITION, legacyLayout, cardComposition, compositionIssues } from "../../js/components/team-composition.js";
+import { cardComposition, compositionIssues } from "../../js/components/team-composition.js";
 
 const MIGRATION = path.join(import.meta.dirname, "../server/db/migrations/007_equipe_mise_en_page.sql");
+
+/** Mises en page reprises par la migration 007 : slug -> { layout, src } (photo pour laquelle elles valent). */
+function migrationLayouts() {
+  const sql = fs.readFileSync(MIGRATION, "utf8");
+  const updates = [...sql.matchAll(/UPDATE team_members SET layout = '([^']+)'\s+WHERE slug = '([^']+)' AND layout IS NULL AND photo_media_id IN \(SELECT id FROM media WHERE storage = 'repo' AND repo_path = '([^']+)'\);/g)];
+  return Object.fromEntries(updates.map(([, json, slug, src]) => [slug, { layout: JSON.parse(json), src }]));
+}
 
 /** Mise en page valide, avec un objet, pour les essais. */
 const sample = () => ({
@@ -81,30 +88,21 @@ describe("format de la mise en page (team-layout.js)", () => {
   });
 });
 
-describe("reprise des anciens réglages (LEGACY_COMPOSITION, migration 007)", () => {
-  test("chaque ancien réglage se convertit en mise en page valide, sans rien perdre d'affiché", () => {
-    for (const [slug, card] of Object.entries(LEGACY_COMPOSITION)) {
-      const layout = legacyLayout(card);
-      assert.deepEqual(parseLayout(layout).errors, [], slug);
-      assert.equal(layout.photo.position, card.photo.position, slug);
-      assert.equal(layout.objects.length, (card.objects || []).length, slug);
+describe("reprise des anciens réglages (migration 007)", () => {
+  test("la migration reprend les 9 cartes, en mises en page valides et complètes, chacune liée à sa photo", () => {
+    const layouts = migrationLayouts();
+    assert.deepEqual(Object.keys(layouts).sort(), ["celeste-yelena", "elena-yanniv", "estebane", "jonathan-axel", "josephine", "noah", "remi", "ricky", "yannis"]);
+    for (const [slug, { layout, src }] of Object.entries(layouts)) {
+      assert.deepEqual(parseLayout(layout), { layout, errors: [] }, `${slug} : valide et déjà normalisée`);
+      assert.equal(src, `assets/img/equipe/${slug}.webp`, slug);
     }
-    // Exemples : nom en haut à droite, rôle et missions en bas à gauche (Noah) ; tout en bas (Yannis)
-    assert.deepEqual(legacyLayout(LEGACY_COMPOSITION.noah).groups, [
+    // Repère de la conversion (rendu identique à l'ancien bandeau, vérifié au navigateur lors de la reprise) :
+    // nom en haut à droite, rôle et missions en bas à gauche (Noah) ; tout en bas (Yannis)
+    assert.deepEqual(layouts.noah.layout.groups, [
       { items: ["name"], x: 93, y: 7.6, align: "end", valign: "top" },
       { items: ["role", "missions"], x: 7, y: 93.6, align: "start", valign: "bottom" }
     ]);
-    assert.deepEqual(legacyLayout(LEGACY_COMPOSITION.yannis).groups.map((g) => g.items), [["name", "role", "missions"]]);
-  });
-
-  test("la migration contient exactement les réglages convertis, chacun lié à sa photo", () => {
-    const sql = fs.readFileSync(MIGRATION, "utf8");
-    const updates = [...sql.matchAll(/UPDATE team_members SET layout = '([^']+)'\s+WHERE slug = '([^']+)' AND layout IS NULL AND photo_media_id IN \(SELECT id FROM media WHERE storage = 'repo' AND repo_path = '([^']+)'\);/g)];
-    assert.deepEqual(updates.map((u) => u[2]).sort(), Object.keys(LEGACY_COMPOSITION).sort());
-    for (const [, json, slug, src] of updates) {
-      assert.deepEqual(JSON.parse(json), legacyLayout(LEGACY_COMPOSITION[slug]), slug);
-      assert.equal(src, LEGACY_COMPOSITION[slug].photo.src, slug);
-    }
+    assert.deepEqual(layouts.yannis.layout.groups.map((g) => g.items), [["name", "role", "missions"]]);
   });
 
   test("base de production existante : réglages repris pour la même photo seulement, versions inchangées", () => {
@@ -130,7 +128,7 @@ describe("reprise des anciens réglages (LEGACY_COMPOSITION, migration 007)", ()
       member("camille", media("c", "assets/img/equipe/camille.webp"), 2); // nouveau membre
       assert.deepEqual(db.migrate(), ["007_equipe_mise_en_page.sql"]);
       const row = (slug) => db.get("SELECT layout, version FROM team_members WHERE slug = ?", slug);
-      assert.deepEqual(JSON.parse(row("yannis").layout), legacyLayout(LEGACY_COMPOSITION.yannis));
+      assert.deepEqual(JSON.parse(row("yannis").layout), migrationLayouts().yannis.layout);
       assert.equal(row("yannis").version, 1);
       assert.equal(row("noah").layout, null);
       assert.equal(row("camille").layout, null);
@@ -173,7 +171,7 @@ describe("saisie, export et historique de la mise en page (CMS)", () => {
     assert.equal(plain.data.layout, null, "nouveau membre : mise en page par défaut");
   });
 
-  test("export : clé « layout » seulement si une mise en page est réglée ; rendu du site identique", async () => {
+  test("export : clé « layout » seulement si une mise en page est réglée ; carte par défaut sinon", async () => {
     const member = (await editor.post("/api/team", { name: "Alex", role: "Son", layout: sample() })).data;
     const team = buildSiteData(cms.db).TEAM;
     const alex = team.find((m) => m.slug === member.slug);
@@ -200,7 +198,7 @@ describe("import d'un equipe.js qui contient des mises en page", { timeout: 120e
     const siteDir = copySite();
     const file = path.join(siteDir, "js/data/equipe.js");
     const { TEAM } = await import(`${new URL(`file://${file}`).href}?v=${Date.now()}`);
-    TEAM[0].layout = legacyLayout(LEGACY_COMPOSITION[TEAM[0].slug] || LEGACY_COMPOSITION.yannis);
+    TEAM[0].layout = parseLayout(sample()).layout; // mise en page différente de celle publiée
     fs.writeFileSync(file, `export const TEAM = ${JSON.stringify(TEAM, null, 2)};\n`);
     const cms = await startCms({ importContent: true, siteDir });
     try {
