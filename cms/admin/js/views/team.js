@@ -6,6 +6,7 @@ import { tagInput, linksEditor, mediaSlot } from "../lib/widgets.js";
 import { isAdmin, can } from "../lib/session.js";
 import { scheduleChangesDialog, scheduledCounts, formatLocal, changeBadge } from "../lib/schedule.js";
 import { missionIconNode, catalogMissions, openMissionCatalog } from "../lib/mission-badges.js";
+import { openLayoutEditor, layoutPreview } from "./team-layout-editor.js";
 
 const MAX_MISSIONS = 6;
 
@@ -51,27 +52,50 @@ export async function teamView(ctx, main) {
   const edit = (member, predicted = null) => {
     const isNew = !member;
     const m = member ? structuredClone(member) : { name: "", role: "", photo: null, photoMediaId: null, tags: [], extra: [{ label: "Pôle", value: "" }], bio: "", layout: null, published: true };
-    const name = input({ value: m.name, maxlength: 80 });
-    const role = input({ value: m.role, maxlength: 100 });
+    const name = input({ value: m.name, maxlength: 80, onchange: () => refreshLayout() });
+    const role = input({ value: m.role, maxlength: 100, onchange: () => refreshLayout() });
     const bio = textarea({ value: m.bio, rows: 3, maxlength: 600 });
     const published = checkbox("Affiché sur la page « L'association »", { checked: m.published });
     const missions = tagInput({ values: m.tags, label: "Missions", max: MAX_MISSIONS, suggestions: catalogMissions,
       decorate: (tag) => h("span", { class: "mission-badge mission-badge--sm" }, missionIconNode(tag)),
-      onChange: (v) => { m.tags = [...v]; } });
+      onChange: (v) => { m.tags = [...v]; refreshLayout(); } });
+    // Mise en page de la carte : aperçu (rendu du site) et éditeur ; enregistrée avec la fiche.
+    const current = () => ({ ...m, name: name.value, role: role.value });
+    const layoutBox = h("div", { class: "layout-field__preview" });
+    const layoutNote = h("p", { class: "hint" });
+    let layoutChanged = false;
+    const refreshLayout = () => {
+      layoutBox.replaceChildren(layoutPreview(current(), m.layout));
+      layoutNote.textContent = layoutChanged
+        ? "Mise en page modifiée : enregistrez (ou programmez) la fiche pour la garder."
+        : m.layout ? "Mise en page réglée pour cette carte." : "Mise en page par défaut : tout le texte en bas, sans objet chromé.";
+      layoutNote.classList.toggle("layout-field__changed", layoutChanged);
+    };
+    const layoutField = h("div", { class: "field field--wide layout-field", dataset: { field: "layout" } },
+      h("span", { class: "label" }, "Mise en page de la carte"),
+      h("div", { class: "layout-field__body" }, layoutBox,
+        h("div", { class: "stack" }, layoutNote,
+          h("div", {}, h("button", { type: "button", class: "btn btn--sm", onclick: () => openLayoutEditor({
+            member: current(), members,
+            onApply: (layout) => { m.layout = layout; layoutChanged = true; refreshLayout(); }
+          }) }, icon("image"), "Modifier la mise en page…")),
+          h("p", { class: "hint" }, "Placez le nom, le rôle, les missions et les objets chromés à la souris, sur la vraie carte du site, entre ses voisines du bandeau."))),
+      h("p", { class: "error-text", hidden: true }));
     const form = h("div", { class: "fields fields--2" },
       h("div", { class: "fields" },
         field({ label: "Nom", control: name, name: "name", required: true, hint: "Prénom(s), comme sur le site." }),
         field({ label: "Rôle", control: role, name: "role", required: true }),
         field({ label: "Missions", control: missions, name: "tags", hint: "Chaque mission devient un badge sur la carte du membre. Choisissez-les dans le catalogue, ou écrivez-en une (pictogramme choisi d'après ses mots)." }),
         h("div", {}, h("button", { type: "button", class: "btn btn--sm", onclick: () => openMissionCatalog({ selected: m.tags, max: MAX_MISSIONS, onChange: (v) => missions.setValues(v) }) }, icon("plus"), "Catalogue des badges"))),
-      h("div", { class: "field", dataset: { field: "photoMediaId" } }, mediaSlot({ media: m.photo, label: "Photo", hint: "Portrait, recadré en 720 × 900.", onChange: (media) => { m.photo = media; m.photoMediaId = media?.id ?? null; } }), h("p", { class: "error-text", hidden: true })),
+      h("div", { class: "field", dataset: { field: "photoMediaId" } }, mediaSlot({ media: m.photo, label: "Photo", hint: "Portrait, recadré en 720 × 900.", onChange: (media) => { m.photo = media; m.photoMediaId = media?.id ?? null; refreshLayout(); } }), h("p", { class: "error-text", hidden: true })),
+      layoutField,
       field({ label: "Présentation", control: bio, name: "bio", wide: true }),
       field({ label: "Détails de la carte", control: linksEditor({ values: m.extra.map((e) => ({ label: e.label, url: e.value })), labelPlaceholder: "Intitulé (ex. Pôle)", onChange: (v) => { m.extra = v.map((x) => ({ label: x.label, value: x.url })); } }), name: "extra", wide: true, hint: "Paires « intitulé : valeur » (ex. Pôle : Technique)." }),
       h("div", { class: "field--wide" }, published));
     // Les détails ne sont pas des adresses web : champ « valeur » en texte libre.
     form.querySelectorAll('input[type="url"]').forEach((el) => { el.type = "text"; el.placeholder = "Valeur"; });
     const ok = h("button", { type: "button", class: "btn btn--primary", hidden: Boolean(predicted) }, isNew ? "Ajouter" : "Enregistrer");
-    // Mise en page de la carte : renvoyée telle quelle (pas encore modifiable ici ; null = par défaut).
+    // Mise en page de la carte : null = par défaut (éditeur : team-layout-editor.js).
     const formData = () => ({ version: m.version, name: name.value, role: role.value, photoMediaId: m.photoMediaId, tags: m.tags, extra: m.extra, bio: bio.value, layout: m.layout ?? null, published: published.input.checked });
     const reload = async () => {
       [members, scheduled] = await Promise.all([get("/api/team"), scheduledCounts("team")]);
@@ -135,6 +159,7 @@ export async function teamView(ctx, main) {
         else toast(errorMessage(error), "error");
       }
     }));
+    refreshLayout();
     name.focus();
   };
   replace(main,

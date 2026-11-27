@@ -33,10 +33,20 @@ const ADMIN_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..
 const SERVER_DIR = path.dirname(fileURLToPath(import.meta.url));
 // Modules sans dépendance Node partagés avec l'interface (mêmes règles des deux côtés).
 const SHARED = { "richtext.mjs": "services/richtext.mjs", "timeutil.mjs": "services/timeutil.mjs", "slug.mjs": "services/slug.mjs" };
-// Module du site servi tel quel à l'interface : catalogue et pictogrammes des missions (Équipe).
-const SHARED_SITE = { "mission-icons.js": "js/components/mission-icons.js" };
-// Polices et logo du site, réutilisés par l'interface (identité visuelle commune).
-const SITE_ASSETS = /^(fonts\/[\w.-]+\.woff2|img\/badge-white\.webp|img\/favicon\.png)$/;
+// Fichiers du site servis tels quels à l'interface (liste fermée) : catalogue et pictogrammes des
+// missions, et rendu d'une carte de l'équipe pour l'éditeur de mise en page (team-card.js et les modules
+// qu'il importe, styles du bandeau) : l'aperçu est exactement la carte publiée.
+const SHARED_SITE = {
+  "mission-icons.js": "js/components/mission-icons.js",
+  "team-card.js": "js/components/team-card.js",
+  "team-layout.js": "js/components/team-layout.js",
+  "team-composition.js": "js/components/team-composition.js",
+  "chrome.js": "js/components/chrome.js",
+  "team.css": "css/components/team.css"
+};
+// Polices et logo du site, réutilisés par l'interface (identité visuelle commune) ; objets chromés
+// détourés (images de chrome.js) pour l'éditeur de mise en page de l'équipe.
+const SITE_ASSETS = /^(fonts\/[\w.-]+\.woff2|img\/badge-white\.webp|img\/favicon\.png|img\/decor\/[\w-]+\.webp)$/;
 const SAFE_METHODS = new Set(["GET", "HEAD"]);
 
 /**

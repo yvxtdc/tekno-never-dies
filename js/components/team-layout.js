@@ -220,3 +220,57 @@ export function layoutSummary(layout) {
   const objects = l.objects.map((o) => `${CHROME_OBJECTS[o.type].label} (${o.x} %, ${o.y} %, ${o.size} %)`);
   return [...groups, objects.length ? `Objets : ${objects.join(", ")}` : "Aucun objet"].join(" · ");
 }
+
+/* ---------- Opérations d'édition (éditeur du CMS) : toujours sur une copie, jamais en place ---------- */
+
+const slugOf = (text) => text.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+/** Identifiant libre sur la carte pour un nouvel objet de ce type : « etincelle », « etincelle-2 »… */
+export function objectId(layout, type) {
+  const base = slugOf(CHROME_OBJECTS[type]?.label || type) || "objet";
+  const taken = new Set(layout.objects.map((o) => o.id));
+  let id = base;
+  for (let n = 2; taken.has(id); n++) id = `${base}-${n}`;
+  return id;
+}
+
+/** Ajoute un objet du catalogue (réglages par défaut du catalogue), au milieu de la carte par défaut. */
+export function addObject(layout, type, { x = 50, y = 50, size = 24 } = {}) {
+  const entry = CHROME_OBJECTS[type];
+  if (!entry) throw new Error(`Objet inconnu : ${type}.`);
+  if (layout.objects.length >= MAX_OBJECTS) throw new Error(`${MAX_OBJECTS} objets au plus par carte.`);
+  const next = structuredClone(layout);
+  const options = Object.fromEntries(Object.entries(entry.options || {}).map(([key, values]) => [key, values[0]]));
+  next.objects.push({
+    id: objectId(layout, type), type, ...(Object.keys(options).length ? { options } : {}),
+    anchor: "card", x, y, size, rotate: 0, flip: false, layer: "front", hideMobile: false
+  });
+  return next;
+}
+
+/** Retire un objet. */
+export function removeObject(layout, id) {
+  const next = structuredClone(layout);
+  next.objects = next.objects.filter((o) => o.id !== id);
+  return next;
+}
+
+/**
+ * Déplace un élément (name, role, missions) dans le groupe d'indice `to`, ou dans un nouveau groupe
+ * (`to` = null) placé selon `place`. Dans un groupe, l'ordre de lecture reste nom, rôle, missions ; un
+ * groupe vidé est retiré.
+ */
+export function moveItem(layout, item, to, place = { x: 50, y: 50, align: "center", valign: "top" }) {
+  if (!ITEMS.includes(item)) throw new Error(`Élément inconnu : ${item}.`);
+  const next = structuredClone(layout);
+  const from = next.groups.find((g) => g.items.includes(item));
+  const target = to === null ? null : next.groups[to];
+  if (to !== null && !target) throw new Error("Groupe introuvable.");
+  if (target === from) return next;
+  if (!target && next.groups.length >= MAX_GROUPS && from.items.length > 1) throw new Error(`${MAX_GROUPS} groupes au plus.`);
+  from.items = from.items.filter((i) => i !== item);
+  if (target) target.items = ITEMS.filter((i) => i === item || target.items.includes(i));
+  else next.groups.push({ items: [item], ...place });
+  next.groups = next.groups.filter((g) => g.items.length);
+  return next;
+}

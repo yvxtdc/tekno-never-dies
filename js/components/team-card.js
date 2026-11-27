@@ -82,15 +82,18 @@ export function missionBadge(mission, color, label = true) {
   return badge;
 }
 
-/** Objet chromé (dessin SVG ou image détourée) ; null si le type est inconnu. */
-export function chromeObject(type, options) {
+/**
+ * Objet chromé (dessin SVG ou image détourée) ; null si le type est inconnu.
+ * asset : adresse d'une image du site (chemin du dépôt -> URL ; le CMS sert ces images ailleurs).
+ */
+export function chromeObject(type, options, asset = (path) => path) {
   const entry = CHROME_OBJECTS[type];
   if (!entry) return null;
 
   if (entry.svg) return svgNode(chromeSvg(type, options));
 
   const img = el('img');
-  img.src = entry.src;
+  img.src = asset(entry.src);
   img.alt = '';
   img.width = 400;
   img.height = Math.round(400 * entry.ratio); // place réservée avant chargement
@@ -101,8 +104,8 @@ export function chromeObject(type, options) {
 }
 
 /** Objet chromé posé sur la carte ; null si le type est inconnu (ignoré plutôt que de casser le bandeau). */
-export function decor(object) {
-  const shape = chromeObject(object.type, object.options);
+export function decor(object, asset) {
+  const shape = chromeObject(object.type, object.options, asset);
   if (!shape) return null;
 
   const node = el('span', [
@@ -132,8 +135,9 @@ export function decor(object) {
  *   layout : mise en page à appliquer (par défaut celle du membre, team-composition.js)
  *   label  : libellé accessible du bouton (texte traduit par la page ; par défaut le nom)
  *   clone  : copie du carrousel infini, masquée aux lecteurs d'écran et sans identifiants
+ *   asset  : adresse des images d'objets détourés (voir chromeObject)
  */
-export function teamSlide(member, { layout = cardComposition(member), label = member.name, clone = false } = {}) {
+export function teamSlide(member, { layout = cardComposition(member), label = member.name, clone = false, asset } = {}) {
   const { photo, groups, colors, objects } = layout;
 
   const li = el('li', 'team-slide');
@@ -193,7 +197,7 @@ export function teamSlide(member, { layout = cardComposition(member), label = me
   }).filter(block => block.childElementCount);
 
   button.append(img, ...blocks);
-  li.append(button, ...objects.map(decor).filter(Boolean));
+  li.append(button, ...objects.map((object) => decor(object, asset)).filter(Boolean));
 
   return li;
 }

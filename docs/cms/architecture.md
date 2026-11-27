@@ -122,7 +122,10 @@ chaque soirée, datés : statistiques)   — voir supervision.md, statistiques.m
   cadrage de la photo ; une seule mise en page pour mobile et ordinateur. Format, limites et contrôle :
   `js/components/team-layout.js`, partagé par le serveur, le site et `validate`. `NULL` = mise en page
   par défaut (tout en bas, aucun objet). Exportée dans `js/data/equipe.js` (clé `layout`, omise si
-  `NULL`) ; champ programmable et comparé dans l'historique. Les anciens réglages du code
+  `NULL`) ; champ programmable et comparé dans l'historique. Saisie : éditeur
+  `admin/js/views/team-layout-editor.js`, qui rend la carte avec le code du site (`team-card.js`,
+  `team.css`, servis par la liste fermée `SHARED_SITE` de `server/app.mjs`) ; le résultat est enregistré
+  avec la fiche du membre. Les anciens réglages du code
   (`LEGACY_COMPOSITION` de `team-composition.js`) ont été repris par la migration 007, pour la même photo
   seulement ; cette table ne sert plus que de repli tant que `equipe.js` n'a pas été réexporté.
 

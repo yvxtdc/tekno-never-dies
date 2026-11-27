@@ -15,7 +15,24 @@ describe("catalogue des badges de missions (Équipe)", () => {
     assert.match(ok.headers.get("content-type"), /javascript/);
     assert.match(String(ok.data), /export const MISSION_CATALOG/);
     // Liste blanche : aucun autre fichier du site par cette route
-    for (const path of ["/admin/shared/team.js", "/admin/shared/../js/data/equipe.js", "/admin/shared/%2e%2e/cms/.env", "/admin/shared/chrome.js"]) {
+    for (const path of ["/admin/shared/team.js", "/admin/shared/../js/data/equipe.js", "/admin/shared/%2e%2e/cms/.env", "/admin/shared/style.css", "/admin/shared/helpers.js"]) {
+      assert.equal((await client.get(path)).status, 404, path);
+    }
+  });
+
+  test("éditeur de mise en page de l'équipe : rendu d'une carte du site servi, et lui seul", async () => {
+    const client = cms.client();
+    // team-card.js et les modules qu'il importe (chemins relatifs résolus sous /admin/shared/), styles du bandeau
+    for (const [file, type] of [["team-card.js", /javascript/], ["team-layout.js", /javascript/], ["team-composition.js", /javascript/], ["chrome.js", /javascript/], ["team.css", /text\/css/]]) {
+      const res = await client.get(`/admin/shared/${file}`);
+      assert.equal(res.status, 200, file);
+      assert.match(res.headers.get("content-type"), type, file);
+    }
+    const imports = String((await client.get("/admin/shared/team-card.js")).data).matchAll(/from '\.\/([\w-]+\.js)'/g);
+    for (const [, file] of imports) assert.equal((await client.get(`/admin/shared/${file}`)).status, 200, `import ${file}`);
+    // Images des objets détourés : seulement le dossier decor, en webp
+    assert.equal((await client.get("/admin/site/img/decor/thorn.webp")).status, 200);
+    for (const path of ["/admin/site/img/equipe/yannis.webp", "/admin/site/img/decor/../equipe/yannis.webp", "/admin/site/img/decor/thorn.png"]) {
       assert.equal((await client.get(path)).status, 404, path);
     }
   });
