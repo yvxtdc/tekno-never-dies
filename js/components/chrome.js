@@ -244,16 +244,17 @@ function cocktailsSvg() {
 }
 
 /**
- * Catalogue des objets chromés : type -> { label, family, svg(options) | src, ratio }.
+ * Catalogue des objets chromés : type -> { label, family, options?, svg(options) | src, ratio }.
  *   label  : nom lisible (historique du CMS, choix des objets)
+ *   options: réglages proposés par l'éditeur du CMS, avec leurs valeurs (le premier = par défaut)
  *   family : silhouette (deux objets de la même famille ne se suivent pas, voir team-composition.js)
  *   svg    : dessin (options : { tint: "silver" | "violet" }, et points: 4 | 8 pour « sparkle »)
  *   src    : image détourée existante ; ratio : hauteur / largeur (réserve la place avant chargement)
  */
 export const CHROME_OBJECTS = {
-  sparkle: { label: "étincelle", family: "etoile", svg: ({ points = 8, tint = "silver" } = {}) => sparkleSvg({ ...SPARKLE[points === 4 ? 4 : 8], tint }) },
-  bolt: { label: "éclair", family: "eclair", svg: ({ tint = "violet" } = {}) => bevelSvg({ points: BOLT, bevel: 0.22, viewBox: "14 0 82 140", ratio: 140 / 82, tint }) },
-  planet: { label: "planète", family: "planete", svg: ({ tint = "violet" } = {}) => planetSvg({ tint }) },
+  sparkle: { label: "étincelle", family: "etoile", options: { points: [8, 4], tint: ["silver", "violet"] }, svg: ({ points = 8, tint = "silver" } = {}) => sparkleSvg({ ...SPARKLE[points === 4 ? 4 : 8], tint }) },
+  bolt: { label: "éclair", family: "eclair", options: { tint: ["violet", "silver"] }, svg: ({ tint = "violet" } = {}) => bevelSvg({ points: BOLT, bevel: 0.22, viewBox: "14 0 82 140", ratio: 140 / 82, tint }) },
+  planet: { label: "planète", family: "planete", options: { tint: ["violet", "silver"] }, svg: ({ tint = "violet" } = {}) => planetSvg({ tint }) },
   cocktails: { label: "verres", family: "verre", svg: () => cocktailsSvg() },
   "star-pair": { label: "paire d'étoiles", family: "etoile", src: "assets/img/decor/star-pair.webp", ratio: 297 / 400 },
   "star-outline": { label: "étoile en contour", family: "etoile", src: "assets/img/decor/star-outline.webp", ratio: 298 / 400 },

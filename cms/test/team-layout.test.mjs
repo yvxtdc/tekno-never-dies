@@ -12,7 +12,7 @@ import { listMigrations } from "../server/db/migrate.mjs";
 import { buildSiteData } from "../server/export/site-data.mjs";
 import { verifyRoundtrip } from "../server/export/import-repo.mjs";
 import { showValue } from "../server/services/schedule-targets.mjs";
-import { parseLayout, normalizeLayout, defaultLayout, groupWidth, layoutSummary, MAX_OBJECTS } from "../../js/components/team-layout.js";
+import { parseLayout, normalizeLayout, defaultLayout, groupWidth, layoutSummary, addObject, removeObject, moveItem, MAX_OBJECTS } from "../../js/components/team-layout.js";
 import { LEGACY_COMPOSITION, legacyLayout, cardComposition, compositionIssues } from "../../js/components/team-composition.js";
 
 const MIGRATION = path.join(import.meta.dirname, "../server/db/migrations/007_equipe_mise_en_page.sql");
@@ -210,5 +210,42 @@ describe("import d'un equipe.js qui contient des mises en page", { timeout: 120e
       await cms.close();
       fs.rmSync(siteDir, { recursive: true, force: true });
     }
+  });
+});
+
+describe("opérations de l'éditeur (team-layout.js)", () => {
+  const base = () => parseLayout(sample()).layout;
+
+  test("ajout d'un objet : identifiant libre, réglages par défaut du catalogue, limite respectée", () => {
+    const one = addObject(base(), "sparkle");
+    const added = one.objects.at(-1);
+    assert.equal(added.id, "etincelle");
+    assert.deepEqual(added.options, { points: 8, tint: "silver" });
+    assert.deepEqual(parseLayout(one).errors, [], "mise en page toujours valide");
+    const two = addObject(one, "sparkle");
+    assert.equal(two.objects.at(-1).id, "etincelle-2");
+    assert.equal(addObject(one, "star-pair").objects.at(-1).id, "paire-d-etoiles");
+    assert.throws(() => addObject(two, "bolt"), /3 objets au plus/);
+    assert.throws(() => addObject(base(), "licorne"), /inconnu/);
+    assert.equal(base().objects.length, 1, "la mise en page d'origine n'est jamais modifiée");
+  });
+
+  test("retrait d'un objet", () => {
+    assert.deepEqual(removeObject(base(), "planete").objects, []);
+  });
+
+  test("déplacement d'un élément : regroupement, séparation, groupes vides retirés, ordre de lecture gardé", () => {
+    const joined = moveItem(base(), "name", 1);
+    assert.deepEqual(joined.groups.map((g) => g.items), [["name", "role", "missions"]], "nom remis avant le rôle ; groupe vide retiré");
+    const split = moveItem(joined, "missions", null, { x: 50, y: 60, align: "center", valign: "top" });
+    assert.deepEqual(split.groups.map((g) => g.items), [["name", "role"], ["missions"]]);
+    assert.deepEqual(split.groups[1], { items: ["missions"], x: 50, y: 60, align: "center", valign: "top" });
+    for (const layout of [joined, split]) assert.deepEqual(parseLayout(layout).errors, []);
+    const three = moveItem(split, "role", null);
+    assert.equal(three.groups.length, 3);
+    // Un élément seul dans son groupe peut repartir dans un nouveau groupe : toujours 3 au plus
+    assert.equal(moveItem(three, "role", null).groups.length, 3);
+    assert.throws(() => moveItem(three, "role", 7), /Groupe introuvable/);
+    assert.throws(() => moveItem(base(), "photo", 0), /inconnu/);
   });
 });

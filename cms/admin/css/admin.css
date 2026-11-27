@@ -653,3 +653,51 @@ dialog.dialog::backdrop { background: rgba(5, 3, 20, .72); backdrop-filter: blur
   .stats-events td[data-label]::before { content: attr(data-label); font-size: 11px; font-weight: 600; color: var(--faint); letter-spacing: .02em; }
   .stats-events .minibar { margin: 2px 0 0; width: 100%; }
 }
+
+/* ---------- Équipe : mise en page d'une carte (views/team-layout-editor.js) ----------
+   La carte elle-même est stylée par la feuille du site (/admin/shared/team.css) : seule la scène
+   (piste, voisines, sélection) est définie ici. */
+.layout-stage__track { --team-gap: 20px; display: flex; gap: var(--team-gap); width: max-content; margin: 0; padding: 0; list-style: none; isolation: isolate; }
+.layout-stage__track .team-card { --card-w: var(--editor-card-w, 235px); }
+.layout-stage__track .team-card:hover { transform: none; }
+.layout-preview .layout-stage__track .team-card { --card-w: 210px; }
+.layout-stage { overflow: auto; padding: 36px 40px 44px; border: 1px solid var(--line); border-radius: var(--radius); background: radial-gradient(120% 90% at 50% 0%, var(--page-2), var(--page)); min-height: 320px; }
+.layout-stage__zoom { width: max-content; margin-inline: auto; }
+.layout-stage__zoom.is-mobile .team-decor--desktop-only { display: none; }
+.layout-stage__neighbour { pointer-events: none; }
+.layout-stage__neighbour .team-card { opacity: .5; }
+.layout-stage__current .team-card__group,
+.layout-stage__current .team-decor { pointer-events: auto; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; border-radius: 6px; }
+.layout-stage__current .team-card__group:hover,
+.layout-stage__current .team-decor:hover { outline: 1px dashed rgba(255, 255, 255, .55); outline-offset: 2px; }
+.layout-stage__current .is-selected,
+.layout-stage__current .team-card__group:focus-visible,
+.layout-stage__current .team-decor:focus-visible { outline: 2px dashed var(--focus); outline-offset: 3px; }
+.layout-stage__current .is-dragging { cursor: grabbing; }
+dialog.dialog--layout { width: min(1240px, calc(100vw - 24px)); }
+.layout-editor { display: grid; gap: 12px; }
+.layout-editor__bar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 14px; }
+.layout-editor__control { display: grid; gap: 4px; }
+.layout-editor__control .select { min-height: 36px; padding-block: 4px; }
+.layout-editor__main { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 16px; align-items: start; }
+.layout-panel { display: grid; gap: 14px; min-width: 0; }
+.layout-panel__title { margin: 0; font-size: 16px; text-transform: capitalize; }
+.layout-panel__list { display: flex; flex-wrap: wrap; gap: 6px; }
+.layout-panel__item { display: grid; gap: 8px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.layout-range { width: 100%; accent-color: var(--lav); }
+.layout-warnings .form-errors { margin: 0; border-color: rgba(255, 197, 96, .6); background: rgba(255, 197, 96, .1); }
+.layout-warnings p { display: flex; align-items: center; gap: 6px; margin: 0; }
+.layout-catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+.layout-catalog__item { display: grid; justify-items: center; gap: 8px; padding: 12px 8px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: rgba(255, 255, 255, .03); color: #fff; font: inherit; font-weight: 600; font-size: 13px; cursor: pointer; }
+.layout-catalog__item:hover, .layout-catalog__item:focus-visible { border-color: var(--lav); background: rgba(149, 106, 255, .14); }
+.layout-catalog__shape { display: grid; place-items: center; width: 72px; height: 72px; }
+.layout-catalog__shape > * { max-width: 100%; max-height: 100%; width: auto; height: auto; }
+.layout-field__body { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+.layout-field__preview { flex: none; }
+/* Aperçu sans voisines : ce qui dépasse de la carte (objets à cheval) est coupé au bord du cadre */
+.layout-preview { padding: 14px; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: radial-gradient(120% 90% at 50% 0%, var(--page-2), var(--page)); }
+.layout-field__changed { color: var(--amber); font-weight: 600; }
+@media (max-width: 900px) {
+  .layout-editor__main { grid-template-columns: 1fr; }
+  .layout-stage { padding: 24px 16px 32px; }
+}
