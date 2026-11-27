@@ -56,17 +56,6 @@ track.append(...TEAM.map(member => slide(member, true)));
 
 
 /* =========================================================
-   CONTRÔLE DE LA COMPOSITION (association.html?composition)
-   Pastilles cachées par un objet chromé, et remarques de
-   team-composition.js. Rien n'est chargé sans le paramètre.
-========================================================= */
-
-if (new URLSearchParams(location.search).has('composition')) {
-  import('./team-composition-check.js').then(({ checkComposition }) => checkComposition(track));
-}
-
-
-/* =========================================================
    VARIABLES CARROUSEL
 ========================================================= */
 

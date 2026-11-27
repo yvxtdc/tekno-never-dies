@@ -125,9 +125,8 @@ chaque soirée, datés : statistiques)   — voir supervision.md, statistiques.m
   `NULL`) ; champ programmable et comparé dans l'historique. Saisie : éditeur
   `admin/js/views/team-layout-editor.js`, qui rend la carte avec le code du site (`team-card.js`,
   `team.css`, servis par la liste fermée `SHARED_SITE` de `server/app.mjs`) ; le résultat est enregistré
-  avec la fiche du membre. Les anciens réglages du code
-  (`LEGACY_COMPOSITION` de `team-composition.js`) ont été repris par la migration 007, pour la même photo
-  seulement ; cette table ne sert plus que de repli tant que `equipe.js` n'a pas été réexporté.
+  avec la fiche du membre. Les réglages faits auparavant dans le code ont été repris par la migration 007
+  (pour la même photo seulement) ; le code ne les contient plus : la base est la seule source.
 
 ## 5. Correspondance avec le site public
 
