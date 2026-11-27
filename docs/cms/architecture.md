@@ -117,6 +117,14 @@ chaque soirée, datés : statistiques)   — voir supervision.md, statistiques.m
   REDFOX » écrit comme sur l'affiche).
 - **Horaires** : `HH:MM` à l'heure de Paris (fuseau unique du site, colonne `timezone` prévue). Une
   heure inférieure au début de la soirée est le lendemain (04:00 après 21:00).
+- **Mise en page des cartes de l'équipe** (`team_members.layout`, migration 007) : groupes de pastilles
+  (nom, rôle, missions) placés en % de la carte, couleurs, objets chromés du catalogue (`chrome.js`) et
+  cadrage de la photo ; une seule mise en page pour mobile et ordinateur. Format, limites et contrôle :
+  `js/components/team-layout.js`, partagé par le serveur, le site et `validate`. `NULL` = mise en page
+  par défaut (tout en bas, aucun objet). Exportée dans `js/data/equipe.js` (clé `layout`, omise si
+  `NULL`) ; champ programmable et comparé dans l'historique. Les anciens réglages du code
+  (`LEGACY_COMPOSITION` de `team-composition.js`) ont été repris par la migration 007, pour la même photo
+  seulement ; cette table ne sert plus que de repli tant que `equipe.js` n'a pas été réexporté.
 
 ## 5. Correspondance avec le site public
 

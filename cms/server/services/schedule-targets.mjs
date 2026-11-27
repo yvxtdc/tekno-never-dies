@@ -17,6 +17,7 @@ import * as faq from "./faq.mjs";
 import * as team from "./team.mjs";
 import { TICKET_STATUSES } from "./tickets.mjs";
 import { frenchRange } from "./timeutil.mjs";
+import { layoutSummary } from "../../../js/components/team-layout.js";
 
 const f = (label, options = {}) => ({ label, schedulable: true, ...options });
 const internal = (label) => ({ label, schedulable: false });
@@ -126,7 +127,7 @@ export const TARGETS = {
     toInput: (x) => ({ ...x }),
     fields: {
       name: f("Nom"), slug: internal("Adresse"), role: f("Rôle"), photoMediaId: f("Photo", { ref: "media" }), tags: f("Missions"),
-      extra: f("Détails de la carte"), bio: f("Présentation"), published: f("Affiché sur le site")
+      extra: f("Détails de la carte"), bio: f("Présentation"), layout: f("Mise en page de la carte"), published: f("Affiché sur le site")
     },
     publicKey: "published",
     isPublicValue: (value) => value === true
@@ -191,6 +192,7 @@ export function showValue(db, type, key, value) {
   if (key.startsWith("order:")) return value ? `après ${value}` : "en premier";
   const def = TARGETS[type].fields[key];
   if (def?.ref) return refName(db, def.ref, value);
+  if (type === "team" && key === "layout") return layoutSummary(value);
   if (value === null || value === undefined || value === "") return EMPTY;
   if (typeof value === "boolean") return yesNo(value);
   if (key === "tickets") return value.length ? value.map((t) => `${t.label} : ${euro(t.price)}${t.status !== "available" ? ` (${TICKET_STATUSES[t.status] || t.status})` : ""}`).join(" · ") : EMPTY;

@@ -80,7 +80,7 @@ const MEDIA_REFERENCES = [
 /** Colonnes JSON lues par l'export (export/site-data.mjs) : un JSON invalide ferait échouer la mise en ligne. */
 const JSON_COLUMNS = [
   ["events", ["genres", "practical", "links", "tickets", "contest"]], ["artists", ["links"]],
-  ["team_members", ["tags", "extra"]], ["media", ["variants"]]
+  ["team_members", ["tags", "extra", "layout"]], ["media", ["variants"]]
 ];
 
 class Aborted extends Error {}

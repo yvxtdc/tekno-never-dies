@@ -112,24 +112,26 @@ button.team-card{
   pointer-events: none;
 }
 
-/* ---------- Pastilles : nom en haut ; rôle en haut ou en bas ; missions en bas ---------- */
-.team-card__head,
-.team-card__foot{
+/* ---------- Pastilles : groupes (nom, rôle, missions) placés par la mise en page du CMS ----------
+   team-layout.js : --gx, --gy = point d'ancrage en % de la carte (bord gauche, milieu ou bord droit
+   du groupe selon l'alignement ; son haut ou son bas) ; --gw = largeur en % jusqu'à la marge.
+   Un texte plus long (traduction) allonge le groupe à l'opposé de son ancrage. */
+.team-card__group{
   position: absolute;
-  inset-inline: 7cqi;
+  width: calc(var(--gw) * 1%);
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 1.6cqi;
+  text-align: center;
   pointer-events: none;
 }
 
-.team-card__head{ top: 9.5cqi; }
-.team-card__foot{ bottom: 8cqi; gap: 1.3cqi; align-items: center; text-align: center; }
-
-.team-card--center .team-card__head{ text-align: center; }
-.team-card--end .team-card__head{ text-align: end; }
-.team-card__foot--start{ align-items: flex-start; text-align: start; }
-.team-card__foot--end{ align-items: flex-end; text-align: end; }
+.team-card__group--top{ top: calc(var(--gy) * 1%); }
+.team-card__group--bottom{ bottom: calc((100 - var(--gy)) * 1%); gap: 1.3cqi; }
+.team-card__group--start{ left: calc(var(--gx) * 1%); align-items: flex-start; text-align: start; }
+.team-card__group--center{ left: calc(var(--gx) * 1%); transform: translateX(-50%); }
+.team-card__group--end{ right: calc((100 - var(--gx)) * 1%); align-items: flex-end; text-align: end; }
 
 /* Lignes équilibrées : « JONATHAN / & AXEL » plutôt que « JONATHAN & / AXEL » */
 .team-card__line{ display: block; text-wrap: balance; }
@@ -186,8 +188,8 @@ button.team-card{
   align-self: stretch;
 }
 
-.team-card__foot--start .team-card__missions{ justify-content: flex-start; }
-.team-card__foot--end .team-card__missions{ justify-content: flex-end; }
+.team-card__group--start .team-card__missions{ justify-content: flex-start; }
+.team-card__group--end .team-card__missions{ justify-content: flex-end; }
 
 .team-mission{
   --size: clamp(26px, 13.5cqi, 34px);
@@ -220,14 +222,11 @@ button.team-card{
   filter: drop-shadow(0 1px 1px rgba(5,3,20,.45));
 }
 
-/* ---------- Objets chromés (team-composition.js, chrome.js) ----------
-   Centre de l'objet en (x, y) % de la carte, largeur en % de la carte ; valeurs « -m » sur mobile.
+/* ---------- Objets chromés (team-layout.js, chrome.js) ----------
+   Centre de l'objet en (--x, --y) % de la carte, largeur --s en % de la carte, rotation --r ; mêmes
+   valeurs sur mobile (masqué si team-decor--desktop-only).
    « end » : x compté depuis le milieu de l'espace qui suit la carte. Objets statiques. */
 .team-decor{
-  --x: var(--x-d);
-  --y: var(--y-d);
-  --s: var(--s-d);
-  --r: var(--r-d);
   position: absolute;
   z-index: 3;
   left: calc(var(--x) * 1%);
@@ -664,13 +663,6 @@ button.team-card{
   .team-track{ padding-inline: 20px; }
 
   .team-card{ --card-w: min(68vw, 250px); }
-
-  .team-decor{
-    --x: var(--x-m, var(--x-d));
-    --y: var(--y-m, var(--y-d));
-    --s: var(--s-m, var(--s-d));
-    --r: var(--r-m, var(--r-d));
-  }
 
   .team-decor--desktop-only{ display: none; }
 

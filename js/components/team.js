@@ -1,8 +1,8 @@
 /**
  * Équipe de la page Association (association.html, qui charge ce module directement) : cartes des
  * membres construites depuis js/data/equipe.js, carrousel infini (défilement automatique, glisser à la
- * souris ou au doigt) et fiche détaillée en fenêtre (#team-modal). Mise en scène des cartes :
- * team-composition.js ; objets chromés : chrome.js ; styles : css/components/team.css.
+ * souris ou au doigt) et fiche détaillée en fenêtre (#team-modal). Mise en page des cartes (CMS) :
+ * team-composition.js et team-layout.js ; objets chromés : chrome.js ; styles : css/components/team.css.
  * Contrairement aux autres modules de js/components/, celui-ci agit dès son chargement (DOM requis) :
  * il n'est importé ni par les outils Node ni par le CMS.
  */
@@ -10,6 +10,7 @@ import { TEAM } from '../data/equipe.js';
 import { t } from '../i18n/i18n.js';
 import { track as trackClick } from '../pages/helpers.js';
 import { cardComposition } from './team-composition.js';
+import { groupWidth } from './team-layout.js';
 import { chromeSvg, CHROME_OBJECTS } from './chrome.js';
 import { missionIcon, missionIconSvg } from './mission-icons.js';
 
@@ -23,9 +24,9 @@ if (!carousel || !track) {
 
 /* =========================================================
    CRÉATION DES CARTES
-   La photo brute (CMS) + par-dessus, générés ici : pastilles
-   (nom, rôle, missions, en texte) et objets chromés.
-   Réglages de la mise en scène : team-composition.js.
+   La photo brute (CMS) + par-dessus, générés ici : groupes de
+   pastilles (nom, rôle, missions, en texte) et objets chromés,
+   placés selon la mise en page saisie dans le CMS.
 ========================================================= */
 
 function el(tag, className, text) {
@@ -52,15 +53,6 @@ function missionBadge(mission, color, label = true) {
     badge.title = mission;
   }
   return badge;
-}
-
-// Valeurs de position d'un objet (desktop, puis mobile si elles diffèrent)
-function placeDecor(node, values, suffix) {
-  const set = (name, value) => value != null && node.style.setProperty(`--${name}-${suffix}`, value);
-  set('x', values.x);
-  set('y', values.y);
-  set('s', values.size);
-  set('r', values.rotate != null ? `${values.rotate}deg` : null);
 }
 
 // Objet chromé (dessin SVG ou image détourée) ; null si le type est inconnu
@@ -95,13 +87,16 @@ function decor(object) {
     `team-decor--${object.anchor === 'end' ? 'end' : 'card'}`,
     `team-decor--${['back', 'between'].includes(object.layer) ? object.layer : 'front'}`,
     object.flip && 'team-decor--flip',
-    object.mobile === false && 'team-decor--desktop-only'
+    object.hideMobile && 'team-decor--desktop-only'
   ].filter(Boolean).join(' '));
   node.dataset.decor = object.id || object.type;
   node.setAttribute('aria-hidden', 'true');
 
-  placeDecor(node, { x: 0, y: 50, size: 20, rotate: 0, ...object }, 'd');
-  if (object.mobile) placeDecor(node, object.mobile, 'm');
+  // Une seule mise en page pour mobile et ordinateur (valeurs en % de la carte)
+  node.style.setProperty('--x', object.x);
+  node.style.setProperty('--y', object.y);
+  node.style.setProperty('--s', object.size);
+  node.style.setProperty('--r', `${object.rotate}deg`);
 
   shape.classList.add('team-decor__shape');
   node.append(shape);
@@ -111,13 +106,13 @@ function decor(object) {
 
 // clone : copie du carrousel infini, masquée aux lecteurs d'écran et sans identifiants
 function slide(member, clone = false) {
-  const { photo, badges, objects } = cardComposition(member);
+  const { photo, groups, colors, objects } = cardComposition(member);
 
   const li = el('li', 'team-slide');
   li.dataset.member = member.slug;
   if (clone) li.setAttribute('aria-hidden', 'true');
 
-  const button = el('button', `team-card team-card--${badges.align}`);
+  const button = el('button', 'team-card');
   button.type = 'button';
   button.dataset.member = member.slug;
   button.setAttribute(
@@ -136,35 +131,41 @@ function slide(member, clone = false) {
   img.draggable = false; // sinon le navigateur « attrape » la photo au lieu de faire défiler
   img.style.objectPosition = photo.position;
 
-  // Nom en haut ; rôle sous le nom ou en bas avec les missions, selon la place laissée par la photo.
-  // Du vrai texte (traduit, lisible par les lecteurs d'écran).
-  const head = el('span', 'team-card__head');
-  const foot = el('span', `team-card__foot team-card__foot--${badges.tagsAlign}`);
+  // Pastilles : du vrai texte (traduit, lisible par les lecteurs d'écran), réparti dans les groupes
+  // de la mise en page. Ordre de lecture : nom, rôle, missions.
+  const parts = {};
   const described = [];
 
-  const name = el('span', 'team-card__line');
-  name.append(pill(member.name, 'name', badges.nameColor));
-  name.firstChild.translate = false;
-  (badges.name === 'bottom' ? foot : head).append(name);
+  parts.name = el('span', 'team-card__line');
+  parts.name.append(pill(member.name, 'name', colors.name));
+  parts.name.firstChild.translate = false;
 
   if (member.role) {
-    const role = el('span', 'team-card__line');
-    role.append(pill(member.role, 'role', badges.roleColor));
-    (badges.role === 'top' && badges.name !== 'bottom' ? head : foot).append(role);
-    if (!clone) role.id = `team-role-${member.slug}`;
-    described.push(role);
+    parts.role = el('span', 'team-card__line');
+    parts.role.append(pill(member.role, 'role', colors.role));
+    if (!clone) parts.role.id = `team-role-${member.slug}`;
+    described.push(parts.role);
   }
 
   // Missions : un médaillon par mission, côte à côte (le texte est dans la fiche et au survol)
-  const tags = el('span', 'team-card__missions');
-  tags.append(...(member.tags || []).map(tag => missionBadge(tag, badges.tagsColor)));
-  foot.append(tags);
-  if (!clone) tags.id = `team-tags-${member.slug}`;
-  described.push(tags);
+  parts.missions = el('span', 'team-card__missions');
+  parts.missions.append(...(member.tags || []).map(tag => missionBadge(tag, colors.missions)));
+  if (!clone) parts.missions.id = `team-tags-${member.slug}`;
+  described.push(parts.missions);
 
   if (!clone) button.setAttribute('aria-describedby', described.map(node => node.id).join(' '));
 
-  button.append(img, ...(head.childElementCount ? [head] : []), foot);
+  // Groupe : ancré en (x, y) % de la carte, s'étend à l'opposé de son ancrage (texte plus long)
+  const blocks = groups.map(group => {
+    const block = el('span', `team-card__group team-card__group--${group.valign} team-card__group--${group.align}`);
+    block.style.setProperty('--gx', group.x);
+    block.style.setProperty('--gy', group.y);
+    block.style.setProperty('--gw', groupWidth(group));
+    block.append(...group.items.map(item => parts[item]).filter(Boolean));
+    return block;
+  }).filter(block => block.childElementCount);
+
+  button.append(img, ...blocks);
   li.append(button, ...objects.map(decor).filter(Boolean));
 
   return li;
@@ -187,7 +188,7 @@ track.append(...TEAM.map(member => slide(member, true)));
 
 /* =========================================================
    CONTRÔLE DE LA COMPOSITION (association.html?composition)
-   Zones protégées et chevauchements, pour régler
+   Pastilles cachées par un objet chromé, et remarques de
    team-composition.js. Rien n'est chargé sans le paramètre.
 ========================================================= */
 
@@ -491,7 +492,7 @@ if (
 
 function fillModal(member) {
 
-  const { photo, badges, objects } = cardComposition(member);
+  const { photo, colors, objects } = cardComposition(member);
 
   modalImg.src = member.photo;
   modalImg.alt = member.name;
@@ -525,7 +526,7 @@ function fillModal(member) {
   modalTags.replaceChildren(
     ...(member.tags || []).map(tag => {
       const item = el('li', 'team-modal-mission');
-      item.append(missionBadge(tag, badges.tagsColor, false), el('span', null, tag));
+      item.append(missionBadge(tag, colors.missions, false), el('span', null, tag));
       return item;
     })
   );
