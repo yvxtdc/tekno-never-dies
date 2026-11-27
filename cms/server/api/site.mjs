@@ -6,7 +6,7 @@ import { REPO_ROOT } from "../config.mjs";
 import { readJson } from "../http/body.mjs";
 import { notFound } from "../http/errors.mjs";
 import { audit } from "../services/audit.mjs";
-import { listPublications, publicationView } from "../publish/publisher.mjs";
+import { listPublications, publicationView, publishStatus } from "../publish/publisher.mjs";
 import { healthReport } from "../services/health.mjs";
 import { lifecycleOverview } from "../services/lifecycle.mjs";
 import { createBackup, listBackups, backupFile, lastBackupAt } from "../services/backup.mjs";
@@ -89,6 +89,8 @@ export function registerSiteRoutes(router, { config, db, publisher }) {
   /* ---------- Mise en ligne ---------- */
   router.get("/api/publications", () => ({ items: listPublications(db, { siteUrl: SITE.url }), running: Boolean(publisher.running), mode: config.publishMode, deployTracking: config.deployTracking }), { perm: "content.read" });
   router.get("/api/publications/pending", () => ({ ...publisher.pending(), drift: publisher.drift() }), { perm: "content.read" });
+  // Indicateur du menu « Mise en ligne » (interrogé après chaque enregistrement et régulièrement)
+  router.get("/api/publications/status", () => publishStatus(db, publisher), { perm: "content.read" });
   router.get("/api/publications/:id", (ctx) => {
     const row = db.get("SELECT p.*, u.name AS user_name FROM publications p LEFT JOIN users u ON u.id = p.user_id WHERE p.id = ?", ctx.params.id);
     if (!row) throw notFound("Mise en ligne introuvable.");
@@ -99,7 +101,8 @@ export function registerSiteRoutes(router, { config, db, publisher }) {
     // Forcer (remplacer des fichiers modifiés hors du CMS) : administrateurs uniquement.
     const force = body.force === true && ctx.user.role === "admin";
     const result = await publisher.publish({ trigger: "manual", user: ctx.user, force, ip: ctx.ip });
-    return result;
+    // Même forme que GET /api/publications/:id (validation lue, déploiement) : l'interface affiche le journal
+    return publicationView(result, SITE.url, { withLog: true });
   }, { perm: "site.publish" });
 
   /* ---------- Sauvegardes ---------- */

@@ -6,6 +6,9 @@ let csrf = "";
 let onUnauthorized = () => {};
 
 export const setCsrf = (token) => { csrf = token || ""; };
+
+/** Écriture réussie (POST, PUT, DELETE, envoi de fichier) : signalée pour l'indicateur « Mise en ligne ». */
+const changed = (method, url) => window.dispatchEvent(new CustomEvent("api:change", { detail: { method, url } }));
 export const setUnauthorizedHandler = (fn) => { onUnauthorized = fn; };
 
 export class ApiError extends Error {
@@ -49,6 +52,7 @@ export async function api(method, url, body, { signal } = {}) {
     throw new ApiError(401, data);
   }
   if (!res.ok) throw new ApiError(res.status, data);
+  if (method !== "GET") changed(method, url);
   return data;
 }
 
@@ -70,7 +74,10 @@ export function upload(url, file, { method = "POST", onProgress } = {}) {
     xhr.onerror = () => reject(new ApiError(0, null));
     xhr.onload = () => {
       if (xhr.status === 401) onUnauthorized();
-      if (xhr.status >= 200 && xhr.status < 300) resolve(xhr.response);
+      if (xhr.status >= 200 && xhr.status < 300) {
+        changed(method, url);
+        resolve(xhr.response);
+      }
       else reject(new ApiError(xhr.status, xhr.response));
     };
     xhr.send(file);

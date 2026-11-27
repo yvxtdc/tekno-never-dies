@@ -27,7 +27,7 @@ import { spawn } from "node:child_process";
 import { now, fromJson } from "../db/index.mjs";
 import { conflict } from "../http/errors.mjs";
 import { buildSiteData } from "../export/site-data.mjs";
-import { renderModules, MANAGED_MODULES } from "../export/modules.mjs";
+import { renderModules, MANAGED_MODULES, MODULE_LABELS } from "../export/modules.mjs";
 import { variantFile, syncRepoMedia, describeRepoMediaSync } from "../services/media.mjs";
 import { audit } from "../services/audit.mjs";
 import { appliedIds, markPublished, notePublishFailure } from "../services/schedule.mjs";
@@ -145,7 +145,9 @@ export class Publisher {
     const last = this.db.get("SELECT finished_at FROM publications WHERE status = 'success' ORDER BY id DESC LIMIT 1")?.finished_at;
     const since = last || "";
     const events = this.db.all("SELECT id, title, status, updated_at FROM events WHERE updated_at > ? ORDER BY updated_at DESC LIMIT 20", since);
-    return { changed, missingMedia, events, hasChanges: changed.length > 0 || missingMedia.length > 0, lastPublishedAt: last || null };
+    // Contenus concernés, en mots (« Équipe », « FAQ »…), dans l'ordre des fichiers
+    const sections = [...new Set([...changed.map((file) => MODULE_LABELS[file] || file), ...(missingMedia.length ? ["Images"] : [])])];
+    return { changed, sections, missingMedia, events, hasChanges: changed.length > 0 || missingMedia.length > 0, lastPublishedAt: last || null };
   }
 
   /**
@@ -515,6 +517,41 @@ export function listPublications(db, { limit = 30, siteUrl = null } = {}) {
     `SELECT p.*, u.name AS user_name FROM publications p LEFT JOIN users u ON u.id = p.user_id ORDER BY p.id DESC LIMIT ?`,
     limit
   ).map((p) => publicationView(p, siteUrl));
+}
+
+/**
+ * État de la mise en ligne en un mot, pour l'indicateur du menu de l'interface (et le titre de l'onglet).
+ * Par ordre de priorité : running (en cours), blocked (fichiers modifiés hors du CMS), failed (dernière
+ * mise en ligne échouée), deploy-failed (dernier envoi non déployé), pending (modifications à mettre en
+ * ligne), deploying (envoyé, déploiement GitHub pas encore confirmé), ok. Même sources que la page
+ * Mise en ligne : publisher.pending(), publisher.drift(), publications.deploy_* (deploy-tracker.mjs).
+ */
+// « À jour » seulement si GitHub a confirmé le déploiement du dernier envoi ; sinon, ce qu'on sait.
+const okDetail = (deployment) => !deployment ? "Rien en attente de mise en ligne."
+  : deployment.level === "ok" ? "Rien en attente : le site public est à jour."
+    : deployment.status === "not_sent" ? `Rien en attente. Dernière mise en ligne : ${deployment.label.toLowerCase()}.`
+      : `Rien en attente. Dernier envoi : ${deployment.label.toLowerCase()}.`;
+
+export function publishStatus(db, publisher) {
+  const pending = publisher.pending();
+  const drift = publisher.drift();
+  const last = db.get("SELECT * FROM publications ORDER BY id DESC LIMIT 1");
+  const deployment = deploymentView(db.get("SELECT * FROM publications WHERE status = 'success' ORDER BY id DESC LIMIT 1"));
+  const what = pending.sections.length ? ` (${pending.sections.join(", ")})` : "";
+  const [state, label, detail] = publisher.running || last?.status === "running"
+    ? ["running", "En cours", "Mise en ligne en cours…"]
+    : drift.length
+      ? ["blocked", "Bloquée", "Des fichiers du site ont été modifiés hors du CMS : la mise en ligne est bloquée."]
+      : last?.status === "failed"
+        ? ["failed", "Échec", `La dernière mise en ligne a échoué${pending.hasChanges ? " : les modifications ne sont pas en ligne" : ""}.`]
+        : deployment?.level === "error"
+          ? ["deploy-failed", "Échec", `Dernier envoi : ${deployment.label.toLowerCase()}.`]
+          : pending.hasChanges
+            ? ["pending", "À publier", `Modifications pas encore en ligne${what}.`]
+            : deployment?.level === "pending"
+              ? ["deploying", "Envoi…", `${deployment.label} : le site public sera à jour dans quelques minutes.`]
+              : ["ok", "", okDetail(deployment)];
+  return { state, label, detail, sections: pending.sections, hasChanges: pending.hasChanges, drift, deployment: deployment && { status: deployment.status, label: deployment.label, level: deployment.level } };
 }
 
 /** Mise en ligne pour l'interface : sans le journal (détail à part), validation et déploiement lisibles. */

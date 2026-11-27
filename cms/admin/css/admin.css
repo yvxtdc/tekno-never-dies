@@ -99,7 +99,21 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 20px 0; }
 .nav a:hover { background: rgba(255, 255, 255, .06); color: #fff; }
 .nav a[aria-current="page"] { background: rgba(149, 106, 255, .2); color: #fff; box-shadow: inset 3px 0 0 var(--lav); }
 .nav svg { width: 18px; height: 18px; flex: none; }
-.nav__badge { margin-left: auto; background: var(--pink-deep); color: #fff; border-radius: 999px; font-size: 11px; padding: 1px 8px; }
+/* Pastille d'état dans le menu (lib/publish-status.js) : à publier, en cours, échec… */
+.nav a > span:not(.nav__badge) { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nav__badge { margin-left: auto; flex: none; border-radius: 999px; font-size: 11px; font-weight: 700; line-height: 1.5; padding: 1px 8px; white-space: nowrap; background: var(--pink-deep); color: #fff; }
+.nav__badge--pending { background: var(--amber); color: #1b1235; }
+.nav__badge--running, .nav__badge--deploying { background: rgba(149, 106, 255, .28); color: #fff; box-shadow: inset 0 0 0 1px var(--lav); }
+.nav__badge--failed, .nav__badge--deploy-failed, .nav__badge--blocked { background: var(--red); color: #1b1235; }
+/* Point sur le bouton du menu (téléphone : menu fermé) */
+.topbar__menu { position: relative; }
+.nav-dot { position: absolute; top: 4px; right: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 0 2px var(--page); }
+.nav-dot--running, .nav-dot--deploying { background: var(--lav); }
+.nav-dot--failed, .nav-dot--deploy-failed, .nav-dot--blocked { background: var(--red); }
+@media (prefers-reduced-motion: no-preference) {
+  .nav__badge--running, .nav__badge--deploying, .nav-dot--running, .nav-dot--deploying { animation: nav-pulse 1.6s ease-in-out infinite; }
+}
+@keyframes nav-pulse { 50% { opacity: .55; } }
 .sidebar__foot { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--line); display: grid; gap: 8px; }
 .me { text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px; padding: 6px 8px; }
 .me__avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--gradient); display: grid; place-items: center; font-weight: 700; flex: none; }
