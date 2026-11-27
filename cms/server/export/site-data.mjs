@@ -14,6 +14,8 @@ import { exportPath, mediaVariants, VARIANTS } from "../services/media.mjs";
 import { richTextToHtml } from "../services/richtext.mjs";
 import { translatableTexts } from "../services/events.mjs";
 import { translatableSources } from "../services/translations.mjs";
+import { exportInfo, infoTranslatableTexts } from "../services/site-info.mjs";
+import { exportTimeline, timelineTexts } from "../services/timeline.mjs";
 import { exportTicket, exportContest, normalizeTicket, sortTickets } from "../services/tickets.mjs";
 
 const norm = (s) => String(s ?? "").replace(/\s+/g, " ").trim();
@@ -194,7 +196,9 @@ export function buildSiteData(db, { mode = "public", includeEventIds = [], inclu
     ),
     ...FAQ.map((f) => norm(f.q)),
     ...db.all("SELECT answer FROM faq_items WHERE published = 1").map((f) => norm(f.answer)),
-    ...TEAM.flatMap((m) => [m.role, m.bio, ...m.tags, ...Object.entries(m.extra).flat()].map(norm))
+    ...TEAM.flatMap((m) => [m.role, m.bio, ...m.tags, ...Object.entries(m.extra).flat()].map(norm)),
+    ...infoTranslatableTexts(db).map(norm),
+    ...timelineTexts(db, { publishedOnly: true }).map(norm)
   ]);
   const rich = new Set(translatableSources(db).filter((s) => s.rich).map((s) => s.source));
   const translations = { de: {}, en: {} };
@@ -206,7 +210,13 @@ export function buildSiteData(db, { mode = "public", includeEventIds = [], inclu
     else translations[t.lang][t.source] = t.text;
   }
 
-  return { events, eventRedirects, ARTISTS, ARTIST_STYLES, ARTIST_PHOTOS, FAQ, TEAM, GALLERY, translations, files };
+  /* ---------- Infos de l'association (js/data/association.js) ---------- */
+  const ASSOCIATION = exportInfo(db);
+
+  /* ---------- Notre histoire (js/data/histoire.js) ---------- */
+  const HISTORY = exportTimeline(db, ref);
+
+  return { events, eventRedirects, ARTISTS, ARTIST_STYLES, ARTIST_PHOTOS, FAQ, TEAM, GALLERY, HISTORY, ASSOCIATION, translations, files };
 }
 
 /** Dimensions d'une image réduite pour tenir dans max × max (sans agrandissement), comme sharp. */

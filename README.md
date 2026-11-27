@@ -69,7 +69,8 @@ vendor/three/                     Three.js
 | Modifier le header, le menu ou le footer | `partials/header.html` ou `footer.html`, puis `npm run partials` |
 | Changer couleurs, tailles, espacements | `css/style.css` (variables en haut, dans `:root`) |
 | Régler les étoiles (vitesse, couleurs, on/off) | `js/stars/config.js` |
-| Changer l'adresse du siège | `js/data/site.js` (+ `association.html` et `mentions-legales.html`) |
+| E-mail, téléphone, Instagram, adresse du siège, responsable de publication, hébergeur | CMS → **Infos de l'association** (administrateurs), puis **Mise en ligne** : écrits partout (en-tête, pied de page, Contact, pages légales) là où la page marque la valeur d'un attribut `data-info` (`tools/sync-infos.mjs`, `js/components/association-info.js`). Ne jamais modifier ces valeurs à la main dans les pages. |
+| Étapes clés de « Notre histoire » (page L'association) | CMS → **Notre histoire** (les années de soirées s'ajoutent seules) |
 | Statistiques de visite (GoatCounter) | tableau de bord : https://teknoneverdies.goatcounter.com — réglage : `SITE.goatcounter` dans `js/data/site.js` (vide = désactivé ; si l'adresse change, la mettre aussi dans la CSP de chaque page) |
 
 ## Header et footer

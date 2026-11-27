@@ -22,6 +22,8 @@ export function renderModules(data) {
     "js/data/faq.js": HEADER("questions fréquentes") + `export const FAQ = ${json(data.FAQ)};\n`,
     "js/data/equipe.js": HEADER("équipe de l'association") + `export const TEAM = ${json(data.TEAM)};\n`,
     "js/data/galerie.js": HEADER("galerie photo") + `export const GALLERY = ${json(data.GALLERY)};\n`,
+    "js/data/histoire.js": HEADER("étapes clés de « Notre histoire » (page L'association), triées par date") + `export const HISTORY = ${json(data.HISTORY)};\n`,
+    "js/data/association.js": HEADER("infos de l'association (coordonnées, responsable de publication, hébergeur)") + `export const ASSOCIATION = ${json(data.ASSOCIATION)};\n`,
     "js/i18n/contenus-de.js": HEADER("traductions allemandes des contenus, fusionnées par js/i18n/de.js") + `export default ${json(data.translations.de)};\n`,
     "js/i18n/contenus-en.js": HEADER("traductions anglaises des contenus, fusionnées par js/i18n/en.js") + `export default ${json(data.translations.en)};\n`
   };
@@ -35,8 +37,10 @@ export const MODULE_LABELS = {
   "js/data/faq.js": "FAQ",
   "js/data/equipe.js": "Équipe",
   "js/data/galerie.js": "Galerie photo",
+  "js/data/histoire.js": "Notre histoire",
+  "js/data/association.js": "Infos de l'association",
   "js/i18n/contenus-de.js": "Traductions",
   "js/i18n/contenus-en.js": "Traductions"
 };
 
-export const MANAGED_MODULES = Object.keys(renderModules({ events: [], eventRedirects: {}, ARTISTS: {}, ARTIST_STYLES: {}, ARTIST_PHOTOS: {}, FAQ: [], TEAM: [], GALLERY: [], translations: { de: {}, en: {} } }));
+export const MANAGED_MODULES = Object.keys(renderModules({ events: [], eventRedirects: {}, ARTISTS: {}, ARTIST_STYLES: {}, ARTIST_PHOTOS: {}, FAQ: [], TEAM: [], GALLERY: [], HISTORY: [], ASSOCIATION: {}, translations: { de: {}, en: {} } }));

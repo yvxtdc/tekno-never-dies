@@ -8,6 +8,8 @@ import * as artists from "../services/artists.mjs";
 import * as venues from "../services/venues.mjs";
 import * as faq from "../services/faq.mjs";
 import * as team from "../services/team.mjs";
+import * as siteInfo from "../services/site-info.mjs";
+import * as timeline from "../services/timeline.mjs";
 import * as gallery from "../services/gallery.mjs";
 import * as translations from "../services/translations.mjs";
 import { eventStatusAction, mergeStale, orphanChanges } from "../services/schedule.mjs";
@@ -177,6 +179,32 @@ export function registerContentRoutes(router, { config, db }) {
     audit(db, ctx.actor, "faq.reorder", "faq", null, "Ordre de la FAQ modifié");
     return faq.listFaq(db);
   }, WRITE);
+
+  /* ---------- Infos de l'association (mentions légales : administrateurs seulement) ---------- */
+  router.get("/api/site-info", () => siteInfo.getSiteInfo(db), READ);
+  router.put("/api/site-info", async (ctx) => {
+    const info = siteInfo.updateSiteInfo(db, await readJson(ctx.req), ctx.user);
+    audit(db, ctx.actor, "site-info.update", "site_info", 1, "Infos de l'association modifiées");
+    return info;
+  }, { perm: "settings.manage" });
+
+  /* ---------- Notre histoire (étapes clés, page L'association) ---------- */
+  router.get("/api/timeline", () => timeline.listTimeline(db), READ);
+  router.post("/api/timeline", async (ctx) => {
+    const item = timeline.createTimelineItem(db, await readJson(ctx.req), ctx.user);
+    audit(db, ctx.actor, "timeline.create", "timeline", item.id, item.title);
+    return item;
+  }, { ...WRITE, status: 201 });
+  router.put("/api/timeline/:id", async (ctx) => {
+    const item = timeline.updateTimelineItem(db, ctx.params.id, await readJson(ctx.req), ctx.user);
+    audit(db, ctx.actor, "timeline.update", "timeline", item.id, item.title);
+    return item;
+  }, WRITE);
+  router.delete("/api/timeline/:id", (ctx) => {
+    const item = timeline.deleteTimelineItem(db, ctx.params.id);
+    audit(db, ctx.actor, "timeline.delete", "timeline", item.id, item.title);
+    return { ok: true };
+  }, DELETE);
 
   /* ---------- Équipe ---------- */
   router.get("/api/team", () => team.listTeam(db), READ);

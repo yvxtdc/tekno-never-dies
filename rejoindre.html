@@ -97,13 +97,13 @@
   <!-- Colonne de droite (ordinateur uniquement) : prochaine soirée remplie par js/partials.js -->
   <aside class="tnd-menu-side" aria-label="Prochaine soirée">
     <div class="tnd-next" hidden></div>
-    <a class="tnd-menu-insta" href="https://www.instagram.com/tnd6tem/" target="_blank" rel="noopener noreferrer">
+    <a class="tnd-menu-insta" href="https://www.instagram.com/tnd6tem/" data-info="href=instagram" target="_blank" rel="noopener noreferrer">
       <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" class="social-dot"/></svg>
       Instagram <span aria-hidden="true">↗</span>
     </a>
   </aside>
   <div class="tnd-menu-bottom">
-    <p class="tnd-menu-foot">Tekno Never Dies, Lauterbourg<br><a href="mailto:tnd6tem@gmail.com">tnd6tem@gmail.com</a></p>
+    <p class="tnd-menu-foot">Tekno Never Dies, Lauterbourg<br><a href="mailto:tnd6tem@gmail.com" data-info="href=emailHref text=email">tnd6tem@gmail.com</a></p>
   </div>
 </nav>
 <!-- /partial:header -->
@@ -152,10 +152,11 @@
       </nav>
 
       <div class="site-footer__actions">
-        <a class="site-footer__icon" href="mailto:tnd6tem@gmail.com" aria-label="Écrire à tnd6tem@gmail.com" title="tnd6tem@gmail.com">
+        <a class="site-footer__icon" href="mailto:tnd6tem@gmail.com" title="tnd6tem@gmail.com" data-info="href=emailHref title=email">
           <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg>
+          <span class="sr-only">Écrire à <span data-info="text=email">tnd6tem@gmail.com</span></span>
         </a>
-        <a class="site-footer__icon" href="https://www.instagram.com/tnd6tem/" target="_blank" rel="noopener noreferrer" aria-label="Instagram Tekno Never Dies" title="@tnd6tem">
+        <a class="site-footer__icon" href="https://www.instagram.com/tnd6tem/" target="_blank" rel="noopener noreferrer" aria-label="Instagram Tekno Never Dies" title="@tnd6tem" data-info="href=instagram title=instagramHandle">
           <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" class="social-dot"/></svg>
         </a>
         <a class="site-footer__icon site-footer__top" href="#main" aria-label="Haut de page" title="Haut de page">

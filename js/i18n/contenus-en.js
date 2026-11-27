@@ -11,6 +11,8 @@ export default {
   "21 juin 2025 · Wissembourg": "21 June 2025 · Wissembourg",
   "250 participant·es": "250 attendees",
   "2ᵉ édition · L'hiver selon TND": "2nd edition · Winter, TND style",
+  "88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis": "88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, United States",
+  "Après une année à réunir l'équipe et le matériel, TND devient officiellement une association.": "After a year bringing the team and gear together, TND officially becomes an association.",
   "Artiste bénévole": "Volunteer artist",
   "Bons commerciaux": "Vouchers",
   "Bons commerciaux, entrée et billetterie": "Vouchers, entrance and ticketing",
@@ -58,6 +60,8 @@ export default {
   "ICE BOILER revient pour une deuxième édition, cette fois dans la salle polyvalente de Munchhausen. Le principe ne change pas : une nuit d'hiver qui démarre en douceur et monte en pression jusqu'à 4h. Nouveauté de cette édition, la techno s'ouvre aux sons trance, groovy et bouncy.": "ICE BOILER is back for a second edition, this time at the Munchhausen community hall. The idea stays the same: a winter night that starts gently and builds up pressure until 4 am. New this time: the techno opens up to trance, groovy and bouncy sounds.",
   "Jonathan et Axel gèrent l’installation, les réglages, les tests et l’entretien du son et des lumières.": "Jonathan and Axel handle the setup, tuning, testing and maintenance of sound and lights.",
   "Joséphine donne un coup de main bénévole lors des événements.": "Joséphine volunteers at events.",
+  "L'association est créée": "The association is founded",
+  "L'idée naît": "The idea is born",
   "La Fête de la musique, version techno.": "The Fête de la Musique, techno version.",
   "La fiche est mise à jour dès que possible. Pour une information urgente, consulte notre compte <a href=\"https://www.instagram.com/tnd6tem/\" target=\"_blank\" rel=\"noopener noreferrer\">Instagram @tnd6tem</a> ou écris-nous depuis la page <a href=\"contact.html\">Contact</a>.": "The event page is updated as soon as possible. For urgent information, check our <a href=\"https://www.instagram.com/tnd6tem/\" target=\"_blank\" rel=\"noopener noreferrer\">Instagram @tnd6tem</a> account or write to us from the <a href=\"contact.html\">Contact</a> page.",
   "La musique est forte. Lors de la plupart de nos soirées, des bouchons d'oreilles sont distribués à l'entrée, et tu peux en demander gratuitement à tout moment pendant la soirée. Fais aussi des pauses loin des enceintes et bois de l'eau régulièrement.": "The music is loud. At most of our parties, earplugs are handed out at the entrance and you can ask for more for free at any time. Also take breaks away from the speakers and drink water regularly.",
@@ -126,7 +130,9 @@ export default {
   "Tout tourne autour du drop.": "It's all about the drop.",
   "Un souci, un malaise, quelqu'un qui te met mal à l'aise ? Viens voir un membre de l'équipe : on est là pour t'aider.": "A problem, feeling unwell, someone making you uncomfortable? Come and see a member of the team: we're here to help.",
   "Une fiche est publiée sur la page <a href=\"evenements.html\">Événements</a> dès que la date, le lieu et les informations essentielles sont confirmés.": "An event page is published on the <a href=\"evenements.html\">Events</a> page as soon as the date, venue and key information are confirmed.",
+  "Une passion commune, et l'envie d'organiser nos propres soirées.": "A shared passion, and the urge to throw our own parties.",
   "Yannis assure l’organisation générale, la supervision, la gestion et la coordination de l’association.": "Yannis handles the overall organisation, supervision, management and coordination of the association.",
+  "président de l’association": "president of the association",
   "À partir de quel âge peut-on venir ?": "What's the minimum age?",
   "Événementiel": "Events"
 };

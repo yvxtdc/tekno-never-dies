@@ -296,7 +296,8 @@ export function mediaUsage(db, id) {
     ...db.all("SELECT e.id, e.title AS label, 'event' AS type, 'Photo « La soirée »' AS role FROM event_photos p JOIN events e ON e.id = p.event_id WHERE p.media_id = ?", id),
     ...db.all("SELECT id, name AS label, 'artist' AS type, 'Photo' AS role FROM artists WHERE photo_media_id = ?", id),
     ...db.all("SELECT id, name AS label, 'team' AS type, 'Photo' AS role FROM team_members WHERE photo_media_id = ?", id),
-    ...db.all("SELECT a.id, a.title AS label, 'album' AS type, 'Photo de galerie' AS role FROM gallery_photos p JOIN gallery_albums a ON a.id = p.album_id WHERE p.media_id = ?", id)
+    ...db.all("SELECT a.id, a.title AS label, 'album' AS type, 'Photo de galerie' AS role FROM gallery_photos p JOIN gallery_albums a ON a.id = p.album_id WHERE p.media_id = ?", id),
+    ...db.all("SELECT id, title AS label, 'timeline' AS type, 'Photo de « Notre histoire »' AS role FROM history_items WHERE media_id = ?", id)
   ];
   return rows;
 }
@@ -306,7 +307,8 @@ const USAGE_SQL = `(
   (SELECT COUNT(*) FROM event_photos WHERE media_id = m.id) +
   (SELECT COUNT(*) FROM artists WHERE photo_media_id = m.id) +
   (SELECT COUNT(*) FROM team_members WHERE photo_media_id = m.id) +
-  (SELECT COUNT(*) FROM gallery_photos WHERE media_id = m.id))`;
+  (SELECT COUNT(*) FROM gallery_photos WHERE media_id = m.id) +
+  (SELECT COUNT(*) FROM history_items WHERE media_id = m.id))`;
 
 export function listMedia(db, { q = "", usage = "", storage = "", sort = "recent", page = 1, pageSize = 40 } = {}) {
   const where = [];

@@ -1,15 +1,15 @@
 /*
- * Informations générales du site : adresse publique, contact, agenda, statistiques, identité légale.
+ * Informations générales du site : adresse publique, agenda, statistiques, identité légale.
  * Fichier SOURCE, modifié à la main : contrairement aux autres modules de js/data/, le CMS ne le génère pas.
  * Lu par les pages, les outils (tools/), le CMS (aperçu, statistiques, supervision) et npm run validate.
- * Plusieurs de ces valeurs sont aussi écrites en dur ailleurs (CSP des pages, footer, mentions légales,
- * CNAME, robots.txt) : README, « Où modifier quoi » et « Mise en ligne ».
+ * Coordonnées (e-mail, adresse du siège, Instagram) : saisies dans le CMS (« Infos de l'association »),
+ * exportées dans js/data/association.js et reprises ici ; dans les pages, tools/sync-infos.mjs les écrit.
+ * L'adresse du site est aussi écrite en dur ailleurs (CSP des pages, CNAME, robots.txt) : README,
+ * « Où modifier quoi » et « Mise en ligne ».
  */
-const ADDRESS = {
-  street: "5 avenue Georges Clemenceau",
-  postalCode: "67630",
-  city: "Lauterbourg"
-};
+import { ASSOCIATION } from "./association.js";
+
+const ADDRESS = { ...ASSOCIATION.address };
 
 const AGENDA_PATH = "teknoneverdies.fr/calendar/events.ics";
 
@@ -20,7 +20,8 @@ export const SITE = {
   url: "https://teknoneverdies.fr/",
   // Adresse de contact utilisée par les scripts (formulaire, agenda, données structurées).
   // Elle est aussi écrite en clair dans les pages et dans partials/ (header, footer).
-  email: "tnd6tem@gmail.com",
+  email: ASSOCIATION.email,
+  instagram: ASSOCIATION.instagram,
   // Agenda .ics à jour (généré par tools/generate-calendar.mjs). Si l'adresse du site change,
   // mettre à jour AGENDA_PATH et `page`, puis régénérer assets/img/agenda-qr.svg (voir README).
   agenda: {

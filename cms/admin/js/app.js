@@ -22,14 +22,16 @@ import { statsView } from "./views/stats.js";
 import { usersView, auditView, backupsView } from "./views/admin.js";
 import { accountView } from "./views/account.js";
 import { watchPublishStatus } from "./lib/publish-status.js";
+import { siteInfoView } from "./views/site-info.js";
+import { timelineView } from "./views/timeline.js";
 
 const app = document.getElementById("app");
 
 const NAV = [
   [null, [["Tableau de bord", "/admin", "dashboard"]]],
   ["Programmation", [["Soirées", "/admin/events", "events"], ["Suivi des soirées", "/admin/suivi", "tasks"], ["Artistes", "/admin/artists", "artists"], ["Lieux", "/admin/venues", "venues"]]],
-  ["Contenus", [["Médiathèque", "/admin/media", "media"], ["Galerie photo", "/admin/gallery", "gallery"], ["FAQ", "/admin/faq", "faq"], ["Équipe", "/admin/team", "team"], ["Traductions", "/admin/translations", "translate"]]],
-  ["Site", [["Programmations", "/admin/schedule", "clock"], ["Mise en ligne", "/admin/publish", "publish"], ["Statistiques", "/admin/stats", "chart"], ["Santé du CMS", "/admin/health", "pulse"]]],
+  ["Contenus", [["Médiathèque", "/admin/media", "media"], ["Galerie photo", "/admin/gallery", "gallery"], ["FAQ", "/admin/faq", "faq"], ["Équipe", "/admin/team", "team"], ["Notre histoire", "/admin/histoire", "history"], ["Traductions", "/admin/translations", "translate"]]],
+  ["Site", [["Programmations", "/admin/schedule", "clock"], ["Mise en ligne", "/admin/publish", "publish"], ["Infos de l'association", "/admin/association", "account"], ["Statistiques", "/admin/stats", "chart"], ["Santé du CMS", "/admin/health", "pulse"]]],
   ["Administration", [["Comptes", "/admin/users", "users", "users.manage"], ["Journal d'activité", "/admin/audit", "audit", "audit.read"], ["Sauvegardes", "/admin/backups", "backup", "backups.manage"]]]
 ];
 
@@ -211,6 +213,8 @@ function registerRoutes() {
   route("/admin/team", teamView);
   route("/admin/translations", translationsView);
   route("/admin/publish", publishView);
+  route("/admin/association", siteInfoView);
+  route("/admin/histoire", timelineView);
   route("/admin/schedule", scheduleView);
   route("/admin/health", healthView);
   route("/admin/suivi", lifecycleView);

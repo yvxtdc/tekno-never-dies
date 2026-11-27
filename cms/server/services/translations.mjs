@@ -7,6 +7,8 @@ import { badRequest } from "../http/errors.mjs";
 import { cleanText } from "./validation.mjs";
 import { translatableTexts } from "./events.mjs";
 import { richTextProblems } from "./richtext.mjs";
+import { infoTranslatableTexts } from "./site-info.mjs";
+import { timelineTexts } from "./timeline.mjs";
 
 const norm = (s) => String(s ?? "").replace(/\s+/g, " ").trim();
 
@@ -36,6 +38,8 @@ export function translatableSources(db) {
   for (const m of db.all("SELECT * FROM team_members ORDER BY position")) {
     for (const text of [m.role, m.bio, ...JSON.parse(m.tags || "[]"), ...JSON.parse(m.extra || "[]").flat()]) add(text, `Équipe · ${m.name}`);
   }
+  for (const text of infoTranslatableTexts(db)) add(text, "Infos de l'association (mentions légales)");
+  for (const text of timelineTexts(db)) add(text, "Notre histoire");
   return [...map.values()];
 }
 

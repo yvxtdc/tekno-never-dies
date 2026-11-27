@@ -55,6 +55,10 @@ for (const file of files.filter((f) => /\.(html|css|js)$/.test(f))) {
 const sync = spawnSync(process.execPath, [path.join(root, "tools", "sync-partials.mjs"), "--check"], { encoding: "utf8" });
 if (sync.status !== 0) errors.push(...sync.stderr.trim().split("\n").filter(Boolean));
 
+/* ---------- 2. infos de l'association (data-info) écrites et bien marquées ---------- */
+const infos = spawnSync(process.execPath, [path.join(root, "tools", "sync-infos.mjs"), "--check"], { encoding: "utf8" });
+if (infos.status !== 0) errors.push(...infos.stderr.trim().split("\n").filter(Boolean));
+
 /* ---------- 2 bis. agenda .ics à jour ---------- */
 const calendar = spawnSync(process.execPath, [path.join(root, "tools", "generate-calendar.mjs"), "--check"], { encoding: "utf8" });
 if (calendar.status !== 0) errors.push(calendar.stderr.trim().split("\n").filter(Boolean).at(-1) || "calendar/events.ics pas à jour");

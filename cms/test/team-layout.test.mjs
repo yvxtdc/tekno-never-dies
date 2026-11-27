@@ -126,7 +126,7 @@ describe("reprise des anciens réglages (migration 007)", () => {
       member("yannis", media("a", "assets/img/equipe/yannis.webp"), 0);
       member("noah", media("b", "assets/img/equipe/noah-2027.webp"), 1); // photo changée depuis le réglage
       member("camille", media("c", "assets/img/equipe/camille.webp"), 2); // nouveau membre
-      assert.deepEqual(db.migrate(), ["007_equipe_mise_en_page.sql"]);
+      assert.deepEqual(db.migrate(), listMigrations().filter((n) => n >= "007"));
       const row = (slug) => db.get("SELECT layout, version FROM team_members WHERE slug = ?", slug);
       assert.deepEqual(JSON.parse(row("yannis").layout), migrationLayouts().yannis.layout);
       assert.equal(row("yannis").version, 1);

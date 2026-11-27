@@ -4,7 +4,7 @@
  *  - admin  : accès complet (comptes, journal, sauvegardes, suppressions définitives).
  *  - editor : gestion des contenus (création, modification, publication, médias), sans les
  *             fonctions sensibles : comptes, journal d'activité, sauvegardes, suppressions
- *             définitives de contenus ou de médias.
+ *             définitives de contenus ou de médias, infos de l'association (mentions légales).
  */
 export const PERMISSIONS = {
   "content.read": ["admin", "editor"],
@@ -16,7 +16,9 @@ export const PERMISSIONS = {
   "site.publish": ["admin", "editor"],
   "users.manage": ["admin"],
   "audit.read": ["admin"],
-  "backups.manage": ["admin"]
+  "backups.manage": ["admin"],
+  // Infos de l'association : coordonnées, responsable de publication, hébergeur (mentions légales)
+  "settings.manage": ["admin"]
 };
 
 export const ROLES = {
