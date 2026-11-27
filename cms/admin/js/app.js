@@ -21,6 +21,7 @@ import { lifecycleView } from "./views/lifecycle.js";
 import { statsView } from "./views/stats.js";
 import { usersView, auditView, backupsView } from "./views/admin.js";
 import { accountView } from "./views/account.js";
+import { watchPublishStatus } from "./lib/publish-status.js";
 
 const app = document.getElementById("app");
 
@@ -53,9 +54,12 @@ function layout() {
         h("span", {}, h("span", { class: "me__name" }, user.name), h("span", { class: "me__role", style: { display: "block" } }, user.roleLabel))),
       h("a", { class: "btn btn--sm btn--ghost", href: "/preview/site/", target: "_blank", rel: "noopener" }, icon("eye"), "Aperçu du site"),
       h("button", { type: "button", class: "btn btn--sm btn--ghost", onclick: logout }, icon("logout"), "Se déconnecter")));
+  const menuButton = h("button", { type: "button", class: "btn btn--icon btn--ghost topbar__menu", "aria-label": "Ouvrir le menu", "aria-controls": "sidebar", onclick: () => shell.classList.toggle("nav-open") }, icon("menu"));
   const topbar = h("div", { class: "topbar" },
-    h("button", { type: "button", class: "btn btn--icon btn--ghost", "aria-label": "Ouvrir le menu", "aria-controls": "sidebar", onclick: () => shell.classList.toggle("nav-open") }, icon("menu")),
+    menuButton,
     h("a", { class: "brand", href: "/admin" }, h("span", { class: "brand__logo", "aria-hidden": "true" }), h("span", { class: "brand__name" }, "TND · Admin")));
+  // Pastille « Mise en ligne » : modifications en attente, mise en ligne en cours, échec (lib/publish-status.js)
+  watchPublishStatus({ link: nav.querySelector('a[href="/admin/publish"]'), menuButton });
   shell.addEventListener("click", (e) => { if (e.target === shell) closeNav(); });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeNav(); });
   append(shell, [sidebar, h("div", {}, topbar, main)]);

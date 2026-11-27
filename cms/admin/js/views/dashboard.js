@@ -36,7 +36,7 @@ export async function dashboardView(ctx, main) {
     h("div", { class: "card__head" }, h("h2", { id: "pub-title" }, "Site public"),
       pending.hasChanges ? h("span", { class: "badge badge--running" }, "Modifications en attente") : h("span", { class: "badge badge--success" }, "À jour")),
     pending.hasChanges
-      ? h("p", {}, `Des modifications ne sont pas encore en ligne${pending.events.length ? ` (${pending.events.slice(0, 3).map((e) => e.title).join(", ")}${pending.events.length > 3 ? "…" : ""})` : ""}.`)
+      ? h("p", {}, `Des modifications ne sont pas encore en ligne${pending.sections?.length ? ` : ${pending.sections.join(", ")}` : ""}${pending.events.length ? ` (${pending.events.slice(0, 3).map((e) => e.title).join(", ")}${pending.events.length > 3 ? "…" : ""})` : ""}.`)
       : h("p", { class: "muted" }, "Tout ce qui est publié dans le CMS est en ligne."),
     drift.length ? h("p", { class: "error-text" }, `Fichiers modifiés hors du CMS : ${drift.join(", ")}.`) : null,
     lastPublication ? h("p", { class: "small muted" }, `Dernière mise en ligne ${relative(lastPublication.finished_at || lastPublication.started_at)} — `, statusBadge(lastPublication.status, { success: "réussie", failed: "échouée", running: "en cours" }[lastPublication.status])) : h("p", { class: "small muted" }, "Aucune mise en ligne depuis le CMS pour l'instant."),

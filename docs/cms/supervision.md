@@ -56,7 +56,14 @@ Règles :
   toutes les 15 s au plus).
 - **Une seule source :** l'état est enregistré sur la mise en ligne (colonnes `deploy_*`). La page
   Mise en ligne, le tableau de santé, les programmations (« Déployée », « Envoyée, déploiement en
-  cours »…) et le suivi des soirées la lisent sans appeler GitHub.
+  cours »…), le suivi des soirées et la pastille du menu la lisent sans appeler GitHub.
+- **Pastille du menu « Mise en ligne »** (`GET /api/publications/status`, `publishStatus` de
+  `publish/publisher.mjs` ; interface : `admin/js/lib/publish-status.js`) : un état à la fois, par
+  priorité : en cours, bloquée (fichiers modifiés hors du CMS), échec (mise en ligne ou déploiement),
+  à publier (modifications en attente, contenus nommés en mots), envoi (déploiement pas encore
+  confirmé), sinon rien. Rafraîchie après chaque enregistrement, à chaque page, et régulièrement ; point
+  sur le bouton du menu sur téléphone, « ● » dans le titre de l'onglet. « À jour » n'est annoncé qu'une
+  fois le déploiement confirmé par GitHub.
 
 Configuration (`cms/.env`) :
 

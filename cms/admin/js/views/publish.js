@@ -75,7 +75,8 @@ export async function publishView(ctx, main) {
           pending.hasChanges
             ? h("div", { class: "stack" },
                 pending.events.length ? h("div", {}, h("p", {}, "Soirées modifiées depuis la dernière mise en ligne :"), h("ul", { class: "diff-list" }, pending.events.map((e) => h("li", {}, h("a", { href: `/admin/events/${e.id}` }, e.title), ` — ${relative(e.updated_at)}`)))) : null,
-                pending.changed.length ? h("p", { class: "small muted" }, `Fichiers de données concernés : ${pending.changed.join(", ")}.`) : null,
+                pending.sections?.length ? h("p", {}, "Contenus concernés : ", h("strong", {}, pending.sections.join(", ")), ".") : null,
+                pending.changed.length ? h("p", { class: "small muted" }, `Fichiers du site régénérés : ${pending.changed.join(", ")}.`) : null,
                 pending.missingMedia.length ? h("p", { class: "small muted" }, `${pending.missingMedia.length} image(s) optimisée(s) à copier dans le site.`) : null)
             : h("p", { class: "muted" }, `Rien de nouveau depuis ${pending.lastPublishedAt ? `la dernière mise en ligne (${relative(pending.lastPublishedAt)})` : "l'import des contenus"}. Vous pouvez quand même relancer une mise en ligne.`),
           pending.drift.length ? h("div", { class: "form-errors" }, h("strong", {}, "Fichiers modifiés hors du CMS : "), pending.drift.join(", "),

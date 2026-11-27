@@ -27,4 +27,16 @@ export function renderModules(data) {
   };
 }
 
+/** Nom lisible du contenu de chaque fichier géré (interface : « Contenus concernés : Équipe, FAQ »). */
+export const MODULE_LABELS = {
+  "js/data/events.js": "Soirées",
+  "js/data/artistes.js": "Artistes",
+  "js/data/artistes-photos.js": "Photos d'artistes",
+  "js/data/faq.js": "FAQ",
+  "js/data/equipe.js": "Équipe",
+  "js/data/galerie.js": "Galerie photo",
+  "js/i18n/contenus-de.js": "Traductions",
+  "js/i18n/contenus-en.js": "Traductions"
+};
+
 export const MANAGED_MODULES = Object.keys(renderModules({ events: [], eventRedirects: {}, ARTISTS: {}, ARTIST_STYLES: {}, ARTIST_PHOTOS: {}, FAQ: [], TEAM: [], GALLERY: [], translations: { de: {}, en: {} } }));

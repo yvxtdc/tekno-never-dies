@@ -30,6 +30,12 @@ describe("mise en ligne (mode commit, dépôt Git temporaire)", { timeout: 300e3
     assert.equal(res.data.status, "success", res.data.log);
     assert.match(res.data.log, /Validation OK/);
     assert.match(res.data.summary, /Aucun changement/);
+    // Réponse au format de GET /api/publications/:id (page Mise en ligne : journal affiché ensuite)
+    assert.equal(typeof res.data.validation, "object", "validation lue, pas une chaîne JSON");
+    assert.ok(Array.isArray(res.data.validation.errors) && Array.isArray(res.data.validation.warnings));
+    assert.ok(res.data.deployment && "status" in res.data.deployment);
+    const { user_name: _, ...shown } = (await editor.get(`/api/publications/${res.data.id}`)).data;
+    assert.deepEqual(Object.keys(res.data).sort(), Object.keys(shown).sort());
     assert.equal(git(siteDir, "rev-parse", "HEAD"), before);
     assert.equal(git(siteDir, "status", "--porcelain"), "", "rien n'est modifié");
   });
